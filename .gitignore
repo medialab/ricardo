@@ -54,3 +54,9 @@ docs/_build/
 
 # Mac hidden file
 .DS_Store
+
+# Client bower components
+client/lib/bower_components/
+
+# Client data
+client/data/
