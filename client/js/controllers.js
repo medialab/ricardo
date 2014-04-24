@@ -20,34 +20,34 @@ angular.module('ricardo.controllers', [])
   })
   .controller('bilateral', function($scope, $location, fileService, cf) {
 
-    $scope.data;
+    // $scope.data;
 
-    fileService
-      .getFile('data/ricardo_basic_14janv.csv')
-      .then(
-        function(data){
-        $scope.data = d3.csv.parse(
-                        data, 
-                        function(d) {
-                          return {
-                            entity: d.entity,
-                            partner: d.partner,
-                            currency: d.currency,
-                            exp_imp: d["exp/imp"],
-                            year: new Date(+d.year, 0, 1),
-                            flow: +d.flow,
-                            total_pounds: +d.total_pounds,
-                          }
-                        })
+    // fileService
+    //   .getFile('data/ricardo_basic_14janv.csv')
+    //   .then(
+    //     function(data){
+    //     $scope.data = d3.csv.parse(
+    //                     data, 
+    //                     function(d) {
+    //                       return {
+    //                         entity: d.entity,
+    //                         partner: d.partner,
+    //                         currency: d.currency,
+    //                         exp_imp: d["exp/imp"],
+    //                         year: new Date(+d.year, 0, 1),
+    //                         flow: +d.flow,
+    //                         total_pounds: +d.total_pounds,
+    //                       }
+    //                     })
 
-        var france = $scope.data.filter(function(d){return d.entity == "France"})
-        cf.add(france)
+    //     var france = $scope.data.filter(function(d){return d.entity == "France"})
+    //     cf.add(france)
 
-        },
-        function(error) {
-          console.log(error)
-        }
-      )
+    //     },
+    //     function(error) {
+    //       console.log(error)
+    //     }
+    //   )
 
   })
   .controller('country', function($scope, $location) {
