@@ -7,8 +7,15 @@
   <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
+  <div ng-controller="navbar" navbar></div>
 
   <div class="container fade-view" ng-view></div>
+  
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">A project by Medialab - SciencesPo</p>
+    </div>
+  </div>
 
   <script src="lib/bower_components/jquery/dist/jquery.min.js"></script>
   <script src="lib/bower_components/jquery-ui/ui/minified/jquery-ui.min.js"></script>
