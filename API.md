@@ -5,7 +5,7 @@ GET HTTP request
 # arguments norm
 
 
-# reporting_countries
+# reporting_entities
 ## inputs
 - (type_filter=["countries","city","colonial_area","geographic_area"])
 - to_world_only=1/0

@@ -60,3 +60,10 @@ client/lib/bower_components/
 
 # Client data
 client/data/
+
+# data
+database_creation/out_data/*.sqlite
+database_creation/out_data/*.csv
+database_creation/in_data/*.csv
+database_creation/in_data/*.mdb
+
