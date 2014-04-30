@@ -5,7 +5,10 @@
 angular.module('ricardo', [
   'ngRoute',
   'ngAnimate',
+  'ngSanitize',
   'ui.bootstrap',
+  'ui.select',
+  'ngGrid',
   'ricardo.filters',
   'ricardo.services',
   'ricardo.directives',

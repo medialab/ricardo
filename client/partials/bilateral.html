@@ -1,21 +1,31 @@
 <div class="row">
 	<div class="col-sm-12">
-    here timeline
+    <div stacked-timeline></div>
   </div>
 </div>
 <div class="row">
   <div class="col-sm-3">
-    here dd1
+    <ui-select ng-model="country.selected" theme="bootstrap">
+    <match placeholder="Select or search a country in the list...">{{$select.selected}}</match>
+    <choices repeat="item in country | filter: $select.search">
+      <div ng-bind-html="item | highlight: $select.search"></div>
+    </choices>
+  </ui-select>
   </div>
   <div class="col-sm-6">
     here viz
   </div>
   <div class="col-sm-3">
-        here dd1
+    <ui-select ng-model="country.selected" theme="bootstrap">
+    <match placeholder="Select or search a country in the list...">{{$select.selected}}</match>
+    <choices repeat="item in country | filter: $select.search">
+      <div ng-bind-html="item | highlight: $select.search"></div>
+    </choices>
+  </ui-select>
   </div>
 </div>
 <div class="row">
 	<div class="col-sm-12">
-    here grid
+    <!-- <div class="gridStyle" ng-grid="gridOptions"></div> -->
   </div>
 </div>
