@@ -20,6 +20,7 @@ angular.module('ricardo.controllers', [])
   })
   .controller('bilateral', function($scope, $location, fileService, cf) {
 
+    $scope.country2;
     $scope.country = [
       "Afghanistan",
       "Albania",

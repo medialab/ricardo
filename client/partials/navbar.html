@@ -7,11 +7,14 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/">RICardo project</a>
+      <a class="navbar-brand" href="/">RICardo</a>
     </div>
     <div class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
         <li ng-repeat="view in views" ng-class="{ active: isActive('/' + view.slug)}"><a href="#/{{view.slug}}">{{view.label}}</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+            <li><a href="#/about">About</a></li>
       </ul>
     </div>
   </div>
