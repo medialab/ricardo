@@ -3,10 +3,10 @@
     <div stacked-timeline></div>
   </div>
 </div>
-<div class="row">
-  <div class="col-sm-3">
+<div id="select" class="row">
+  <div class="select-dropdown col-sm-3">
     <ui-select ng-model="country.selected" theme="bootstrap">
-    <match placeholder="Select or search a country in the list...">{{$select.selected}}</match>
+    <match placeholder="Search and select a country...">{{$select.selected}}</match>
     <choices repeat="item in country | filter: $select.search">
       <div ng-bind-html="item | highlight: $select.search"></div>
     </choices>
@@ -15,9 +15,9 @@
   <div class="col-sm-6">
     here viz
   </div>
-  <div class="col-sm-3">
-    <ui-select ng-model="country.selected" theme="bootstrap">
-    <match placeholder="Select or search a country in the list...">{{$select.selected}}</match>
+  <div class="select-dropdown col-sm-3">
+    <ui-select ng-model="country2.selected" theme="bootstrap">
+    <match placeholder="Search and select a country...">{{$select.selected}}</match>
     <choices repeat="item in country | filter: $select.search">
       <div ng-bind-html="item | highlight: $select.search"></div>
     </choices>

@@ -1,3 +1,251 @@
+@font-face {
+    font-family: 'montserrat';
+    src: url('fonts/montserrat-regular-webfont.eot');
+    src: url('fonts/montserrat-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/montserrat-regular-webfont.woff') format('woff'),
+         url('fonts/montserrat-regular-webfont.ttf') format('truetype'),
+         url('fonts/montserrat-regular-webfont.svg#montserratregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'montserrat';
+    src: url('fonts/montserrat-bold-webfont.eot');
+    src: url('fonts/montserrat-bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/montserrat-bold-webfont.woff') format('woff'),
+         url('fonts/montserrat-bold-webfont.ttf') format('truetype'),
+         url('fonts/montserrat-bold-webfont.svg#montserratbold') format('svg');
+    font-weight: bold;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'merriweather';
+    src: url('fonts/merriweather-regular-webfont.eot');
+    src: url('fonts/merriweather-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/merriweather-regular-webfont.woff') format('woff'),
+         url('fonts/merriweather-regular-webfont.ttf') format('truetype'),
+         url('fonts/merriweather-regular-webfont.svg#merriweatherregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'merriweather';
+    src: url('fonts/merriweather-light-webfont.eot');
+    src: url('fonts/merriweather-light-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/merriweather-light-webfont.woff') format('woff'),
+         url('fonts/merriweather-light-webfont.ttf') format('truetype'),
+         url('fonts/merriweather-light-webfont.svg#merriweatherlight') format('svg');
+    font-weight: lighter;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'merriweather';
+    src: url('fonts/merriweather-italic-webfont.eot');
+    src: url('fonts/merriweather-italic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/merriweather-italic-webfont.woff') format('woff'),
+         url('fonts/merriweather-italic-webfont.ttf') format('truetype'),
+         url('fonts/merriweather-italic-webfont.svg#merriweatheritalic') format('svg');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'merriweather';
+    src: url('fonts/merriweather-bold-webfont.eot');
+    src: url('fonts/merriweather-bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/merriweather-bold-webfont.woff') format('woff'),
+         url('fonts/merriweather-bold-webfont.ttf') format('truetype'),
+         url('fonts/merriweather-bold-webfont.svg#merriweatherbold') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}
+
+/* Global style */
+
+body {
+    font-family: 'merriweather', 'Georgia', serif;
+    background-color: #f5f5f5;
+}
+
+h1,h2,h3,h4{
+    font-family: 'montserrat', 'Arial', sans-serif;
+    font-weight: bold;
+}
+
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+#footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: white;
+}
+
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+body > .container {
+  padding: 53px 15px 60px 15px;
+}
+.container .text-muted {
+  margin: 20px 0;
+}
+
+#footer > .container {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+/* Components*/
+
+/* navbar */
+
+#nav .navbar{
+  background: white;
+  border-width: 3px 0 1px 0;
+  border-top-color: #222;
+  border-bottom-color: #e7e7e7;
+}
+
+#nav .navbar-brand{
+  font-family: 'montserrat', 'Arial', sans-serif;
+}
+
+#nav .navbar-nav > li{
+  border-left: 1px solid #e7e7e7;
+}
+
+#nav .navbar-nav > li:last-child{
+  border-right: 1px solid #e7e7e7;
+}
+
+#nav .navbar-nav > li > a{
+  font-variant: small-caps;
+  letter-spacing: 2px;
+  text-transform: lowercase;
+}
+
+#nav .navbar-right > li > a{
+  font-family: 'montserrat', 'Arial', sans-serif;
+  text-transform: uppercase;
+  font-variant: normal;
+  font-weight: bold;
+  font-size: 0.7em;
+}
+
+/* select geo-entities dropdown*/
+
+#select{
+  background-color: white;
+  border: 1px solid #e7e7e7;
+  min-height: 70px
+}
+
+#select > div:first-child{
+  border-right: 1px solid #e7e7e7;
+
+}
+
+#select > div:last-child{
+  border-right: none;
+  border-left: 1px solid #e7e7e7;
+}
+
+.select-dropdown .btn, .select-dropdown .form-control{
+  border: 0;
+  border-radius: 0;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  color: #999;
+  min-height: 70px
+}
+
+.select-dropdown .btn:hover{
+  background-color: transparent;
+}
+
+.select-dropdown *:focus, .select-dropdown *:active:focus{
+  outline: 0;
+}
+
+.select-dropdown .dropdown-menu{
+  border-color:#e7e7e7;
+  border-radius: 0;
+  border-width: 0 1px 1px 1px;
+  font-size: 13px; 
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  min-width: 294px;
+  left: -16px;
+}
+
+.select-dropdown .dropdown-menu > .active > a, .dropdown-menu > .active > a:hover, .dropdown-menu > .active > a:focus{
+  color: #222;
+  background-color: #e8e8e8;
+}
+
+.select-dropdown  .dropdown-menu > li > a {
+  padding: 10px 20px;
+}
+
+/* timeline */
+
+.hidden-over{
+  position: relative;
+  top: -200px;
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  transition: all 1s ease;
+}
+
+.show-over{
+  top:0px;
+
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.brush{
+  fill:black;
+  fill-opacity:0.2;
+  stroke:none;
+}
+
+/* grid */
+
+.gridStyle {
+    border: 1px solid rgb(212,212,212);
+    width: 100%; 
+    height: 500px
+}
+
 /* Page transition */
 .fade-view {
     position: absolute;
@@ -25,60 +273,4 @@
 }
 .fade-view.ng-leave-active {
     opacity: 0;
-}
-
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-  position: relative;
-  min-height: 100%;
-}
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
-}
-#footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 60px;
-  background-color: #f5f5f5;
-}
-
-
-/* Custom page CSS
--------------------------------------------------- */
-/* Not required for template or sticky footer method. */
-
-body > .container {
-  padding: 60px 15px 0;
-}
-.container .text-muted {
-  margin: 20px 0;
-}
-
-#footer > .container {
-  padding-right: 15px;
-  padding-left: 15px;
-}
-
-/* graph axis */
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-.brush{
-  fill:black;
-  fill-opacity:0.2;
-  stroke:none;
-}
-
-.gridStyle {
-    border: 1px solid rgb(212,212,212);
-    width: 100%; 
-    height: 500px
 }
