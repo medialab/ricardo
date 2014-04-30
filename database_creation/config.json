@@ -1,0 +1,10 @@
+{
+	"mdb_filename":"RICardo_Basic_avril14b.mdb",
+	"sqlite_filename":"RICardo_visualisation.sqlite",
+	"sqlite_schema":"RICardo_visualisation_schema.sql",
+	"name_cleaning_csv":"entity_names_cleaning.csv",
+	"RICnames_csv":"entity_RICnames.csv",
+	"RICnames_aggregation_csv":"RICnames_aggregation.csv"
+
+
+}
