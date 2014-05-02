@@ -1,5 +1,6 @@
 import sqlite3
 import json
+import codecs
 
 
 def get(types=["Country"],to_world_only=False):
@@ -14,16 +15,14 @@ def get(types=["Country"],to_world_only=False):
 
 
 
-	table="flow_impexp_bilateral" if not to_world_only else "flow_impexp_world"
-
-
-
+	partner_clause="and partner='World'" if to_world_only else ""
 
 	cursor.execute("""SELECT reporting,type,central_state,continent
-					  FROM %s 
+					  FROM flow_joined
 					  LEFT OUTER JOIN RICentities ON RICname=reporting
 					  where type IN ("%s")
-					  group by reporting"""%(table,'","'.join(types)))
+					  %s
+					  group by reporting"""%('","'.join(types),partner_clause))
 	
 	json_response=[]
 	for (r,t,central,continent) in cursor:
@@ -33,7 +32,7 @@ def get(types=["Country"],to_world_only=False):
 			"central_state":central,
 			"continent":continent
 			})
-	return json.dumps(json_response,encoding="UTF8")
+	return json.dumps(json_response,encoding="UTF8",indent=4)
 
 # type possible values
 # 'Geographical Area'
@@ -41,6 +40,8 @@ def get(types=["Country"],to_world_only=False):
 # 'Country'
 # 'group'
 # 'Colonial Area'
+type_arg=["Country"]
 
 
-print get(["City/Part of"])
+with codecs.open("reporting_countries.json","w") as f:
+	f.write(get(type_arg,True))
