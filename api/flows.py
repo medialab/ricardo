@@ -71,9 +71,3 @@ def get_flows_in_pounds(reportings=[],partners=[]):
 
 	return json.dumps(json_response,encoding="UTF8",indent=4)
 
-# inputs
-reportings=["France"]
-partners=["United Kingdom"]
-
-with codecs.open("flows_in_pounds.json","w") as f:
-	f.write(get_flows_in_pounds(reportings,partners))

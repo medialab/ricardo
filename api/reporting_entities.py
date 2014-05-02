@@ -34,14 +34,3 @@ def get(types=["Country"],to_world_only=False):
 			})
 	return json.dumps(json_response,encoding="UTF8",indent=4)
 
-# type possible values
-# 'Geographical Area'
-# 'City/Part of'
-# 'Country'
-# 'group'
-# 'Colonial Area'
-type_arg=["Country"]
-
-
-with codecs.open("reporting_countries.json","w") as f:
-	f.write(get(type_arg,True))
