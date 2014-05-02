@@ -59,24 +59,75 @@ c.execute("UPDATE `rate` SET `Modified Currency`=trim(lower(`Modified Currency`)
 c.execute("DELETE FROM `Exp-Imp-Standard` WHERE `ID_Exp_spe` in (7,16,25)")
 
 # remove 770 'Pas de données'
-c.execute("SELECT count(*) from flow where notes='Pas de données'")
+c.execute("SELECT count(*) from flow where notes='Pas de données' and Flow is null")
 print "removing %s flows with Notes='Pas de données'"%c.fetchone()[0]
 c.execute("DELETE FROM flow WHERE notes ='Pas de données'")
 
 # remove Null rates from rate
 c.execute("DELETE FROM rate WHERE `FX rate (NCU/£)` is null")
 
+
+###################################################
+##          Import RICnames definition from CSV
+###################################################
+import RICnames_from_csv
+RICnames_from_csv.import_in_sqlite(conn, conf)
+
+##################################################
+##			Create views on flow
+#####################################################
+c.execute("""DROP VIEW IF EXISTS flow_joined;""")
+c.execute("""CREATE VIEW IF NOT EXISTS flow_joined AS 
+	 SELECT f.*, `Exp / Imp (standard)` as expimp, `Spe/Gen/Tot (standard)` as spegen, `FX rate (NCU/£)` as rate ,r2.RICname as reporting, p2.RICname as partner
+	 from flow as f
+	 LEFT OUTER JOIN `Exp-Imp-Standard` USING (`Exp / Imp`,`Spe/Gen/Tot`)
+	 LEFT OUTER JOIN currency as c
+		ON f.`Initial Currency`=c.`Original Currency` 
+		   AND f.`Reporting Entity_Original Name`=c.`Reporting Entity (Original Name)`
+		   AND f.Yr=c.Yr
+	 LEFT OUTER JOIN rate as r USING (Yr,`Modified Currency`)
+	 LEFT OUTER JOIN entity_names_cleaning as r ON `Reporting Entity_Original Name`=r.original_name COLLATE NOCASE
+	 LEFT OUTER JOIN RICentities r2 ON r2.RICname=r.RICname
+	 LEFT OUTER JOIN entity_names_cleaning as p ON trim(`Partner Entity_Original Name`)=p.original_name COLLATE NOCASE
+	 LEFT OUTER JOIN RICentities p2 ON p2.RICname=p.RICname
+	 WHERE 	
+		`Partner Entity_Sum` is null
+	 	and ((`Total Trade Estimation` is null and partner != "World" )or(`Total Trade Estimation`=1 and partner = "World"))
+	 	and partner is not null
+	 	and expimp != "Re-exp"
+	""")
+#
+	 	
+
+# c.execute("""DROP VIEW IF EXISTS flow_impexp_total;""")
+# c.execute(""" CREATE VIEW IF NOT EXISTS flow_impexp_world AS 
+# 	SELECT f.*, `Exp / Imp (standard)` as expimp, `Spe/Gen/Tot (standard)` as spegen, `FX rate (NCU/£)` as rate ,r2.RICname as reporting, p2.RICname as partner
+# 	 from flow as f
+# 	 LEFT OUTER JOIN `Exp-Imp-Standard` USING (`Exp / Imp`,`Spe/Gen/Tot`)
+# 	 LEFT OUTER JOIN currency as c
+# 		ON f.`Initial Currency`=c.`Original Currency` 
+# 		   AND f.`Reporting Entity_Original Name`=c.`Reporting Entity (Original Name)`
+# 		   AND f.Yr=c.Yr
+# 	 LEFT OUTER JOIN rate as r USING (Yr,`Modified Currency`)
+# 	 LEFT OUTER JOIN entity_names_cleaning as r ON `Reporting Entity_Original Name`=r.original_name COLLATE NOCASE
+# 	 LEFT OUTER JOIN RICentities r2 ON r2.RICname=r.RICname
+# 	 LEFT OUTER JOIN entity_names_cleaning as p ON trim(`Partner Entity_Original Name`)=p.original_name COLLATE NOCASE
+# 	 LEFT OUTER JOIN RICentities p2 ON p2.RICname=p.RICname
+# 	 WHERE 
+# 	 	`Total Trade Estimation` is not null 
+# 	 	and `notes` != "Pas de données" 
+# 	 	and partner is not null
+# """)#and `Partner Entity_Original Name`!="Total"
+
 ########################################################################################
 # remove 'valeurs officielles' when duplicates with 'Valeurs actuelles' for France between 1847 and 1856 both included
 ########################################################################################
 
 c.execute("""SELECT count(*) as nb,group_concat(Notes,'|'),group_concat(ID,'|'),group_concat(Source,'|') as notes_group
-	FROM `flow`
-	LEFT OUTER JOIN `Exp-Imp-Standard` USING (`Exp / Imp`,`Spe/Gen/Tot`)
-	WHERE `Reporting Entity_Original Name`="france" 
-		and `Total Trade Estimation` is null
+	FROM `flow_joined`
+	WHERE `reporting`="France" 
 		and Yr >= 1847 AND Yr <= 1856
-		GROUP BY Yr,`Exp / Imp (standard)`,`Reporting Entity_Original Name`,`Partner Entity_Original Name` HAVING count(*)>1
+		GROUP BY Yr,expimp,reporting,partner HAVING count(*)>1
 	""")
 
 ids_to_remove=[]
@@ -98,18 +149,14 @@ if len(ids_to_remove)>0:
 ########################################################################################
 # remove GEN flows when duplicates with SPE flows
 ########################################################################################
-c.execute("""SELECT count(*) as nb,group_concat(`Spe/Gen/Tot (standard)`,'|'),group_concat(ID,'|'),`Reporting Entity_Original Name`,`Partner Entity_Original Name`,Yr,`Exp / Imp (standard)` 
-	FROM `flow`
-	LEFT OUTER JOIN `Exp-Imp-Standard` USING (`Exp / Imp`,`Spe/Gen/Tot`)
-	WHERE
-		`Total Trade Estimation` is null
-		and `notes` != "Pas de données"
-		GROUP BY Yr,`Exp / Imp (standard)`,`Reporting Entity_Original Name`,`Partner Entity_Original Name` HAVING count(*)>1
+c.execute("""SELECT count(*) as nb,group_concat(`spegen`,'|'),group_concat(ID,'|'),`reporting`,`partner`,Yr,`expimp` 
+	FROM `flow_joined`
+	GROUP BY Yr,`expimp`,`reporting`,`partner` HAVING count(*)>1
 	""")
 lines=c.fetchall()
 ids_to_remove={}
 for n,spe_gens,ids,reporting,partner,Yr,e_i in lines :
-	if n==2 and spe_gens and "Gen" in spe_gens and "Spe" in spe_gens:
+	if n==2 and spe_gens and "Gen" in spe_gens.split("|") and "Spe" in spe_gens.split("|"):
 		i=spe_gens.split("|").index("Gen")
 		id=ids.split("|")[i]
 		if reporting in ids_to_remove.keys():
@@ -125,46 +172,7 @@ if ids_to_remove:
 		c.execute("DELETE FROM flow WHERE id IN (%s)"%",".join(ids))
 
 
-###################################################
-##          Import RICnames definition from CSV
-###################################################
-import RICnames_from_csv
-RICnames_from_csv.import_in_sqlite(conn, conf)
 
-##################################################
-##			Create views on flow
-#####################################################
-c.execute("""DROP VIEW IF EXISTS flow_impexp_nototal;""")
-c.execute(""" CREATE VIEW IF NOT EXISTS flow_impexp_bilateral AS 
-	 SELECT flow.*, `Exp / Imp (standard)`, `Spe/Gen/Tot (standard)`, r2.RICname as reporting, p2.RICname as partner
-	 from flow 
-	 LEFT OUTER JOIN `Exp-Imp-Standard` USING (`Exp / Imp`,`Spe/Gen/Tot`)
-	 LEFT OUTER JOIN entity_names_cleaning as r ON `Reporting Entity_Original Name`=r.original_name COLLATE NOCASE
-	 LEFT OUTER JOIN RICentities r2 ON r2.RICname=r.RICname
-	 LEFT OUTER JOIN entity_names_cleaning as p ON trim(`Partner Entity_Original Name`)=p.original_name COLLATE NOCASE
-	 LEFT OUTER JOIN RICentities p2 ON p2.RICname=p.RICname
-	 WHERE 
-	 	`Total Trade Estimation` is null and
-	 	`notes` != "Pas de données" 
-	 	and partner is not null
-	""")
-# Notes != "Valeur Officielle" and Source !="Tableau décennal du commerce de la France avec ses colonies et les puissances étrangères. 1847 à 1856. Première partie."
-
-
-c.execute("""DROP VIEW IF EXISTS flow_impexp_total;""")
-c.execute(""" CREATE VIEW IF NOT EXISTS flow_impexp_world AS 
-	SELECT flow.*, `Exp / Imp (standard)`, `Spe/Gen/Tot (standard)` , r2.RICname as reporting, p2.RICname as partner
-	 from flow 
-	 LEFT OUTER JOIN `Exp-Imp-Standard` USING (`Exp / Imp`,`Spe/Gen/Tot`)
-	 LEFT OUTER JOIN entity_names_cleaning as r ON `Reporting Entity_Original Name`=r.original_name COLLATE NOCASE
-	 LEFT OUTER JOIN RICentities r2 ON r2.RICname=r.RICname
-	 LEFT OUTER JOIN entity_names_cleaning as p ON trim(`Partner Entity_Original Name`)=p.original_name COLLATE NOCASE
-	 LEFT OUTER JOIN RICentities p2 ON p2.RICname=p.RICname
-	 WHERE 
-	 	`Total Trade Estimation` is not null 
-	 	and `notes` != "Pas de données" 
-	 	and partner is not null
-""")#and `Partner Entity_Original Name`!="Total"
 
 print "cleaning done"
 conn.commit()

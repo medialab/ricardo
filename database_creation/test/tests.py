@@ -26,9 +26,11 @@ print "CURRENCY TEST : %s"%currency_status
 import expimp
 expimp_status="OK" if expimp.test(cursor) else "FAILED"
 print "EXP IMP TEST : %s"%expimp_status
+
 import flow
 flow_status="OK" if flow.test(cursor) else "FAILED"
-print "FLOW TAST : %s"%flow_status
+print "FLOW TEST : %s"%flow_status
+
 
 # c.execute("""SELECT  `Reporting Entity_Original Name`
 # 	FROM flow

@@ -3,15 +3,16 @@ import codecs
 import os
 
 def test(cursor):
-
+	 
+	# and `Partner Entity_Sum` is not null
 	# cursor.execute("UPDATE flow SET `Exp / Imp`=trim(lower(`Exp / Imp`)), `Spe/Gen/Tot`=trim(lower(`Spe/Gen/Tot`))")
 	# cursor.execute("UPDATE `Exp-Imp-Standard` SET `Exp / Imp`=trim(lower(`Exp / Imp`)), `Spe/Gen/Tot`=trim(lower(`Spe/Gen/Tot`))")
 
-	for flow in ("flow_impexp_bilateral","flow_impexp_world") :
-		cursor.execute("""SELECT group_concat(`ID`,';'),group_concat(`Flow`,';'),count(*),group_concat(`Spe/Gen/Tot (standard)`,';'),group_concat(`Reporting Entity_Original Name`,';'),reporting,group_concat(`Partner Entity_Original Name`,';'),partner,Yr,`Exp / Imp (standard)`,group_concat(`Source`,';') 				
+	for flow in ("flow_joined",) :
+		cursor.execute("""SELECT group_concat(`ID`,';'),group_concat(`Flow`,';'),count(*),group_concat(`spegen`,';'),group_concat(`Reporting Entity_Original Name`,';'),reporting,group_concat(`Partner Entity_Original Name`,';'),partner,Yr,`expimp`,group_concat(`Source`,'|') 				
 							from %s 
-							
-							GROUP BY Yr,`Exp / Imp (standard)`,reporting,partner HAVING count(*)>1
+							WHERE Flow is not null
+							GROUP BY Yr,expimp,reporting,partner HAVING count(*)>1
 				
 							"""%flow)
 		lines=list(cursor)
@@ -20,7 +21,7 @@ def test(cursor):
 		nb_dups=0
 		reporting_spegen={}
 		reporting_dups={}
-		log=u'"ids","nb_dup","original_reportings","reporting","original_partner","partner","year","exp_imp","spe_gen","flows","sources"\n'
+		log=u'"ids","nb_dup","original_reportings","reporting","original_partner","partner","year","exp_imp","spe_gen","flows","nb_source","sources"\n'
 		for ids,flows,n,group,o_r,r,o_p,p,y,e_i,s in lines:
 			if group and "Gen" in group and "Spe" in group:
 				nb_spe_gen+=n
@@ -30,7 +31,9 @@ def test(cursor):
 				nb_dups+=n
 				reporting_dups[r]=reporting_dups.get(r,0)+n
 				spegen=True
-			log+=u'"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"\n'%(ids,n,o_r,r,o_p,p,y,e_i,group,flows,s)
+			# count sources
+			sources=set(s.split("|"))
+			log+=u'"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"\n'%(ids,n,o_r,r,o_p,p,y,e_i,group,flows,len(sources),"|".join(sources))
 		print "# %s"%flow
 		print "## Spe/gen Dups"
 		print "   number of spe/gen to clean %s"%nb_spe_gen
