@@ -20,7 +20,12 @@ config(['$routeProvider', function($routeProvider) {
   });
   $routeProvider.when('/bilateral', {
     templateUrl: 'partials/bilateral.html',
-    controller: 'bilateral'
+    controller: 'bilateral',
+    resolve: {
+      reportingEntities : function (apiService) {
+        return apiService.getReportingEntities('data/reporting_countries.json')
+      }
+    }
   });
   $routeProvider.when('/country', {
     templateUrl: 'partials/country.html',

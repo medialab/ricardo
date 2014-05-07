@@ -5,27 +5,27 @@
 </div>
 <div id="select" class="row">
   <div class="select-dropdown col-sm-3">
-    <ui-select ng-model="country.selected" theme="bootstrap">
-    <match placeholder="Search and select a country...">{{$select.selected}}</match>
-    <choices repeat="item in country | filter: $select.search">
-      <div ng-bind-html="item | highlight: $select.search"></div>
+    <ui-select ng-model="sourceEntity.selected" theme="bootstrap">
+    <match placeholder="Search and select a country...">{{$select.selected.reporting}}</match>
+    <choices repeat="item in reportingEntities | filter: $select.search">
+      <div ng-bind-html="item.reporting | highlight: $select.search"></div>
     </choices>
   </ui-select>
   </div>
   <div class="col-sm-6">
-    here viz
+    <div stream></div>
   </div>
   <div class="select-dropdown col-sm-3">
-    <ui-select ng-model="country2.selected" theme="bootstrap">
-    <match placeholder="Search and select a country...">{{$select.selected}}</match>
-    <choices repeat="item in country | filter: $select.search">
-      <div ng-bind-html="item | highlight: $select.search"></div>
+    <ui-select ng-model="targetEntity.selected" theme="bootstrap">
+    <match placeholder="Search and select a country...">{{$select.selected.reporting}}</match>
+    <choices repeat="item in reportingEntities | filter: $select.search">
+      <div ng-bind-html="item.reporting | highlight: $select.search"></div>
     </choices>
   </ui-select>
   </div>
 </div>
 <div class="row">
 	<div class="col-sm-12">
-    <!-- <div class="gridStyle" ng-grid="gridOptions"></div> -->
+     <div class="gridStyle" ng-grid="gridOptions"></div>
   </div>
 </div>

@@ -14,62 +14,103 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
-  .directive('stackedTimeline',[ 'cf', 'fileService', '$timeout', function (cf, fileService, $timeout){
+  .directive('stackedTimeline',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
     return {
       restrict: 'A',
       replace: false,
       //templateUrl: 'partials/navbar.html',
       link: function(scope, element, attrs) {
 
-        var timelineData;
+        var timelineData = [{key:"imp", values:[]},{key:"exp", values:[]}];
         
         function init(){
-        
-          fileService
-            .getFile('data/ricardo_basic_14janv.csv')
+          
+          apiService
+            .getFlows('data/bilateral_france_UK.json')
             .then(
               function(data){
-              var list = d3.csv.parse(
-                              data, 
-                              function(d) {
-                                return {
-                                  entity: d.entity,
-                                  partner: d.partner,
-                                  currency: d.currency,
-                                  exp_imp: d["exp/imp"],
-                                  year: new Date(+d.year, 0, 1),
-                                  flow: +d.flow,
-                                  total_pounds: +d.total_pounds,
-                                }
-                              })
+                var flows = data.flows_in_pounds,
+                    mirror_flows = data.mirror_flows;
+                
+                cfSource.add(flows);
+                cfTarget.add(mirror_flows);
 
-              scope.testData = list.filter(function(d){return d.entity == "France"})
-              cf.add(scope.testData)
-              cf.partner().filter("Italy")
-              timelineData = d3.nest().key(function(d){return d.exp_imp}).entries(cf.year().top(Infinity))
-              
-              var stacked = ricardo.stackedBar()
-                .width(element.width())
-                .height(200)
-                .stackColors(["#FF4136","#3D9970"])
-                .on("brushed", function(d){
-                  console.log(d)
+                scope.testData = flows
+                
+                scope.streamData = [
+                  {key:"first", values:[
+                    {y: cfSource.imp(), x:0, key:"first"},
+                    {y: cfTarget.exp(), x:1, key:"first"}
+                    ]
+                  },
+                  {key:"second", values:[
+                    {y: cfSource.exp(), x:0, key:"second"},
+                    {y: cfTarget.imp(), x:1, key:"second"}
+                    ]
+                  }
+                ]
+
+                flows.forEach(function(d){
+                  timelineData[0].values.push({total: d.imp, year: new Date(d.year, 0, 1)})
+                  timelineData[1].values.push({total: d.exp, year: new Date(d.year, 0, 1)})
                 })
+                
+                var stacked = ricardo.stackedBar()
+                  .width(element.width())
+                  .height(200)
+                  .stackColors(["#FF4136","#3D9970"])
+                  .on("brushed", function(d){
+                    cfSource.year().filterRange(d)
+                    cfTarget.year().filterRange(d)
+                  })
 
-              var chart = d3.select(element[0])
+                var chart = d3.select(element[0])
 
-              chart.datum(timelineData).call(stacked)
+                chart.datum(timelineData).call(stacked)
 
               },
               function(error) {
                 console.log(error)
               }
             )
+  
           }
 
-        scope.$watch("country.selected", function(newValue, oldValue){
+        scope.$watch("sourceEntity.selected", function(newValue, oldValue){
           if(newValue != oldValue){
             init()
+          }
+        })
+
+      }
+    }
+  }])
+  .directive('stream',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
+    return {
+      restrict: 'A',
+      replace: false,
+      //templateUrl: 'partials/navbar.html',
+      link: function(scope, element, attrs) {
+        
+        function init(data){
+
+          console.log(data)
+
+          var stream = ricardo.stream()
+            .width(element.width())
+            .height(200)
+            .stackColors(["#FF4136","#3D9970"])
+
+          var chart = d3.select(element[0])
+
+          chart.datum(data).call(stream)
+
+        }
+
+
+        scope.$watch("streamData", function(newValue, oldValue){
+          if(newValue != oldValue){
+            init(newValue)
           }
         })
 

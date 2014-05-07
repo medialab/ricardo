@@ -232,6 +232,16 @@ body > .container {
   shape-rendering: crispEdges;
 }
 
+.y path{
+  fill: none;
+  stroke-width:0;
+}
+
+.axis .minor line {
+  stroke: #777;
+  stroke-dasharray: 2,2;
+}
+
 .brush{
   fill:black;
   fill-opacity:0.2;

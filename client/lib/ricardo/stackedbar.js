@@ -47,14 +47,14 @@
         var color = d3.scale.ordinal().range(stackColors).domain(colorDomain)
 
         var area = d3.svg.area()
-            .x(function(d) { return x(new Date(d.year)); })
+            .x(function(d) { return x(d.year); })
             .y0(function(d) { return y(d.y0); })
             .y1(function(d) { return y(d.y0 + d.y); });
 
         var stack = d3.layout.stack()
             .values(function(d) { return d.values; })
             .x(function x(d) {return d.year})
-            .y(function y(d) {return d.total_pounds})
+            .y(function y(d) {return d.total})
 
         var layers = stack(data)
 
@@ -68,13 +68,13 @@
         var yAxis = d3.svg.axis()
             .scale(y)
             .orient("left")
-            //.tickValues([0, yStackMax])
+            .ticks(5)
+            .tickSize(-width)
             .tickFormat(d3.format("2s"))
 
         var xAxis = d3.svg.axis()
             .scale(x)
             .orient("bottom")
-            //.tickValues([0, yStackMax])
 
         var stacked = chart.selectAll(".stack")
                       .data(layers)
@@ -114,6 +114,23 @@
         //   .attr("x", 20)
         //   .attr("dy", "-0.25em")
 
+        /* axis */
+
+        if(chart.select("g.x.axis").empty() || chart.select("g.y.axis").empty()){
+
+          chart.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + chartHeight + ")")
+            .call(xAxis);
+
+          var gy = chart.append("g")
+              .attr("class", "y axis")
+              .call(yAxis);
+              
+          gy.selectAll("g").filter(function(d) { return d; })
+              .classed("minor", true);
+        }
+
         /* Brush */
       
         var brush = d3.svg.brush()
@@ -142,18 +159,6 @@
         gBrush.selectAll("rect")
             .attr("height", chartHeight);
 
-
-        if(chart.select("g.x.axis").empty() || chart.select("g.y.axis").empty()){
-
-          chart.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + chartHeight + ")")
-            .call(xAxis);
-
-          chart.append("g")
-              .attr("class", "y axis")
-              .call(yAxis);
-        }
 
       }); //end selection
     } // end stackedBar
