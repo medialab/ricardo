@@ -24,8 +24,8 @@ angular.module('ricardo.controllers', [])
     $scope.sourceEntity = {};
     $scope.targetEntity = {};
 
-    $scope.testData = [];
-    $scope.gridOptions = { data: 'testData' }
+    $scope.tableData = [];
+    $scope.gridOptions = { data: 'tableData' }
 
   })
   .controller('country', function($scope, $location) {

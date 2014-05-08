@@ -1,5 +1,6 @@
 <div class="row">
-	<div class="col-sm-12">
+	<div class="timeline-cont col-sm-12">
+    <h4>Trade exchanges between {{startDate}} – {{endDate}}</h4>
     <div stacked-timeline></div>
   </div>
 </div>
@@ -14,6 +15,9 @@
   </div>
   <div class="col-sm-6">
     <div stream></div>
+    <div class="row">
+      <div class="stream-legend" stream-legend></div>
+    </div>
   </div>
   <div class="select-dropdown col-sm-3">
     <ui-select ng-model="targetEntity.selected" theme="bootstrap">
@@ -24,8 +28,11 @@
   </ui-select>
   </div>
 </div>
-<div class="row">
+<div class="row table-cont">
 	<div class="col-sm-12">
-     <div class="gridStyle" ng-grid="gridOptions"></div>
+  <h4>the grid</h4>
   </div>
+  <div class="col-sm-12 grid-cont">
+  <div class="gridStyle" ng-grid="gridOptions"></div>
+</div>
 </div>

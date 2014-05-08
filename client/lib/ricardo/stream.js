@@ -7,13 +7,11 @@
     var height = 600,
         width = 600,
         stackColors = ["#0EA789", "#0EA789"],
-        duration = 2000;
+        duration = 1000;
 
 
     function stream(selection){
       selection.each(function(data){
-
-        console.log(data)
 
         var chart;
         var margin = {top: 0, right: 0, bottom: 0, left: 0},
@@ -60,10 +58,13 @@
         y.domain([0,yStackMax])
 
 
-        var stacked = chart.selectAll(".stack")
-                      .data(layers)
-                      .enter().append("g")
-                      .attr("class", "stack")
+        var stacked = chart.selectAll(".stack").data(layers)
+                      
+        //stacked.transition().duration()
+        //  .attr("class", "stack")
+
+        stacked.enter().append("g")
+          .attr("class", "stack")
 
         // stacked
         //   .transition()
@@ -111,15 +112,35 @@
 
         var bars = stacked.selectAll("rect").data(function(d){return d.values})
 
+        bars.transition().duration(duration)
+          .attr("x", function(d) { return x(d.x); })
+          .attr("y", function(d) { return y(d.y0)+10; })
+          .attr("height", function(d) { 
+            if(y(d.y)-10 < 0){
+              return 0
+            }else{
+              return y(d.y)-10;
+            }
+          })
+
         bars.enter().append("rect")
           .attr("x", function(d) { return x(d.x); })
           .attr("y", function(d) { return y(d.y0)+10; })
           .attr("width", function(d) { return x.rangeBand() })
-          .attr("height", function(d) { return y(d.y)-10; })
+          .attr("height", function(d) { 
+            if(y(d.y)-10 < 0){
+              return 0
+            }else{
+              return y(d.y)-10;
+            }
+          })
           .attr("fill", function(d) { return color(d.key) })
           .on("click", function(d){console.log(d)})
 
-        var flows = stacked.append("path")
+
+        var flows = stacked.selectAll("path").data(function(d){return [d]})
+
+        flows.transition().duration(duration)
           .attr("d", function(d){
             var p1 = [x(d.values[0].x)+ x.rangeBand(), y(d.values[0].y0)+10],
                 p2 = [x(d.values[1].x), y(d.values[1].y0)+10],
@@ -128,6 +149,18 @@
 
             return drawLink(p1,p2,p3,p4)
           })
+        
+        flows.enter()
+          .append("path")
+          .attr("d", function(d){
+            var p1 = [x(d.values[0].x)+ x.rangeBand(), y(d.values[0].y0)+10],
+                p2 = [x(d.values[1].x), y(d.values[1].y0)+10],
+                p3 = [x(d.values[1].x), y(d.values[1].y0+d.values[1].y)],
+                p4 = [x(d.values[0].x) + x.rangeBand(), y(d.values[0].y0+d.values[0].y)];
+
+            return drawLink(p1,p2,p3,p4)
+          })
+          .attr("fill", "#eaeaea")
         
       }); //end selection
     } // end stream
