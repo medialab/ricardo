@@ -24,14 +24,13 @@ angular.module('ricardo.directives', [])
         
         function init(){
           
-          
-
           apiService
             .getFlows('data/bilateral_france_UK.json')
+            //.getFlows('data/bilateral_france_all.json')
             .then(
               function(data){
                 var flows = data.flows_in_pounds,
-                    mirror_flows = data.mirror_flows;
+                    mirror_flows = data.mirror_flows || [];
                 
                 cfSource.add(flows);
                 cfTarget.add(mirror_flows);
@@ -47,16 +46,17 @@ angular.module('ricardo.directives', [])
                 scope.streamData = [
                   {key:"first", values:[
                     {y: cfSource.imp(), x:0, key:"first"},
-                    {y: cfTarget.exp(), x:1, key:"first"}
+                    {y: cfTarget.exp(), x:1, key:"second"}
                     ]
                   },
                   {key:"second", values:[
                     {y: cfSource.exp(), x:0, key:"second"},
-                    {y: cfTarget.imp(), x:1, key:"second"}
+                    {y: cfTarget.imp(), x:1, key:"first"}
                     ]
                   }
                 ]
 
+                flows.sort(function(a, b){ return d3.ascending(a.year, b.year); })
                 flows.forEach(function(d){
                   timelineData[0].values.push({total: d.imp, year: new Date(d.year, 0, 1)})
                   timelineData[1].values.push({total: d.exp, year: new Date(d.year, 0, 1)})
@@ -65,7 +65,7 @@ angular.module('ricardo.directives', [])
                 var stacked = ricardo.stackedBar()
                   .width(element.width())
                   .height(200)
-                  .stackColors(["#FF4136","#3D9970"])
+                  .stackColors(["#7CA49E", "#D35530"])
                   .on("brushing", function(d){
                     scope.startDate = d[0].getFullYear()
                     scope.endDate = d[1].getFullYear()
@@ -81,12 +81,12 @@ angular.module('ricardo.directives', [])
                     scope.streamData = [
                       {key:"first", values:[
                         {y: cfSource.imp(), x:0, key:"first"},
-                        {y: cfTarget.exp(), x:1, key:"first"}
+                        {y: cfTarget.exp(), x:1, key:"second"}
                         ]
                       },
                       {key:"second", values:[
                         {y: cfSource.exp(), x:0, key:"second"},
-                        {y: cfTarget.imp(), x:1, key:"second"}
+                        {y: cfTarget.imp(), x:1, key:"first"}
                         ]
                       }
                     ]
@@ -109,9 +109,10 @@ angular.module('ricardo.directives', [])
   
           }
 
+        init()
         scope.$watch("sourceEntity.selected", function(newValue, oldValue){
           if(newValue != oldValue){
-            init()
+            //init()
           }
         })
 
@@ -127,7 +128,7 @@ angular.module('ricardo.directives', [])
           var stream = ricardo.stream()
             .width(element.width())
             .height(200)
-            .stackColors(["#FF4136","#3D9970"])
+            .stackColors(["#7CA49E", "#D35530"])
 
           var chart = d3.select(element[0])
 

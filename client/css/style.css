@@ -288,7 +288,7 @@ body > .container {
 }
 
 .table-cont-open{
-  height: 600px;
+  height: 500px;
 }
 
 .grid-cont{
@@ -296,18 +296,28 @@ body > .container {
 }
 
 .gridStyle {
-    border: 1px solid rgb(212,212,212);
     width: 100%; 
     height: 500px
 }
-.ngRow.odd {
-background-color: white;
+
+.ngRowCountPicker{
+  display: none;
 }
 
 .ngHeaderCell {
 font-family: 'montserrat', 'Arial', sans-serif;
 font-variant: small-caps;
 font-size: 1.1em;
+}
+
+.csv-data-link-span {
+  margin: 10px;
+  float: left;
+}
+
+.csv-data-link-span a{
+  color: #222;
+  text-decoration: none;
 }
 
 /* Page transition */

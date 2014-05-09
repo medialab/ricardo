@@ -134,7 +134,7 @@
               return y(d.y)-10;
             }
           })
-          .attr("fill", function(d) { return color(d.key) })
+          .attr("fill", function(d) { console.log(d); return color(d.key) })
           .on("click", function(d){console.log(d)})
 
 

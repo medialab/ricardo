@@ -29,7 +29,12 @@ config(['$routeProvider', function($routeProvider) {
   });
   $routeProvider.when('/country', {
     templateUrl: 'partials/country.html',
-    controller: 'country'
+    controller: 'country',
+    resolve: {
+      reportingEntities : function (apiService) {
+        return apiService.getReportingEntities('data/reporting_countries.json')
+      }
+    }
   });
   $routeProvider.when('/world', {
     templateUrl: 'partials/world.html',
