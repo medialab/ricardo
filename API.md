@@ -7,16 +7,17 @@ GET HTTP request
 
 # reporting_entities
 ## inputs
-- (type_filter=["countries","city","colonial_area","geographic_area"])
-- to_world_only=1/0
+- (type_filter=["city/part_of","colonial_area","country","geographical_area","group"])
+- (to_world_only=1 or 0)
 
 ## outputs
 
 ```json
 [
   {
-    "reporting":"Germany",
-    "type":"country"|"city"|"group"|"geo area"|"colonial area",
+    "RICid":456
+    "RICname":"Germany",
+    "type":"city/part_of"|"colonial_area"|"country"|"geographical_area"|"group",
     "continent":"europe"|"asia"|africa"...,
     "central_state":"Germany"
   },...
@@ -35,8 +36,10 @@ API root used in
 
 ## inputs
 
-- reporting = ["France"]
-- (partner = "Germany")
+- reporting_ids = 456,53
+- (partner_ids = 598)
+
+not implemented yet :
 - type = ["flow_in_pounds","null_flows","missing_rate_flows","flow_in_original_currency"]
 - (with_sources)
 - (from=YYYY)
@@ -47,8 +50,8 @@ API root used in
 ```json
 { "metadata":
       {
-        reporting:["France"],
-        (partner:"Germany",)
+        reporting_ids:[456,53],
+        (partner_ids:[598],)
         type:"flow_in_pounds",
         (from:YYYY,)
         (to:YYYY,)
@@ -66,7 +69,8 @@ API root used in
   "flow_in_pounds"|"null_flows"|"missing_rate_flows"|"mirror_flow"|"flow_original_currency":
   [
     {
-      "partner":"Germany",
+      "reporting_id":456
+      "partner_id":598,
       "year":1865,
       "imp": 655488.123,
       "exp":1225488.123,
@@ -78,7 +82,7 @@ API root used in
 }
 ```
   
-# flows_sources
+# flows_sources (not implemented yet)
 
 Provide a list of all sources used in a flow API call.
 Used to get them all at once without repeating them in flow.
