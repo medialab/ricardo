@@ -61,6 +61,7 @@ client/lib/bower_components/
 client/data/
 
 # data
+*.sqlite
 database_creation/out_data/*.sqlite
 database_creation/out_data/*.csv
 database_creation/in_data/*.csv

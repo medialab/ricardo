@@ -162,14 +162,19 @@ body > .container {
   min-height: 70px
 }
 
-#select > div:first-child{
+#select > div {
+  border-left: 1px solid #e7e7e7;
   border-right: 1px solid #e7e7e7;
+}
 
+#select > div:first-child{
+  border-right: none;
+  border-left: none;
 }
 
 #select > div:last-child{
   border-right: none;
-  border-left: 1px solid #e7e7e7;
+  border-left: none;
 }
 
 .select-dropdown .btn, .select-dropdown .form-control{
@@ -211,25 +216,40 @@ body > .container {
 
 /* timeline */
 
-.hidden-over{
-  position: relative;
-  top: -200px;
+.timeline-cont{
+  height: 0;
+  overflow: hidden;
   -webkit-transition: all 1s ease;
   -moz-transition: all 1s ease;
   -o-transition: all 1s ease;
   transition: all 1s ease;
 }
 
-.show-over{
-  top:0px;
-
+.timeline-open{
+   height: 250px;
 }
 
+.timeline-cont h4{
+  border-bottom: 3px solid #e5e5e5;
+  margin-bottom: 0px;
+  margin-top: 15px;
+  padding-bottom: 10px;
+}
 .axis path,
 .axis line {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
+}
+
+.y path{
+  fill: none;
+  stroke-width:0;
+}
+
+.axis .minor line {
+  stroke: #777;
+  stroke-dasharray: 2,2;
 }
 
 .brush{
@@ -238,12 +258,66 @@ body > .container {
   stroke:none;
 }
 
+/* stream */
+
+.stream-legend h4{
+  font-variant: small-caps;
+  letter-spacing: 2px;
+  text-transform: lowercase;
+  color: #777;
+  font-size: 1em;
+  font-family: 'merriweather', 'Georgia', serif;
+  font-weight: normal;
+}
+
+.stream-legend .pat{
+  text-align: right;
+}
 /* grid */
 
+.table-cont{
+  margin-top: 20px;
+  background-color: white;
+  border-top: 3px solid #222;  
+  height: 0px;
+  overflow: hidden;
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  transition: all 1s ease;
+}
+
+.table-cont-open{
+  height: 500px;
+}
+
+.grid-cont{
+  padding: 0;
+}
+
 .gridStyle {
-    border: 1px solid rgb(212,212,212);
     width: 100%; 
     height: 500px
+}
+
+.ngRowCountPicker{
+  display: none;
+}
+
+.ngHeaderCell {
+font-family: 'montserrat', 'Arial', sans-serif;
+font-variant: small-caps;
+font-size: 1.1em;
+}
+
+.csv-data-link-span {
+  margin: 10px;
+  float: left;
+}
+
+.csv-data-link-span a{
+  color: #222;
+  text-decoration: none;
 }
 
 /* Page transition */

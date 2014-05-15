@@ -20,7 +20,8 @@ import flows
 
 # inputs
 reportings=["France"]
-partners=["United Kingdom"]
+#partners=["United Kingdom"]
+partners=[]
 
-with codecs.open("bilateral_france_UK.json","w") as f:
+with codecs.open("bilateral_france_all.json","w") as f:
 	f.write(flows.get_flows_in_pounds(reportings,partners))

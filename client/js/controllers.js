@@ -13,83 +13,133 @@ angular.module('ricardo.controllers', [])
       {slug:"bilateral", label:"Bilateral view"},
       {slug:"country", label:"Country view"},
       {slug:"world", label:"World view"},
-      {slug:"timeline", label:"Timeline view"},
-      {slug:"federation", label:"Federation view"},
+      {slug:"timeline", label:"Timeline view"}
+      //,
+      //{slug:"federation", label:"Federation view"},
     ]
 
   })
-  .controller('bilateral', function($scope, $location, fileService, cf) {
+  .controller('bilateral', function($scope, $location, reportingEntities) {
 
-    $scope.country2;
-    $scope.country = [
-      "Afghanistan",
-      "Albania",
-      "Algeria",
-      "Andorra",
-      "Angola",
-      "Antigua and Barbuda",
-      "Argentina",
-      "Armenia",
-      "Aruba",
-      "Australia",
-      "Austria",
-      "Bahamas",
-      "Bahrain",
-      "Bangladesh",
-      "Barbados",
-      "Belarus",
-      "Belgium",
-      "Belize",
-      "Benin",
-      "Bhutan",
-      "Bolivia",
-      "Bosnia and Herzegovina",
-      "Botswana",
-      "Brazil",
-      "Brunei",
-      "Bulgaria",
-      "Burkina Faso",
-      "Burma",
-      "Burundi"
-    ]
+    $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
+    $scope.reportingEntities = reportingEntities;
+    $scope.sourceEntity = {};
+    $scope.targetEntity = {};
 
-    $scope.testData = []
-    $scope.gridOptions = { data: 'testData' }
+    $scope.sourceEntity.selected = {
+        "central_state": "France", 
+        "reporting": "France", 
+        "type": "Country", 
+        "continent": "Europe"
+    }
 
-    // $scope.data;
+    $scope.targetEntity.selected = {
+        "central_state": "United Kingdom", 
+        "reporting": "United Kingdom", 
+        "type": "Country", 
+        "continent": "Europe"
+    }
 
-    // fileService
-    //   .getFile('data/ricardo_basic_14janv.csv')
-    //   .then(
-    //     function(data){
-    //     $scope.data = d3.csv.parse(
-    //                     data, 
-    //                     function(d) {
-    //                       return {
-    //                         entity: d.entity,
-    //                         partner: d.partner,
-    //                         currency: d.currency,
-    //                         exp_imp: d["exp/imp"],
-    //                         year: new Date(+d.year, 0, 1),
-    //                         flow: +d.flow,
-    //                         total_pounds: +d.total_pounds,
-    //                       }
-    //                     })
+    $scope.tableData = [];
+    $scope.totalServerItems = 0;
+    $scope.pagingOptions = {
+        pageSizes: [50],
+        pageSize: 50,
+        currentPage: 1
+    }; 
 
-    //     var france = $scope.data.filter(function(d){return d.entity == "France"})
-    //     console.log(france.length)
-    //     cf.add(france)
-    //     cf.partner().filter("Brazil")
-    //     var timeev = d3.nest().key(function(d){return d.exp_imp}).entries(cf.year().top(Infinity))
-    //     console.log(timeev)
-    //     },
-    //     function(error) {
-    //       console.log(error)
-    //     }
-    //   )
+    $scope.setPagingData = function(data, pageSize, page){
+        var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
+        $scope.tablePagedData = pagedData;
+        $scope.totalServerItems = data.length;
+        if (!$scope.$$phase) {
+            $scope.$apply();
+        }
+    };
+
+    $scope.tablePagedData = []
+    
+    $scope.gridOptions = { 
+      data: 'tablePagedData',
+      enablePaging: true,
+      showFooter: true,
+      totalServerItems:'totalServerItems',
+      pagingOptions: $scope.pagingOptions,
+      enableRowSelection: false,
+      footerRowHeight: 45,
+      plugins: [new ngGridCsvExportPlugin({data:'tableData'})]
+    }
+
+    $scope.$watch('tableData', function (newVal, oldVal) {
+        if (newVal !== oldVal) {
+          $scope.pagingOptions.currentPage = 1
+          $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+        }
+    }, true);    
+
+    $scope.$watch('pagingOptions', function (newVal, oldVal) {
+        if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
+          $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+        }
+    }, true);
 
   })
-  .controller('country', function($scope, $location) {
+  .controller('country', function($scope, $location, reportingEntities) {
+
+    $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
+    $scope.reportingEntities = reportingEntities;
+    $scope.sourceEntity = {};
+    $scope.targetEntity = {};
+
+    $scope.sourceEntity.selected = {
+        "central_state": "France", 
+        "reporting": "France", 
+        "type": "Country", 
+        "continent": "Europe"
+    }
+
+    $scope.tableData = [];
+    $scope.totalServerItems = 0;
+    $scope.pagingOptions = {
+        pageSizes: [50],
+        pageSize: 50,
+        currentPage: 1
+    }; 
+
+    $scope.setPagingData = function(data, pageSize, page){
+        var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
+        $scope.tablePagedData = pagedData;
+        $scope.totalServerItems = data.length;
+        if (!$scope.$$phase) {
+            $scope.$apply();
+        }
+    };
+
+    $scope.tablePagedData = []
+    
+    $scope.gridOptions = { 
+      data: 'tablePagedData',
+      enablePaging: true,
+      showFooter: true,
+      totalServerItems:'totalServerItems',
+      pagingOptions: $scope.pagingOptions,
+      enableRowSelection: false,
+      footerRowHeight: 45,
+      plugins: [new ngGridCsvExportPlugin({data:'tableData'})]
+    }
+
+    $scope.$watch('tableData', function (newVal, oldVal) {
+        if (newVal !== oldVal) {
+          $scope.pagingOptions.currentPage = 1
+          $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+        }
+    }, true);    
+
+    $scope.$watch('pagingOptions', function (newVal, oldVal) {
+        if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
+          $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+        }
+    }, true);
 
   })
   .controller('world', function($scope, $location) {

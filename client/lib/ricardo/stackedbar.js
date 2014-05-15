@@ -8,15 +8,15 @@
         width = 600,
         stackColors = ["#0EA789", "#0EA789"],
         brushDate,
-        duration = 2000,
-        dispatch = d3.dispatch("brushed");
+        duration = 1000,
+        dispatch = d3.dispatch("brushed", "brushing");
 
 
     function stackedBar(selection){
       selection.each(function(data){
 
         var chart;
-        var margin = {top: 10, right: 0, bottom: 40, left: 60},
+        var margin = {top: 10, right: 0, bottom: 50, left: 0},
             chartWidth = width - margin.left - margin.right,
             chartHeight = height - margin.top - margin.bottom;
 
@@ -47,14 +47,14 @@
         var color = d3.scale.ordinal().range(stackColors).domain(colorDomain)
 
         var area = d3.svg.area()
-            .x(function(d) { return x(new Date(d.year)); })
+            .x(function(d) { return x(d.year); })
             .y0(function(d) { return y(d.y0); })
             .y1(function(d) { return y(d.y0 + d.y); });
 
         var stack = d3.layout.stack()
             .values(function(d) { return d.values; })
             .x(function x(d) {return d.year})
-            .y(function y(d) {return d.total_pounds})
+            .y(function y(d) {return d.total})
 
         var layers = stack(data)
 
@@ -67,14 +67,36 @@
 
         var yAxis = d3.svg.axis()
             .scale(y)
-            .orient("left")
-            //.tickValues([0, yStackMax])
-            .tickFormat(d3.format("2s"))
+            .orient("right")
+            .ticks(5)
+            .tickSize(width)
+            .tickFormat(function(d,i){
+              var prefix = d3.formatPrefix(d)
+              if(i == 0){
+                return
+              }
+              else if(i == 5){
+                var symbol;
+                if(prefix.symbol == "G"){
+                  symbol = "billion"
+                }else if(prefix.symbol == "M"){
+                  symbol = "million"
+                }else if(prefix.symbol == "k"){
+                  symbol = "thousand"
+                }else{
+                  symbol = ""
+                }
+                return "£" + prefix.scale(d) + " " + symbol
+              }
+              else{
+                return prefix.scale(d)
+              }
+              
+              })
 
         var xAxis = d3.svg.axis()
             .scale(x)
             .orient("bottom")
-            //.tickValues([0, yStackMax])
 
         var stacked = chart.selectAll(".stack")
                       .data(layers)
@@ -91,34 +113,73 @@
           .attr("d", function(d) { return area(d.values); })
           .attr("fill", function(d) { return color(d.key); });
         
-        // var legendScale = d3.scale.ordinal().rangeBands([0, chartWidth], 0, 0.1).domain(colorDomain)
+        /* legend */
+        
+        var legendScale = d3.scale.ordinal().rangeBands([0, chartWidth/3], 0, 0).domain(colorDomain)
 
-        // var legends = chart.selectAll(".timeline-legend").data(colorDomain)
+        var legends = chart.selectAll(".timeline-legend").data(colorDomain)
 
-        // var legend = legends.enter()
-        //   .append("g")
-        //   .attr("class", "timeline-legend")
-        //   .attr("transform", function(d){ return "translate(" + legendScale(d) + "," + (height - 20) + ")"});
+        var legend = legends.enter()
+          .append("g")
+          .attr("class", "timeline-legend")
+          .attr("transform", function(d){ return "translate(" + legendScale(d) + "," + (height - 20) + ")"});
 
-        // legend
-        //   .append("rect")
-        //   .attr("fill", function(d){return color(d)})
-        //   .attr("width", 15)
-        //   .attr("height", 15)
-        //   .attr("x", 0)
-        //   .attr("y", -15)
+        legend
+          .append("rect")
+          .attr("fill", function(d){return color(d)})
+          .attr("width", 10)
+          .attr("height", 10)
+          .attr("x", 0)
+          .attr("y", -10)
 
-        // legend
-        //   .append("text")
-        //   .text(function(d){return d.toUpperCase()})
-        //   .attr("x", 20)
-        //   .attr("dy", "-0.25em")
+        legend
+          .append("text")
+          .text(function(d){return d.toUpperCase()})
+          .attr("font-family", "'montserrat', 'Arial', sans-serif")
+          .attr("font-weight","bold")
+          .attr("font-size", "0.8em")
+          .attr("x", 20)
+
+        /* axis */
+
+        if(chart.select("g.x.axis").empty() || chart.select("g.y.axis").empty()){
+
+          chart.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + chartHeight + ")")
+            .call(xAxis);
+
+          var gy = chart.append("g")
+              .attr("class", "y axis")
+              .call(yAxis)
+              .call(customAxis);
+              
+          gy.selectAll("g").filter(function(d) { return d; })
+              .classed("minor", true);
+        }
+
+        function customAxis(g) {
+          g.selectAll("text")
+            .attr("x", 4)
+            .attr("dy", -4)
+            .attr("font-size", "0.85em");
+          }
 
         /* Brush */
       
         var brush = d3.svg.brush()
           .x(x)
           //.extent([startBrush, endBrush])
+          .on("brush", function(){
+            if(brush.empty()){
+            brush.clear()
+            dispatch.brushing(x.domain())
+
+            }
+            else{
+              dispatch.brushing(brush.extent())
+            }
+          })
           .on("brushend", brushended);
 
         function brushended() {
@@ -129,8 +190,16 @@
           d3.select(this).transition()
               .call(brush.extent(extent1))
               .call(brush.event);
-          if (brush.empty())  dispatch.brushed(x.domain())
-          else dispatch.brushed(brush.extent()); 
+          
+          if(brush.empty()){
+            brush.extent(x.domain())
+            dispatch.brushed(x.domain())
+            dispatch.brushing(x.domain())
+          }
+          else{
+            dispatch.brushed(brush.extent())
+            dispatch.brushing(brush.extent())
+          }
         }
         //selection.selectAll("g.brush").remove();
         
@@ -142,18 +211,6 @@
         gBrush.selectAll("rect")
             .attr("height", chartHeight);
 
-
-        if(chart.select("g.x.axis").empty() || chart.select("g.y.axis").empty()){
-
-          chart.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + chartHeight + ")")
-            .call(xAxis);
-
-          chart.append("g")
-              .attr("class", "y axis")
-              .call(yAxis);
-        }
 
       }); //end selection
     } // end stackedBar
