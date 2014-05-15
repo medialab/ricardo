@@ -76,9 +76,9 @@ RICnames_from_csv.import_in_sqlite(conn, conf)
 ##################################################
 ##			Create views on flow
 #####################################################
-c.execute("""DROP VIEW IF EXISTS flow_joined;""")
-c.execute("""CREATE VIEW IF NOT EXISTS flow_joined AS 
-	 SELECT f.*, `Exp / Imp (standard)` as expimp, `Spe/Gen/Tot (standard)` as spegen, `FX rate (NCU/£)` as rate ,r2.RICname as reporting, p2.RICname as partner
+c.execute("""DROP TABLE IF EXISTS flow_joined;""")
+c.execute("""CREATE TABLE IF NOT EXISTS flow_joined AS 
+	 SELECT f.*, `Exp / Imp (standard)` as expimp, `Spe/Gen/Tot (standard)` as spegen, `FX rate (NCU/£)` as rate ,r2.RICname as reporting,r2.id as reporting_id, p2.RICname as partner,p2.id as partner_id
 	 from flow as f
 	 LEFT OUTER JOIN `Exp-Imp-Standard` USING (`Exp / Imp`,`Spe/Gen/Tot`)
 	 LEFT OUTER JOIN currency as c
@@ -96,7 +96,15 @@ c.execute("""CREATE VIEW IF NOT EXISTS flow_joined AS
 	 	and partner is not null
 	 	and expimp != "Re-exp"
 	""")
-#
+
+# INDEX
+c.execute("""CREATE INDEX i_rid ON flow_joined (reporting_id)""")
+c.execute("""CREATE INDEX i_pid ON flow_joined (partner_id)""")
+c.execute("""CREATE INDEX i_yr ON flow_joined (Yr)""")
+c.execute("""CREATE INDEX i_r ON flow_joined (reporting)""")
+c.execute("""CREATE INDEX i_p ON flow_joined (partner)""")
+c.execute("""CREATE INDEX i_re_rn ON RICentities (RICname)""")
+
 	 	
 
 # c.execute("""DROP VIEW IF EXISTS flow_impexp_total;""")
@@ -144,7 +152,7 @@ for n,notes,ids,sources in c :
 		raise
 if len(ids_to_remove)>0:
 	print "removing %s 'Valeur officielle' noted duplicates for France between 1847 1856"%len(ids_to_remove)
-	c.execute("DELETE FROM flow WHERE id IN (%s)"%",".join(ids_to_remove))
+	c.execute("DELETE FROM flow_joined WHERE id IN (%s)"%",".join(ids_to_remove))
 
 ########################################################################################
 # remove GEN flows when duplicates with SPE flows
@@ -169,7 +177,7 @@ for n,spe_gens,ids,reporting,partner,Yr,e_i in lines :
 if ids_to_remove:
 	for r,ids in ids_to_remove.iteritems():
 		print ("removing %s Gen duplicates for %s"%(r,len(ids))).encode("utf8")
-		c.execute("DELETE FROM flow WHERE id IN (%s)"%",".join(ids))
+		c.execute("DELETE FROM flow_joined WHERE id IN (%s)"%",".join(ids))
 
 
 

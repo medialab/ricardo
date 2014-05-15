@@ -83,7 +83,7 @@ def import_in_sqlite(conn, conf):
 
 	# populate Ricentities table
 	for RICname,meta in RICnames_metadata.iteritems():
-		c.execute("INSERT INTO RICentities VALUES(?,?,?,?,?)",(RICname,meta["type"],meta["central_state"],meta["continent"],meta["COW_code"]))
+		c.execute("INSERT INTO RICentities VALUES(null,?,?,?,?,?)",(RICname,meta["type"].lower().replace(" ","_"),meta["central_state"],meta["continent"],meta["COW_code"]))
 
 	# populate Ricentities_groups table
 	for RICname_group,d in RICnames_groups_metadata.iteritems():
