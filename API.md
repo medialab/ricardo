@@ -3,12 +3,17 @@
 GET HTTP request
 
 # arguments norm
-
+GET request parameters as URL query
 
 # reporting_entities
-## inputs
-- (type_filter=["city/part_of","colonial_area","country","geographical_area","group"])
-- (to_world_only=1 or 0)
+
+## API call
+### root : reporting_entities
+### inputs
+- type_filter = city/part_of,colonial_area,country,geographical_area,group - Optional
+- to_world_only = 1 - Optional
+### example
+ricardo_server.tld/reporting_entities?type_filter=country,group&to_world_only=1
 
 ## outputs
 
@@ -34,16 +39,23 @@ API root used in
 - country view : in this case no partner should be specified.
 - world view : specifies many reporting and "world" as partner.
 
-## inputs
-
+## API call
+### root : flows
+### inputs
 - reporting_ids = 456,53
-- (partner_ids = 598)
+- partner_ids = 598 - Optional
+
+ids are provided by the reporting_entities API call
 
 not implemented yet :
-- type = ["flow_in_pounds","null_flows","missing_rate_flows","flow_in_original_currency"]
+- type = flow_in_pounds,null_flows,missing_rate_flows,flow_in_original_currency - Optional
 - (with_sources)
 - (from=YYYY)
 - (to=YYYY)
+
+### example
+ricardo_server.tld/flows?reporting_ids=885&partner_ids=841
+
 
 
 ## outputs
