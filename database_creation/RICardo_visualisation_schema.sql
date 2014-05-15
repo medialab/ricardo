@@ -66,7 +66,8 @@ CREATE TABLE IF NOT EXISTS `entity_names_cleaning`
 DROP TABLE IF EXISTS `RICentities`;
 CREATE TABLE IF NOT EXISTS `RICentities`
  (
-	`RICname`			TEXT PRIMARY KEY ASC, 
+	`id`			INTEGER PRIMARY KEY,
+	`RICname`			TEXT UNIQUE, 
 	`type`			TEXT, 
 	`central_state`			TEXT,
 	`continent`		TEXT,
