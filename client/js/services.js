@@ -61,7 +61,29 @@ angular.module('ricardo.services', [])
     var cf = crossfilter([]),
     all = cf.groupAll(),
     year = cf.dimension(function(d) { return new Date(d.year, 0, 1); }),
-    years = year.group(d3.time.year);
+    years = year.group(d3.time.year).reduce(reduceAdd, reduceRemove, reduceInitial),
+    partner = cf.dimension(function(d) { return d.partner}),
+    partners = partner.group().reduce(reduceAdd, reduceRemove, reduceInitial);
+
+    function reduceAdd(p, v) {
+      ++p.count;
+      p.imp += v.imp;
+      p.exp += v.exp;
+      p.tot = p.imp + p.exp
+      return p;
+    }
+
+    function reduceRemove(p, v) {
+      --p.count;
+      p.imp -= v.imp;
+      p.exp -= v.exp;
+      p.tot = p.imp + p.exp
+      return p;
+    }
+
+    function reduceInitial() {
+      return {count:0, imp: 0, exp: 0, tot: 0};
+    }
 
     //decide which dimension/group to expose
     var exports = {};
@@ -71,6 +93,9 @@ angular.module('ricardo.services', [])
     exports.size = function() { return cf.size(); }; // crossfilter size total
     exports.all = function() { return all};
     exports.year = function() { return year};
+    exports.years = function() { return years};
+    exports.partner = function() { return partner};
+    exports.partners = function() { return partners};
     exports.imp = function() { return all.reduceSum(function(d) { return d.imp; }).value()};
     exports.exp  = function() { return all.reduceSum(function(d) { return d.exp; }).value()};
     exports.total  = function() { return all.reduceSum(function(d) { return d.total; }).value()};
