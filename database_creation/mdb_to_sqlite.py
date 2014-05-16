@@ -61,7 +61,7 @@ c.execute("DELETE FROM `Exp-Imp-Standard` WHERE `ID_Exp_spe` in (7,16,25)")
 # remove 770 'Pas de données'
 c.execute("SELECT count(*) from flow where notes='Pas de données' and Flow is null")
 print "removing %s flows with Notes='Pas de données'"%c.fetchone()[0]
-c.execute("DELETE FROM flow WHERE notes ='Pas de données'")
+c.execute("DELETE FROM flow WHERE notes ='Pas de données' and Flow is null")
 
 # remove Null rates from rate
 c.execute("DELETE FROM rate WHERE `FX rate (NCU/£)` is null")
@@ -78,7 +78,7 @@ RICnames_from_csv.import_in_sqlite(conn, conf)
 #####################################################
 c.execute("""DROP TABLE IF EXISTS flow_joined;""")
 c.execute("""CREATE TABLE IF NOT EXISTS flow_joined AS 
-	 SELECT f.*, `Exp / Imp (standard)` as expimp, `Spe/Gen/Tot (standard)` as spegen, `FX rate (NCU/£)` as rate ,r2.RICname as reporting,r2.id as reporting_id, p2.RICname as partner,p2.id as partner_id
+	 SELECT f.*, `Exp / Imp (standard)` as expimp, `Spe/Gen/Tot (standard)` as spegen, `FX rate (NCU/£)` as rate ,`Modified Currency` as currency, r2.RICname as reporting,r2.id as reporting_id, p2.RICname as partner,p2.id as partner_id
 	 from flow as f
 	 LEFT OUTER JOIN `Exp-Imp-Standard` USING (`Exp / Imp`,`Spe/Gen/Tot`)
 	 LEFT OUTER JOIN currency as c
@@ -154,9 +154,12 @@ if len(ids_to_remove)>0:
 	print "removing %s 'Valeur officielle' noted duplicates for France between 1847 1856"%len(ids_to_remove)
 	c.execute("DELETE FROM flow_joined WHERE id IN (%s)"%",".join(ids_to_remove))
 
+
+
 ########################################################################################
 # remove GEN flows when duplicates with SPE flows
 ########################################################################################
+
 c.execute("""SELECT count(*) as nb,group_concat(`spegen`,'|'),group_concat(ID,'|'),`reporting`,`partner`,Yr,`expimp` 
 	FROM `flow_joined`
 	GROUP BY Yr,`expimp`,`reporting`,`partner` HAVING count(*)>1
