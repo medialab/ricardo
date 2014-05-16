@@ -1,10 +1,16 @@
 # coding=utf8
+
+from ricardo_api import app
+from ricardo_api import get_db
+
 import sqlite3
 import json
 import codecs
 
-def flows_data(cursor,reporting_ids,partner_ids):
-   
+
+
+def flows_data(reporting_ids,partner_ids):
+    cursor = get_db().cursor()
     partners_clause =""" AND partner_id IN ("%s")"""%'","'.join(partner_ids) if len(partner_ids)>0 else ""
 
     cursor.execute("""SELECT reporting_id,reporting,partner_id,partner,type,central_state,continent,Yr,group_concat(expimp,"|"),group_concat(Flow*Unit/rate,"|")
@@ -50,23 +56,23 @@ def flows_data(cursor,reporting_ids,partner_ids):
     return {"flows":flows,"partners_meta":partners_meta}
 
 
-def get_flows_in_pounds(cursor,reporting_ids=[],partner_ids=[]):
+def get_flows_in_pounds(reporting_ids=[],partner_ids=[]):
     
     json_response={"meta":{"reporting_ids":reporting_ids,"partner_ids":partner_ids}}
-    data=flows_data(cursor,reporting_ids,partner_ids)
+    data=flows_data(reporting_ids,partner_ids)
     json_response["flows_in_pounds"]=data["flows"]
     json_response["partners"]=data["partners_meta"].values()
 
     if len(reporting_ids)==1 and len(partner_ids)==1:
         #bilateral : add mirror
-        data=flows_data(cursor,partner_ids,reporting_ids)
+        data=flows_data(partner_ids,reporting_ids)
         json_response["mirror_flows"]=data["flows"]
 
 
     return json.dumps(json_response,encoding="UTF8",indent=4)
 
-def get_reporting_entities(cursor,types=[],to_world_only=False):
-
+def get_reporting_entities(types=[],to_world_only=False):
+    cursor = get_db().cursor()
     type_clause='type IN ("%s")'%'","'.join(types) if len(types)>0 else "" 
     partner_clause="partner='World'" if to_world_only else ""
     if type_clause!="" or partner_clause!="":
