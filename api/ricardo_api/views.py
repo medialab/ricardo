@@ -3,6 +3,7 @@ from ricardo_api import app
 from flask import request
 from flask import Response
 from flask import abort
+from flask import jsonify
 
 import ricardo_api.models as models
 
@@ -16,7 +17,7 @@ def flows():
     # partners = request.args.get('partners', '')
     reporting_ids = request.args.get('reporting_ids', '')
     partner_ids = request.args.get('partner_ids', '')
-    flow_type = request.args.get('type','')
+    original_currency = True if request.args.get('original_currency','0')=='1' else False
     with_sources = request.args.get('with_sources','')
     # from=YYYY)
     # to=YYYY)
@@ -24,7 +25,7 @@ def flows():
         abort(400)
    
     try:
-        json_data=models.get_flows_in_pounds(reporting_ids.split(","),partner_ids.split(",")if partner_ids!='' else [])
+        json_data=models.get_flows(reporting_ids.split(","),partner_ids.split(",")if partner_ids!='' else [],original_currency)
     except Exception as e:
         app.logger.exception("exception occurs in flows")
         abort(500)
@@ -38,6 +39,15 @@ def reporting_entities():
     
     try:
         json_data=models.get_reporting_entities(type_filter.split(",") if type_filter else [],to_world_only)
+    except:
+        abort(500)
+    return Response(json_data, status=200, mimetype='application/json')
+
+@app.route('/RICentities')
+def RICentities():
+    #type_filter = request.args.get('type_filter',None) #["countries","city","colonial_area","geographic_area"])
+    try:
+        json_data=models.get_RICentities() #type_filter.split(",") if type_filter else [])
     except:
         abort(500)
     return Response(json_data, status=200, mimetype='application/json')

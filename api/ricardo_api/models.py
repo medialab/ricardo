@@ -8,25 +8,47 @@ import json
 import codecs
 
 
+def ric_entities_data(ids=[]):
+    cursor = get_db().cursor()
+    
+    where_clause="""WHERE id in (%s)"""%(",".join(ids)) if len(ids)>0 else ""
 
-def flows_data(reporting_ids,partner_ids):
+    cursor.execute("""SELECT id,RICname,type,central_state,continent
+                      FROM  RICentities 
+                      %s"""%where_clause)
+    
+    rics=[]
+    for (id,r,t,central,continent) in cursor:
+        rics.append({
+            "RICid":id,
+            "RICname":r,
+            "type":t,
+            "central_state":central,
+            "continent":continent
+            })
+    return rics
+
+
+def flows_data(reporting_ids,partner_ids,original_currency=False):
     cursor = get_db().cursor()
     partners_clause =""" AND partner_id IN ("%s")"""%'","'.join(partner_ids) if len(partner_ids)>0 else ""
 
-    cursor.execute("""SELECT reporting_id,reporting,partner_id,partner,type,central_state,continent,Yr,group_concat(expimp,"|"),group_concat(Flow*Unit/rate,"|")
+    flow_field = "Flow*Unit/rate" if not original_currency else "Flow*Unit"
+
+    cursor.execute("""SELECT reporting_id,partner_id,Yr,group_concat(expimp,"|"),group_concat(%s,"|"),currency
                       FROM flow_joined
-                      LEFT OUTER JOIN RICentities ON RICname=partner
                       where reporting_id IN ("%s")
                       %s
                       and rate is not null
                       and Flow is not null
                       GROUP BY reporting,partner,Yr
-                      """%('","'.join(reporting_ids),partners_clause)
+                      """%(flow_field,'","'.join(reporting_ids),partners_clause)
                 )
+    #
     flows=[]
     partners_meta={}
-    for (r_id,r,p_id,p,p_type,p_central,p_continent,y,expimp_g,flow_g) in cursor:
-        partners_meta[p]={"partner":p,"type":p_type,"central_state":p_central,"continent":p_continent}
+    for (r_id,p_id,y,expimp_g,flow_g,currency) in cursor:
+
         imports=[]
         exports=[]
         for i,ei in enumerate(expimp_g.split("|")):
@@ -40,9 +62,10 @@ def flows_data(reporting_ids,partner_ids):
         if len(exports)>1:
             dups.append((r,"Exp to",p,y,exports))
         for dup in dups:
-            print "Warning duplicated flows for %s %s %s in %s with dup flows in pounds : %s"%dup
-        imp=max(imports) if len(imports)>0 else None # in case of duplicates
-        exp=max(exports) if len(exports)>0 else None # in case of duplicates
+            app.warning("Warning duplicated flows for %s %s %s in %s with dup flows in pounds : %s"%dup)
+        # resolve dupicates and null cases
+        imp=max(imports) if len(imports)>0 else None 
+        exp=max(exports) if len(exports)>0 else None
         total = (imp if imp else 0) + (exp if exp else 0)
         flows.append({
             "reporting_id":r_id,
@@ -51,22 +74,23 @@ def flows_data(reporting_ids,partner_ids):
             "imp": imp,
             "exp": exp,
             "total": total,
-            "currency":"£",
+            "currency":currency if original_currency else "sterling pound",
             })
-    return {"flows":flows,"partners_meta":partners_meta}
+
+    return flows
 
 
-def get_flows_in_pounds(reporting_ids=[],partner_ids=[]):
+def get_flows(reporting_ids,partner_ids,original_currency):
     
-    json_response={"meta":{"reporting_ids":reporting_ids,"partner_ids":partner_ids}}
-    data=flows_data(reporting_ids,partner_ids)
-    json_response["flows_in_pounds"]=data["flows"]
-    json_response["partners"]=data["partners_meta"].values()
+    json_response={}
+    json_response["flows"]=flows_data(reporting_ids,partner_ids,original_currency)
+    if len(partner_ids)==0:
+        partner_ids=list(set(str(_["partner_id"]) for _ in json_response["flows"]))
+    json_response["RICentities"]=ric_entities_data(reporting_ids+partner_ids)
 
     if len(reporting_ids)==1 and len(partner_ids)==1:
         #bilateral : add mirror
-        data=flows_data(partner_ids,reporting_ids)
-        json_response["mirror_flows"]=data["flows"]
+        json_response["mirror_flows"]=flows_data(partner_ids,reporting_ids,original_currency)
 
 
     return json.dumps(json_response,encoding="UTF8",indent=4)
@@ -96,4 +120,7 @@ def get_reporting_entities(types=[],to_world_only=False):
             "continent":continent
             })
     return json.dumps(json_response,encoding="UTF8",indent=4)
+
+def get_RICentities():
+    return json.dumps(ric_entities_data(),encoding="UTF8",indent=4)
 
