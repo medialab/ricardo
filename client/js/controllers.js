@@ -98,6 +98,7 @@ angular.module('ricardo.controllers', [])
         "continent": "Europe"
     }
 
+    $scope.barchartData = [];
     $scope.tableData = [];
     $scope.totalServerItems = 0;
     $scope.pagingOptions = {

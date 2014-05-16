@@ -8,12 +8,18 @@ GET request parameters as URL query
 # reporting_entities
 
 ## API call
-### root : reporting_entities
+### root
+
+  /reporting_entities
+
 ### inputs
+
 - type_filter = city/part_of,colonial_area,country,geographical_area,group - Optional
 - to_world_only = 1 - Optional
+
 ### example
-ricardo_server.tld/reporting_entities?type_filter=country,group&to_world_only=1
+
+  ricardo_server.tld/reporting_entities?type_filter=country,group&to_world_only=1
 
 ## outputs
 
@@ -40,8 +46,12 @@ API root used in
 - world view : specifies many reporting and "world" as partner.
 
 ## API call
-### root : flows
+### root 
+
+  /flows
+
 ### inputs
+
 - reporting_ids = 456,53
 - partner_ids = 598 - Optional
 
@@ -54,7 +64,8 @@ not implemented yet :
 - (to=YYYY)
 
 ### example
-ricardo_server.tld/flows?reporting_ids=885&partner_ids=841
+
+  ricardo_server.tld/flows?reporting_ids=885&partner_ids=841
 
 
 

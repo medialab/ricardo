@@ -26,12 +26,14 @@ angular.module('ricardo.directives', [])
           
           apiService
             .getFlows('data/bilateral_france_UK.json')
-            //.getFlows('data/bilateral_france_all.json')
             .then(
               function(data){
                 var flows = data.flows_in_pounds,
                     mirror_flows = data.mirror_flows || [];
                 
+                cfSource.clear();
+                cfTarget.clear();
+
                 cfSource.add(flows);
                 cfTarget.add(mirror_flows);
 
@@ -187,6 +189,114 @@ angular.module('ricardo.directives', [])
         scope.$watch("streamData", function(newValue, oldValue){
           if(newValue != oldValue){
             update(newValue)
+          }
+        })
+
+      }
+    }
+  }])
+  .directive('stackedTimelineCountry',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
+    return {
+      restrict: 'A',
+      replace: false,
+      link: function(scope, element, attrs) {
+
+        var timelineData = [{key:"imp", values:[]},{key:"exp", values:[]}];
+        
+        function init(){
+          
+          apiService
+            .getFlows('data/bilateral_france_all.json')
+            .then(
+              function(data){
+                
+                var flows = data.flows_in_pounds;
+
+                cfSource.clear();
+                cfSource.add(flows);
+
+                scope.startDate = cfSource.year().bottom(1)[0].year
+                scope.endDate = cfSource.year().top(1)[0].year
+                
+                scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
+                
+                scope.reportings = data.meta.reportings
+                
+                scope.partners = data.partners
+
+                scope.barchartData = cfSource.partners().top(Infinity)
+
+                console.log(scope.barchartData)
+
+                var flowsPerYear = cfSource.years().top(Infinity)
+
+                flowsPerYear.sort(function(a, b){ return d3.ascending(a.key, b.key); })
+                flowsPerYear.forEach(function(d){
+                  timelineData[0].values.push({total: d.value.imp, year: d.key})
+                  timelineData[1].values.push({total: d.value.exp, year: d.key})
+                })
+
+
+                var stacked = ricardo.stackedBar()
+                  .width(element.width())
+                  .height(200)
+                  .stackColors(["#7CA49E", "#D35530"])
+                  .on("brushing", function(d){
+                    scope.startDate = d[0].getFullYear()
+                    scope.endDate = d[1].getFullYear()
+                    if(!scope.$$phase) {
+                      scope.$apply()
+                    }
+                  })
+                  .on("brushed", function(d){
+                    cfSource.year().filterRange(d)
+                    cfTarget.year().filterRange(d)
+
+                    scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
+                    if(!scope.$$phase) {
+                      scope.$apply()
+                    }
+                  })
+
+                var chart = d3.select(element[0])
+                chart.datum(timelineData).call(stacked)
+
+                d3.select('.timeline-cont').classed("timeline-open", true)
+                d3.select('.table-cont').classed("table-cont-open", true)
+
+              },
+              function(error) {
+                console.log(error)
+              }
+            )
+  
+          }
+
+        init()
+        scope.$watch("sourceEntity.selected", function(newValue, oldValue){
+          if(newValue != oldValue){
+            //init()
+          }
+        })
+
+      }
+    }
+  }])
+  .directive('barchartCountry',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
+    return {
+      restrict: 'A',
+      replace: false,
+      link: function(scope, element, attrs) {
+
+          var doubleBar = ricardo.doubleBarChart()
+            .width(element.width())
+            .height(1000)
+
+          var chart = d3.select(element[0])
+
+        scope.$watch("barchartData", function(newValue, oldValue){
+          if(newValue != oldValue){
+            chart.datum(newValue).call(doubleBar)
           }
         })
 
