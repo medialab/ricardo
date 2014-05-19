@@ -224,16 +224,14 @@ angular.module('ricardo.directives', [])
                 
                 scope.partners = data.partners
 
-                scope.barchartData = cfSource.partners().top(Infinity)
-
-                console.log(scope.barchartData)
-
+                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != "World"})
+                
                 var flowsPerYear = cfSource.years().top(Infinity)
 
                 flowsPerYear.sort(function(a, b){ return d3.ascending(a.key, b.key); })
                 flowsPerYear.forEach(function(d){
-                  timelineData[0].values.push({total: d.value.imp, year: d.key})
-                  timelineData[1].values.push({total: d.value.exp, year: d.key})
+                    timelineData[0].values.push({total: d.value.imp, year: d.key})
+                    timelineData[1].values.push({total: d.value.exp, year: d.key})
                 })
 
 
@@ -250,9 +248,10 @@ angular.module('ricardo.directives', [])
                   })
                   .on("brushed", function(d){
                     cfSource.year().filterRange(d)
-                    cfTarget.year().filterRange(d)
 
                     scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
+                    scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != "World"})
+                    
                     if(!scope.$$phase) {
                       scope.$apply()
                     }
@@ -290,7 +289,6 @@ angular.module('ricardo.directives', [])
 
           var doubleBar = ricardo.doubleBarChart()
             .width(element.width())
-            .height(1000)
 
           var chart = d3.select(element[0])
 

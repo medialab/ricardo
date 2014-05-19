@@ -63,26 +63,30 @@ angular.module('ricardo.services', [])
     year = cf.dimension(function(d) { return new Date(d.year, 0, 1); }),
     years = year.group(d3.time.year).reduce(reduceAdd, reduceRemove, reduceInitial),
     partner = cf.dimension(function(d) { return d.partner}),
-    partners = partner.group().reduce(reduceAdd, reduceRemove, reduceInitial);
+    partners = partner.group().reduce(reduceAdd, reduceRemove, reduceInitial).order(order);
 
     function reduceAdd(p, v) {
       ++p.count;
-      p.imp += v.imp;
-      p.exp += v.exp;
+      p.imp += Math.round(v.imp);
+      p.exp += Math.round(v.exp);
       p.tot = p.imp + p.exp
       return p;
     }
 
     function reduceRemove(p, v) {
       --p.count;
-      p.imp -= v.imp;
-      p.exp -= v.exp;
+      p.imp -= Math.round(v.imp);
+      p.exp -= Math.round(v.exp);
       p.tot = p.imp + p.exp
       return p;
     }
 
     function reduceInitial() {
       return {count:0, imp: 0, exp: 0, tot: 0};
+    }
+
+    function order(p) {
+      return p.tot;
     }
 
     //decide which dimension/group to expose

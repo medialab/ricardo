@@ -68,7 +68,7 @@
         var yAxis = d3.svg.axis()
             .scale(y)
             .orient("right")
-            .ticks(6)
+            .ticks(5)
             .tickSize(width)
             .tickFormat(function(d,i){
               var prefix = d3.formatPrefix(d)

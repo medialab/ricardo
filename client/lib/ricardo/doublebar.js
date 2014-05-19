@@ -8,14 +8,20 @@
         width = 600,
         barColors = ["#7CA49E", "#D35530"],
         duration = 1000,
-        order = "total";
+        barHeigth = 5,
+        barGap = 20,
+        order = "tot";
 
 
     function doubleBarChart(selection){
       selection.each(function(data){
 
+        data.sort(function(a,b){return d3.descending(a.value[order],b.value[order])})
+
+        height = data.length*(barHeigth+barGap)
+        
         var chart;
-        var margin = {top: 10, right: 0, bottom: 50, left: 0},
+        var margin = {top: barGap, right: 0, bottom: 50, left: 0},
             chartWidth = width - margin.left - margin.right,
             chartHeight = height - margin.top - margin.bottom;
 
@@ -35,101 +41,196 @@
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         }
 
-        var xImp = d3.scale.linear()
-            .range([chartWidth/2, chartWidth]);
+        // var x = d3.scale.log()
+        //     .range([2, chartWidth/2]);
 
-        var xExp = d3.scale.log()
-            .range([chartWidth/2, 0]);
-
-        var y = d3.scale.ordinal()
-            .rangeBands([0, chartHeight],0.5,0);
-
-        //var colorDomain = data.map(function(d){return d.key});
-
-        //var color = d3.scale.ordinal().range(barColors).domain(colorDomain)
+        var x = d3.scale.linear()
+            .range([2, chartWidth/2]);
 
         var xImpMax = d3.max(data, function(d){return d.value.imp});
-        var xImpMin = d3.min(data, function(d){return d.value.imp});
+        var xImpMin = d3.min(data, function(d){if(d.value.imp) return d.value.imp});
         var xExpMax = d3.max(data, function(d){return d.value.exp});
+        var xExpMin = d3.min(data, function(d){if(d.value.exp) return d.value.exp});
 
-        xImp.domain([xImpMin,xImpMax])
-        xExp.domain([0,xExpMax])
-        y.domain(data.map(function(d){return d.key}))
+        var xMax = xImpMax > xExpMax ? xImpMax : xExpMax;
+        var xMin = xImpMin < xExpMin ? xImpMin : xExpMin;
 
-        var barsImp = chart.selectAll(".imp")
-                      .data(data)
+        //x.domain([xMin, xMax])
+        x.domain([0, xMax])
+
+      var div = d3.select("body").append("div")   
+          .attr("class", "tooltip-elm")               
+
+        var barsImpGroup = chart.select(".barImpGroup")
+
+        if (barsImpGroup.empty()){
+          chart.append("g").attr("class", "barImpGroup").attr("transform", "translate(" + chartWidth/2 + ",0)")
+          barsImpGroup = chart.select(".barImpGroup")
+        }
+        
+        var barsImp = barsImpGroup
+                      .selectAll(".imp")
+                      .data(data, function(d){return d.key})
+
+        barsImp.transition().duration(duration)
+          .attr("y", function(d,i){return i*(barHeigth+barGap)})
+          .attr("width", function(d){
+            if(d.value.imp > 0){
+              return x(d.value.imp)
+            }else{
+              return 0
+            }
+          })
+          .each(function(d){
+             $(this).tooltip('destroy')
+             $(this).tooltip({title:"£ " + d.value.imp, placement:"right", container: 'body'})
+          })
 
         barsImp
           .enter()
           .append("rect")
           .attr("class", "imp")
-          .attr("x", chartWidth/2)
-          .attr("y", function(d){return y(d.key)})
-          .attr("width", function(d){return xImp.(d.value.imp)})
-          .attr("height", y.rangeBand())
+          .attr("y", function(d,i){return i*(barHeigth+barGap)})
+          .attr("width", function(d){
+            if(d.value.imp > 0){
+              return x(d.value.imp)
+            }else{
+              return 0
+            }
+          })
+          .attr("height", barHeigth)
           .attr("fill", barColors[0])
+          .each(function(d){
+             $(this).tooltip({title:"£ " + d.value.imp, placement:"right", container: 'body'})
+          })
 
-        // stacked
-        //   .transition()
-        //   .duration(500)
-        //   .attr("d", function(d) { return area(d.values); })
+        barsImp.exit().remove()
 
-        // stacked.append("path")
-        //   .attr("class", "area")
-        //   .attr("d", function(d) { return area(d.values); })
-        //   .attr("fill", function(d) { return color(d.key); });
-        
-        // /* legend */
-        
-        // var legendScale = d3.scale.ordinal().rangeBands([0, chartWidth/3], 0, 0).domain(colorDomain)
+        var barsExpGroup = chart.select(".barExpGroup")
 
-        // var legends = chart.selectAll(".timeline-legend").data(colorDomain)
+        if (barsExpGroup.empty()){
+          chart.append("g").attr("class", "barExpGroup")
+          barsExpGroup = chart.select(".barExpGroup")
+        }
 
-        // var legend = legends.enter()
-        //   .append("g")
-        //   .attr("class", "timeline-legend")
-        //   .attr("transform", function(d){ return "translate(" + legendScale(d) + "," + (height - 20) + ")"});
+        var barsExp = barsExpGroup
+                      .selectAll(".exp")
+                      .data(data, function(d){return d.key})
 
-        // legend
-        //   .append("rect")
-        //   .attr("fill", function(d){return color(d)})
-        //   .attr("width", 10)
-        //   .attr("height", 10)
-        //   .attr("x", 0)
-        //   .attr("y", -10)
+        barsExp.transition().duration(duration)
+          .attr("x", function(d){
+            if(d.value.exp > 0){
+              return chartWidth/2 - x(d.value.exp)
+            }else{
+              return chartWidth/2
+            }
+          })
+          .attr("y", function(d,i){return i*(barHeigth+barGap)})
+          .attr("width", function(d){
+            if(d.value.exp > 0){
+              return x(d.value.exp)
+            }else{
+              return 0
+            }
+          })
+          .each(function(d){
+             $(this).tooltip('destroy')
+             $(this).tooltip({title:"£ " + d.value.exp, placement:"left", container: 'body'})
+          })
 
-        // legend
-        //   .append("text")
-        //   .text(function(d){return d.toUpperCase()})
-        //   .attr("font-family", "'montserrat', 'Arial', sans-serif")
-        //   .attr("font-weight","bold")
-        //   .attr("font-size", "0.8em")
-        //   .attr("x", 20)
+        barsExp
+          .enter()
+          .append("rect")
+          .attr("x", function(d){
+            if(d.value.exp > 0){
+              return chartWidth/2 - x(d.value.exp)
+            }else{
+              return chartWidth/2
+            }
+          })
+          .attr("class", "exp")
+          .attr("y", function(d,i){return i*(barHeigth+barGap)})
+          .attr("width", function(d){
+            if(d.value.exp > 0){
+              return x(d.value.exp)
+            }else{
+              return 0
+            }
+          })
+          .attr("height", barHeigth)
+          .attr("fill", barColors[1])
+          .each(function(d){
+             $(this).tooltip({title:"£ " + d.value.exp, placement:"left", container: 'body'})
+          })
 
-        // /* axis */
+        barsExp.exit().remove()
 
-        // if(chart.select("g.x.axis").empty() || chart.select("g.y.axis").empty()){
+        var barsLegendGroup = chart.select(".barLegendGroup")
 
-        //   chart.append("g")
-        //     .attr("class", "x axis")
-        //     .attr("transform", "translate(0," + chartHeight + ")")
-        //     .call(xAxis);
+        if (barsLegendGroup.empty()){
+          chart.append("g").attr("class", "barLegendGroup")
+          barsLegendGroup = chart.select(".barLegendGroup")
+        }
 
-        //   var gy = chart.append("g")
-        //       .attr("class", "y axis")
-        //       .call(yAxis)
-        //       .call(customAxis);
-              
-        //   gy.selectAll("g").filter(function(d) { return d; })
-        //       .classed("minor", true);
-        // }
 
-        // function customAxis(g) {
-        //   g.selectAll("text")
-        //     .attr("x", 4)
-        //     .attr("dy", -4)
-        //     .attr("font-size", "0.85em");
-        //   }
+        var barsLegend = barsLegendGroup
+                          .selectAll(".legend")
+                          .data(data, function(d){return d.key})
+
+        barsLegend.transition().duration(duration)
+          .attr("y", function(d,i){return i*(barHeigth+barGap)})
+
+        barsLegend
+          .enter()
+          .append("text")
+          .attr("x", chartWidth/2)
+          .attr("class", "legend")
+          .attr("y", function(d,i){return i*(barHeigth+barGap)})
+          .attr("text-anchor", "middle")
+          .attr("font-size", "0.9em")
+          .attr("dy", "-0.2em")
+          .text(function(d){return d.key})
+
+        barsLegend.exit().remove()
+
+
+
+        /* custom axis */
+
+        var lineFunction = d3.svg.line()
+                          .x(function(d) { return x(d.x); })
+                          .y(function(d) { return d.y; })
+
+        var axisImpGroup = chart.select(".axisImpGroup")
+
+        if (axisImpGroup.empty()){
+          chart.append("g").attr("class", "axisImpGroup").attr("transform", "translate(" + chartWidth/2 + ",0)")
+          axisImpGroup = chart.select(".axisImpGroup")
+        }
+
+        var axisImpData = [
+            {x: xImpMax/2, y: 0},
+            {x: xImpMax/2, y: chartHeight},
+            {x: xImpMax, y: 0},
+            {x: xImpMax, y:chartHeight}
+          ]
+
+        var axisExpData = [
+            {x: xExpMax/2, y: 0},
+            {x: xExpMax/2, y:chartHeight},
+            {x: xExpMax, y:0},
+            {x: xExpMax, y:chartHeight}
+          ]
+
+        var axisImp = axisImpGroup
+                      .selectAll(".axis")
+                      .data(axisImpData, function(d){return d.x})
+        axisImp
+          .enter()
+          .append("path")
+          .attr("class", "axis")
+          .attr("d", function(d){return lineFunction(d)})
+          .attr("fill", "none")
 
       }); //end selection
     } // end doubleBarChart
