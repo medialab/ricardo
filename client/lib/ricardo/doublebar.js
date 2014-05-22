@@ -10,6 +10,7 @@
         duration = 1000,
         barHeigth = 5,
         barGap = 20,
+        RICentities,
         order = "tot";
 
 
@@ -189,7 +190,7 @@
           .attr("text-anchor", "middle")
           .attr("font-size", "0.9em")
           .attr("dy", "-0.2em")
-          .text(function(d){return d.key})
+          .text(function(d){return RICentities[""+d.key]})
 
         barsLegend.exit().remove()
 
@@ -257,6 +258,12 @@
   doubleBarChart.order = function(x){
     if (!arguments.length) return order;
     order = x;
+    return doubleBarChart;
+  }
+
+  doubleBarChart.RICentities = function(x){
+    if (!arguments.length) return RICentities;
+    RICentities = x;
     return doubleBarChart;
   }
 

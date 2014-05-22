@@ -70,45 +70,46 @@
             .orient("right")
             .ticks(5)
             .tickSize(width)
-            .tickFormat(function(d,i){
-              var prefix = d3.formatPrefix(d)
-              if(i == 0){
-                return
-              }
-              else if(i == 5){
-                var symbol;
-                if(prefix.symbol == "G"){
-                  symbol = "billion"
-                }else if(prefix.symbol == "M"){
-                  symbol = "million"
-                }else if(prefix.symbol == "k"){
-                  symbol = "thousand"
-                }else{
-                  symbol = ""
-                }
-                return "£" + prefix.scale(d) + " " + symbol
-              }
-              else{
-                return prefix.scale(d)
-              }
+            // .tickFormat(function(d,i){
+            //   var prefix = d3.formatPrefix(d)
+            //   if(i == 0){
+            //     return
+            //   }
+            //   else if(i == 4){
+            //     var symbol;
+            //     if(prefix.symbol == "G"){
+            //       symbol = "billion"
+            //     }else if(prefix.symbol == "M"){
+            //       symbol = "million"
+            //     }else if(prefix.symbol == "k"){
+            //       symbol = "thousand"
+            //     }else{
+            //       symbol = ""
+            //     }
+            //     return "£" + prefix.scale(d) + " " + symbol
+            //   }
+            //   else{
+            //     return prefix.scale(d)
+            //   }
               
-              })
+            //   })
+            .tickFormat(d3.format("s"))
 
         var xAxis = d3.svg.axis()
             .scale(x)
             .orient("bottom")
 
-        var stacked = chart.selectAll(".stack")
-                      .data(layers)
-                      .enter().append("g")
-                      .attr("class", "stack")
+        var stacked = chart.selectAll(".area")
+                      .data(layers, function(d){return d.key})
 
         stacked
           .transition()
-          .duration(500)
-          .attr("d", function(d) { return area(d.values); })
+          .duration(duration)
+          .attr("d", function(d) { console.log("ciao");return area(d.values); })
 
-        stacked.append("path")
+        stacked
+          .enter()
+          .append("path")
           .attr("class", "area")
           .attr("d", function(d) { return area(d.values); })
           .attr("fill", function(d) { return color(d.key); });
@@ -142,6 +143,8 @@
 
         /* axis */
 
+        var gy = chart.select("g.y.axis");
+
         if(chart.select("g.x.axis").empty() || chart.select("g.y.axis").empty()){
 
           chart.append("g")
@@ -149,13 +152,22 @@
             .attr("transform", "translate(0," + chartHeight + ")")
             .call(xAxis);
 
-          var gy = chart.append("g")
+          gy = chart.append("g")
               .attr("class", "y axis")
               .call(yAxis)
               .call(customAxis);
               
           gy.selectAll("g").filter(function(d) { return d; })
               .classed("minor", true);
+        }else{
+
+          gy.transition().duration(duration)
+            .call(yAxis)
+            .call(customAxis);
+
+          gy.selectAll("g").filter(function(d) { return d; })
+              .classed("minor", true);
+          
         }
 
         function customAxis(g) {
@@ -202,14 +214,21 @@
           }
         }
         //selection.selectAll("g.brush").remove();
-        
-        var gBrush = chart.append("g")
-            .attr("class", "brush")
+        var gBrush = chart.select(".brush");
+
+        if(gBrush.empty()){
+          gBrush = chart.append("g")
+              .attr("class", "brush")
+              .call(brush)
+              .call(brush.event);
+
+          gBrush.selectAll("rect")
+              .attr("height", chartHeight);
+        }else{
+          gBrush
             .call(brush)
             .call(brush.event);
-
-        gBrush.selectAll("rect")
-            .attr("height", chartHeight);
+        }
 
 
       }); //end selection

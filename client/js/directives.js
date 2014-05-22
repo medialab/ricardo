@@ -20,19 +20,72 @@ angular.module('ricardo.directives', [])
       replace: false,
       link: function(scope, element, attrs) {
 
-        var timelineData = [{key:"imp", values:[]},{key:"exp", values:[]}];
+        var timelineData;
+
+        var stacked = ricardo.stackedBar()
+          .width(element.width())
+          .height(200)
+          .stackColors(["#7CA49E", "#D35530"])
+          .on("brushing", function(d){
+            scope.startDate = d[0].getFullYear()
+            scope.endDate = d[1].getFullYear()
+            if(!scope.$$phase) {
+              scope.$apply()
+            }
+          })
+          .on("brushed", function(d){
+            cfSource.year().filterRange(d)
+            cfTarget.year().filterRange(d)
+
+            scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
+            scope.streamData = [
+              {key:"first", values:[
+                {y: cfSource.imp(), x:0, key:"first"},
+                {y: cfTarget.exp(), x:1, key:"second"}
+                ]
+              },
+              {key:"second", values:[
+                {y: cfSource.exp(), x:0, key:"second"},
+                {y: cfTarget.imp(), x:1, key:"first"}
+                ]
+              }
+            ]
+            if(!scope.$$phase) {
+              scope.$apply()
+            }
+          })
+
+        var chart = d3.select(element[0]);
+
         
-        function init(){
+        var init = function(sourceID, targetID){
           
           apiService
-            .getFlows('data/bilateral_france_UK.json')
+            //.getFlows('data/bilateral_france_UK.json')
+            .getFlows({reporting_ids: sourceID, partner_ids: targetID})
             .then(
               function(data){
-                var flows = data.flows_in_pounds,
+                var flows = data.flows,
                     mirror_flows = data.mirror_flows || [];
                 
-                cfSource.clear();
-                cfTarget.clear();
+                if(!flows.length){
+                  alert("no data for these Countries")
+                  console.log("no data")
+                  return
+                }
+
+                if(cfSource.size()>0){
+                  cfSource.year().filterAll()
+                  cfSource.clear();
+                }
+
+                if(cfTarget.size()>0){
+                  cfTarget.year().filterAll()
+                  cfTarget.clear();
+                }
+
+                //cfSource.clear();
+                //cfTarget.clear();
 
                 cfSource.add(flows);
                 cfTarget.add(mirror_flows);
@@ -42,8 +95,11 @@ angular.module('ricardo.directives', [])
                 
                 scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
                 
-                scope.reportings = data.meta.reportings
-                scope.partners = data.meta.partners
+                //useful meta re-implement it!
+                //scope.reportings = data.meta.reportings
+                //scope.partners = data.meta.partners
+                scope.reportings = [scope.entities.sourceEntity.selected.RICname]
+                scope.partners = [scope.entities.targetEntity.selected.RICname]
 
                 scope.streamData = [
                   {key:"first", values:[
@@ -58,47 +114,14 @@ angular.module('ricardo.directives', [])
                   }
                 ]
 
+                timelineData = [{key:"imp", values:[]},{key:"exp", values:[]}];
                 flows.sort(function(a, b){ return d3.ascending(a.year, b.year); })
                 flows.forEach(function(d){
                   timelineData[0].values.push({total: d.imp, year: new Date(d.year, 0, 1)})
                   timelineData[1].values.push({total: d.exp, year: new Date(d.year, 0, 1)})
                 })
                 
-                var stacked = ricardo.stackedBar()
-                  .width(element.width())
-                  .height(200)
-                  .stackColors(["#7CA49E", "#D35530"])
-                  .on("brushing", function(d){
-                    scope.startDate = d[0].getFullYear()
-                    scope.endDate = d[1].getFullYear()
-                    if(!scope.$$phase) {
-                      scope.$apply()
-                    }
-                  })
-                  .on("brushed", function(d){
-                    cfSource.year().filterRange(d)
-                    cfTarget.year().filterRange(d)
-
-                    scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
-                    scope.streamData = [
-                      {key:"first", values:[
-                        {y: cfSource.imp(), x:0, key:"first"},
-                        {y: cfTarget.exp(), x:1, key:"second"}
-                        ]
-                      },
-                      {key:"second", values:[
-                        {y: cfSource.exp(), x:0, key:"second"},
-                        {y: cfTarget.imp(), x:1, key:"first"}
-                        ]
-                      }
-                    ]
-                    if(!scope.$$phase) {
-                      scope.$apply()
-                    }
-                  })
-
-                var chart = d3.select(element[0])
-                chart.datum(timelineData).call(stacked)
+                update()
 
                 d3.select('.timeline-cont').classed("timeline-open", true)
                 d3.select('.table-cont').classed("table-cont-open", true)
@@ -111,12 +134,15 @@ angular.module('ricardo.directives', [])
   
           }
 
-        init()
-        scope.$watch("sourceEntity.selected", function(newValue, oldValue){
-          if(newValue != oldValue){
-            //init()
+        var update = function(){
+          chart.datum(timelineData).call(stacked)
+        }
+
+        scope.$watchCollection('[entities.sourceEntity.selected, entities.targetEntity.selected]', function(newValue, oldValue){
+          if(newValue != oldValue && newValue[0] && newValue[1]){
+              init(newValue[0].RICid, newValue[1].RICid)
           }
-        })
+        }, true)
 
       }
     }
@@ -201,18 +227,54 @@ angular.module('ricardo.directives', [])
       replace: false,
       link: function(scope, element, attrs) {
 
-        var timelineData = [{key:"imp", values:[]},{key:"exp", values:[]}];
+        var timelineData;
+
+        var stacked = ricardo.stackedBar()
+          .width(element.width())
+          .height(200)
+          .stackColors(["#7CA49E", "#D35530"])
+          .on("brushing", function(d){
+            scope.startDate = d[0].getFullYear()
+            scope.endDate = d[1].getFullYear()
+            if(!scope.$$phase) {
+              scope.$apply()
+            }
+          })
+          .on("brushed", function(d){
+            cfSource.year().filterRange(d)
+
+            scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
+            scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+            
+            if(!scope.$$phase) {
+              scope.$apply()
+            }
+          })
+
+        var chart = d3.select(element[0])
+
+                
         
-        function init(){
+        var init = function(sourceID){
           
           apiService
-            .getFlows('data/bilateral_france_all.json')
+            .getFlows({reporting_ids: sourceID})
             .then(
               function(data){
                 
-                var flows = data.flows_in_pounds;
+                var flows = data.flows;
 
-                cfSource.clear();
+                if(!flows.length){
+                  alert("no data for these Countries")
+                  console.log("no data")
+                  return
+                }
+
+                if(cfSource.size()>0){
+                  cfSource.year().filterAll()
+                  cfSource.clear();
+                }
+
                 cfSource.add(flows);
 
                 scope.startDate = cfSource.year().bottom(1)[0].year
@@ -220,45 +282,31 @@ angular.module('ricardo.directives', [])
                 
                 scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
                 
-                scope.reportings = data.meta.reportings
+                //scope.reportings = data.meta.reportings
                 
-                scope.partners = data.partners
+                //scope.partners = data.partners
 
-                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != "World"})
+                //scope.RICentities = d3.nest().key(function(d){return d.RICid}).entries(data.RICentities)
+
+                scope.RICentities = {}
+
+                data.RICentities.forEach(function(d){
+                  scope.RICentities[""+d.RICid] = d.RICname
+                })
+
+                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
                 
                 var flowsPerYear = cfSource.years().top(Infinity)
 
+                timelineData = [{key:"imp", values:[]},{key:"exp", values:[]}];
+                
                 flowsPerYear.sort(function(a, b){ return d3.ascending(a.key, b.key); })
                 flowsPerYear.forEach(function(d){
                     timelineData[0].values.push({total: d.value.imp, year: d.key})
                     timelineData[1].values.push({total: d.value.exp, year: d.key})
                 })
 
-
-                var stacked = ricardo.stackedBar()
-                  .width(element.width())
-                  .height(200)
-                  .stackColors(["#7CA49E", "#D35530"])
-                  .on("brushing", function(d){
-                    scope.startDate = d[0].getFullYear()
-                    scope.endDate = d[1].getFullYear()
-                    if(!scope.$$phase) {
-                      scope.$apply()
-                    }
-                  })
-                  .on("brushed", function(d){
-                    cfSource.year().filterRange(d)
-
-                    scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
-                    scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != "World"})
-                    
-                    if(!scope.$$phase) {
-                      scope.$apply()
-                    }
-                  })
-
-                var chart = d3.select(element[0])
-                chart.datum(timelineData).call(stacked)
+                update()
 
                 d3.select('.timeline-cont').classed("timeline-open", true)
                 d3.select('.table-cont').classed("table-cont-open", true)
@@ -271,10 +319,14 @@ angular.module('ricardo.directives', [])
   
           }
 
-        init()
-        scope.$watch("sourceEntity.selected", function(newValue, oldValue){
-          if(newValue != oldValue){
-            //init()
+          var update = function(){
+            chart.datum(timelineData).call(stacked)
+          }
+
+        //init()
+        scope.$watch("entities.sourceEntity.selected", function(newValue, oldValue){
+          if(newValue != oldValue && newValue){
+              init(newValue.RICid)
           }
         })
 
@@ -290,11 +342,12 @@ angular.module('ricardo.directives', [])
           var doubleBar = ricardo.doubleBarChart()
             .width(element.width())
 
+
           var chart = d3.select(element[0])
 
         scope.$watch("barchartData", function(newValue, oldValue){
           if(newValue != oldValue){
-            chart.datum(newValue).call(doubleBar)
+            chart.datum(newValue).call(doubleBar.RICentities(scope.RICentities))
           }
         })
 

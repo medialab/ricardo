@@ -6,10 +6,10 @@
 </div>
 <div id="select" class="row">
   <div class="select-dropdown col-sm-3">
-    <ui-select ng-model="sourceEntity.selected" theme="bootstrap">
-    <match placeholder="Search and select a country...">{{$select.selected.reporting}}</match>
+    <ui-select ng-model="entities.sourceEntity.selected" theme="bootstrap">
+    <match placeholder="Search and select a country...">{{$select.selected.RICname}}</match>
     <choices repeat="item in reportingEntities | filter: $select.search">
-      <div ng-bind-html="item.reporting | highlight: $select.search"></div>
+      <div ng-bind-html="item.RICname | highlight: $select.search"></div>
     </choices>
   </ui-select>
   </div>

@@ -2,8 +2,12 @@
 
 /* Services */
 
+var baseUrl = 'http://jiminy.medialab.sciences-po.fr/ricardo_api';
 
 angular.module('ricardo.services', [])
+  .config(function ( $httpProvider) {        
+      delete $httpProvider.defaults.headers.common['X-Requested-With'];
+  })
   .factory('fileService', function($http, $q) {
 
    return {
@@ -24,26 +28,56 @@ angular.module('ricardo.services', [])
 
    return {
 
-     getReportingEntities : function(url){
+     getReportingEntities : function(params){
        var deferred = $q.defer();
-       $http.get(url).success(function(data){
+       var serviceUrl = '/reporting_entities'
+       $http({
+          method: 'GET',
+          url : baseUrl + serviceUrl,
+          params : params
+        }).success(function(data){
          deferred.resolve(data);
        }).error(function(){
-         deferred.reject("An error occured while fetching file");
+         deferred.reject("An error occured while fetching data");
        });
 
        return deferred.promise;
      },
-     getFlows : function(url){
+     // getReportingEntities : function(url){
+     //   var deferred = $q.defer();
+     //   $http.get(url).success(function(data){
+     //     deferred.resolve(data);
+     //   }).error(function(){
+     //     deferred.reject("An error occured while fetching file");
+     //   });
+
+     //   return deferred.promise;
+     // },
+     getFlows : function(params){
        var deferred = $q.defer();
-       $http.get(url).success(function(data){
+       var serviceUrl = '/flows'
+       $http({
+          method: 'GET',
+          url : baseUrl + serviceUrl,
+          params : params
+        }).success(function(data){
          deferred.resolve(data);
        }).error(function(){
-         deferred.reject("An error occured while fetching file");
+         deferred.reject("An error occured while fetching data");
        });
 
        return deferred.promise;
      },
+     // getFlows : function(url){
+     //   var deferred = $q.defer();
+     //   $http.get(url).success(function(data){
+     //     deferred.resolve(data);
+     //   }).error(function(){
+     //     deferred.reject("An error occured while fetching file");
+     //   });
+
+     //   return deferred.promise;
+     // },
      getFlowsResources : function(url){
        var deferred = $q.defer();
        $http.get(url).success(function(data){
@@ -62,7 +96,7 @@ angular.module('ricardo.services', [])
     all = cf.groupAll(),
     year = cf.dimension(function(d) { return new Date(d.year, 0, 1); }),
     years = year.group(d3.time.year).reduce(reduceAdd, reduceRemove, reduceInitial),
-    partner = cf.dimension(function(d) { return d.partner}),
+    partner = cf.dimension(function(d) { return d.partner_id}),
     partners = partner.group().reduce(reduceAdd, reduceRemove, reduceInitial).order(order);
 
     function reduceAdd(p, v) {

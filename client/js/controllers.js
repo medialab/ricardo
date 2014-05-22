@@ -23,22 +23,25 @@ angular.module('ricardo.controllers', [])
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
-    $scope.sourceEntity = {};
-    $scope.targetEntity = {};
+    $scope.entities = {sourceEntity : {}, targetEntity : {}}
 
-    $scope.sourceEntity.selected = {
-        "central_state": "France", 
-        "reporting": "France", 
-        "type": "Country", 
-        "continent": "Europe"
-    }
+    // $scope.sourceEntity.selected = {
+    //     "central_state": "France", 
+    //     "reporting": "France", 
+    //     "type": "Country", 
+    //     "continent": "Europe"
+    // }
 
-    $scope.targetEntity.selected = {
-        "central_state": "United Kingdom", 
-        "reporting": "United Kingdom", 
-        "type": "Country", 
-        "continent": "Europe"
-    }
+    // $scope.targetEntity.selected = {
+    //     "central_state": "United Kingdom", 
+    //     "reporting": "United Kingdom", 
+    //     "type": "Country", 
+    //     "continent": "Europe"
+    // }
+
+    //$scope.entities.sourceEntity.selected;
+
+    //$scope.entities.targetEntity.selected;
 
     $scope.tableData = [];
     $scope.totalServerItems = 0;
@@ -88,15 +91,15 @@ angular.module('ricardo.controllers', [])
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
-    $scope.sourceEntity = {};
-    $scope.targetEntity = {};
 
-    $scope.sourceEntity.selected = {
-        "central_state": "France", 
-        "reporting": "France", 
-        "type": "Country", 
-        "continent": "Europe"
-    }
+    $scope.entities = {sourceEntity : {}}
+
+    // $scope.sourceEntity.selected = {
+    //     "central_state": "France", 
+    //     "reporting": "France", 
+    //     "type": "Country", 
+    //     "continent": "Europe"
+    // }
 
     $scope.barchartData = [];
     $scope.tableData = [];

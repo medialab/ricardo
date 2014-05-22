@@ -15,6 +15,7 @@ angular.module('ricardo', [
   'ricardo.controllers'
   ]).
 config(['$routeProvider', function($routeProvider) {
+
   $routeProvider.when('/', {
   	templateUrl: 'partials/home.html'
   });
@@ -23,7 +24,7 @@ config(['$routeProvider', function($routeProvider) {
     controller: 'bilateral',
     resolve: {
       reportingEntities : function (apiService) {
-        return apiService.getReportingEntities('data/reporting_countries.json')
+        return apiService.getReportingEntities({'type_filter': 'country'})
       }
     }
   });
@@ -32,7 +33,7 @@ config(['$routeProvider', function($routeProvider) {
     controller: 'country',
     resolve: {
       reportingEntities : function (apiService) {
-        return apiService.getReportingEntities('data/reporting_countries.json')
+        return apiService.getReportingEntities({'type_filter': 'country'})
       }
     }
   });
