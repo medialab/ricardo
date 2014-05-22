@@ -58,11 +58,11 @@ def flows_data(reporting_ids,partner_ids,original_currency=False):
                 exports.append(float(flow_g.split("|")[i]))
         dups=[]
         if len(imports)>1 :
-            dups.append((r,"Imp from",p,y,imports))
+            dups.append((r_id,"Imp from",p_id,y,imports))
         if len(exports)>1:
-            dups.append((r,"Exp to",p,y,exports))
+            dups.append((r_id,"Exp to",p_id,y,exports))
         for dup in dups:
-            app.warning("Warning duplicated flows for %s %s %s in %s with dup flows in pounds : %s"%dup)
+            app.logger.warning("Warning duplicated flows for %s %s %s in %s with dup flows in pounds : %s"%dup)
         # resolve dupicates and null cases
         imp=max(imports) if len(imports)>0 else None 
         exp=max(exports) if len(exports)>0 else None
