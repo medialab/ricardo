@@ -17,15 +17,15 @@ def flows():
     # partners = request.args.get('partners', '')
     reporting_ids = request.args.get('reporting_ids', '')
     partner_ids = request.args.get('partner_ids', '')
-    original_currency = True if request.args.get('original_currency','0')=='1' else False
-    with_sources = request.args.get('with_sources','')
+    original_currency = request.args.get('original_currency','0')=='1'
+    with_sources = request.args.get('with_sources','no parameter found')==""
     # from=YYYY)
     # to=YYYY)
     if reporting_ids=="":
         abort(400)
    
     try:
-        json_data=models.get_flows(reporting_ids.split(","),partner_ids.split(",")if partner_ids!='' else [],original_currency)
+        json_data=models.get_flows(reporting_ids.split(","),partner_ids.split(",")if partner_ids!='' else [],original_currency,with_sources)
     except Exception as e:
         app.logger.exception("exception occurs in flows")
         abort(500)
@@ -34,7 +34,7 @@ def flows():
 @app.route('/reporting_entities')
 def reporting_entities():
     type_filter = request.args.get('type_filter',None) #["countries","city","colonial_area","geographic_area"])
-    to_world_only=True if request.args.get('to_world_only','0')=='1' else False
+    to_world_only = request.args.get('to_world_only','0')=='1'
 
     
     try:
