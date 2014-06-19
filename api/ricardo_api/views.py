@@ -13,19 +13,18 @@ def index():
 
 @app.route('/flows')
 def flows():
-    # reportings = request.args.get('reportings', '')
-    # partners = request.args.get('partners', '')
     reporting_ids = request.args.get('reporting_ids', '')
     partner_ids = request.args.get('partner_ids', '')
     original_currency = request.args.get('original_currency','0')=='1'
     with_sources = request.args.get('with_sources','no parameter found')==""
-    # from=YYYY)
-    # to=YYYY)
+    from_year = request.args.get('from', '')
+    to_year = request.args.get('to', '')
+
     if reporting_ids=="":
         abort(400)
    
     try:
-        json_data=models.get_flows(reporting_ids.split(","),partner_ids.split(",")if partner_ids!='' else [],original_currency,with_sources)
+        json_data=models.get_flows(reporting_ids.split(","),partner_ids.split(",")if partner_ids!='' else [],original_currency,from_year,to_year,with_sources)
     except Exception as e:
         app.logger.exception("exception occurs in flows")
         abort(500)

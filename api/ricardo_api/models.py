@@ -29,12 +29,16 @@ def ric_entities_data(ids=[]):
     return rics
 
 
-def flows_data(reporting_ids,partner_ids,original_currency=False,with_sources=False):
+def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources):
     cursor = get_db().cursor()
     partners_clause =""" AND partner_id IN ("%s")"""%'","'.join(partner_ids) if len(partner_ids)>0 else ""
+    from_year_clause = """ AND Yr>%s"""%from_year if from_year!="" else ""
+    to_year_clause = """ AND Yr<%s"""%to_year if to_year!="" else ""
+
 
     flow_field = "Flow*Unit/rate" if not original_currency else "Flow*Unit"
     source_field = """,group_concat(Source,"|")""" if with_sources else ""
+    
 
     cursor.execute("""SELECT reporting_id,partner_id,Yr,group_concat(expimp,"|"),group_concat(%s,"|"),currency%s
                       FROM flow_joined
@@ -43,7 +47,7 @@ def flows_data(reporting_ids,partner_ids,original_currency=False,with_sources=Fa
                       and rate is not null
                       and Flow is not null
                       GROUP BY reporting,partner,Yr
-                      """%(flow_field,source_field,'","'.join(reporting_ids),partners_clause)
+                      """%(flow_field,source_field,'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause)
                 )
     #
     flows=[]
@@ -89,17 +93,17 @@ def flows_data(reporting_ids,partner_ids,original_currency=False,with_sources=Fa
     return flows
 
 
-def get_flows(reporting_ids,partner_ids,original_currency,with_sources):
+def get_flows(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources):
     
     json_response={}
-    json_response["flows"]=flows_data(reporting_ids,partner_ids,original_currency,with_sources)
+    json_response["flows"]=flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources)
     if len(partner_ids)==0:
         partner_ids=list(set(str(_["partner_id"]) for _ in json_response["flows"]))
     json_response["RICentities"]={"reportings":ric_entities_data(reporting_ids),"partners":ric_entities_data(partner_ids)}
 
     if len(reporting_ids)==1 and len(partner_ids)==1:
         #bilateral : add mirror
-        json_response["mirror_flows"]=flows_data(partner_ids,reporting_ids,original_currency,with_sources)
+        json_response["mirror_flows"]=flows_data(partner_ids,reporting_ids,original_currency,from_year,to_year,with_sources)
 
 
     return json.dumps(json_response,encoding="UTF8",indent=4)
