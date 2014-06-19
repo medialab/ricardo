@@ -86,7 +86,7 @@ def get_flows(reporting_ids,partner_ids,original_currency):
     json_response["flows"]=flows_data(reporting_ids,partner_ids,original_currency)
     if len(partner_ids)==0:
         partner_ids=list(set(str(_["partner_id"]) for _ in json_response["flows"]))
-    json_response["RICentities"]=ric_entities_data(reporting_ids+partner_ids)
+    json_response["RICentities"]={"reportings":ric_entities_data(reporting_ids),"partners":ric_entities_data(partner_ids)}
 
     if len(reporting_ids)==1 and len(partner_ids)==1:
         #bilateral : add mirror
