@@ -92,6 +92,25 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
 
     return flows
 
+def get_flows_sources(reporting_ids,partner_ids,from_year,to_year):
+    cursor = get_db().cursor()
+    partners_clause =""" AND partner_id IN ("%s")"""%'","'.join(partner_ids) if len(partner_ids)>0 else ""
+    from_year_clause = """ AND Yr>%s"""%from_year if from_year!="" else ""
+    to_year_clause = """ AND Yr<%s"""%to_year if to_year!="" else ""
+    
+    cursor.execute("""SELECT distinct(Source)
+                      FROM flow_joined
+                      where reporting_id IN ("%s")
+                      %s
+                      and rate is not null
+                      and Flow is not null
+                      """%('","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause)
+                )
+   
+    r=[_[0] for _ in cursor]
+    app.logger.info(r)
+    return json.dumps({"sources":r},encoding="UTF8",indent=4)
+
 
 def get_flows(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources):
     

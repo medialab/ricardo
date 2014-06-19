@@ -50,3 +50,16 @@ def RICentities():
     except:
         abort(500)
     return Response(json_data, status=200, mimetype='application/json')
+
+@app.route('/flows_sources')
+def flows_sources():
+    reporting_ids = request.args.get('reporting_ids', '')
+    partner_ids = request.args.get('partner_ids', '')
+    from_year = request.args.get('from', '')
+    to_year = request.args.get('to', '')
+    try:
+        json_data=models.get_flows_sources(reporting_ids.split(","),partner_ids.split(",")if partner_ids!='' else [],from_year,to_year)
+    except:
+        app.logger.exception("exception in flow source")
+        abort(500)
+    return Response(json_data, status=200, mimetype='application/json')
