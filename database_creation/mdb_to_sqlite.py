@@ -27,7 +27,7 @@ with open(conf["sqlite_schema"],"r") as schema:
 	c.executescript(schema.read())
 
 for table in subprocess.check_output("mdb-tables -1 %s 2>/dev/null"%mdb_filename,shell=True).split("\n")[1:-1]:
- 	if table in ["RawData V4","Currency Name V4","Exchange Rate V4","Exp-Imp-Standard"]:
+ 	if table in ["RawData V4","Currency Name V4","Exchange Rate V4","Exp-Imp-Standard","Entity_Names","RICentities","RICentities_groups"]:
 	 	# new_table_name=table.lower().replace(" ","_").replace("-","_")
 	 	# print new_table_name
 		#c.executescript()
@@ -42,6 +42,7 @@ print "inserts done"
 c.execute("ALTER TABLE `RawData V4` RENAME TO flow")
 c.execute("ALTER TABLE `Currency Name V4` RENAME TO currency")
 c.execute("ALTER TABLE `Exchange Rate V4` RENAME TO rate")
+c.execute("ALTER TABLE `Entity_Names` RENAME TO entity_names_cleaning")
 print "renaming table done"
 # clean data
 # trim and lower
@@ -70,8 +71,12 @@ c.execute("DELETE FROM rate WHERE `FX rate (NCU/£)` is null")
 ###################################################
 ##          Import RICnames definition from CSV
 ###################################################
-import RICnames_from_csv
-RICnames_from_csv.import_in_sqlite(conn, conf)
+# import RICnames_from_csv
+# RICnames_from_csv.import_in_sqlite(conn, conf)
+#  depecrated since RICnames were included into mdb file by Karine
+
+# add the missing Haïti
+c.execute('INSERT INTO `entity_names_cleaning` (`original_name`, `name`, `RICname`) VALUES ("Haïti","Haïti","Haiti");')
 
 ##################################################
 ##			Create views on flow

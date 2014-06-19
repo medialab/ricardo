@@ -1,3 +1,4 @@
+--renamed flow
 CREATE TABLE `RawData V4`
  (
 	`ID`			INTEGER  PRIMARY KEY ASC, 
@@ -23,6 +24,7 @@ CREATE TABLE `RawData V4`
 	`Supplementary Notes`			TEXT
 );
 
+-- renamed currency
 CREATE TABLE `Currency Name V4`
  (
 	`ID_Curr_Yr_RepEntity`			INTEGER  PRIMARY KEY ASC, 
@@ -32,7 +34,8 @@ CREATE TABLE `Currency Name V4`
 	`Modified Currency`			TEXT
 
 );
-	
+
+--renamed rate
 CREATE TABLE `Exchange Rate V4`
  (
 	`ID_Curr_Yr`			INTEGER  PRIMARY KEY ASC, 
@@ -55,8 +58,9 @@ CREATE TABLE `Exp-Imp-Standard`
 	
 );
 
-DROP TABLE IF EXISTS `entity_names_cleaning`;
-CREATE TABLE IF NOT EXISTS `entity_names_cleaning`
+-- renamed entity_names_cleaning
+DROP TABLE IF EXISTS `Entity_Names`;
+CREATE TABLE IF NOT EXISTS `Entity_Names`
  (
 	`original_name`			TEXT PRIMARY KEY ASC, 
 	`name`			TEXT,
@@ -66,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `entity_names_cleaning`
 DROP TABLE IF EXISTS `RICentities`;
 CREATE TABLE IF NOT EXISTS `RICentities`
  (
-	`id`			INTEGER PRIMARY KEY,
+	`id`			INTEGER PRIMARY KEY AUTOINCREMENT,
 	`RICname`			TEXT UNIQUE, 
 	`type`			TEXT, 
 	`central_state`			TEXT,
@@ -77,6 +81,7 @@ CREATE TABLE IF NOT EXISTS `RICentities`
 DROP TABLE IF EXISTS `RICentities_groups`;
 CREATE TABLE IF NOT EXISTS `RICentities_groups`
  (
+	`ID`			INTEGER, 
 	`RICname_group`			TEXT,
 	`RICname_part`			TEXT
 );
