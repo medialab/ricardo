@@ -107,9 +107,7 @@ def get_flows_sources(reporting_ids,partner_ids,from_year,to_year):
                       """%('","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause)
                 )
    
-    r=[_[0] for _ in cursor]
-    app.logger.info(r)
-    return json.dumps({"sources":r},encoding="UTF8",indent=4)
+    return json.dumps({"sources":[_[0] for _ in cursor]},encoding="UTF8",indent=4)
 
 
 def get_flows(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources):
