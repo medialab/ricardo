@@ -91,14 +91,15 @@ API root used in
 - reporting_ids = 456,53
 - partner_ids = 598 - Optional
 - original_currency = 1|0 - Optionnal
+- with_sources - Optionnal
+- from=YYYY - Optionnal
+- to=YYYY - Optionnal
 
 ids are provided by the reporting_entities API call
 
 not implemented yet :
 - null flows ?
-- (with_sources)
-- (from=YYYY)
-- (to=YYYY)
+
 
 ### example
 
@@ -109,21 +110,23 @@ not implemented yet :
 ## outputs
 ```json
 { 
-  RICentities: [
+  "RICentities": [
+    "reportings":[
     {
       RICid: 442,
       type: "geographical_area",
       central_state: "",
       RICname: "World",
       continent: "World"
-    },
+    }]
+    "partners":[
     {
       RICid: 885,
       type: "country",
       central_state: "France",
       RICname: "France",
       continent: "Europe"
-    }
+    }]
   ],
   "flows"|"mirror_flows":
   [
@@ -154,20 +157,22 @@ not implemented:
       }
 ```
   
-# flows_sources (not implemented yet)
+# flows_sources
 
 Provide a list of all sources used in a flow API call.
 Used to get them all at once without repeating them in flow.
 
 ## inputs
-- reporting = ["France"]
-- (partner = "Germany")
-- (from=YYYY)
-- (to=YYYY)
+- reporting_ids = 456,53
+- partner_ids = 598 - Optional
+- from=YYYY - Optionnal
+- to=YYYY - Optionnal
 
 ## outputs
 ```json
-["source1","source2",...]
+{
+  "sources":["source1","source2",...]
+}
 ```
 
 
