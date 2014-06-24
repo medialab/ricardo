@@ -97,7 +97,9 @@ angular.module('ricardo.services', [])
     year = cf.dimension(function(d) { return new Date(d.year, 0, 1); }),
     years = year.group(d3.time.year).reduce(reduceAdd, reduceRemove, reduceInitial),
     partner = cf.dimension(function(d) { return d.partner_id}),
-    partners = partner.group().reduce(reduceAdd, reduceRemove, reduceInitial).order(order);
+    partners = partner.group().reduce(reduceAdd, reduceRemove, reduceInitial).order(order),
+    type = cf.dimension(function(d){return d.type}),
+    types = type.group();
 
     function reduceAdd(p, v) {
       ++p.count;
@@ -134,6 +136,8 @@ angular.module('ricardo.services', [])
     exports.years = function() { return years};
     exports.partner = function() { return partner};
     exports.partners = function() { return partners};
+    exports.type = function() { return type};
+    exports.types = function() { return types};
     exports.imp = function() { return all.reduceSum(function(d) { return d.imp; }).value()};
     exports.exp  = function() { return all.reduceSum(function(d) { return d.exp; }).value()};
     exports.total  = function() { return all.reduceSum(function(d) { return d.total; }).value()};

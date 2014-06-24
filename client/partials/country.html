@@ -13,9 +13,37 @@
     </choices>
   </ui-select>
   </div>
-  <div class="col-sm-6">
-    <div barchart-country></div>
+  <div class="col-sm-9">
     <div class="row">
+      <div class="col-sm-12">
+        <div class="filter-group">
+          <p>
+            filtered by:
+            <div class="btn-group">
+              <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'all'" uncheckable>all</label>
+              <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'city/part_of'" uncheckable>city/part_of</label>
+              <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'colonial_area'" uncheckable>colonial_area</label>
+              <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'country'" uncheckable>country</label>
+              <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'geographical_area'" uncheckable>geographical_area</label>
+              <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'group'" uncheckable>group</label>
+            </div>
+          </p>
+          <p>
+            ordered by:
+            <div class="btn-group">
+              <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'tot'" uncheckable>total</label>
+              <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'imp'" uncheckable>import</label>
+              <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'exp'" uncheckable>export</label>
+              <!-- <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'key'" uncheckable>name</label> -->
+            </div>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div barchart-country></div>
+      </div>
     </div>
   </div>
 </div>

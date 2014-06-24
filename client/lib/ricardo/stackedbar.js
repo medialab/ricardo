@@ -105,7 +105,7 @@
         stacked
           .transition()
           .duration(duration)
-          .attr("d", function(d) { console.log("ciao");return area(d.values); })
+          .attr("d", function(d) { return area(d.values); })
 
         stacked
           .enter()

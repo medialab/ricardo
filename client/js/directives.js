@@ -76,6 +76,7 @@ angular.module('ricardo.directives', [])
 
                 if(cfSource.size()>0){
                   cfSource.year().filterAll()
+                  cfSource.type().filterAll()
                   cfSource.clear();
                 }
 
@@ -275,6 +276,16 @@ angular.module('ricardo.directives', [])
                   cfSource.clear();
                 }
 
+                scope.RICentities = {}
+
+                data.RICentities.partners.forEach(function(d){
+                  scope.RICentities[""+d.RICid] = {RICname : d.RICname, type: d.type}
+                })
+
+                flows.forEach(function(d){
+                  d.type = scope.RICentities[""+d.partner_id].type
+                })
+                
                 cfSource.add(flows);
 
                 scope.startDate = cfSource.year().bottom(1)[0].year
@@ -283,16 +294,8 @@ angular.module('ricardo.directives', [])
                 scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
                 
                 //scope.reportings = data.meta.reportings
-                
                 //scope.partners = data.partners
-
                 //scope.RICentities = d3.nest().key(function(d){return d.RICid}).entries(data.RICentities)
-
-                scope.RICentities = {}
-
-                data.RICentities.forEach(function(d){
-                  scope.RICentities[""+d.RICid] = d.RICname
-                })
 
                 scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
                 
@@ -330,6 +333,18 @@ angular.module('ricardo.directives', [])
           }
         })
 
+        scope.$watch("filter", function(newValue, oldValue){
+          if(newValue != oldValue){
+              if(newValue == "all"){
+                cfSource.type().filterAll()
+                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+              }else{
+                cfSource.type().filterExact(newValue)
+                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+              }
+          }
+        })
+
       }
     }
   }])
@@ -348,6 +363,12 @@ angular.module('ricardo.directives', [])
         scope.$watch("barchartData", function(newValue, oldValue){
           if(newValue != oldValue){
             chart.datum(newValue).call(doubleBar.RICentities(scope.RICentities))
+          }
+        })
+
+        scope.$watch("order", function(newValue, oldValue){
+          if(newValue != oldValue){
+            chart.call(doubleBar.order(newValue))
           }
         })
 

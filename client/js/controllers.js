@@ -101,6 +101,9 @@ angular.module('ricardo.controllers', [])
     //     "continent": "Europe"
     // }
 
+    $scope.filter = "all"
+    $scope.order = "tot"
+
     $scope.barchartData = [];
     $scope.tableData = [];
     $scope.totalServerItems = 0;
