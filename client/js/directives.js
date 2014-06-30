@@ -375,3 +375,124 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
+  .directive('stackedTimelineWorld',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
+    return {
+      restrict: 'A',
+      replace: false,
+      link: function(scope, element, attrs) {
+
+        var timelineData;
+
+        var stacked = ricardo.stackedBar()
+          .width(element.width())
+          .height(200)
+          .stackColors(["#7CA49E", "#D35530"])
+          .on("brushing", function(d){
+            scope.startDate = d[0].getFullYear()
+            scope.endDate = d[1].getFullYear()
+            if(!scope.$$phase) {
+              scope.$apply()
+            }
+          })
+          .on("brushed", function(d){
+            cfSource.year().filterRange(d)
+
+            scope.tableData = cfSource.year().top(Infinity)
+            scope.linechartData = d3.nest().key(function(d){return d.reporting_id}).entries(cfSource.year().top(Infinity))
+            
+            if(!scope.$$phase) {
+              scope.$apply()
+            }
+          })
+
+        var chart = d3.select(element[0])
+
+                
+        
+        var init = function(sourceID){
+          apiService
+            .getFlows({reporting_ids:sourceID.join(","), partner_ids: 442})
+            .then(
+              function(data){
+                
+                var flows = data.flows;
+
+                if(!flows.length){
+                  alert("no data")
+                  console.log("no data")
+                  return
+                }
+
+                if(cfSource.size()>0){
+                  cfSource.year().filterAll()
+                  cfSource.clear();
+                }
+
+                scope.RICentities = {}
+
+                data.RICentities.partners.forEach(function(d){
+                  scope.RICentities[""+d.RICid] = {RICname : d.RICname, type: d.type}
+                })
+
+                flows.forEach(function(d){
+                  d.type = scope.RICentities[""+d.partner_id].type
+                })
+              
+
+                cfSource.add(flows);
+
+                scope.startDate = cfSource.year().bottom(1)[0].year
+                scope.endDate = cfSource.year().top(1)[0].year
+                
+                scope.tableData = cfSource.year().top(Infinity)
+
+                scope.linechartData = d3.nest().key(function(d){return d.reporting_id}).entries(cfSource.year().top(Infinity))
+                
+                var flowsPerYear = cfSource.years().top(Infinity)
+
+                timelineData = [{key:"imp", values:[]},{key:"exp", values:[]}];
+                
+                flowsPerYear.sort(function(a, b){ return d3.ascending(a.key, b.key); })
+                flowsPerYear.forEach(function(d){
+                    timelineData[0].values.push({total: d.value.imp, year: d.key})
+                    timelineData[1].values.push({total: d.value.exp, year: d.key})
+                })
+
+                update()
+
+                d3.select('.timeline-cont').classed("timeline-open", true)
+                d3.select('.table-cont').classed("table-cont-open", true)
+
+              },
+              function(error) {
+                console.log(error)
+              }
+            )
+  
+          }
+
+          var update = function(){
+            chart.datum(timelineData).call(stacked)
+          }
+
+        scope.$watch("reporting", function(newValue, oldValue){
+          if(newValue != oldValue && newValue){
+              init(newValue)
+          }
+        }, true)
+
+        // scope.$watch("filter", function(newValue, oldValue){
+        //   if(newValue != oldValue){
+        //       if(newValue == "all"){
+        //         cfSource.type().filterAll()
+        //         scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+        //       }else{
+        //         cfSource.type().filterExact(newValue)
+        //         scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+        //       }
+        //   }
+        // })
+
+      }
+    }
+  }])

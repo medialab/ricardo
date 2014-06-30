@@ -149,7 +149,74 @@ angular.module('ricardo.controllers', [])
     }, true);
 
   })
-  .controller('world', function($scope, $location) {
+  .controller('world', function($scope, $location, reportingEntities) {
+
+    $scope.reportingEntities = reportingEntities;
+    $scope.entities = {sourceEntity : {}}
+    $scope.reporting = []
+
+    $scope.pushReporting = function(elm){
+      if($scope.reporting.length >= 5) return;
+      if($scope.reporting.indexOf(elm) > -1) return;
+      $scope.reporting.push(elm) 
+    }
+
+    $scope.removeReporting = function(elm){
+      if($scope.reporting.indexOf(elm) > -1) return;
+      var i = $scope.reporting.indexOf(elm)
+      $scope.reporting.splice(i, 1);
+    }
+
+    $scope.$watch('entities.sourceEntity', function (newVal, oldVal) {
+        if (newVal !== oldVal) {
+          $scope.pushReporting(newVal.selected.RICid)
+          console.log($scope.reporting)
+        }
+    }, true);
+
+    // $scope.tableData = [];
+    // $scope.totalServerItems = 0;
+    // $scope.pagingOptions = {
+    //     pageSizes: [50],
+    //     pageSize: 50,
+    //     currentPage: 1
+    // }; 
+
+    // $scope.setPagingData = function(data, pageSize, page){
+    //     var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
+    //     $scope.tablePagedData = pagedData;
+    //     $scope.totalServerItems = data.length;
+    //     if (!$scope.$$phase) {
+    //         $scope.$apply();
+    //     }
+    // };
+
+    // $scope.tablePagedData = []
+    
+    // $scope.gridOptions = { 
+    //   data: 'tablePagedData',
+    //   enablePaging: true,
+    //   showFooter: true,
+    //   totalServerItems:'totalServerItems',
+    //   pagingOptions: $scope.pagingOptions,
+    //   enableRowSelection: false,
+    //   footerRowHeight: 45,
+    //   plugins: [new ngGridCsvExportPlugin({data:'tableData'})]
+    // }
+
+    // $scope.$watch('tableData', function (newVal, oldVal) {
+    //     if (newVal !== oldVal) {
+    //       $scope.pagingOptions.currentPage = 1
+    //       $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+    //     }
+    // }, true);    
+
+    // $scope.$watch('pagingOptions', function (newVal, oldVal) {
+    //     if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
+    //       $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+    //     }
+    // }, true);
+
 
   })
   .controller('timeline', function($scope, $location) {
