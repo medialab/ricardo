@@ -326,6 +326,18 @@ font-size: 1.1em;
   margin: 10px 0;
 }
 
+.white{
+  background-color: white;
+}
+
+#list-world-container {
+  padding: 10px 0;
+}
+
+.alert-custom {
+  background-color: white;
+}
+
 /* Page transition */
 .fade-view {
     position: absolute;

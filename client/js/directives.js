@@ -410,8 +410,9 @@ angular.module('ricardo.directives', [])
                 
         
         var init = function(sourceID){
+          var ids = sourceID.map(function(d){return d.RICid})
           apiService
-            .getFlows({reporting_ids:sourceID.join(","), partner_ids: 442})
+            .getFlows({reporting_ids:ids.join(","), partner_ids: 442})
             .then(
               function(data){
                 
@@ -438,7 +439,6 @@ angular.module('ricardo.directives', [])
                   d.type = scope.RICentities[""+d.partner_id].type
                 })
               
-
                 cfSource.add(flows);
 
                 scope.startDate = cfSource.year().bottom(1)[0].year
@@ -494,5 +494,41 @@ angular.module('ricardo.directives', [])
         // })
 
       }
+    }
+  }])
+  .directive('linechartWorld',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
+    return {
+      restrict: 'A',
+      replace: false,
+      link: function(scope, element, attrs) {
+
+          var linechart = ricardo.linechart()
+            .width(element.width())
+
+
+          var chart = d3.select(element[0])
+
+        scope.$watch("linechartData", function(newValue, oldValue){
+          if(newValue != oldValue){
+            var reportingId = scope.reporting.map(function(d){return ""+d.RICid})
+            var colors = []
+            var repNumber = d3.range(reportingId.length)
+            repNumber.forEach(function(d){
+              var color = scope.lineColors[d]
+              colors.push(color)
+            })
+            chart.datum(newValue).call(linechart.lineColors(colors).sort(reportingId))
+          }
+        })
+
+
+      }
+    }
+  }])
+  .directive('listWorld',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
+    return {
+      restrict: 'A',
+      replace: false,
+      templateUrl: "../partials/listworld.html"
     }
   }])

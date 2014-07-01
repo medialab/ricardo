@@ -143,11 +143,12 @@
 
         /* axis */
 
-        var gy = chart.select("g.y.axis");
+        var gy = chart.select("g.y.axis")
+            gx = chart.select("g.x.axis");
 
         if(chart.select("g.x.axis").empty() || chart.select("g.y.axis").empty()){
 
-          chart.append("g")
+          gx = chart.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + chartHeight + ")")
             .call(xAxis);
@@ -160,6 +161,9 @@
           gy.selectAll("g").filter(function(d) { return d; })
               .classed("minor", true);
         }else{
+
+          gx.transition().duration(duration)
+            .call(xAxis)
 
           gy.transition().duration(duration)
             .call(yAxis)

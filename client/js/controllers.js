@@ -154,23 +154,24 @@ angular.module('ricardo.controllers', [])
     $scope.reportingEntities = reportingEntities;
     $scope.entities = {sourceEntity : {}}
     $scope.reporting = []
+    $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
 
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
-      if($scope.reporting.indexOf(elm) > -1) return;
+      if($scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid) > -1) return;
       $scope.reporting.push(elm) 
     }
 
     $scope.removeReporting = function(elm){
-      if($scope.reporting.indexOf(elm) > -1) return;
-      var i = $scope.reporting.indexOf(elm)
+      if($scope.reporting.length == 1) return;
+      if($scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid) < 0) return;
+      var i = $scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid)
       $scope.reporting.splice(i, 1);
     }
 
     $scope.$watch('entities.sourceEntity', function (newVal, oldVal) {
         if (newVal !== oldVal) {
-          $scope.pushReporting(newVal.selected.RICid)
-          console.log($scope.reporting)
+          $scope.pushReporting(newVal.selected)
         }
     }, true);
 
