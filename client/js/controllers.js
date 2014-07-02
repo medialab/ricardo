@@ -156,6 +156,8 @@ angular.module('ricardo.controllers', [])
     $scope.reporting = []
     $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
 
+    $scope.yValue = "total"
+
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
       if($scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid) > -1) return;

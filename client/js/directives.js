@@ -521,6 +521,11 @@ angular.module('ricardo.directives', [])
           }
         })
 
+        scope.$watch("yValue", function(newValue, oldValue){
+          if(newValue != oldValue){
+            chart.call(linechart.yValue(newValue))
+          }
+        })
 
       }
     }

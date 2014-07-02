@@ -14,9 +14,9 @@
 
     function linechart(selection){
       selection.each(function(data){
-
+        console.log(data)
         var chart;
-        var margin = {top: 10, right: 0, bottom: 30, left: 5},
+        var margin = {top: 20, right: 5, bottom: 30, left: 5},
             chartWidth = width - margin.left - margin.right,
             chartHeight = height - margin.top - margin.bottom;
 
@@ -162,6 +162,12 @@
   linechart.sort = function(x){
     if (!arguments.length) return sort;
     sort = x;
+    return linechart;
+  }
+
+  linechart.yValue = function(x){
+    if (!arguments.length) return yValue;
+    yValue = x;
     return linechart;
   }
 
