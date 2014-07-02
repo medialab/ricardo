@@ -156,6 +156,77 @@ not implemented:
         (with_sources)
       }
 ```
+
+# continent_flows
+
+Flows aggregated by continent
+
+## views
+API root used in 
+- continent view : in this case no partner should be specified.
+- world view : specifies continents and "world" as partner.
+
+## API call
+### root 
+
+  /continent_flows
+
+### inputs
+
+- continents = Europe,Asia
+- partner_ids = 598 - Optional
+- with_sources - Optionnal
+- from=YYYY - Optionnal
+- to=YYYY - Optionnal
+
+not implemented yet :
+- null flows ?
+
+
+### example
+
+  ricardo_server.tld/continent_flows?continent=Asiapartner_ids=841
+
+## outputs
+```json
+{
+    "RICentities": {
+        "partners": [
+            {
+                "RICid": 1382, 
+                "type": "Geographical Area", 
+                "central_state": null, 
+                "RICname": "World", 
+                "continent": "World"
+            }
+        ], 
+        "reportings": [
+            "Europe"
+        ]
+    }, 
+    "flows": [
+        {
+            "currency": "sterling pound", 
+            "reporting_id": "Europe", 
+            "imp": 31100000.0, 
+            "exp": 30100000.0, 
+            "year": 1796, 
+            "total": 61200000.0, 
+            "partner_id": 1382
+        }, 
+        {
+            "currency": "sterling pound", 
+            "reporting_id": "Europe", 
+            "imp": 25100000.0, 
+            "exp": 27500000.0, 
+            "year": 1797, 
+            "total": 52600000.0, 
+            "partner_id": 1382
+        },
+        ... 
+      ]
+}
+```
   
 # flows_sources
 
