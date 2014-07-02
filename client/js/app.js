@@ -39,7 +39,12 @@ config(['$routeProvider', function($routeProvider) {
   });
   $routeProvider.when('/world', {
     templateUrl: 'partials/world.html',
-    controller: 'world'
+    controller: 'world',
+    resolve: {
+      reportingEntities : function (apiService) {
+        return apiService.getReportingEntities({'type_filter': 'colonial_area,country,geographical_area','to_world_only': 1})
+      }
+    }
   });
   $routeProvider.when('/timeline', {
     templateUrl: 'partials/timeline.html',

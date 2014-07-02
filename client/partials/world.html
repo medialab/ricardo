@@ -1,1 +1,66 @@
-<h1>hello world</h1>
+<div class="row">
+	<div class="timeline-cont col-sm-12">
+    <h4>Trade exchanges between {{startDate}} – {{endDate}}</h4>
+    <div stacked-timeline-world></div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-3">
+    <div id="select" class="row">
+      <div class="select-dropdown col-sm-12">
+        <ui-select ng-model="entities.sourceEntity.selected" theme="bootstrap">
+        <match placeholder="Search and select a country...">{{$select.selected.RICname}}</match>
+        <choices repeat="item in reportingEntities | filter: $select.search">
+          <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+        </choices>
+      </ui-select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div list-world></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-9">
+    <!-- <div class="row"> -->
+      <div class="col-sm-12 white">
+        <div class="filter-group">
+          <p>
+            value by:
+            <div class="btn-group">
+              <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'total'" uncheckable>total</label>
+              <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'imp'" uncheckable>import</label>
+              <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'exp'" uncheckable>export</label>
+            </div>
+          </p>
+        </div>
+      </div>
+    <!-- </div> -->
+    <!-- <div class="row"> -->
+      <div class="col-sm-12 white">
+        <div linechart-world></div>
+      </div>
+    <!-- </div> -->
+  </div>
+
+<!--   <div class="col-sm-6">
+    <div stream></div>
+    <div class="row">
+      <div class="stream-legend" stream-legend></div>
+    </div>
+  </div>
+  <div class="select-dropdown col-sm-3">
+    <ui-select ng-model="entities.targetEntity.selected" theme="bootstrap">
+    <match placeholder="Search and select a country...">{{$select.selected.RICname}}</match>
+    <choices repeat="item in reportingEntities | filter: $select.search">
+      <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+    </choices>
+  </ui-select>
+  </div> -->
+</div>
+<!-- <div class="row table-cont">
+  <div class="col-sm-12 grid-cont">
+    <div class="gridStyle" ng-grid="gridOptions"></div>
+  </div>
+</div> -->

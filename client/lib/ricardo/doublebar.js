@@ -180,6 +180,7 @@
 
         barsLegend.transition().duration(duration)
           .attr("y", function(d,i){return i*(barHeigth+barGap)})
+          .attr("fill", function(d){ if(d.value.tot == 0){return "#999"}else{return "#333"}})
 
         barsLegend
           .enter()
@@ -190,7 +191,8 @@
           .attr("text-anchor", "middle")
           .attr("font-size", "0.9em")
           .attr("dy", "-0.2em")
-          .text(function(d){return RICentities[""+d.key]})
+          .attr("fill", function(d){ if(d.value.tot == 0){return "#999"}else{return "#333"}})
+          .text(function(d){return RICentities[""+d.key].RICname})
 
         barsLegend.exit().remove()
 
