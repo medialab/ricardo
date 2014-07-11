@@ -29,7 +29,7 @@ def ric_entities_data(ids=[]):
     return rics
 
 
-def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources):
+def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources,group_reporting_by=""):
     cursor = get_db().cursor()
     partners_clause =""" AND partner_id IN ("%s")"""%'","'.join(partner_ids) if len(partner_ids)>0 else ""
     from_year_clause = """ AND Yr>%s"""%from_year if from_year!="" else ""
@@ -39,8 +39,8 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
     flow_field = "Flow*Unit/rate" if not original_currency else "Flow*Unit"
     source_field = """,group_concat(Source,"|")""" if with_sources else ""
     
-
-    cursor.execute("""SELECT reporting_id,partner_id,Yr,group_concat(expimp,"|"),group_concat(%s,"|"),currency%s
+    if group_reporting_by=="":
+        cursor.execute("""SELECT reporting_id,partner_id,Yr,group_concat(expimp,"|"),group_concat(%s,"|"),currency%s
                       FROM flow_joined
                       where reporting_id IN ("%s")
                       %s
@@ -48,6 +48,16 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
                       and Flow is not null
                       GROUP BY reporting,partner,Yr
                       """%(flow_field,source_field,'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause)
+                )
+    elif group_reporting_by=="continent":
+        cursor.execute("""SELECT r.continent,partner_id,Yr,group_concat(expimp,"|"),group_concat(%s,"|"),currency%s
+                      FROM flow_joined LEFT OUTER JOIN RICentities r on reporting_id==r.id  LEFT OUTER JOIN RICentities p on partner_id==p.id
+                      where r.continent IN ("%s") AND p.continent not in ("%s")
+                      %s
+                      and rate is not null
+                      and Flow is not null
+                      GROUP BY r.continent,partner,Yr
+                      """%(flow_field,source_field,'","'.join(reporting_ids),'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause)
                 )
     #
     flows=[]
@@ -66,16 +76,23 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
                 imports.append(float(flow_g.split("|")[i]))
             elif ei == "Exp":
                 exports.append(float(flow_g.split("|")[i]))
-        dups=[]
-        if len(imports)>1 :
-            dups.append((r_id,"Imp from",p_id,y,imports))
-        if len(exports)>1:
-            dups.append((r_id,"Exp to",p_id,y,exports))
-        for dup in dups:
-            app.logger.warning("Warning duplicated flows for %s %s %s in %s with dup flows in pounds : %s"%dup)
-        # resolve dupicates and null cases
-        imp=max(imports) if len(imports)>0 else None 
-        exp=max(exports) if len(exports)>0 else None
+        if group_reporting_by=="":
+            # duplicates are only possible when not grouping
+            dups=[]
+            if len(imports)>1 :
+                dups.append((r_id,"Imp from",p_id,y,imports))
+            if len(exports)>1:
+                dups.append((r_id,"Exp to",p_id,y,exports))
+            for dup in dups:
+                app.logger.warning("Warning duplicated flows for %s %s %s in %s with dup flows in pounds : %s"%dup)
+        if group_reporting_by=="":
+            # resolve duplicates and null cases
+            imp=max(imports) if len(imports)>0 else None 
+            exp=max(exports) if len(exports)>0 else None
+        else:
+            #when grouping we sum exp imp
+            imp=sum(imports)
+            exp=sum(exports)
         total = (imp if imp else 0) + (exp if exp else 0)
         flows.append({
             "reporting_id":r_id,
@@ -116,14 +133,29 @@ def get_flows(reporting_ids,partner_ids,original_currency,from_year,to_year,with
     json_response["flows"]=flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources)
     if len(partner_ids)==0:
         partner_ids=list(set(str(_["partner_id"]) for _ in json_response["flows"]))
-    json_response["RICentities"]={"reportings":ric_entities_data(reporting_ids),"partners":ric_entities_data(partner_ids)}
+    partners = ric_entities_data(partner_ids) if len(partner_ids)>0 else []
+    json_response["RICentities"]={"reportings":ric_entities_data(reporting_ids),"partners":partners}
 
     if len(reporting_ids)==1 and len(partner_ids)==1:
         #bilateral : add mirror
         json_response["mirror_flows"]=flows_data(partner_ids,reporting_ids,original_currency,from_year,to_year,with_sources)
 
+    return json.dumps(json_response,encoding="UTF8",indent=4)
+
+def get_continent_flows(continents,partner_ids,from_year,to_year,with_sources):
+    
+    json_response={}
+    json_response["flows"]=flows_data(continents,partner_ids,False,from_year,to_year,with_sources,"continent")
+    if len(partner_ids)==0:
+        partner_ids=list(set(str(_["partner_id"]) for _ in json_response["flows"]))
+    app.logger.info(partner_ids)
+    app.logger.info(ric_entities_data(partner_ids))
+    partners = ric_entities_data(partner_ids) if len(partner_ids)>0 else []
+    json_response["RICentities"]={"reportings":continents,"partners":partners}
 
     return json.dumps(json_response,encoding="UTF8",indent=4)
+
+
 
 def get_reporting_entities(types=[],to_world_only=False):
     cursor = get_db().cursor()

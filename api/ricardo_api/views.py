@@ -29,6 +29,24 @@ def flows():
         app.logger.exception("exception occurs in flows")
         abort(500)
     return Response(json_data, status=200, mimetype='application/json')
+
+@app.route('/continent_flows')
+def continent_flows():
+    continents = request.args.get('continents', '')
+    partner_ids = request.args.get('partner_ids', '')
+    with_sources = request.args.get('with_sources','no parameter found')==""
+    from_year = request.args.get('from', '')
+    to_year = request.args.get('to', '')
+
+    if continents=="":
+        abort(400)
+   
+    try:
+        json_data=models.get_continent_flows(continents.split(","),partner_ids.split(",")if partner_ids!='' else [],from_year,to_year,with_sources)
+    except Exception as e:
+        app.logger.exception("exception occurs in flows")
+        abort(500)
+    return Response(json_data, status=200, mimetype='application/json')
     
 @app.route('/reporting_entities')
 def reporting_entities():
