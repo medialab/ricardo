@@ -534,6 +534,6 @@ angular.module('ricardo.directives', [])
     return {
       restrict: 'A',
       replace: false,
-      templateUrl: "../partials/listworld.html"
+      templateUrl: "partials/listworld.html"
     }
   }])
