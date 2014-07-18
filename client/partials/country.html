@@ -5,13 +5,28 @@
   </div>
 </div>
 <div id="select" class="row">
-  <div class="select-dropdown col-sm-3">
-    <ui-select ng-model="entities.sourceEntity.selected" theme="bootstrap">
-    <match placeholder="Search and select a country...">{{$select.selected.RICname}}</match>
-    <choices repeat="item in reportingEntities | filter: $select.search">
-      <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-    </choices>
-  </ui-select>
+  <div class="col-sm-3">
+    <div class="row">
+      <div class="select-dropdown col-sm-12">
+        <ui-select ng-model="entities.sourceEntity.selected" theme="bootstrap">
+          <match placeholder="Search and select a country...">{{$select.selected.RICname}}</match>
+          <choices repeat="item in reportingEntities | filter: $select.search">
+            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="select-dropdown col-sm-12" ng-show="RICentitiesDD.length">
+        <p>Select up to 5 partners</p>
+        <ui-select ng-model="entities.multiEntity.selected" theme="bootstrap">
+          <match placeholder="Search and select a country...">{{$select.selected.RICname}}</match>
+          <choices repeat="item in RICentitiesDD | filter: $select.search">
+            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
+      </div>
+    </div>
   </div>
   <div class="col-sm-9">
     <div class="row">

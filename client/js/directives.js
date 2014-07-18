@@ -279,8 +279,15 @@ angular.module('ricardo.directives', [])
                 scope.RICentities = {}
 
                 data.RICentities.partners.forEach(function(d){
-                  scope.RICentities[""+d.RICid] = {RICname : d.RICname, type: d.type}
+                  scope.RICentities[""+d.RICid] = {RICname : d.RICname, type: d.type, RICid: d.RICid }
                 })
+
+
+                scope.RICentitiesDD = d3.values(scope.RICentities).sort(function(a,b){
+                      if(a.RICname < b.RICname) return -1;
+                      if(a.RICname > b.RICname) return 1;
+                      return 0;
+                  })
 
                 flows.forEach(function(d){
                   d.type = scope.RICentities[""+d.partner_id].type
