@@ -13,7 +13,7 @@ angular.module('ricardo.controllers', [])
       {slug:"bilateral", label:"Bilateral view"},
       {slug:"country", label:"Country view"},
       {slug:"world", label:"World view"},
-      {slug:"timeline", label:"Timeline view"}
+      {slug:"continent", label:"Continent view"}
       //,
       //{slug:"federation", label:"Federation view"},
     ]
@@ -245,9 +245,9 @@ angular.module('ricardo.controllers', [])
 
 
   })
-  .controller('timeline', function($scope, $location) {
+  .controller('continent', function($scope, $location) {
 
   })
-  .controller('federation', function($scope, $location) {
+  // .controller('federation', function($scope, $location) {
 
-  })
+  // })

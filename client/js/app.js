@@ -33,7 +33,8 @@ config(['$routeProvider', function($routeProvider) {
     controller: 'country',
     resolve: {
       reportingEntities : function (apiService) {
-        return apiService.getReportingEntities({'type_filter': 'country'})
+        //return apiService.getReportingEntities({'type_filter': 'country'})
+        return apiService.getReportingEntities()
       }
     }
   });
@@ -42,17 +43,18 @@ config(['$routeProvider', function($routeProvider) {
     controller: 'world',
     resolve: {
       reportingEntities : function (apiService) {
+        //return apiService.getReportingEntities({'type_filter': 'colonial_area,country,geographical_area','to_world_only': 1})
         return apiService.getReportingEntities({'type_filter': 'colonial_area,country,geographical_area','to_world_only': 1})
       }
     }
   });
-  $routeProvider.when('/timeline', {
-    templateUrl: 'partials/timeline.html',
-    controller: 'timeline'
+  $routeProvider.when('/continent', {
+    templateUrl: 'partials/continent.html',
+    controller: 'continent'
   });
-  $routeProvider.when('/federation', {
-    templateUrl: 'partials/federation.html',
-    controller: 'federation'
-  });
+  // $routeProvider.when('/federation', {
+  //   templateUrl: 'partials/federation.html',
+  //   controller: 'federation'
+  // });
   $routeProvider.otherwise({redirectTo: '/'});
 }]);

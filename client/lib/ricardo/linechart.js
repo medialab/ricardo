@@ -14,7 +14,6 @@
 
     function linechart(selection){
       selection.each(function(data){
-        console.log(data)
         var chart;
         var margin = {top: 20, right: 5, bottom: 30, left: 5},
             chartWidth = width - margin.left - margin.right,

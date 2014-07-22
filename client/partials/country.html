@@ -27,6 +27,11 @@
         </ui-select>
       </div>
     </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div list-world></div>
+      </div>
+    </div>
   </div>
   <div class="col-sm-9">
     <div class="row">
@@ -58,6 +63,21 @@
     <div class="row">
       <div class="col-sm-12">
         <div barchart-country></div>
+      </div>
+      <div class="col-sm-12 white">
+        <div class="filter-group">
+          <p>
+            value by:
+            <div class="btn-group">
+              <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'total'" uncheckable>total</label>
+              <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'imp'" uncheckable>import</label>
+              <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'exp'" uncheckable>export</label>
+            </div>
+          </p>
+        </div>
+      </div>
+      <div class="col-sm-12">
+        <div id="linechart-world" linechart-world></div>
       </div>
     </div>
   </div>
