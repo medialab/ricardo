@@ -50,7 +50,12 @@ config(['$routeProvider', function($routeProvider) {
   });
   $routeProvider.when('/continent', {
     templateUrl: 'partials/continent.html',
-    controller: 'continent'
+    controller: 'continent',
+    resolve: {
+      reportingEntities : function (apiService) {
+        return apiService.getReportingEntities({'type_filter': 'country'})
+      }
+    }
   });
   // $routeProvider.when('/federation', {
   //   templateUrl: 'partials/federation.html',

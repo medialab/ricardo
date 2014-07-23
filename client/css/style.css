@@ -330,6 +330,11 @@ font-size: 1.1em;
   background-color: white;
 }
 
+.barchart-country{
+  max-height: 500px;
+  overflow: scroll;
+}
+
 /* world */
 
 #list-world-container {
