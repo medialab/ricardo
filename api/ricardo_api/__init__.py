@@ -7,9 +7,6 @@ import os
 #flask
 from flask import Flask
 from flask import g
-from flask import request
-from flask import Response
-from flask import abort
 # ricardo
 import config
 
@@ -29,4 +26,3 @@ def close_connection(exception):
         db.close()
 
 import ricardo_api.views
-import ricardo_api.models

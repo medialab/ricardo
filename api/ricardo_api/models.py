@@ -158,7 +158,27 @@ def get_continent_flows(continents,partner_ids,from_year,to_year,with_sources):
 
 
 def get_reporting_entities(types=[],to_world_only=False):
+    
     cursor = get_db().cursor()
+    if "continent" in types:
+        types.remove("continent")
+        cursor.execute("""SELECT continent
+                          FROM flow_joined
+                          LEFT OUTER JOIN RICentities ON RICname=reporting
+                          group by continent ORDER BY count(*) DESC""")
+        json_response=[]
+        for (continent) in cursor:
+            json_response.append({
+            "RICname":continent[0],
+            "type":"continent",
+            })
+        
+        if len(types)==0:
+            # nothing to add so return
+            return json.dumps(json_response,encoding="UTF8",indent=4)
+    else:
+        json_response=[]
+
     type_clause='type IN ("%s")'%'","'.join(types) if len(types)>0 else "" 
     partner_clause="partner='World'" if to_world_only else ""
     if type_clause!="" or partner_clause!="":
@@ -167,12 +187,11 @@ def get_reporting_entities(types=[],to_world_only=False):
     else:
         where_clause =""
     cursor.execute("""SELECT RICentities.id,reporting,type,central_state,continent
-                      FROM flow_joined
-                      LEFT OUTER JOIN RICentities ON RICname=reporting
-                      %s
-                      group by reporting"""%(where_clause))
+                          FROM flow_joined
+                          LEFT OUTER JOIN RICentities ON RICname=reporting
+                          %s
+                          group by reporting"""%(where_clause))
     
-    json_response=[]
     for (id,r,t,central,continent) in cursor:
         json_response.append({
             "RICid":id,
@@ -182,6 +201,7 @@ def get_reporting_entities(types=[],to_world_only=False):
             "continent":continent
             })
     return json.dumps(json_response,encoding="UTF8",indent=4)
+
 
 def get_RICentities():
     return json.dumps(ric_entities_data(),encoding="UTF8",indent=4)

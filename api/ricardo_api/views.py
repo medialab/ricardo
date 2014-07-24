@@ -52,12 +52,14 @@ def continent_flows():
 def reporting_entities():
     type_filter = request.args.get('type_filter',None) #["countries","city","colonial_area","geographic_area"])
     to_world_only = request.args.get('to_world_only','0')=='1'
-
-    
+    types=type_filter.split(",") if type_filter else []
+   
     try:
-        json_data=models.get_reporting_entities(type_filter.split(",") if type_filter else [],to_world_only)
-    except:
+        json_data=models.get_reporting_entities(types,to_world_only)
+    except Exception:
+        raise
         abort(500)
+
     return Response(json_data, status=200, mimetype='application/json')
 
 @app.route('/RICentities')

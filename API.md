@@ -50,7 +50,7 @@ list entities which has reported Imp/Exp flows.
 
 ### inputs
 
-- type_filter = city/part_of,colonial_area,country,geographical_area,group - Optional
+- type_filter = city/part_of,colonial_area,country,geographical_area,group,continent - Optional
 - to_world_only = 1|0 - Optional
 
 ### example
@@ -61,6 +61,10 @@ list entities which has reported Imp/Exp flows.
 
 ```json
 [
+  {
+        "type": "continent", 
+        "RICname": "Europe"
+  },
   {
     "RICid":456
     "RICname":"Germany",
