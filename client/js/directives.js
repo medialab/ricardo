@@ -222,7 +222,7 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
-  .directive('stackedTimelineCountry',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
+  .directive('stackedTimelineCountry',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout',function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout){
     return {
       restrict: 'A',
       replace: false,
@@ -243,9 +243,12 @@ angular.module('ricardo.directives', [])
           })
           .on("brushed", function(d){
             cfSource.year().filterRange(d)
+            cfSourceLine.year().filterRange(d)
 
             scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
             scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+
+            scope.linechartData = d3.nest().key(function(d){return d.reporting_id}).entries(cfSourceLine.year().top(Infinity))
             
             if(!scope.$$phase) {
               scope.$apply()
@@ -279,8 +282,19 @@ angular.module('ricardo.directives', [])
                 scope.RICentities = {}
 
                 data.RICentities.partners.forEach(function(d){
-                  scope.RICentities[""+d.RICid] = {RICname : d.RICname, type: d.type}
+                  scope.RICentities[""+d.RICid] = {RICname : d.RICname, type: d.type, RICid: d.RICid }
                 })
+
+
+                scope.RICentitiesDD = d3.values(scope.RICentities).sort(function(a,b){
+                      if(a.RICname < b.RICname) return -1;
+                      if(a.RICname > b.RICname) return 1;
+                      return 0;
+                  })
+
+                d3.select("#linechart-world > svg").remove()
+                scope.reporting = []
+                scope.entities.multiEntity = {}
 
                 flows.forEach(function(d){
                   d.type = scope.RICentities[""+d.partner_id].type
@@ -293,9 +307,6 @@ angular.module('ricardo.directives', [])
                 
                 scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
                 
-                //scope.reportings = data.meta.reportings
-                //scope.partners = data.partners
-                //scope.RICentities = d3.nest().key(function(d){return d.RICid}).entries(data.RICentities)
 
                 scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
                 
@@ -322,6 +333,40 @@ angular.module('ricardo.directives', [])
   
           }
 
+        var initLinechart = function(sourceID, partnerID, startDate, endDate){
+          var ids = sourceID.map(function(d){return d.RICid})
+          apiService
+            .getFlows({reporting_ids:ids.join(","), partner_ids: partnerID, from: startDate, to: endDate})
+            .then(
+              function(data){
+                
+                var flows = data.flows;
+
+                if(!flows.length){
+                  alert("no data")
+                  console.log("no data")
+                  return
+                }
+
+                if(cfSourceLine.size()>0){
+                  cfSourceLine.year().filterAll()
+                  cfSourceLine.clear();
+                }
+
+              
+                cfSourceLine.add(flows);
+
+                scope.linechartData = d3.nest().key(function(d){return d.reporting_id}).entries(cfSourceLine.year().top(Infinity))
+                
+
+              },
+              function(error) {
+                console.log(error)
+              }
+            )
+  
+          }
+
           var update = function(){
             chart.datum(timelineData).call(stacked)
           }
@@ -332,6 +377,13 @@ angular.module('ricardo.directives', [])
               init(newValue.RICid)
           }
         })
+
+        scope.$watch("reporting", function(newValue, oldValue){
+          if(newValue != oldValue && newValue){
+              var partnerID = scope.entities.sourceEntity.selected.RICid;
+              initLinechart(newValue, partnerID, scope.startDate, scope.endDate)
+          }
+        }, true)
 
         scope.$watch("filter", function(newValue, oldValue){
           if(newValue != oldValue){
@@ -534,6 +586,6 @@ angular.module('ricardo.directives', [])
     return {
       restrict: 'A',
       replace: false,
-      templateUrl: "../partials/listworld.html"
+      templateUrl: "partials/listworld.html"
     }
   }])
