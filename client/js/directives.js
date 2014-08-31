@@ -56,12 +56,10 @@ angular.module('ricardo.directives', [])
           })
 
         var chart = d3.select(element[0]);
-
         
         var init = function(sourceID, targetID){
           
           apiService
-            //.getFlows('data/bilateral_france_UK.json')
             .getFlows({reporting_ids: sourceID, partner_ids: targetID})
             .then(
               function(data){
@@ -85,9 +83,6 @@ angular.module('ricardo.directives', [])
                   cfTarget.clear();
                 }
 
-                //cfSource.clear();
-                //cfTarget.clear();
-
                 cfSource.add(flows);
                 cfTarget.add(mirror_flows);
 
@@ -96,9 +91,6 @@ angular.module('ricardo.directives', [])
                 
                 scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
                 
-                //useful meta re-implement it!
-                //scope.reportings = data.meta.reportings
-                //scope.partners = data.meta.partners
                 scope.reportings = [scope.entities.sourceEntity.selected.RICname]
                 scope.partners = [scope.entities.targetEntity.selected.RICname]
 
@@ -123,10 +115,6 @@ angular.module('ricardo.directives', [])
                 })
                 
                 update()
-
-                d3.select('.timeline-cont').classed("timeline-open", true)
-                d3.select('.table-cont').classed("table-cont-open", true)
-
               },
               function(error) {
                 console.log(error)
@@ -144,6 +132,24 @@ angular.module('ricardo.directives', [])
               init(newValue[0].RICid, newValue[1].RICid)
           }
         }, true)
+
+        /* start initialize */
+
+        scope.entities.sourceEntity.selected = {"RICid": 885,
+                                                "RICname": "France",
+                                                "central_state": "France",
+                                                "continent": "Europe",
+                                                "type": "country"}
+
+        scope.entities.targetEntity.selected = {"RICid": 926,
+                                                "RICname": "Italy",
+                                                "central_state": "Italy",
+                                                "continent": "Europe",
+                                                "type": "country"}
+
+        init(885,926)
+
+        /* end initialize */
 
       }
     }
@@ -188,25 +194,25 @@ angular.module('ricardo.directives', [])
           element.find(".pat").empty()
 
           d3.select(reportingCont).append("h4")
-            .text("imported to " + scope.partners.join())
+            .text("imported from " + scope.partners.join() + " ←")
 
           d3.select(reportingCont).append("p")
             .text("£ " + format(Math.round(data[0].values[0].y)))
 
           d3.select(reportingCont).append("h4")
-            .text("exported to " + scope.partners.join())
+            .text("exported to " + scope.partners.join() + " →")
 
           d3.select(reportingCont).append("p")
             .text("£ " + format(Math.round(data[1].values[0].y)))
 
           d3.select(partnerCont).append("h4")
-            .text("exported to " + scope.reportings.join())
+            .text("← exported to " + scope.reportings.join())
 
           d3.select(partnerCont).append("p")
             .text("£ " + format(Math.round(data[0].values[1].y)))
 
           d3.select(partnerCont).append("h4")
-            .text("imported to " + scope.reportings.join())
+            .text("→ imported from " + scope.reportings.join())
 
           d3.select(partnerCont).append("p")
             .text("£ " + format(Math.round(data[1].values[1].y)))
@@ -282,7 +288,7 @@ angular.module('ricardo.directives', [])
                 scope.RICentities = {}
 
                 data.RICentities.partners.forEach(function(d){
-                  scope.RICentities[""+d.RICid] = {RICname : d.RICname, type: d.type, RICid: d.RICid }
+                  scope.RICentities[""+d.RICid] = {RICname : d.RICname, type: d.type, RICid: d.RICid, continent: d.continent }
                 })
 
 
@@ -292,9 +298,29 @@ angular.module('ricardo.directives', [])
                       return 0;
                   })
 
+                scope.reportingCountryEntities = scope.RICentitiesDD.filter(function(d){return d.type == "country"})
+                scope.reportingColonialEntities = scope.RICentitiesDD.filter(function(d){return d.type == "colonial_area"})
+                scope.reportingGeoEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area"})
+                var continents = d3.nest()
+                                  .key(function(d){return d.continent})
+                                  .entries(scope.RICentitiesDD)
+                                  .map(function(d){return d.key})
+                                  .filter(function(d){return d})
+
+                scope.reportingContinentEntities = []
+                continents.forEach(function(d){
+                  var elm = {RICname : d, type: "continent", RICid: d }
+                  scope.reportingContinentEntities.push(elm)
+                })
+
+                            
                 d3.select("#linechart-world > svg").remove()
                 scope.reporting = []
-                scope.entities.multiEntity = {}
+                scope.entities.sourceCountryEntity = {} 
+                scope.entities.sourceColonialEntity = {}
+                scope.entities.sourceGeoEntity = {}
+                scope.entities.sourceContinentEntity = {}
+
 
                 flows.forEach(function(d){
                   d.type = scope.RICentities[""+d.partner_id].type
@@ -333,7 +359,31 @@ angular.module('ricardo.directives', [])
   
           }
 
-        var initLinechart = function(sourceID, partnerID, startDate, endDate){
+        var initLinechart = function(entities){
+
+              if(cfSourceLine.size()>0){
+                cfSourceLine.year().filterAll()
+                cfSourceLine.clear();
+              }
+
+              //scope.RICentities = {}
+
+              var partnerID = scope.entities.sourceEntity.selected.RICid;
+
+
+              var values = d3.nest().key(function(d){return d.type}).entries(entities)
+              values.forEach(function(d){
+                if(d.key != "continent"){
+                  initEntityLinechart(d.values, partnerID, scope.startDate, scope.endDate)
+                }
+                else{
+                  initContinentLinechart(d.values, partnerID, scope.startDate, scope.endDate)
+                }
+              })
+
+        }
+
+        var initEntityLinechart = function(sourceID, partnerID, startDate, endDate){
           var ids = sourceID.map(function(d){return d.RICid})
           apiService
             .getFlows({reporting_ids:ids.join(","), partner_ids: partnerID, from: startDate, to: endDate})
@@ -348,10 +398,45 @@ angular.module('ricardo.directives', [])
                   return
                 }
 
-                if(cfSourceLine.size()>0){
-                  cfSourceLine.year().filterAll()
-                  cfSourceLine.clear();
+                // if(cfSourceLine.size()>0){
+                //   cfSourceLine.year().filterAll()
+                //   cfSourceLine.clear();
+                // }
+
+              
+                cfSourceLine.add(flows);
+
+                scope.linechartData = d3.nest().key(function(d){return d.reporting_id}).entries(cfSourceLine.year().top(Infinity))
+                
+
+              },
+              function(error) {
+                console.log(error)
+              }
+            )
+  
+          }
+
+
+        var initContinentLinechart = function(sourceID, partnerID, startDate, endDate){
+          var ids = sourceID.map(function(d){return d.RICid})
+          apiService
+            .getContinentFlows({continents:ids.join(","), partner_ids: partnerID, from: startDate, to: endDate})
+            .then(
+              function(data){
+                
+                var flows = data.flows;
+
+                if(!flows.length){
+                  alert("no data")
+                  console.log("no data")
+                  return
                 }
+
+                // if(cfSourceLine.size()>0){
+                //   cfSourceLine.year().filterAll()
+                //   cfSourceLine.clear();
+                // }
 
               
                 cfSourceLine.add(flows);
@@ -372,6 +457,19 @@ angular.module('ricardo.directives', [])
           }
 
         //init()
+
+        /* start initialize */
+
+        scope.entities.sourceEntity.selected = {"RICid": 885,
+                                                "RICname": "France",
+                                                "central_state": "France",
+                                                "continent": "Europe",
+                                                "type": "country"}
+
+        init(885)
+
+        /* end initialize */
+
         scope.$watch("entities.sourceEntity.selected", function(newValue, oldValue){
           if(newValue != oldValue && newValue){
               init(newValue.RICid)
@@ -380,8 +478,9 @@ angular.module('ricardo.directives', [])
 
         scope.$watch("reporting", function(newValue, oldValue){
           if(newValue != oldValue && newValue){
-              var partnerID = scope.entities.sourceEntity.selected.RICid;
-              initLinechart(newValue, partnerID, scope.startDate, scope.endDate)
+              //var partnerID = scope.entities.sourceEntity.selected.RICid;
+              //initLinechart(newValue, partnerID, scope.startDate, scope.endDate)
+              initLinechart(newValue)
           }
         }, true)
 
@@ -427,6 +526,273 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
+  .directive('stackedTimelineContinent',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout',function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout){
+    return {
+      restrict: 'A',
+      replace: false,
+      link: function(scope, element, attrs) {
+
+        var timelineData;
+
+        var stacked = ricardo.stackedBar()
+          .width(element.width())
+          .height(200)
+          .stackColors(["#7CA49E", "#D35530"])
+          .on("brushing", function(d){
+            scope.startDate = d[0].getFullYear()
+            scope.endDate = d[1].getFullYear()
+            if(!scope.$$phase) {
+              scope.$apply()
+            }
+          })
+          .on("brushed", function(d){
+            cfSource.year().filterRange(d)
+            cfSourceLine.year().filterRange(d)
+
+            scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
+            scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+
+            scope.linechartData = d3.nest().key(function(d){return d.reporting_id}).entries(cfSourceLine.year().top(Infinity))
+            
+            if(!scope.$$phase) {
+              scope.$apply()
+            }
+          })
+
+        var chart = d3.select(element[0])
+
+                
+        
+        var init = function(sourceID){
+          
+          apiService
+            .getContinentFlows({continents: sourceID})
+            .then(
+              function(data){
+                
+                var flows = data.flows;
+
+                if(!flows.length){
+                  alert("no data for these Countries")
+                  console.log("no data")
+                  return
+                }
+
+                if(cfSource.size()>0){
+                  cfSource.year().filterAll()
+                  cfSource.clear();
+                }
+
+                scope.RICentities = {}
+
+                data.RICentities.partners.forEach(function(d){
+                  scope.RICentities[""+d.RICid] = {RICname : d.RICname, type: d.type, RICid: d.RICid, continent: d.continent }
+                })
+
+
+                scope.RICentitiesDD = d3.values(scope.RICentities).sort(function(a,b){
+                      if(a.RICname < b.RICname) return -1;
+                      if(a.RICname > b.RICname) return 1;
+                      return 0;
+                  })
+
+                scope.reportingCountryEntities = scope.RICentitiesDD.filter(function(d){return d.type == "country"})
+                scope.reportingColonialEntities = scope.RICentitiesDD.filter(function(d){return d.type == "colonial_area"})
+                scope.reportingGeoEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area"})
+                var continents = d3.nest()
+                                  .key(function(d){return d.continent})
+                                  .entries(scope.RICentitiesDD)
+                                  .map(function(d){return d.key})
+                                  .filter(function(d){return d})
+
+                scope.reportingContinentEntities = []
+
+                continents.forEach(function(d){
+                  var elm = {RICname : d, type: "continent", RICid: d }
+                  scope.reportingContinentEntities.push(elm)
+                })
+                            
+                d3.select("#linechart-world > svg").remove()
+                scope.reporting = []
+                //scope.entities.multiEntity = {}
+                scope.entities.sourceCountryEntity = {} 
+                scope.entities.sourceColonialEntity = {}
+                scope.entities.sourceGeoEntity = {}
+                scope.entities.sourceContinentEntity = {}
+
+
+                flows.forEach(function(d){
+                  d.type = scope.RICentities[""+d.partner_id].type
+                })
+                
+                cfSource.add(flows);
+
+                scope.startDate = cfSource.year().bottom(1)[0].year
+                scope.endDate = cfSource.year().top(1)[0].year
+                
+                scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
+                
+
+                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+                
+                var flowsPerYear = cfSource.years().top(Infinity)
+
+                timelineData = [{key:"imp", values:[]},{key:"exp", values:[]}];
+                
+                flowsPerYear.sort(function(a, b){ return d3.ascending(a.key, b.key); })
+                flowsPerYear.forEach(function(d){
+                    timelineData[0].values.push({total: d.value.imp, year: d.key})
+                    timelineData[1].values.push({total: d.value.exp, year: d.key})
+                })
+
+                update()
+
+                d3.select('.timeline-cont').classed("timeline-open", true)
+                d3.select('.table-cont').classed("table-cont-open", true)
+
+              },
+              function(error) {
+                console.log(error)
+              }
+            )
+  
+          }
+
+        var initLinechart = function(entities){
+
+              if(cfSourceLine.size()>0){
+                cfSourceLine.year().filterAll()
+                cfSourceLine.clear();
+              }
+
+              //scope.RICentities = {}
+
+              var partnerID = scope.entities.sourceEntity.selected.RICid;
+
+
+              var values = d3.nest().key(function(d){return d.type}).entries(entities)
+              values.forEach(function(d){
+                if(d.key != "continent"){
+                  initEntityLinechart(d.values, partnerID, scope.startDate, scope.endDate)
+                }
+                else{
+                  initContinentLinechart(d.values, partnerID, scope.startDate, scope.endDate)
+                }
+              })
+
+        }
+
+        var initEntityLinechart = function(sourceID, partnerID, startDate, endDate){
+          var ids = sourceID.map(function(d){return d.RICid})
+          apiService
+            .getContinentFlows({partner_ids:ids.join(","), continents: partnerID, from: startDate, to: endDate})
+            .then(
+              function(data){
+                
+                var flows = data.flows;
+
+                
+                console.log(cfSourceLine.size(), flows)
+
+                if(!flows.length){
+                  alert("no data")
+                  console.log("no data")
+                  return
+                }
+
+                cfSourceLine.add(flows);
+
+                scope.linechartData = d3.nest().key(function(d){return d.reporting_id}).entries(cfSourceLine.year().top(Infinity))
+                
+
+              },
+              function(error) {
+                console.log(error)
+              }
+            )
+  
+          }
+
+
+        var initContinentLinechart = function(sourceID, partnerID, startDate, endDate){
+          var ids = sourceID.map(function(d){return d.RICid})
+          apiService
+            .getContinentFlows({continents:ids.join(","), partner_ids: partnerID, from: startDate, to: endDate})
+            .then(
+              function(data){
+                
+                var flows = data.flows;
+
+                if(!flows.length){
+                  alert("no data")
+                  console.log("no data")
+                  return
+                }
+
+                // if(cfSourceLine.size()>0){
+                //   cfSourceLine.year().filterAll()
+                //   cfSourceLine.clear();
+                // }
+
+              
+                cfSourceLine.add(flows);
+
+                scope.linechartData = d3.nest().key(function(d){return d.reporting_id}).entries(cfSourceLine.year().top(Infinity))
+                
+
+              },
+              function(error) {
+                console.log(error)
+              }
+            )
+  
+          }
+
+          var update = function(){
+            chart.datum(timelineData).call(stacked)
+          }
+
+        //init()
+
+         /* start initialize */
+
+        scope.entities.sourceEntity.selected = {"RICid": "Europe",
+                                                "RICname": "Europe",
+                                                "type": "continent"}
+
+        init("Europe")
+
+        /* end initialize */
+
+        scope.$watch("entities.sourceEntity.selected", function(newValue, oldValue){
+          if(newValue != oldValue && newValue){
+              init(newValue.RICid)
+          }
+        })
+
+        scope.$watch("reporting", function(newValue, oldValue){
+          if(newValue != oldValue && newValue){
+              //var partnerID = scope.entities.sourceEntity.selected.RICid;
+              //initLinechart(newValue, partnerID, scope.startDate, scope.endDate)
+              initLinechart(newValue)
+          }
+        }, true)
+
+        scope.$watch("filter", function(newValue, oldValue){
+          if(newValue != oldValue){
+              if(newValue == "all"){
+                cfSource.type().filterAll()
+                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+              }else{
+                cfSource.type().filterExact(newValue)
+                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+              }
+          }
+        })
+
+      }
+    }
+  }])
   .directive('stackedTimelineWorld',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
     return {
       restrict: 'A',
@@ -459,9 +825,29 @@ angular.module('ricardo.directives', [])
 
         var chart = d3.select(element[0])
 
-                
-        
-        var init = function(sourceID){
+        var init = function(entities){
+
+              if(cfSource.size()>0){
+                  cfSource.year().filterAll()
+                  cfSource.clear();
+                }
+
+              scope.RICentities = {}
+
+              var values = d3.nest().key(function(d){return d.type}).entries(entities)
+              values.forEach(function(d){
+                if(d.key != "continent"){
+                  initEntity(d.values)
+                }
+                else{
+                  initContinent(d.values)
+                }
+              })
+
+
+        }
+
+        var initEntity = function(sourceID){
           var ids = sourceID.map(function(d){return d.RICid})
           apiService
             .getFlows({reporting_ids:ids.join(","), partner_ids: 442})
@@ -475,13 +861,6 @@ angular.module('ricardo.directives', [])
                   console.log("no data")
                   return
                 }
-
-                if(cfSource.size()>0){
-                  cfSource.year().filterAll()
-                  cfSource.clear();
-                }
-
-                scope.RICentities = {}
 
                 data.RICentities.partners.forEach(function(d){
                   scope.RICentities[""+d.RICid] = {RICname : d.RICname, type: d.type}
@@ -512,8 +891,57 @@ angular.module('ricardo.directives', [])
 
                 update()
 
-                d3.select('.timeline-cont').classed("timeline-open", true)
-                d3.select('.table-cont').classed("table-cont-open", true)
+              },
+              function(error) {
+                console.log(error)
+              }
+            )
+  
+          }
+
+        var initContinent = function(sourceID){
+          var ids = sourceID.map(function(d){return d.RICname})
+          apiService
+            .getContinentFlows({continents:ids.join(","), partner_ids: 442})
+            .then(
+              function(data){
+                
+                var flows = data.flows;
+
+                if(!flows.length){
+                  alert("no data")
+                  console.log("no data")
+                  return
+                }
+
+                data.RICentities.partners.forEach(function(d){
+                  scope.RICentities[""+d.RICid] = {RICname : d.RICname, type: d.type}
+                })
+
+                flows.forEach(function(d){
+                  d.type = scope.RICentities[""+d.partner_id].type
+                })
+              
+                cfSource.add(flows);
+
+                scope.startDate = cfSource.year().bottom(1)[0].year
+                scope.endDate = cfSource.year().top(1)[0].year
+                
+                scope.tableData = cfSource.year().top(Infinity)
+
+                scope.linechartData = d3.nest().key(function(d){return d.reporting_id}).entries(cfSource.year().top(Infinity))
+                
+                var flowsPerYear = cfSource.years().top(Infinity)
+
+                timelineData = [{key:"imp", values:[]},{key:"exp", values:[]}];
+                
+                flowsPerYear.sort(function(a, b){ return d3.ascending(a.key, b.key); })
+                flowsPerYear.forEach(function(d){
+                    timelineData[0].values.push({total: d.value.imp, year: d.key})
+                    timelineData[1].values.push({total: d.value.exp, year: d.key})
+                })
+
+                update()
 
               },
               function(error) {
@@ -527,9 +955,17 @@ angular.module('ricardo.directives', [])
             chart.datum(timelineData).call(stacked)
           }
 
+        /* start initialize */
+
+        scope.reporting = [{"RICid": 885,"RICname": "France","central_state": "France","continent": "Europe","type": "country"}]
+
+        init(scope.reporting)
+
+        /* end initialize */
+
         scope.$watch("reporting", function(newValue, oldValue){
           if(newValue != oldValue && newValue){
-              init(newValue)
+            init(newValue)
           }
         }, true)
 
@@ -556,6 +992,7 @@ angular.module('ricardo.directives', [])
 
           var linechart = ricardo.linechart()
             .width(element.width())
+            .height(400)
 
 
           var chart = d3.select(element[0])

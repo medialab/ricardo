@@ -8,16 +8,35 @@
   <div class="col-sm-3">
     <div id="select" class="row">
       <div class="select-dropdown col-sm-12">
-        <ui-select ng-model="entities.sourceEntity.selected" theme="bootstrap">
-        <match placeholder="Search and select a country...">{{$select.selected.RICname}}</match>
-        <choices repeat="item in reportingEntities | filter: $select.search">
+        <ui-select ng-model="entities.sourceCountryEntity.selected" theme="bootstrap">
+        <match placeholder="Select a Country...">{{$select.selected.RICname}}</match>
+        <choices repeat="item in reportingCountryEntities | filter: $select.search">
+          <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+        </choices>
+      </ui-select>
+        <ui-select ng-model="entities.sourceColonialEntity.selected" theme="bootstrap">
+        <match placeholder="Select a Colonial area...">{{$select.selected.RICname}}</match>
+        <choices repeat="item in reportingColonialEntities | filter: $select.search">
+          <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+        </choices>
+      </ui-select>
+      <ui-select ng-model="entities.sourceGeoEntity.selected" theme="bootstrap">
+        <match placeholder="Select a Geographical area...">{{$select.selected.RICname}}</match>
+        <choices repeat="item in reportingGeoEntities | filter: $select.search">
+          <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+        </choices>
+      </ui-select>
+      <ui-select ng-model="entities.sourceContinentEntity.selected" theme="bootstrap">
+        <match placeholder="Select a Continent...">{{$select.selected.RICname}}</match>
+        <choices repeat="item in reportingContinentEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
       </ui-select>
       </div>
     </div>
-    <div class="row">
+    <div class="row list">
       <div class="col-sm-12">
+        <h3>selected entities [up to 5]</h3>
         <div list-world></div>
       </div>
     </div>
@@ -26,14 +45,12 @@
     <!-- <div class="row"> -->
       <div class="col-sm-12 white">
         <div class="filter-group">
-          <p>
-            value by:
-            <div class="btn-group">
+            <div class="btn-group pull-right">
               <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'total'" uncheckable>total</label>
               <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'imp'" uncheckable>import</label>
               <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'exp'" uncheckable>export</label>
             </div>
-          </p>
+            <div style="clear:both;"></div>
         </div>
       </div>
     <!-- </div> -->
@@ -43,24 +60,9 @@
       </div>
     <!-- </div> -->
   </div>
-
-<!--   <div class="col-sm-6">
-    <div stream></div>
-    <div class="row">
-      <div class="stream-legend" stream-legend></div>
-    </div>
-  </div>
-  <div class="select-dropdown col-sm-3">
-    <ui-select ng-model="entities.targetEntity.selected" theme="bootstrap">
-    <match placeholder="Search and select a country...">{{$select.selected.RICname}}</match>
-    <choices repeat="item in reportingEntities | filter: $select.search">
-      <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-    </choices>
-  </ui-select>
-  </div> -->
 </div>
-<!-- <div class="row table-cont">
+<div class="row table-cont">
   <div class="col-sm-12 grid-cont">
     <div class="gridStyle" ng-grid="gridOptions"></div>
   </div>
-</div> -->
+</div>

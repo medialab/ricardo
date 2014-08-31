@@ -9,6 +9,7 @@ angular.module('ricardo', [
   'ui.bootstrap',
   'ui.select',
   'ngGrid',
+  'angular-loading-bar',
   'ricardo.filters',
   'ricardo.services',
   'ricardo.directives',
@@ -33,8 +34,8 @@ config(['$routeProvider', function($routeProvider) {
     controller: 'country',
     resolve: {
       reportingEntities : function (apiService) {
-        //return apiService.getReportingEntities({'type_filter': 'country'})
-        return apiService.getReportingEntities()
+        return apiService.getReportingEntities({'type_filter': 'country'})
+        //return apiService.getReportingEntities()
       }
     }
   });
@@ -42,9 +43,17 @@ config(['$routeProvider', function($routeProvider) {
     templateUrl: 'partials/world.html',
     controller: 'world',
     resolve: {
-      reportingEntities : function (apiService) {
-        //return apiService.getReportingEntities({'type_filter': 'colonial_area,country,geographical_area','to_world_only': 1})
-        return apiService.getReportingEntities({'type_filter': 'colonial_area,country,geographical_area','to_world_only': 1})
+      reportingColonialEntities : function (apiService) {
+        return apiService.getReportingEntities({'type_filter': 'colonial_area','to_world_only': 1})
+      },
+      reportingCountryEntities : function (apiService) {
+        return apiService.getReportingEntities({'type_filter': 'country','to_world_only': 1})
+      },
+      reportingGeoEntities : function (apiService) {
+        return apiService.getReportingEntities({'type_filter': 'geographical_area','to_world_only': 1})
+      },
+      reportingContinentEntities : function (apiService) {
+        return apiService.getReportingEntities({'type_filter': 'continent','to_world_only': 1})
       }
     }
   });
@@ -53,13 +62,12 @@ config(['$routeProvider', function($routeProvider) {
     controller: 'continent',
     resolve: {
       reportingEntities : function (apiService) {
-        return apiService.getReportingEntities({'type_filter': 'country'})
+        return apiService.getReportingEntities({'type_filter': 'continent'})
       }
     }
   });
-  // $routeProvider.when('/federation', {
-  //   templateUrl: 'partials/federation.html',
-  //   controller: 'federation'
-  // });
   $routeProvider.otherwise({redirectTo: '/'});
-}]);
+}])
+  .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
+    cfpLoadingBarProvider.includeBar = false;
+  }])

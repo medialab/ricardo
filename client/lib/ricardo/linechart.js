@@ -4,7 +4,7 @@
 
   ricardo.linechart = function(){
 
-    var height = 600,
+    var height = 400,
         width = 600,
         lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c'],
         sort = [],
@@ -126,6 +126,7 @@
                 .attr("d", function(d) { return line(d.values); })
                 .attr("stroke", function(d,i) { return color(d.key); })
                 .attr("fill", "none")
+                .attr("stroke-width", "2px")
 
         entities.exit().remove()
 

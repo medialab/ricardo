@@ -45,6 +45,8 @@
         // var x = d3.scale.log()
         //     .range([2, chartWidth/2]);
 
+        var format = d3.format("0,000");
+
         var x = d3.scale.linear()
             .range([2, chartWidth/2]);
 
@@ -84,7 +86,7 @@
           })
           .each(function(d){
              $(this).tooltip('destroy')
-             $(this).tooltip({title:"£ " + d.value.imp, placement:"right", container: 'body'})
+             $(this).tooltip({title:"£ " + format(d.value.imp), placement:"right", container: 'body'})
           })
 
         barsImp
@@ -102,7 +104,7 @@
           .attr("height", barHeigth)
           .attr("fill", barColors[0])
           .each(function(d){
-             $(this).tooltip({title:"£ " + d.value.imp, placement:"right", container: 'body'})
+             $(this).tooltip({title:"£ " + format(d.value.imp), placement:"right", container: 'body'})
           })
 
         barsImp.exit().remove()
@@ -136,7 +138,7 @@
           })
           .each(function(d){
              $(this).tooltip('destroy')
-             $(this).tooltip({title:"£ " + d.value.exp, placement:"left", container: 'body'})
+             $(this).tooltip({title:"£ " + format(d.value.exp), placement:"left", container: 'body'})
           })
 
         barsExp
@@ -161,7 +163,7 @@
           .attr("height", barHeigth)
           .attr("fill", barColors[1])
           .each(function(d){
-             $(this).tooltip({title:"£ " + d.value.exp, placement:"left", container: 'body'})
+             $(this).tooltip({title:"£ " + format(d.value.exp), placement:"left", container: 'body'})
           })
 
         barsExp.exit().remove()
@@ -196,6 +198,29 @@
 
         barsLegend.exit().remove()
 
+        var barsLegendValue = barsLegendGroup
+                          .selectAll(".legendValue")
+                          .data([data[0],data[0]])
+
+        barsLegendValue.transition().duration(duration)
+          //.attr("y", function(d,i){return 0*(barHeigth+barGap)})
+          .attr("fill", function(d){ if(d.value.tot == 0){return "#999"}else{return "#333"}})
+          .text(function(d,i){if(i > 0){return "£"+format(d.value.imp)}else{return "£"+format(d.value.exp)}})
+          .attr("x", function(d,i){if(i > 0){return x(d.value.imp)+chartWidth/2}else{return chartWidth/2 - x(d.value.exp)}})
+
+        barsLegendValue
+          .enter()
+          .append("text")
+          .attr("x", function(d,i){if(i > 0){return x(d.value.imp)+chartWidth/2}else{return chartWidth/2 - x(d.value.exp)}})
+          .attr("class", "legendValue")
+          .attr("y", function(d,i){return 0*(barHeigth+barGap)})
+          .attr("text-anchor", function(d,i){if(i > 0){return "end"}else{return "start"}})
+          .attr("font-size", "0.9em")
+          .attr("dy", "-0.4em")
+          .attr("fill", function(d){ if(d.value.tot == 0){return "#999"}else{return "#333"}})
+          .text(function(d,i){if(i > 0){return "£"+format(d.value.imp)}else{return "£"+format(d.value.exp)}})
+
+        barsLegendValue.exit().remove()
 
 
         /* custom axis */

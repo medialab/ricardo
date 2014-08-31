@@ -24,7 +24,7 @@ angular.module('ricardo.services', [])
      }
    }
   })
-  .factory('apiService', function($http, $q) {
+  .factory('apiService', function($http, $q, $rootScope) {
 
    return {
 
@@ -43,16 +43,6 @@ angular.module('ricardo.services', [])
 
        return deferred.promise;
      },
-     // getReportingEntities : function(url){
-     //   var deferred = $q.defer();
-     //   $http.get(url).success(function(data){
-     //     deferred.resolve(data);
-     //   }).error(function(){
-     //     deferred.reject("An error occured while fetching file");
-     //   });
-
-     //   return deferred.promise;
-     // },
      getFlows : function(params){
        var deferred = $q.defer();
        var serviceUrl = '/flows'
@@ -68,16 +58,21 @@ angular.module('ricardo.services', [])
 
        return deferred.promise;
      },
-     // getFlows : function(url){
-     //   var deferred = $q.defer();
-     //   $http.get(url).success(function(data){
-     //     deferred.resolve(data);
-     //   }).error(function(){
-     //     deferred.reject("An error occured while fetching file");
-     //   });
+     getContinentFlows : function(params){
+       var deferred = $q.defer();
+       var serviceUrl = '/continent_flows'
+       $http({
+          method: 'GET',
+          url : baseUrl + serviceUrl,
+          params : params
+        }).success(function(data){
+         deferred.resolve(data);
+       }).error(function(){
+         deferred.reject("An error occured while fetching data");
+       });
 
-     //   return deferred.promise;
-     // },
+       return deferred.promise;
+     },
      getFlowsResources : function(url){
        var deferred = $q.defer();
        $http.get(url).success(function(data){
