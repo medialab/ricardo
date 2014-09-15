@@ -343,7 +343,7 @@ font-size: 1.1em;
 #select-lineChart, #select-doubleChart{
   background-color: white;
   border: 1px solid #e7e7e7;
-  margin-top: 20px;
+  margin-top: 5px;
 }
 
 /* world */
@@ -358,7 +358,7 @@ font-size: 1.1em;
   margin-top: 10px;
 }
 
-.list h3{
+.list h3, .subtitle{
   font-family: 'montserrat', Arial, sans-serif;
   font-weight: bold;
   font-size: 0.8em;

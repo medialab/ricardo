@@ -1,7 +1,15 @@
 <div class="row">
 	<div class="timeline-cont col-sm-12">
-    <h4>Trade exchanges between {{startDate}} – {{endDate}}</h4>
+    <h4>Trade exchanges by {{entities.sourceEntity.selected.RICname}}, {{minDate}} – {{maxDate}}</h4>
     <div stacked-timeline-country></div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-3">
+    <h3 class="subtitle">choose a reporting country:</h3>
+  </div>
+  <div class="col-sm-9">
+    <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} by partners, {{startDate}} – {{endDate}}, in £</h3>
   </div>
 </div>
 <div id="select-doubleChart" class="row">
@@ -49,6 +57,14 @@
   </div>
 </div>
 
+<div class="row">
+  <div class="col-sm-3">
+    <h3 class="subtitle">select up to 5 partners:</h3>
+  </div>
+  <div class="col-sm-9">
+    <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} with <span ng-repeat="country in reporting">{{country.RICname}}<span ng-if="!$last">, </span></span>, {{startDate}} – {{endDate}}, in £</h3>
+  </div>
+</div>
 <div id="select-lineChart" class="row">
   <div class="col-sm-3">
     <div class="row">
@@ -81,7 +97,7 @@
     </div>
     <div class="row">
       <div class="col-sm-12">
-        <p class="filter">selected entities [up to 5]</p>
+        <p class="filter">selected parteners:</p>
         <div list-world></div>
       </div>
     </div>

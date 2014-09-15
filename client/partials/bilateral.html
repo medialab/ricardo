@@ -1,7 +1,18 @@
 <div class="row">
 	<div class="timeline-cont col-sm-12">
-    <h4>Trade exchanges between {{startDate}} – {{endDate}}</h4>
+    <h4>Trade exchanges between {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}}, {{minDate}} – {{maxDate}}, reported by {{entities.sourceEntity.selected.RICname}}</h4>
     <div stacked-timeline></div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-3">
+    <h3 class="subtitle">choose a reporting country:</h3>
+  </div>
+  <div class="col-sm-6">
+    <h3 class="subtitle">Mirror flows between {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}}, {{startDate}} -{{endDate}}, in £</h3>
+  </div>
+  <div class="col-sm-3">
+    <h3 class="subtitle">choose a partner country:</h3>
   </div>
 </div>
 <div id="select" class="row">

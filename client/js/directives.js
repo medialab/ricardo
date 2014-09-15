@@ -88,6 +88,9 @@ angular.module('ricardo.directives', [])
 
                 scope.startDate = cfSource.year().bottom(1)[0].year
                 scope.endDate = cfSource.year().top(1)[0].year
+
+                scope.minDate = cfSource.year().bottom(1)[0].year
+                scope.maxDate = cfSource.year().top(1)[0].year
                 
                 scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
                 
@@ -193,6 +196,10 @@ angular.module('ricardo.directives', [])
           element.find(".rep").empty()
           element.find(".pat").empty()
 
+          d3.select(reportingCont).append("h3")
+            .attr("class", "subtitle")
+            .text("reported by " + scope.reportings.join() + ":")
+
           d3.select(reportingCont).append("h4")
             .text("imported from " + scope.partners.join() + " ←")
 
@@ -204,6 +211,10 @@ angular.module('ricardo.directives', [])
 
           d3.select(reportingCont).append("p")
             .text("£ " + format(Math.round(data[1].values[0].y)))
+
+          d3.select(partnerCont).append("h3")
+            .attr("class", "subtitle")
+            .text("reported by " + scope.partners.join() + ":")
 
           d3.select(partnerCont).append("h4")
             .text("← exported to " + scope.reportings.join())
@@ -330,6 +341,9 @@ angular.module('ricardo.directives', [])
 
                 scope.startDate = cfSource.year().bottom(1)[0].year
                 scope.endDate = cfSource.year().top(1)[0].year
+
+                scope.minDate = cfSource.year().bottom(1)[0].year
+                scope.maxDate = cfSource.year().top(1)[0].year
                 
                 scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
                 
@@ -629,6 +643,9 @@ angular.module('ricardo.directives', [])
 
                 scope.startDate = cfSource.year().bottom(1)[0].year
                 scope.endDate = cfSource.year().top(1)[0].year
+
+                scope.minDate = cfSource.year().bottom(1)[0].year
+                scope.maxDate = cfSource.year().top(1)[0].year
                 
                 scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
                 
@@ -874,6 +891,9 @@ angular.module('ricardo.directives', [])
 
                 scope.startDate = cfSource.year().bottom(1)[0].year
                 scope.endDate = cfSource.year().top(1)[0].year
+
+                scope.minDate = cfSource.year().bottom(1)[0].year
+                scope.maxDate = cfSource.year().top(1)[0].year
                 
                 scope.tableData = cfSource.year().top(Infinity)
 
