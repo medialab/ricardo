@@ -70,30 +70,27 @@
             .orient("right")
             .ticks(5)
             .tickSize(width)
-            // .tickFormat(function(d,i){
-            //   var prefix = d3.formatPrefix(d)
-            //   if(i == 0){
-            //     return
-            //   }
-            //   else if(i == 4){
-            //     var symbol;
-            //     if(prefix.symbol == "G"){
-            //       symbol = "billion"
-            //     }else if(prefix.symbol == "M"){
-            //       symbol = "million"
-            //     }else if(prefix.symbol == "k"){
-            //       symbol = "thousand"
-            //     }else{
-            //       symbol = ""
-            //     }
-            //     return "£" + prefix.scale(d) + " " + symbol
-            //   }
-            //   else{
-            //     return prefix.scale(d)
-            //   }
+            .tickFormat(function(d,i){
+              var prefix = d3.formatPrefix(d)
+              if(i == 0){
+                return
+              }
+              else{
+                var symbol;
+                if(prefix.symbol == "G"){
+                  symbol = "billion"
+                }else if(prefix.symbol == "M"){
+                  symbol = "million"
+                }else if(prefix.symbol == "k"){
+                  symbol = "thousand"
+                }else{
+                  symbol = ""
+                }
+                return prefix.scale(d) + " " + symbol + " £"
+              }
               
-            //   })
-            .tickFormat(d3.format("s"))
+              })
+            //.tickFormat(d3.format("s"))
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -135,7 +132,7 @@
 
         legend
           .append("text")
-          .text(function(d){return d.toUpperCase()})
+          .text(function(d){return d == "imp" ? "IMPORTS" : "EXPORTS"})
           .attr("font-family", "'montserrat', 'Arial', sans-serif")
           .attr("font-weight","bold")
           .attr("font-size", "0.8em")

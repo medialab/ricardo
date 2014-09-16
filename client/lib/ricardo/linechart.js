@@ -64,7 +64,27 @@
             .orient("right")
             .ticks(5)
             .tickSize(width)
-            .tickFormat(d3.format("s"))
+            //.tickFormat(d3.format("s"))
+            .tickFormat(function(d,i){
+              var prefix = d3.formatPrefix(d)
+              if(i == 0){
+                return
+              }
+              else{
+                var symbol;
+                if(prefix.symbol == "G"){
+                  symbol = "billion"
+                }else if(prefix.symbol == "M"){
+                  symbol = "million"
+                }else if(prefix.symbol == "k"){
+                  symbol = "thousand"
+                }else{
+                  symbol = ""
+                }
+                return prefix.scale(d) + " " + symbol + " £"
+              }
+              
+              })
 
 
         var gy = chart.select("g.y.axis")
@@ -129,6 +149,67 @@
                 .attr("stroke-width", "2px")
 
         entities.exit().remove()
+
+
+        var voronoi = d3.geom.voronoi()
+            .x(function(d) { return x(new Date(d.year, 0, 1)); })
+            .y(function(d) { return y(d[yValue]); })
+            .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]]);
+        
+
+
+          var voronoiGroup = chart.select(".voronoi")
+
+          if(voronoiGroup.empty()){
+                voronoiGroup = chart.append("g")
+                            .attr("class", "voronoi")
+                            .attr("fill", "none")
+                            .attr("pointer-events", "all")
+              }
+
+          var voronoiGraph = voronoiGroup.selectAll("path")
+              .data(voronoi(d3.merge(data.map(function(d) { return d.values; }))))
+
+          voronoiGraph.attr("d", function(d) { return "M" + d.join("L") + "Z"; })
+                .datum(function(d) { return d.point; })
+                .on("mouseover", mouseover)
+                .on("mouseout", mouseout);
+
+
+          voronoiGraph
+                .enter().append("path")
+                .attr("d", function(d) { return "M" + d.join("L") + "Z"; })
+                .datum(function(d) {return d.point; })
+                .on("mouseover", mouseover)
+                .on("mouseout", mouseout);
+
+          voronoiGraph.exit().remove()
+
+          var focus = chart.select(".focus")
+                    
+          if(focus.empty()){
+              focus = chart.append("g")
+                  .attr("transform", "translate(-100,-100)")
+                  .attr("class", "focus");
+                }
+
+          focus.append("circle")
+              .attr("r", 3);
+
+          focus.append("text")
+              .attr("y", -10)
+              .attr("text-anchor", "middle")
+
+          var format = d3.format("0,000");
+
+          function mouseover(d) {
+              focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
+              focus.select("text").text(format(Math.round(d[yValue])) + "£");
+            }
+
+          function mouseout(d) {
+              focus.attr("transform", "translate(-100,-100)");
+            }
 
         
       }); //end selection
