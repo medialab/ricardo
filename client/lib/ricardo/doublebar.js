@@ -252,12 +252,12 @@
 
         var axisImp = axisImpGroup
                       .selectAll(".axis")
-                      .data(axisImpData, function(d){return d.x})
+                      .data(axisImpData)
         axisImp
           .enter()
           .append("path")
           .attr("class", "axis")
-          .attr("d", function(d){return lineFunction(d)})
+          .attr("d", function(d){console.log(d, lineFunction(d));return lineFunction(d)})
           .attr("fill", "none")
 
       }); //end selection
