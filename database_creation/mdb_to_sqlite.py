@@ -14,9 +14,11 @@ except :
 mdb_filename=os.path.join("in_data",conf["mdb_filename"])
 mdb_sqlite_filename=os.path.join("out_data",conf["sqlite_filename"])
 try:
-	os.remove(mdb_sqlite_filename)
+	if os.path.isfile(mdb_sqlite_filename):
+		os.remove(mdb_sqlite_filename)
 except:
-	pass
+	print "couldn't delete target sqlite database file"
+	exit(1)
 
 conn=sqlite3.connect(mdb_sqlite_filename)
 c=conn.cursor()
@@ -26,8 +28,8 @@ with open(conf["sqlite_schema"],"r") as schema:
 	#c.executescript(subprocess.check_output("mdb-schema %s sqlite 2>/dev/null"%mdb_filename,shell=True))
 	c.executescript(schema.read())
 
-for table in subprocess.check_output("mdb-tables -1 %s 2>/dev/null"%mdb_filename,shell=True).split("\n")[1:-1]:
- 	if table in ["RawData V4","Currency Name V4","Exchange Rate V4","Exp-Imp-Standard","Entity_Names","RICentities","RICentities_groups"]:
+for table in subprocess.check_output("mdb-tables -1 %s 2>/dev/null"%mdb_filename,shell=True).split("\n")[0:-1]:
+ 	if table in ["RawData v1","Currency Name v1","Exchange Rate v1","Exp-Imp-Standard v1","Entity_Names v1","RICentities v1","RICentities_groups v1"]:
 	 	# new_table_name=table.lower().replace(" ","_").replace("-","_")
 	 	# print new_table_name
 		#c.executescript()
@@ -39,10 +41,13 @@ for table in subprocess.check_output("mdb-tables -1 %s 2>/dev/null"%mdb_filename
 		#c.execute("END")
 
 print "inserts done"
-c.execute("ALTER TABLE `RawData V4` RENAME TO flow")
-c.execute("ALTER TABLE `Currency Name V4` RENAME TO currency")
-c.execute("ALTER TABLE `Exchange Rate V4` RENAME TO rate")
-c.execute("ALTER TABLE `Entity_Names` RENAME TO entity_names_cleaning")
+c.execute("ALTER TABLE `RawData v1` RENAME TO flow")
+c.execute("ALTER TABLE `Currency Name v1` RENAME TO currency")
+c.execute("ALTER TABLE `Exchange Rate v1` RENAME TO rate")
+c.execute("ALTER TABLE `Entity_Names v1` RENAME TO entity_names_cleaning")
+c.execute("ALTER TABLE `Exp-Imp-Standard v1` RENAME TO `Exp-Imp-Standard`")
+c.execute("ALTER TABLE `RICentities v1` RENAME TO RICentities")
+c.execute("ALTER TABLE `RICentities_groups v1` RENAME TO RICentities_groups")
 print "renaming table done"
 # clean data
 # trim and lower
