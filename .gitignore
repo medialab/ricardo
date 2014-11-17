@@ -58,6 +58,9 @@ docs/_build/
 client/lib/bower_components/
 
 # Client data
+client/js/config.js
+
+# Client setting
 client/data/
 
 # data
