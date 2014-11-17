@@ -24,7 +24,7 @@ angular.module('ricardo.services', [])
      }
    }
   })
-  .factory('apiService', function($http, $q, $rootScope) {
+  .factory('apiService', function($http, $q, $rootScope, BASE_API_URL) {
 
    return {
 
@@ -33,7 +33,7 @@ angular.module('ricardo.services', [])
        var serviceUrl = '/reporting_entities'
        $http({
           method: 'GET',
-          url : baseUrl + serviceUrl,
+          url : BASE_API_URL + serviceUrl,
           params : params
         }).success(function(data){
          deferred.resolve(data);
@@ -48,7 +48,7 @@ angular.module('ricardo.services', [])
        var serviceUrl = '/flows'
        $http({
           method: 'GET',
-          url : baseUrl + serviceUrl,
+          url : BASE_API_URL + serviceUrl,
           params : params
         }).success(function(data){
          deferred.resolve(data);
@@ -63,7 +63,7 @@ angular.module('ricardo.services', [])
        var serviceUrl = '/continent_flows'
        $http({
           method: 'GET',
-          url : baseUrl + serviceUrl,
+          url : BASE_API_URL + serviceUrl,
           params : params
         }).success(function(data){
          deferred.resolve(data);
