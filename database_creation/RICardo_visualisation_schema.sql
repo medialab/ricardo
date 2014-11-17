@@ -1,5 +1,5 @@
 --renamed flow
-CREATE TABLE `RawData V4`
+CREATE TABLE `RawData v1`
  (
 	`ID`			INTEGER  PRIMARY KEY ASC, 
 	`File Name`			TEXT, 
@@ -21,11 +21,12 @@ CREATE TABLE `RawData V4`
 	`Source suite`			TEXT, 
 	`Pages`			TEXT, 
 	`Notes`			TEXT, 
-	`Supplementary Notes`			TEXT
+	`Supplementary Notes`			TEXT,
+	`Total_Type`			TEXT
 );
 
 -- renamed currency
-CREATE TABLE `Currency Name V4`
+CREATE TABLE `Currency Name v1`
  (
 	`ID_Curr_Yr_RepEntity`			INTEGER  PRIMARY KEY ASC, 
 	`Original Currency`			TEXT, 
@@ -36,7 +37,7 @@ CREATE TABLE `Currency Name V4`
 );
 
 --renamed rate
-CREATE TABLE `Exchange Rate V4`
+CREATE TABLE `Exchange Rate v1`
  (
 	`ID_Curr_Yr`			INTEGER  PRIMARY KEY ASC, 
 	`Modified Currency`			TEXT, 
@@ -48,7 +49,7 @@ CREATE TABLE `Exchange Rate V4`
 	
 );
 
-CREATE TABLE `Exp-Imp-Standard`
+CREATE TABLE `Exp-Imp-Standard v1`
  (
 	`ID_Exp_spe`			INTEGER  PRIMARY KEY ASC, 
 	`Exp / Imp`			TEXT, 
@@ -59,16 +60,16 @@ CREATE TABLE `Exp-Imp-Standard`
 );
 
 -- renamed entity_names_cleaning
-DROP TABLE IF EXISTS `Entity_Names`;
-CREATE TABLE IF NOT EXISTS `Entity_Names`
+DROP TABLE IF EXISTS `Entity_Names v1`;
+CREATE TABLE IF NOT EXISTS `Entity_Names v1`
  (
 	`original_name`			TEXT PRIMARY KEY ASC, 
 	`name`			TEXT,
 	`RICname`		TEXT
 );
 
-DROP TABLE IF EXISTS `RICentities`;
-CREATE TABLE IF NOT EXISTS `RICentities`
+DROP TABLE IF EXISTS `RICentities v1`;
+CREATE TABLE IF NOT EXISTS `RICentities v1`
  (
 	`id`			INTEGER PRIMARY KEY AUTOINCREMENT,
 	`RICname`			TEXT UNIQUE, 
@@ -78,8 +79,8 @@ CREATE TABLE IF NOT EXISTS `RICentities`
 	`COW_code` 		INTEGER
 );
 
-DROP TABLE IF EXISTS `RICentities_groups`;
-CREATE TABLE IF NOT EXISTS `RICentities_groups`
+DROP TABLE IF EXISTS `RICentities_groups v1`;
+CREATE TABLE IF NOT EXISTS `RICentities_groups v1`
  (
 	`ID`			INTEGER, 
 	`RICname_group`			TEXT,
