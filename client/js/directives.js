@@ -14,11 +14,22 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
-  .directive('stackedTimeline',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
+  .directive('stackedTimeline',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout', '$modal',function (cfSource, cfTarget, fileService, apiService, $timeout, $modal){
     return {
       restrict: 'A',
       replace: false,
       link: function(scope, element, attrs) {
+
+        var modalInstance;
+
+          scope.open = function (size) {
+
+               modalInstance = $modal.open({
+                templateUrl: 'partials/modal.html',
+                controller: 'ModalInstance',
+                size: size
+              });
+          };
 
         var timelineData;
 
@@ -66,9 +77,11 @@ angular.module('ricardo.directives', [])
                 var flows = data.flows,
                     mirror_flows = data.mirror_flows || [];
                 
+                
                 if(!flows.length){
-                  alert("no data for these Countries")
-                  console.log("no data")
+                  scope.open()
+                  scope.entities.sourceEntity.selected = scope.oldValues[0]
+                  scope.entities.targetEntity.selected = scope.oldValues[1]
                   return
                 }
 
@@ -132,6 +145,7 @@ angular.module('ricardo.directives', [])
 
         scope.$watchCollection('[entities.sourceEntity.selected, entities.targetEntity.selected]', function(newValue, oldValue){
           if(newValue != oldValue && newValue[0] && newValue[1]){
+              scope.oldValues = oldValue
               init(newValue[0].RICid, newValue[1].RICid)
           }
         }, true)
@@ -239,11 +253,22 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
-  .directive('stackedTimelineCountry',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout',function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout){
+  .directive('stackedTimelineCountry',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout','$modal',function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout,$modal){
     return {
       restrict: 'A',
       replace: false,
       link: function(scope, element, attrs) {
+
+        var modalInstance;
+
+          scope.open = function (size) {
+
+               modalInstance = $modal.open({
+                templateUrl: 'partials/modal.html',
+                controller: 'ModalInstance',
+                size: size
+              });
+          };
 
         var timelineData;
 
@@ -286,8 +311,7 @@ angular.module('ricardo.directives', [])
                 var flows = data.flows;
 
                 if(!flows.length){
-                  alert("no data for these Countries")
-                  console.log("no data")
+                  scope.open()
                   return
                 }
 
@@ -407,8 +431,8 @@ angular.module('ricardo.directives', [])
                 var flows = data.flows;
 
                 if(!flows.length){
-                  alert("no data")
-                  console.log("no data")
+                  scope.open()
+                  scope.reporting.pop()
                   return
                 }
 
@@ -442,8 +466,8 @@ angular.module('ricardo.directives', [])
                 var flows = data.flows;
 
                 if(!flows.length){
-                  alert("no data")
-                  console.log("no data")
+                  scope.open()
+                  scope.reporting.pop()
                   return
                 }
 
@@ -540,11 +564,22 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
-  .directive('stackedTimelineContinent',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout',function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout){
+  .directive('stackedTimelineContinent',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout','$modal',function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout,$modal){
     return {
       restrict: 'A',
       replace: false,
       link: function(scope, element, attrs) {
+
+        var modalInstance;
+
+          scope.open = function (size) {
+
+               modalInstance = $modal.open({
+                templateUrl: 'partials/modal.html',
+                controller: 'ModalInstance',
+                size: size
+              });
+          };
 
         var timelineData;
 
@@ -587,8 +622,7 @@ angular.module('ricardo.directives', [])
                 var flows = data.flows;
 
                 if(!flows.length){
-                  alert("no data for these Countries")
-                  console.log("no data")
+                  scope.open()
                   return
                 }
 
@@ -709,11 +743,11 @@ angular.module('ricardo.directives', [])
                 var flows = data.flows;
 
                 
-                console.log(cfSourceLine.size(), flows)
+                //console.log(cfSourceLine.size(), flows)
 
                 if(!flows.length){
-                  alert("no data")
-                  console.log("no data")
+                  scope.open()
+                  scope.reporting.pop()
                   return
                 }
 
@@ -741,8 +775,8 @@ angular.module('ricardo.directives', [])
                 var flows = data.flows;
 
                 if(!flows.length){
-                  alert("no data")
-                  console.log("no data")
+                  scope.open()
+                  scope.reporting.pop()
                   return
                 }
 
@@ -810,11 +844,22 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
-  .directive('stackedTimelineWorld',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
+  .directive('stackedTimelineWorld',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout','$modal',function (cfSource, cfTarget, fileService, apiService, $timeout, $modal){
     return {
       restrict: 'A',
       replace: false,
       link: function(scope, element, attrs) {
+
+        var modalInstance;
+
+          scope.open = function (size) {
+
+               modalInstance = $modal.open({
+                templateUrl: 'partials/modal.html',
+                controller: 'ModalInstance',
+                size: size
+              });
+          };
 
         var timelineData;
 
@@ -874,8 +919,7 @@ angular.module('ricardo.directives', [])
                 var flows = data.flows;
 
                 if(!flows.length){
-                  alert("no data")
-                  console.log("no data")
+                  scope.open()
                   return
                 }
 
@@ -929,8 +973,7 @@ angular.module('ricardo.directives', [])
                 var flows = data.flows;
 
                 if(!flows.length){
-                  alert("no data")
-                  console.log("no data")
+                  scope.open()
                   return
                 }
 

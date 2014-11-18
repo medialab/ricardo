@@ -412,4 +412,11 @@ angular.module('ricardo.controllers', [])
     }, true);
 
 
-  })
+  }).
+controller('ModalInstance', function ($scope, $modalInstance) {
+
+  $scope.ok = function () {
+    $modalInstance.close();
+  };
+
+});
