@@ -19,7 +19,10 @@
 
         data.sort(function(a,b){return d3.descending(a.value[order],b.value[order])})
 
+
+        
         data = data.filter(function(d){return d.value.tot > 0})
+
 
         height = data.length*(barHeigth+barGap)
         
@@ -38,7 +41,7 @@
         else
         {
           chart = selection.select('svg')
-          .transition().duration(duration)
+          //.transition().duration(duration)
           .attr('width', width)
           .attr('height', height)
             .select("g")
@@ -75,6 +78,7 @@
           barsImpGroup = chart.select(".barImpGroup")
         }
         
+        
         var barsImp = barsImpGroup
                       .selectAll(".imp")
                       .data(data, function(d){return d.key})
@@ -90,7 +94,7 @@
           })
           .each(function(d){
              $(this).tooltip('destroy')
-             $(this).tooltip({title:"£ " + format(d.value.imp), placement:"right", container: 'body'})
+             $(this).tooltip({title:format(d.value.imp), placement:"right", container: 'body'})
           })
 
         barsImp
@@ -108,7 +112,7 @@
           .attr("height", barHeigth)
           .attr("fill", barColors[0])
           .each(function(d){
-             $(this).tooltip({title:"£ " + format(d.value.imp), placement:"right", container: 'body'})
+             $(this).tooltip({title: format(d.value.imp), placement:"right", container: 'body'})
           })
 
         barsImp.exit().remove()
@@ -142,7 +146,7 @@
           })
           .each(function(d){
              $(this).tooltip('destroy')
-             $(this).tooltip({title:"£ " + format(d.value.exp), placement:"left", container: 'body'})
+             $(this).tooltip({title: format(d.value.exp), placement:"left", container: 'body'})
           })
 
         barsExp
@@ -167,11 +171,12 @@
           .attr("height", barHeigth)
           .attr("fill", barColors[1])
           .each(function(d){
-             $(this).tooltip({title:"£ " + format(d.value.exp), placement:"left", container: 'body'})
+             $(this).tooltip({title: format(d.value.exp), placement:"left", container: 'body'})
           })
 
         barsExp.exit().remove()
 
+        
         var barsLegendGroup = chart.select(".barLegendGroup")
 
         if (barsLegendGroup.empty()){
@@ -210,7 +215,7 @@
         barsLegendValue.transition().duration(duration)
           //.attr("y", function(d,i){return 0*(barHeigth+barGap)})
           .attr("fill", function(d){ if(d == 0){return "#999"}else{return "#777"}})
-          .text(function(d,i){if(i > 0){return "£"+format(d)}else{return "£"+format(d)}})
+          .text(function(d,i){if(i > 0){return format(d)}else{return format(d)}})
           //.attr("x", function(d,i){if(i > 0){return x(d.value.imp)+chartWidth/2}else{return chartWidth/2 - x(d.value.exp)}})
 
         barsLegendValue
@@ -224,13 +229,13 @@
           .attr("font-size", "0.9em")
           .attr("dy", "-0.4em")
           .attr("fill", function(d){ if(d == 0){return "#999"}else{return "#777"}})
-          .text(function(d,i){if(i > 0){return "£"+format(d)}else{return "£"+format(d)}})
+          .text(function(d,i){if(i > 0){return format(d)}else{return format(d)}})
 
         barsLegendValue.exit().remove()
-
+        
 
         /* custom axis */
-
+        
         var lineFunction = d3.svg.line()
                           .x(function(d) {return d.x; })
                           .y(function(d) {return d.y; })
@@ -295,6 +300,8 @@
           .attr("fill", "none")
           .attr("stroke", "#777")
           .attr("stroke-dasharray", "2,2")
+
+        
 
       }); //end selection
     } // end doubleBarChart

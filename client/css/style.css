@@ -399,6 +399,9 @@ font-size: 1.1em;
   text-align: center;
 }
 
+.currency {
+  margin-left: 20px;
+}
 /* Page transition */
 .fade-view {
     position: absolute;

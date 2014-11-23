@@ -99,6 +99,7 @@ angular.module('ricardo.directives', [])
                 cfSource.add(flows);
                 cfTarget.add(mirror_flows);
 
+
                 scope.startDate = cfSource.year().bottom(1)[0].year
                 scope.endDate = cfSource.year().top(1)[0].year
 
@@ -218,13 +219,13 @@ angular.module('ricardo.directives', [])
             .text("imported from " + scope.partners.join() + " ←")
 
           d3.select(reportingCont).append("p")
-            .text("£ " + format(Math.round(data[0].values[0].y)))
+            .text(format(Math.round(data[0].values[0].y)))
 
           d3.select(reportingCont).append("h4")
             .text("exported to " + scope.partners.join() + " →")
 
           d3.select(reportingCont).append("p")
-            .text("£ " + format(Math.round(data[1].values[0].y)))
+            .text(format(Math.round(data[1].values[0].y)))
 
           d3.select(partnerCont).append("h3")
             .attr("class", "subtitle")
@@ -234,13 +235,13 @@ angular.module('ricardo.directives', [])
             .text("← exported to " + scope.reportings.join())
 
           d3.select(partnerCont).append("p")
-            .text("£ " + format(Math.round(data[0].values[1].y)))
+            .text(format(Math.round(data[0].values[1].y)))
 
           d3.select(partnerCont).append("h4")
             .text("→ imported from " + scope.reportings.join())
 
           d3.select(partnerCont).append("p")
-            .text("£ " + format(Math.round(data[1].values[1].y)))
+            .text(format(Math.round(data[1].values[1].y)))
 
         }
 
@@ -301,10 +302,10 @@ angular.module('ricardo.directives', [])
 
                 
         
-        var init = function(sourceID){
+        var init = function(sourceID, currency){
           
           apiService
-            .getFlows({reporting_ids: sourceID})
+            .getFlows({reporting_ids: sourceID, original_currency: currency})
             .then(
               function(data){
                 
@@ -319,6 +320,8 @@ angular.module('ricardo.directives', [])
                   cfSource.year().filterAll()
                   cfSource.clear();
                 }
+
+                scope.actualCurrency = flows[0].currency;
 
                 scope.RICentities = {}
 
@@ -371,8 +374,9 @@ angular.module('ricardo.directives', [])
                 
                 scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
                 
-
                 scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+
+                
                 
                 var flowsPerYear = cfSource.years().top(Infinity)
 
@@ -412,19 +416,19 @@ angular.module('ricardo.directives', [])
               var values = d3.nest().key(function(d){return d.type}).entries(entities)
               values.forEach(function(d){
                 if(d.key != "continent"){
-                  initEntityLinechart(d.values, partnerID, scope.startDate, scope.endDate)
+                  initEntityLinechart(d.values, partnerID, scope.startDate, scope.endDate, scope.currency)
                 }
                 else{
-                  initContinentLinechart(d.values, partnerID, scope.startDate, scope.endDate)
+                  initContinentLinechart(d.values, partnerID, scope.startDate, scope.endDate, scope.currency)
                 }
               })
 
         }
 
-        var initEntityLinechart = function(sourceID, partnerID, startDate, endDate){
+        var initEntityLinechart = function(sourceID, partnerID, startDate, endDate, currency){
           var ids = sourceID.map(function(d){return d.RICid})
           apiService
-            .getFlows({reporting_ids:ids.join(","), partner_ids: partnerID, from: startDate, to: endDate})
+            .getFlows({reporting_ids:ids.join(","), partner_ids: partnerID, from: startDate, to: endDate, original_currency: currency})
             .then(
               function(data){
                 
@@ -456,10 +460,10 @@ angular.module('ricardo.directives', [])
           }
 
 
-        var initContinentLinechart = function(sourceID, partnerID, startDate, endDate){
+        var initContinentLinechart = function(sourceID, partnerID, startDate, endDate, currency){
           var ids = sourceID.map(function(d){return d.RICid})
           apiService
-            .getContinentFlows({continents:ids.join(","), partner_ids: partnerID, from: startDate, to: endDate})
+            .getContinentFlows({continents:ids.join(","), partner_ids: partnerID, from: startDate, to: endDate, original_currency: currency})
             .then(
               function(data){
                 
@@ -504,13 +508,13 @@ angular.module('ricardo.directives', [])
                                                 "continent": "Europe",
                                                 "type": "country"}
 
-        init(885)
+        init(885, 0)
 
         /* end initialize */
 
         scope.$watch("entities.sourceEntity.selected", function(newValue, oldValue){
           if(newValue != oldValue && newValue){
-              init(newValue.RICid)
+              init(newValue.RICid, scope.currency)
           }
         })
 
@@ -519,6 +523,12 @@ angular.module('ricardo.directives', [])
               //var partnerID = scope.entities.sourceEntity.selected.RICid;
               //initLinechart(newValue, partnerID, scope.startDate, scope.endDate)
               initLinechart(newValue)
+          }
+        }, true)
+
+        scope.$watch("currency", function(newValue, oldValue){
+          if(newValue != oldValue){
+            init(scope.entities.sourceEntity.selected.RICid, newValue)
           }
         }, true)
 
@@ -550,7 +560,9 @@ angular.module('ricardo.directives', [])
           var chart = d3.select(element[0])
 
         scope.$watch("barchartData", function(newValue, oldValue){
+
           if(newValue != oldValue){
+            
             chart.datum(newValue).call(doubleBar.RICentities(scope.RICentities))
           }
         })

@@ -86,7 +86,7 @@
                 }else{
                   symbol = ""
                 }
-                return prefix.scale(d) + " " + symbol + " £"
+                return prefix.scale(d) + " " + symbol
               }
               
               })
