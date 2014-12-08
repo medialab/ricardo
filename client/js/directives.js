@@ -130,6 +130,8 @@ angular.module('ricardo.directives', [])
                   timelineData[0].values.push({total: d.imp, year: new Date(d.year, 0, 1)})
                   timelineData[1].values.push({total: d.exp, year: new Date(d.year, 0, 1)})
                 })
+
+                scope.missingData = timelineData;
                 
                 update()
               },
@@ -188,6 +190,28 @@ angular.module('ricardo.directives', [])
         scope.$watch("streamData", function(newValue, oldValue){
           if(newValue != oldValue){
             chart.datum(newValue).call(stream)
+          }
+        })
+
+      }
+    }
+  }])
+  .directive('missing',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
+    return {
+      restrict: 'A',
+      replace: false,
+      link: function(scope, element, attrs) {
+
+          var missing = ricardo.missing()
+            .width(element.width())
+            .height(70)
+            .stackColors(["#7CA49E", "#D35530"])
+
+          var chart = d3.select(element[0])
+
+        scope.$watch("missingData", function(newValue, oldValue){
+          if(newValue != oldValue){
+            chart.datum(newValue).call(missing)
           }
         })
 

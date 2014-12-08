@@ -25,6 +25,7 @@ angular.module('ricardo.controllers', [])
 
     $scope.actualCurrency = "sterling pound"
     $scope.tableData = [];
+    $scope.missingData = [];
     $scope.totalServerItems = 0;
     $scope.pagingOptions = {
         pageSizes: [50],

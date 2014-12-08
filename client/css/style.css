@@ -220,7 +220,7 @@ body > .container {
 /* timeline */
 
 .timeline-cont{
-  height: 250px;
+  /*height: 250px;*/
   overflow: hidden;
 }
 
