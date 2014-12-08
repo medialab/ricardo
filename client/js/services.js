@@ -2,8 +2,6 @@
 
 /* Services */
 
-var baseUrl = 'http://jiminy.medialab.sciences-po.fr/ricardo_api';
-
 angular.module('ricardo.services', [])
   .config(function ( $httpProvider) {        
       delete $httpProvider.defaults.headers.common['X-Requested-With'];
