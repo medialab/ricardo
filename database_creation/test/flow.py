@@ -11,10 +11,9 @@ def test(cursor):
 	for flow in ("flow_joined",) :
 		cursor.execute("""SELECT group_concat(`ID`,';'),group_concat(`Flow`,';'),count(*),group_concat(`spegen`,';'),group_concat(`Reporting Entity_Original Name`,';'),reporting,group_concat(`Partner Entity_Original Name`,';'),partner,Yr,`expimp`,group_concat(`Source`,'|') 				
 							from %s 
-							WHERE Flow is not null
 							GROUP BY Yr,expimp,reporting,partner HAVING count(*)>1
 				
-							"""%flow)
+							"""%flow)#WHERE Flow is not null
 		lines=list(cursor)
 		print len(lines)
 		nb_spe_gen=0
