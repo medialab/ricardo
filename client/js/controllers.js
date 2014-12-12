@@ -23,7 +23,9 @@ angular.module('ricardo.controllers', [])
     $scope.reportingEntities = reportingEntities;
     $scope.entities = {sourceEntity : {}, targetEntity : {}}
 
+    $scope.actualCurrency = "sterling pound"
     $scope.tableData = [];
+    $scope.missingData = [];
     $scope.totalServerItems = 0;
     $scope.pagingOptions = {
         pageSizes: [50],
@@ -76,6 +78,8 @@ angular.module('ricardo.controllers', [])
 
     $scope.filter = "all"
     $scope.order = "tot"
+    $scope.currency = 0
+    $scope.actualCurrency = "sterling pound"
     $scope.RICentities = {}
     $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
           if(a.RICname < b.RICname) return -1;
@@ -197,6 +201,7 @@ angular.module('ricardo.controllers', [])
 
     $scope.filter = "all"
     $scope.order = "tot"
+    $scope.actualCurrency = "sterling pound"
     $scope.RICentities = {}
     $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
           if(a.RICname < b.RICname) return -1;
@@ -322,6 +327,7 @@ angular.module('ricardo.controllers', [])
     $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
 
     $scope.yValue = "total"
+    $scope.actualCurrency = "sterling pound"
 
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
@@ -412,4 +418,11 @@ angular.module('ricardo.controllers', [])
     }, true);
 
 
-  })
+  }).
+controller('ModalInstance', function ($scope, $modalInstance) {
+
+  $scope.ok = function () {
+    $modalInstance.close();
+  };
+
+});

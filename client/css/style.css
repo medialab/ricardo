@@ -220,7 +220,7 @@ body > .container {
 /* timeline */
 
 .timeline-cont{
-  height: 250px;
+  /*height: 250px;*/
   overflow: hidden;
 }
 
@@ -318,7 +318,7 @@ font-size: 1.1em;
   margin: 15px 0;
 }
 
-.filter-group .btn {
+.filter-group .btn, .modal-content .btn {
   border-radius: 0px;
 }
 
@@ -387,6 +387,20 @@ font-size: 1.1em;
   border-top-color:  #777;
   border-left-color: #777;
   border-radius: 30px;
+}
+
+/* modal */
+.modal-content{
+  border-radius: 0px;
+  text-align: center;
+}
+
+.modal-footer{
+  text-align: center;
+}
+
+.currency {
+  margin-left: 20px;
 }
 /* Page transition */
 .fade-view {

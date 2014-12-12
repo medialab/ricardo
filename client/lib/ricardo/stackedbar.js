@@ -16,7 +16,7 @@
       selection.each(function(data){
 
         var chart;
-        var margin = {top: 10, right: 0, bottom: 50, left: 0},
+        var margin = {top: 10, right: 0, bottom: 30, left: 0},
             chartWidth = width - margin.left - margin.right,
             chartHeight = height - margin.top - margin.bottom;
 
@@ -86,7 +86,7 @@
                 }else{
                   symbol = ""
                 }
-                return prefix.scale(d) + " " + symbol + " £"
+                return prefix.scale(d) + " " + symbol
               }
               
               })
@@ -113,6 +113,7 @@
         
         /* legend */
         
+        /*
         var legendScale = d3.scale.ordinal().rangeBands([0, chartWidth/3], 0, 0).domain(colorDomain)
 
         var legends = chart.selectAll(".timeline-legend").data(colorDomain)
@@ -137,6 +138,8 @@
           .attr("font-weight","bold")
           .attr("font-size", "0.8em")
           .attr("x", 20)
+
+        */
 
         /* axis */
 

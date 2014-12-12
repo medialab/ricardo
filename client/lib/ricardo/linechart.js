@@ -81,7 +81,7 @@
                 }else{
                   symbol = ""
                 }
-                return prefix.scale(d) + " " + symbol + " £"
+                return prefix.scale(d) + " " + symbol
               }
               
               })
@@ -204,7 +204,7 @@
 
           function mouseover(d) {
               focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
-              focus.select("text").text(format(Math.round(d[yValue])) + "£");
+              focus.select("text").text(format(Math.round(d[yValue])));
             }
 
           function mouseout(d) {

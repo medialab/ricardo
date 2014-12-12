@@ -19,10 +19,15 @@
 
         data.sort(function(a,b){return d3.descending(a.value[order],b.value[order])})
 
+
+        
+        data = data.filter(function(d){return d.value.tot > 0})
+
+
         height = data.length*(barHeigth+barGap)
         
         var chart;
-        var margin = {top: barGap, right: 0, bottom: 50, left: 0},
+        var margin = {top: barGap, right: 20, bottom: 0, left: 10},
             chartWidth = width - margin.left - margin.right,
             chartHeight = height - margin.top - margin.bottom;
 
@@ -36,6 +41,7 @@
         else
         {
           chart = selection.select('svg')
+          //.transition().duration(duration)
           .attr('width', width)
           .attr('height', height)
             .select("g")
@@ -58,6 +64,7 @@
         var xMax = xImpMax > xExpMax ? xImpMax : xExpMax;
         var xMin = xImpMin < xExpMin ? xImpMin : xExpMin;
 
+
         //x.domain([xMin, xMax])
         x.domain([0, xMax])
 
@@ -70,6 +77,7 @@
           chart.append("g").attr("class", "barImpGroup").attr("transform", "translate(" + chartWidth/2 + ",0)")
           barsImpGroup = chart.select(".barImpGroup")
         }
+        
         
         var barsImp = barsImpGroup
                       .selectAll(".imp")
@@ -86,7 +94,7 @@
           })
           .each(function(d){
              $(this).tooltip('destroy')
-             $(this).tooltip({title:"£ " + format(d.value.imp), placement:"right", container: 'body'})
+             $(this).tooltip({title:format(d.value.imp), placement:"right", container: 'body'})
           })
 
         barsImp
@@ -104,7 +112,7 @@
           .attr("height", barHeigth)
           .attr("fill", barColors[0])
           .each(function(d){
-             $(this).tooltip({title:"£ " + format(d.value.imp), placement:"right", container: 'body'})
+             $(this).tooltip({title: format(d.value.imp), placement:"right", container: 'body'})
           })
 
         barsImp.exit().remove()
@@ -138,7 +146,7 @@
           })
           .each(function(d){
              $(this).tooltip('destroy')
-             $(this).tooltip({title:"£ " + format(d.value.exp), placement:"left", container: 'body'})
+             $(this).tooltip({title: format(d.value.exp), placement:"left", container: 'body'})
           })
 
         barsExp
@@ -163,11 +171,12 @@
           .attr("height", barHeigth)
           .attr("fill", barColors[1])
           .each(function(d){
-             $(this).tooltip({title:"£ " + format(d.value.exp), placement:"left", container: 'body'})
+             $(this).tooltip({title: format(d.value.exp), placement:"left", container: 'body'})
           })
 
         barsExp.exit().remove()
 
+        
         var barsLegendGroup = chart.select(".barLegendGroup")
 
         if (barsLegendGroup.empty()){
@@ -200,34 +209,36 @@
 
         var barsLegendValue = barsLegendGroup
                           .selectAll(".legendValue")
-                          .data([data[0],data[0]])
+                          //.data([data[0],data[0]])
+                          .data([xMax,xMax])
 
         barsLegendValue.transition().duration(duration)
           //.attr("y", function(d,i){return 0*(barHeigth+barGap)})
-          .attr("fill", function(d){ if(d.value.tot == 0){return "#999"}else{return "#333"}})
-          .text(function(d,i){if(i > 0){return "£"+format(d.value.imp)}else{return "£"+format(d.value.exp)}})
-          .attr("x", function(d,i){if(i > 0){return x(d.value.imp)+chartWidth/2}else{return chartWidth/2 - x(d.value.exp)}})
+          .attr("fill", function(d){ if(d == 0){return "#999"}else{return "#777"}})
+          .text(function(d,i){if(i > 0){return format(d)}else{return format(d)}})
+          //.attr("x", function(d,i){if(i > 0){return x(d.value.imp)+chartWidth/2}else{return chartWidth/2 - x(d.value.exp)}})
 
         barsLegendValue
           .enter()
           .append("text")
-          .attr("x", function(d,i){if(i > 0){return x(d.value.imp)+chartWidth/2}else{return chartWidth/2 - x(d.value.exp)}})
+          //.attr("x", function(d,i){if(i > 0){return x(d.value.imp)+chartWidth/2}else{return chartWidth/2 - x(d.value.exp)}})
+          .attr("x", function(d,i){if(i > 0){return chartWidth}else{return 0}})
           .attr("class", "legendValue")
           .attr("y", function(d,i){return 0*(barHeigth+barGap)})
           .attr("text-anchor", function(d,i){if(i > 0){return "end"}else{return "start"}})
           .attr("font-size", "0.9em")
           .attr("dy", "-0.4em")
-          .attr("fill", function(d){ if(d.value.tot == 0){return "#999"}else{return "#333"}})
-          .text(function(d,i){if(i > 0){return "£"+format(d.value.imp)}else{return "£"+format(d.value.exp)}})
+          .attr("fill", function(d){ if(d == 0){return "#999"}else{return "#777"}})
+          .text(function(d,i){if(i > 0){return format(d)}else{return format(d)}})
 
         barsLegendValue.exit().remove()
-
+        
 
         /* custom axis */
-
+        
         var lineFunction = d3.svg.line()
-                          .x(function(d) { return x(d.x); })
-                          .y(function(d) { return d.y; })
+                          .x(function(d) {return d.x; })
+                          .y(function(d) {return d.y; })
 
         var axisImpGroup = chart.select(".axisImpGroup")
 
@@ -236,29 +247,61 @@
           axisImpGroup = chart.select(".axisImpGroup")
         }
 
+        var axisExpGroup = chart.select(".axisExpGroup")
+
+        if (axisExpGroup.empty()){
+          chart.append("g").attr("class", "axisExpGroup")
+          axisExpGroup = chart.select(".axisExpGroup")
+        }
+
+
         var axisImpData = [
-            {x: xImpMax/2, y: 0},
-            {x: xImpMax/2, y: chartHeight},
-            {x: xImpMax, y: 0},
-            {x: xImpMax, y:chartHeight}
+            [{x: x(xMax/2), y: 0},
+            {x: x(xMax/2), y: chartHeight}],
+            [{x: x(xMax), y: 0},
+            {x: x(xMax), y:chartHeight}]
           ]
 
         var axisExpData = [
-            {x: xExpMax/2, y: 0},
-            {x: xExpMax/2, y:chartHeight},
-            {x: xExpMax, y:0},
-            {x: xExpMax, y:chartHeight}
+            [{x: x(xMax/2), y: 0},
+            {x: x(xMax/2), y:chartHeight}],
+            [{x: chartWidth/2 - x(xMax), y:0},
+            {x: chartWidth/2 - x(xMax), y:chartHeight}]
           ]
 
         var axisImp = axisImpGroup
                       .selectAll(".axis")
                       .data(axisImpData)
+        
+        axisImp
+           .attr("d", function(d){return lineFunction(d)})
+
         axisImp
           .enter()
           .append("path")
           .attr("class", "axis")
-          .attr("d", function(d){console.log(d, lineFunction(d));return lineFunction(d)})
+          .attr("d", function(d){return lineFunction(d)})
           .attr("fill", "none")
+          .attr("stroke", "#777")
+          .attr("stroke-dasharray", "2,2")
+
+        var axisExp = axisExpGroup
+                      .selectAll(".axis")
+                      .data(axisExpData)
+        
+        axisExp
+          .attr("d", function(d){return lineFunction(d)})
+
+        axisExp
+          .enter()
+          .append("path")
+          .attr("class", "axis")
+          .attr("d", function(d){return lineFunction(d)})
+          .attr("fill", "none")
+          .attr("stroke", "#777")
+          .attr("stroke-dasharray", "2,2")
+
+        
 
       }); //end selection
     } // end doubleBarChart

@@ -14,7 +14,7 @@
       selection.each(function(data){
 
         var chart;
-        var margin = {top: 0, right: 0, bottom: 0, left: 0},
+        var margin = {top: 15, right: 0, bottom: 0, left: 0},
             chartWidth = width - margin.left - margin.right,
             chartHeight = height - margin.top - margin.bottom;
 
@@ -114,36 +114,25 @@
 
         bars.transition().duration(duration)
           .attr("x", function(d) { return x(d.x); })
-          .attr("y", function(d) { return y(d.y0)+10; })
-          .attr("height", function(d) { 
-            if(y(d.y)-10 < 0){
-              return 0
-            }else{
-              return y(d.y)-10;
-            }
-          })
+          .attr("y", function(d) { return y(d.y0); })
+          .attr("height", function(d) { return y(d.y)})
 
         bars.enter().append("rect")
           .attr("x", function(d) { return x(d.x); })
-          .attr("y", function(d) { return y(d.y0)+10; })
+          .attr("y", function(d) { return y(d.y0); })
           .attr("width", function(d) { return x.rangeBand() })
-          .attr("height", function(d) { 
-            if(y(d.y)-10 < 0){
-              return 0
-            }else{
-              return y(d.y)-10;
-            }
-          })
+          .attr("height", function(d) {return y(d.y)})
           .attr("fill", function(d) { return color(d.key) })
-          .on("click", function(d){console.log(d)})
+          .attr("stroke", "white")
+          .attr("stroke-width", "2px")
 
 
         var flows = stacked.selectAll("path").data(function(d){return [d]})
 
         flows.transition().duration(duration)
           .attr("d", function(d){
-            var p1 = [x(d.values[0].x)+ x.rangeBand(), y(d.values[0].y0)+10],
-                p2 = [x(d.values[1].x), y(d.values[1].y0)+10],
+            var p1 = [x(d.values[0].x)+ x.rangeBand(), y(d.values[0].y0)],
+                p2 = [x(d.values[1].x), y(d.values[1].y0)],
                 p3 = [x(d.values[1].x), y(d.values[1].y0+d.values[1].y)],
                 p4 = [x(d.values[0].x) + x.rangeBand(), y(d.values[0].y0+d.values[0].y)];
 
@@ -153,14 +142,16 @@
         flows.enter()
           .append("path")
           .attr("d", function(d){
-            var p1 = [x(d.values[0].x)+ x.rangeBand(), y(d.values[0].y0)+10],
-                p2 = [x(d.values[1].x), y(d.values[1].y0)+10],
+            var p1 = [x(d.values[0].x)+ x.rangeBand(), y(d.values[0].y0)],
+                p2 = [x(d.values[1].x), y(d.values[1].y0)],
                 p3 = [x(d.values[1].x), y(d.values[1].y0+d.values[1].y)],
                 p4 = [x(d.values[0].x) + x.rangeBand(), y(d.values[0].y0+d.values[0].y)];
 
             return drawLink(p1,p2,p3,p4)
           })
           .attr("fill", "#eaeaea")
+          .attr("stroke", "white")
+          .attr("stroke-width", "2px")
         
       }); //end selection
     } // end stream

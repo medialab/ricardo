@@ -14,11 +14,22 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
-  .directive('stackedTimeline',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
+  .directive('stackedTimeline',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout', '$modal',function (cfSource, cfTarget, fileService, apiService, $timeout, $modal){
     return {
       restrict: 'A',
       replace: false,
       link: function(scope, element, attrs) {
+
+        var modalInstance;
+
+          scope.open = function (size) {
+
+               modalInstance = $modal.open({
+                templateUrl: 'partials/modal.html',
+                controller: 'ModalInstance',
+                size: size
+              });
+          };
 
         var timelineData;
 
@@ -66,9 +77,11 @@ angular.module('ricardo.directives', [])
                 var flows = data.flows,
                     mirror_flows = data.mirror_flows || [];
                 
+                
                 if(!flows.length){
-                  alert("no data for these Countries")
-                  console.log("no data")
+                  scope.open()
+                  scope.entities.sourceEntity.selected = scope.oldValues[0]
+                  scope.entities.targetEntity.selected = scope.oldValues[1]
                   return
                 }
 
@@ -85,6 +98,7 @@ angular.module('ricardo.directives', [])
 
                 cfSource.add(flows);
                 cfTarget.add(mirror_flows);
+
 
                 scope.startDate = cfSource.year().bottom(1)[0].year
                 scope.endDate = cfSource.year().top(1)[0].year
@@ -116,6 +130,8 @@ angular.module('ricardo.directives', [])
                   timelineData[0].values.push({total: d.imp, year: new Date(d.year, 0, 1)})
                   timelineData[1].values.push({total: d.exp, year: new Date(d.year, 0, 1)})
                 })
+
+                scope.missingData = timelineData;
                 
                 update()
               },
@@ -132,6 +148,7 @@ angular.module('ricardo.directives', [])
 
         scope.$watchCollection('[entities.sourceEntity.selected, entities.targetEntity.selected]', function(newValue, oldValue){
           if(newValue != oldValue && newValue[0] && newValue[1]){
+              scope.oldValues = oldValue
               init(newValue[0].RICid, newValue[1].RICid)
           }
         }, true)
@@ -179,6 +196,28 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
+  .directive('missing',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
+    return {
+      restrict: 'A',
+      replace: false,
+      link: function(scope, element, attrs) {
+
+          var missing = ricardo.missing()
+            .width(element.width())
+            .height(70)
+            .stackColors(["#7CA49E", "#D35530"])
+
+          var chart = d3.select(element[0])
+
+        scope.$watch("missingData", function(newValue, oldValue){
+          if(newValue != oldValue){
+            chart.datum(newValue).call(missing)
+          }
+        })
+
+      }
+    }
+  }])
   .directive('streamLegend',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
     return {
       restrict: 'A',
@@ -204,13 +243,13 @@ angular.module('ricardo.directives', [])
             .text("imported from " + scope.partners.join() + " ←")
 
           d3.select(reportingCont).append("p")
-            .text("£ " + format(Math.round(data[0].values[0].y)))
+            .text(format(Math.round(data[0].values[0].y)))
 
           d3.select(reportingCont).append("h4")
             .text("exported to " + scope.partners.join() + " →")
 
           d3.select(reportingCont).append("p")
-            .text("£ " + format(Math.round(data[1].values[0].y)))
+            .text(format(Math.round(data[1].values[0].y)))
 
           d3.select(partnerCont).append("h3")
             .attr("class", "subtitle")
@@ -220,13 +259,13 @@ angular.module('ricardo.directives', [])
             .text("← exported to " + scope.reportings.join())
 
           d3.select(partnerCont).append("p")
-            .text("£ " + format(Math.round(data[0].values[1].y)))
+            .text(format(Math.round(data[0].values[1].y)))
 
           d3.select(partnerCont).append("h4")
             .text("→ imported from " + scope.reportings.join())
 
           d3.select(partnerCont).append("p")
-            .text("£ " + format(Math.round(data[1].values[1].y)))
+            .text(format(Math.round(data[1].values[1].y)))
 
         }
 
@@ -239,11 +278,22 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
-  .directive('stackedTimelineCountry',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout',function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout){
+  .directive('stackedTimelineCountry',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout','$modal',function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout,$modal){
     return {
       restrict: 'A',
       replace: false,
       link: function(scope, element, attrs) {
+
+        var modalInstance;
+
+          scope.open = function (size) {
+
+               modalInstance = $modal.open({
+                templateUrl: 'partials/modal.html',
+                controller: 'ModalInstance',
+                size: size
+              });
+          };
 
         var timelineData;
 
@@ -276,18 +326,17 @@ angular.module('ricardo.directives', [])
 
                 
         
-        var init = function(sourceID){
+        var init = function(sourceID, currency){
           
           apiService
-            .getFlows({reporting_ids: sourceID})
+            .getFlows({reporting_ids: sourceID, original_currency: currency})
             .then(
               function(data){
                 
                 var flows = data.flows;
 
                 if(!flows.length){
-                  alert("no data for these Countries")
-                  console.log("no data")
+                  scope.open()
                   return
                 }
 
@@ -295,6 +344,8 @@ angular.module('ricardo.directives', [])
                   cfSource.year().filterAll()
                   cfSource.clear();
                 }
+
+                scope.actualCurrency = flows[0].currency;
 
                 scope.RICentities = {}
 
@@ -347,8 +398,9 @@ angular.module('ricardo.directives', [])
                 
                 scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
                 
-
                 scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+
+                
                 
                 var flowsPerYear = cfSource.years().top(Infinity)
 
@@ -388,27 +440,27 @@ angular.module('ricardo.directives', [])
               var values = d3.nest().key(function(d){return d.type}).entries(entities)
               values.forEach(function(d){
                 if(d.key != "continent"){
-                  initEntityLinechart(d.values, partnerID, scope.startDate, scope.endDate)
+                  initEntityLinechart(d.values, partnerID, scope.startDate, scope.endDate, scope.currency)
                 }
                 else{
-                  initContinentLinechart(d.values, partnerID, scope.startDate, scope.endDate)
+                  initContinentLinechart(d.values, partnerID, scope.startDate, scope.endDate, scope.currency)
                 }
               })
 
         }
 
-        var initEntityLinechart = function(sourceID, partnerID, startDate, endDate){
+        var initEntityLinechart = function(sourceID, partnerID, startDate, endDate, currency){
           var ids = sourceID.map(function(d){return d.RICid})
           apiService
-            .getFlows({reporting_ids:ids.join(","), partner_ids: partnerID, from: startDate, to: endDate})
+            .getFlows({reporting_ids:ids.join(","), partner_ids: partnerID, from: startDate, to: endDate, original_currency: currency})
             .then(
               function(data){
                 
                 var flows = data.flows;
 
                 if(!flows.length){
-                  alert("no data")
-                  console.log("no data")
+                  scope.open()
+                  scope.reporting.pop()
                   return
                 }
 
@@ -432,18 +484,18 @@ angular.module('ricardo.directives', [])
           }
 
 
-        var initContinentLinechart = function(sourceID, partnerID, startDate, endDate){
+        var initContinentLinechart = function(sourceID, partnerID, startDate, endDate, currency){
           var ids = sourceID.map(function(d){return d.RICid})
           apiService
-            .getContinentFlows({continents:ids.join(","), partner_ids: partnerID, from: startDate, to: endDate})
+            .getContinentFlows({continents:ids.join(","), partner_ids: partnerID, from: startDate, to: endDate, original_currency: currency})
             .then(
               function(data){
                 
                 var flows = data.flows;
 
                 if(!flows.length){
-                  alert("no data")
-                  console.log("no data")
+                  scope.open()
+                  scope.reporting.pop()
                   return
                 }
 
@@ -480,13 +532,13 @@ angular.module('ricardo.directives', [])
                                                 "continent": "Europe",
                                                 "type": "country"}
 
-        init(885)
+        init(885, 0)
 
         /* end initialize */
 
         scope.$watch("entities.sourceEntity.selected", function(newValue, oldValue){
           if(newValue != oldValue && newValue){
-              init(newValue.RICid)
+              init(newValue.RICid, scope.currency)
           }
         })
 
@@ -495,6 +547,12 @@ angular.module('ricardo.directives', [])
               //var partnerID = scope.entities.sourceEntity.selected.RICid;
               //initLinechart(newValue, partnerID, scope.startDate, scope.endDate)
               initLinechart(newValue)
+          }
+        }, true)
+
+        scope.$watch("currency", function(newValue, oldValue){
+          if(newValue != oldValue){
+            init(scope.entities.sourceEntity.selected.RICid, newValue)
           }
         }, true)
 
@@ -526,7 +584,9 @@ angular.module('ricardo.directives', [])
           var chart = d3.select(element[0])
 
         scope.$watch("barchartData", function(newValue, oldValue){
+
           if(newValue != oldValue){
+            
             chart.datum(newValue).call(doubleBar.RICentities(scope.RICentities))
           }
         })
@@ -540,11 +600,22 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
-  .directive('stackedTimelineContinent',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout',function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout){
+  .directive('stackedTimelineContinent',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout','$modal',function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout,$modal){
     return {
       restrict: 'A',
       replace: false,
       link: function(scope, element, attrs) {
+
+        var modalInstance;
+
+          scope.open = function (size) {
+
+               modalInstance = $modal.open({
+                templateUrl: 'partials/modal.html',
+                controller: 'ModalInstance',
+                size: size
+              });
+          };
 
         var timelineData;
 
@@ -587,8 +658,7 @@ angular.module('ricardo.directives', [])
                 var flows = data.flows;
 
                 if(!flows.length){
-                  alert("no data for these Countries")
-                  console.log("no data")
+                  scope.open()
                   return
                 }
 
@@ -709,11 +779,11 @@ angular.module('ricardo.directives', [])
                 var flows = data.flows;
 
                 
-                console.log(cfSourceLine.size(), flows)
+                //console.log(cfSourceLine.size(), flows)
 
                 if(!flows.length){
-                  alert("no data")
-                  console.log("no data")
+                  scope.open()
+                  scope.reporting.pop()
                   return
                 }
 
@@ -741,8 +811,8 @@ angular.module('ricardo.directives', [])
                 var flows = data.flows;
 
                 if(!flows.length){
-                  alert("no data")
-                  console.log("no data")
+                  scope.open()
+                  scope.reporting.pop()
                   return
                 }
 
@@ -810,11 +880,22 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
-  .directive('stackedTimelineWorld',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
+  .directive('stackedTimelineWorld',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout','$modal',function (cfSource, cfTarget, fileService, apiService, $timeout, $modal){
     return {
       restrict: 'A',
       replace: false,
       link: function(scope, element, attrs) {
+
+        var modalInstance;
+
+          scope.open = function (size) {
+
+               modalInstance = $modal.open({
+                templateUrl: 'partials/modal.html',
+                controller: 'ModalInstance',
+                size: size
+              });
+          };
 
         var timelineData;
 
@@ -874,8 +955,7 @@ angular.module('ricardo.directives', [])
                 var flows = data.flows;
 
                 if(!flows.length){
-                  alert("no data")
-                  console.log("no data")
+                  scope.open()
                   return
                 }
 
@@ -929,8 +1009,7 @@ angular.module('ricardo.directives', [])
                 var flows = data.flows;
 
                 if(!flows.length){
-                  alert("no data")
-                  console.log("no data")
+                  scope.open()
                   return
                 }
 

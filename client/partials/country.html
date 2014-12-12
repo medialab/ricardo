@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="timeline-cont col-sm-12">
-    <h4>Trade exchanges by {{entities.sourceEntity.selected.RICname}}, {{minDate}} – {{maxDate}}</h4>
+    <h4>Trade exchanges by {{entities.sourceEntity.selected.RICname}}, {{minDate}} – {{maxDate}}, in {{actualCurrency}}</h4>
     <div stacked-timeline-country></div>
   </div>
 </div>
@@ -9,7 +9,7 @@
     <h3 class="subtitle">choose a reporting country:</h3>
   </div>
   <div class="col-sm-9">
-    <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} by partners, {{startDate}} – {{endDate}}, in £</h3>
+    <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} by partners, {{startDate}} – {{endDate}}, in {{actualCurrency}}</h3>
   </div>
 </div>
 <div id="select-doubleChart" class="row">
@@ -38,6 +38,11 @@
               <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'geographical_area'" uncheckable>geographical_area</label>
               <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'group'" uncheckable>group</label>
             </div>
+            <div class="btn-group pull-left currency">
+              <p class="filter">currency</p>
+              <label class="btn btn-sm btn-default" ng-model="currency" btn-radio="0" uncheckable>Pound</label>
+              <label class="btn btn-sm btn-default" ng-model="currency" btn-radio="1" uncheckable>National</label>
+            </div>
             <div class="btn-group pull-right">
               <p class="filter">ordered by</p>
               <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'tot'" uncheckable>total</label>
@@ -62,7 +67,7 @@
     <h3 class="subtitle">select up to 5 partners:</h3>
   </div>
   <div class="col-sm-9">
-    <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} with <span ng-repeat="country in reporting">{{country.RICname}}<span ng-if="!$last">, </span></span>, {{startDate}} – {{endDate}}, in £</h3>
+    <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} with <span ng-repeat="country in reporting">{{country.RICname}}<span ng-if="!$last">, </span></span>, {{startDate}} – {{endDate}}, in {{actualCurrency}}</h3>
   </div>
 </div>
 <div id="select-lineChart" class="row">
@@ -120,8 +125,8 @@
   </div>
 </div>
 
-<div class="row table-cont">
+<!-- <div class="row table-cont">
   <div class="col-sm-12 grid-cont">
     <div class="gridStyle" ng-grid="gridOptions"></div>
   </div>
-</div>
+</div> -->
