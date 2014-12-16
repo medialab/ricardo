@@ -312,6 +312,10 @@ font-size: 1.1em;
   text-decoration: none;
 }
 
+.shdt{
+  padding-top: 20px;
+}
+
 /* country */
 
 .filter-group {

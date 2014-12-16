@@ -37,6 +37,7 @@ angular.module('ricardo.controllers', [])
         pageSize: 50,
         currentPage: 1
     }; 
+    $scope.viewTable = 0;
 
     $scope.setPagingData = function(data, pageSize, page){
         var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
@@ -99,6 +100,7 @@ angular.module('ricardo.controllers', [])
     $scope.reportingGeoEntities = [];
     $scope.reportingContinentEntities = [];
     $scope.missingData = [];
+    $scope.viewTable = 0;
 
     $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
 
@@ -221,7 +223,8 @@ angular.module('ricardo.controllers', [])
     $scope.reportingCountryEntities = [];
     $scope.reportingColonialEntities = [];
     $scope.reportingGeoEntities = [];
-    $scope.reportingContinentEntities = []
+    $scope.reportingContinentEntities = [];
+    $scope.viewTable = 0;
 
     $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
 
@@ -335,7 +338,8 @@ angular.module('ricardo.controllers', [])
     $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
 
     $scope.yValue = "total"
-    $scope.actualCurrency = "sterling pound"
+    $scope.actualCurrency = "sterling pound";
+    $scope.viewTable = 0;
 
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
