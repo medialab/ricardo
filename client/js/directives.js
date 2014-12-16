@@ -76,14 +76,53 @@ angular.module('ricardo.directives', [])
               function(data){
                 var flows = data.flows,
                     mirror_flows = data.mirror_flows || [];
+                    
+                    scope.alerts = [];
                 
-                
+                //manage empty country couple
                 if(!flows.length){
-                  scope.open()
-                  scope.entities.sourceEntity.selected = scope.oldValues[0]
-                  scope.entities.targetEntity.selected = scope.oldValues[1]
+
+                  scope.startDate = 1857
+                  scope.endDate = 1938
+
+                  scope.minDate = 1857
+                  scope.maxDate = 1938
+                  
+                  scope.tableData = []
+                  
+                  scope.reportings = [scope.entities.sourceEntity.selected.RICname]
+                  scope.partners = [scope.entities.targetEntity.selected.RICname]
+                  scope.streamData = [
+                    {key:"first", values:[
+                      {y: 0, x:0, key:"first"},
+                      {y: 0, x:1, key:"second"}
+                      ]
+                    },
+                    {key:"second", values:[
+                      {y: 0, x:0, key:"second"},
+                      {y: 0, x:1, key:"first"}
+                      ]
+                    }
+                  ]
+
+                  timelineData = [{key:"imp", values:[]},{key:"exp", values:[]}];
+                  var yearDiff = d3.range(scope.maxDate-scope.minDate)
+                  yearDiff.forEach(function(d,i){
+                    timelineData[0].values.push({total: null, year: new Date((1857+i), 0, 1)})
+                    timelineData[1].values.push({total: null, year: new Date((1857+i), 0, 1)})
+                  })
+
+                  
+                  scope.alerts.push({type:'danger', msg:'There are no data available in the database for this couple of countries'});
+                  console.log(scope.alerts)
+
+                  scope.missingData = timelineData;
+                  update()
                   return
                 }
+
+                //end empty couple country
+                
 
                 if(cfSource.size()>0){
                   cfSource.year().filterAll()

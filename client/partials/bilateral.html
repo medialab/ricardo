@@ -26,6 +26,7 @@
   </ui-select>
   </div>
   <div class="col-sm-6">
+    <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
     <div stream></div>
     <div class="row">
       <div class="stream-legend" stream-legend></div>

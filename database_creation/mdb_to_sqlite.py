@@ -64,13 +64,17 @@ c.execute("UPDATE `rate` SET `Modified Currency`=trim(lower(`Modified Currency`)
 # duplicates in exp-imp
 c.execute("DELETE FROM `Exp-Imp-Standard` WHERE `ID_Exp_spe` in (7,16,25)")
 
-# remove 770 'Pas de données'
-c.execute("SELECT count(*) from flow where notes='Pas de données' and Flow is null")
-print "removing %s flows with Notes='Pas de données'"%c.fetchone()[0]
-c.execute("DELETE FROM flow WHERE notes ='Pas de données' and Flow is null")
+# clean Land/Sea
+c.execute("UPDATE `flow` SET `Land/Sea` = null WHERE `Land/Sea` = ' '")
 
-# remove Null rates from rate
-c.execute("DELETE FROM rate WHERE `FX rate (NCU/£)` is null")
+
+# remove 770 'Pas de données' : a priori on tente de les garder 
+# c.execute("SELECT count(*) from flow where notes='Pas de données' and Flow is null")
+# print "removing %s flows with Notes='Pas de données'"%c.fetchone()[0]
+# c.execute("DELETE FROM flow WHERE notes ='Pas de données' and Flow is null")
+
+# remove Null rates from rate : normalement on devrait avoir des taux pour tout
+#c.execute("DELETE FROM rate WHERE `FX rate (NCU/£)` is null")
 
 
 ###################################################
@@ -88,7 +92,7 @@ c.execute('INSERT INTO `entity_names_cleaning` (`original_name`, `name`, `RICnam
 #####################################################
 c.execute("""DROP TABLE IF EXISTS flow_joined;""")
 c.execute("""CREATE TABLE IF NOT EXISTS flow_joined AS 
-	 SELECT f.*, `Exp / Imp (standard)` as expimp, `Spe/Gen/Tot (standard)` as spegen, `FX rate (NCU/£)` as rate ,`Modified Currency` as currency, r2.RICname as reporting,r2.id as reporting_id, p2.RICname as partner,p2.id as partner_id
+	 SELECT f.*, `Exp / Imp (standard)` as expimp, `Spe/Gen/Tot (standard)` as spegen, `FX rate (NCU/£)` as rate ,`Modified Currency` as currency, r2.RICname as reporting,r2.id as reporting_id, p2.RICname as partner,p2.id as partner_id, r.original_name as reporting_original_name, p.original_name as partner_original_name
 	 from flow as f
 	 LEFT OUTER JOIN `Exp-Imp-Standard` USING (`Exp / Imp`,`Spe/Gen/Tot`)
 	 LEFT OUTER JOIN currency as c
@@ -138,6 +142,32 @@ c.execute("""CREATE INDEX i_re_rn ON RICentities (RICname)""")
 # """)#and `Partner Entity_Original Name`!="Total"
 
 ########################################################################################
+# merge duplicates from lan and sea 
+########################################################################################
+
+c.execute("""SELECT count(*) as nb,group_concat(`flow`,'|'),group_concat(ID,'|'),group_concat(`Land/Sea`,'|'),group_concat(`Notes`,'|'),group_concat(`Original No`,'|')
+	FROM `flow_joined`
+	WHERE `Land/Sea` is not null
+	GROUP BY Yr,expimp,reporting_original_name,partner_original_name HAVING count(*)>1
+	""")
+sub_c=conn.cursor()
+rows_grouped=0
+for n,flows,ids,land_seas,notes,original_nos in c :
+	if n==2:
+		original_no="Original Nos:"+", ".join(set(original_nos.split("|")))
+		land_sea=", ".join(set(land_seas.split("|")))
+		if len(set(land_seas.split("|")))>1:
+			if notes :
+				notes=", ".join(set(notes.split("|")))+" ; "+original_no
+			sub_c.execute("""UPDATE `flow_joined` SET flow=%.1f,notes="%s",`Land/Sea`="%s" WHERE ID=%s"""%(sum(float(_) for _ in flows.split("|")),notes,land_sea,ids.split("|")[0]))
+			sub_c.execute("""DELETE FROM `flow_joined` WHERE ID=%s"""%ids.split("|")[1])
+			rows_grouped+=2
+if rows_grouped>0:
+	print "removing %s land/seas duplicates by suming them"%rows_grouped
+sub_c.close()
+
+
+########################################################################################
 # remove 'valeurs officielles' when duplicates with 'Valeurs actuelles' for France between 1847 and 1856 both included
 ########################################################################################
 
@@ -164,28 +194,64 @@ if len(ids_to_remove)>0:
 	print "removing %s 'Valeur officielle' noted duplicates for France between 1847 1856"%len(ids_to_remove)
 	c.execute("DELETE FROM flow_joined WHERE id IN (%s)"%",".join(ids_to_remove))
 
+########################################################################################
+# remove "species and billions" remove species flows when exists
+########################################################################################
+
+c.execute("""SELECT * from (SELECT count(*) as nb,group_concat(`Species and Bullions`,'|') as sb,group_concat(ID,'|'),reporting,partner
+	FROM `flow_joined`		
+	GROUP BY Yr,expimp,reporting,partner HAVING count(*)>1)
+	WHERE sb="S|NS"
+	""")#
+ids_to_remove=[]
+rps=[]
+for n,sb,ids,r,p in c :
+	if n==2 :
+		i=sb.split("|").index("S")
+		id=ids.split("|")[i]
+		ids_to_remove.append(id)
+		rps.append('"%s"'%"|".join((r,p)))
+rps=set(rps)
+		
+if len(ids_to_remove)>0:
+	print "removing %s flows S duplicated with NS for reporting|partner couples %s"%(len(ids_to_remove),",".join(rps))
+	c.execute("DELETE FROM flow_joined WHERE id IN (%s)"%",".join(ids_to_remove))
 
 
 ########################################################################################
 # remove GEN flows when duplicates with SPE flows
 ########################################################################################
 
-c.execute("""SELECT count(*) as nb,group_concat(`spegen`,'|'),group_concat(ID,'|'),`reporting`,`partner`,Yr,`expimp` 
+c.execute("""SELECT count(*) as nb,group_concat(`spegen`,'|'),group_concat(`Species and Bullions`,'|') as sb,group_concat(ID,'|'),`reporting`,`partner`,Yr,`expimp`,group_concat(`flow`,'|') 
 	FROM `flow_joined`
 	GROUP BY Yr,`expimp`,`reporting`,`partner` HAVING count(*)>1
 	""")
 lines=c.fetchall()
 ids_to_remove={}
-for n,spe_gens,ids,reporting,partner,Yr,e_i in lines :
-	if n==2 and spe_gens and "Gen" in spe_gens.split("|") and "Spe" in spe_gens.split("|"):
-		i=spe_gens.split("|").index("Gen")
-		id=ids.split("|")[i]
-		if reporting in ids_to_remove.keys():
-			ids_to_remove[reporting].append(id)
+for n,spe_gens,sb,ids,reporting,partner,Yr,e_i,f in lines :
+	local_ids_to_remove=[]
+
+	if spe_gens and "Gen" in spe_gens.split("|") and "Spe" in spe_gens.split("|"):
+
+		spe_indeces=[k for k,v in enumerate(spe_gens.split("|")) if v =="Spe"]
+		if len(spe_indeces)>1:
+			speNS_indeces=[k for k,v in enumerate(sb.split("|")) if v =="NS" and k in spe_indeces]
+			if len(speNS_indeces)>1:
+				print ("duplicate found :%s flows for %s,%s,%s,%s,%s,%s"%(n,Yr,reporting,partner,e_i,spe_gens,sb)).encode("utf8")
+			else:
+				#remove
+				local_ids_to_remove=[v for k,v in enumerate(ids.split("|")) if k!=speNS_indeces[0]]
 		else:
-		 	ids_to_remove[reporting]=[id]
+			#remove
+			local_ids_to_remove=[v for k,v in enumerate(ids.split("|")) if k!=spe_indeces[0]]
+
+		if len(local_ids_to_remove)>0:
+			if reporting in ids_to_remove.keys():
+				ids_to_remove[reporting]+=local_ids_to_remove
+			else:
+			 	ids_to_remove[reporting]=local_ids_to_remove
 	else:
-		print ("duplicate found :%s flows for %s,%s,%s,%s,%s"%(n,Yr,reporting,partner,e_i,spe_gens)).encode("utf8")
+		print ("duplicate found :%s flows for %s,%s,%s,%s,%s,%s"%(n,Yr,reporting,partner,e_i,spe_gens,sb)).encode("utf8")
 
 if ids_to_remove:
 	for r,ids in ids_to_remove.iteritems():

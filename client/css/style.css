@@ -402,6 +402,16 @@ font-size: 1.1em;
 .currency {
   margin-left: 20px;
 }
+
+/* alert */
+
+.alert{
+  border:none;
+  border-radius: 0px;
+  margin-bottom: 0px;
+  margin-top: 15px;
+}
+
 /* Page transition */
 .fade-view {
     position: absolute;

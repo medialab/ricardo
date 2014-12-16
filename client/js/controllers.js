@@ -23,6 +23,11 @@ angular.module('ricardo.controllers', [])
     $scope.reportingEntities = reportingEntities;
     $scope.entities = {sourceEntity : {}, targetEntity : {}}
 
+    $scope.alerts = []
+    $scope.closeAlert = function(index) {
+      $scope.alerts.splice(index, 1);
+      };
+
     $scope.actualCurrency = "sterling pound"
     $scope.tableData = [];
     $scope.missingData = [];
