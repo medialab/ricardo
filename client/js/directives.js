@@ -124,6 +124,7 @@ angular.module('ricardo.directives', [])
                   }
                 ]
 
+                console.log(flows)
                 timelineData = [{key:"imp", values:[]},{key:"exp", values:[]}];
                 flows.sort(function(a, b){ return d3.ascending(a.year, b.year); })
                 flows.forEach(function(d){
@@ -411,6 +412,8 @@ angular.module('ricardo.directives', [])
                     timelineData[0].values.push({total: d.value.imp, year: d.key})
                     timelineData[1].values.push({total: d.value.exp, year: d.key})
                 })
+
+                scope.missingData = timelineData;
 
                 update()
 
@@ -732,6 +735,8 @@ angular.module('ricardo.directives', [])
                     timelineData[1].values.push({total: d.value.exp, year: d.key})
                 })
 
+                scope.missingData = timelineData;
+
                 update()
 
                 d3.select('.timeline-cont').classed("timeline-open", true)
@@ -989,6 +994,8 @@ angular.module('ricardo.directives', [])
                     timelineData[1].values.push({total: d.value.exp, year: d.key})
                 })
 
+                scope.missingData = timelineData;
+                
                 update()
 
               },

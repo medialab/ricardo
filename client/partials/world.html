@@ -2,6 +2,7 @@
 	<div class="timeline-cont col-sm-12">
     <h4>Total trade of  <span ng-repeat="country in reporting">{{country.RICname}}<span ng-if="!$last">, </span></span> (aggregated), {{minDate}} – {{maxDate}}, in {{actualCurrency}}</h4>
     <div stacked-timeline-world></div>
+    <div missing></div>
   </div>
 </div>
 <div class="row">

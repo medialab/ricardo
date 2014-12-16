@@ -92,7 +92,8 @@ angular.module('ricardo.controllers', [])
     $scope.reportingCountryEntities = [];
     $scope.reportingColonialEntities = [];
     $scope.reportingGeoEntities = [];
-    $scope.reportingContinentEntities = []
+    $scope.reportingContinentEntities = [];
+    $scope.missingData = [];
 
     $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
 
@@ -210,6 +211,7 @@ angular.module('ricardo.controllers', [])
       })
 
     $scope.reporting = []
+    $scope.missingData = [];
 
     $scope.reportingCountryEntities = [];
     $scope.reportingColonialEntities = [];
@@ -323,7 +325,8 @@ angular.module('ricardo.controllers', [])
     })
 
     $scope.entities = {sourceCountryEntity : {}, sourceColonialEntity : {}, sourceGeoEntity : {}, sourceContinentEntity : {}}
-    $scope.reporting = []
+    $scope.reporting = [];
+    $scope.missingData = [];
     $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
 
     $scope.yValue = "total"

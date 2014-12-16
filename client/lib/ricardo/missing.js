@@ -58,7 +58,7 @@
         y.domain([0,yStackMax])
 
         var stacked = chart.selectAll(".stack")
-                      .data(layers, function(d){return d.key})
+                      .data(layers)
                       
         stacked.enter().append("g")
                       .attr("class", "stack")
@@ -76,16 +76,20 @@
 
 
       circle.enter().append("circle")
-          .attr("cx", function(d) { return x(d.year) + (x.rangeBand()/2); })
+          .attr("cx", function(d) {return x(d.year) + (x.rangeBand()/2); })
           .attr("cy", function(d) { return y(d.y0 + d.y) + 3; })
           .attr("r", 3)
           .attr("fill", function(d) { if(!d.total){return "none"} })
+          .on("click", function(d){console.log(d)})
+          
 
       circle.exit().remove()
         
         /* legend */
         
-        var legendScale = d3.scale.ordinal().rangeBands([0, chartWidth/3], 0, 0).domain(colorDomain)
+        colorDomain.push("missing", "available")
+
+        var legendScale = d3.scale.ordinal().rangeBands([0, chartWidth/2], 0, 0).domain(colorDomain)
 
         var legends = chart.selectAll(".timeline-legend").data(colorDomain)
 
@@ -101,10 +105,19 @@
           .attr("height", 10)
           .attr("x", 0)
           .attr("y", -10)
+          .filter(function(d){return d == "missing" || d == "available"})
+          .attr("rx", 5)
+          .attr("ry", 5)
+          .attr("fill", function(d){return d == "missing" ? "none" : "grey"})
+          .attr("stroke", function(d){return d == "missing" ? "grey" : "none"})
 
         legend
           .append("text")
-          .text(function(d){return d == "imp" ? "IMPORTS" : "EXPORTS"})
+          .text(function(d){
+            if(d == "imp"){return "IMPORTS";}
+            else if(d == "exp"){ return "EXPORTS";}
+            else{return d + " data";}
+          })
           .attr("font-family", "'montserrat', 'Arial', sans-serif")
           .attr("font-weight","bold")
           .attr("font-size", "0.8em")
