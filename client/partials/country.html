@@ -25,36 +25,37 @@
         </ui-select>
       </div>
     </div>
-  </div>
-  <div class="col-sm-9">
     <div class="row">
       <div class="col-sm-12">
-        <div class="filter-group">
-            <div class="btn-group pull-left">
-              <p class="filter">filtered by</p>
-              <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'all'" uncheckable>all</label>
-              <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'city/part_of'" uncheckable>city/part_of</label>
-              <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'colonial_area'" uncheckable>colonial_area</label>
-              <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'country'" uncheckable>country</label>
-              <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'geographical_area'" uncheckable>geographical_area</label>
-              <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'group'" uncheckable>group</label>
-            </div>
-            <div class="btn-group pull-left currency">
-              <p class="filter">currency</p>
-              <label class="btn btn-sm btn-default" ng-model="currency" btn-radio="0" uncheckable>Pound</label>
-              <label class="btn btn-sm btn-default" ng-model="currency" btn-radio="1" uncheckable>National</label>
-            </div>
-            <div class="btn-group pull-right">
-              <p class="filter">ordered by</p>
-              <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'tot'" uncheckable>total</label>
-              <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'imp'" uncheckable>imports</label>
-              <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'exp'" uncheckable>exports</label>
-              <!-- <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'key'" uncheckable>name</label> -->
-            </div>
-            <div style="clear:both"></div>
+        <div class="btn-group radio-country">
+          <p class="filter">filtered by</p>
+          <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'all'" uncheckable>all</label>
+          <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'city/part_of'" uncheckable>city/part_of</label>
+          <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'colonial_area'" uncheckable>colonial_area</label>
+          <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'country'" uncheckable>country</label>
+          <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'geographical_area'" uncheckable>geographical_area</label>
+          <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'group'" uncheckable>group</label>
+        </div>
+        <div class="btn-group radio-country">
+          <p class="filter">ordered by</p>
+          <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'tot'" uncheckable>total</label>
+          <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'imp'" uncheckable>imports</label>
+          <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'exp'" uncheckable>exports</label>
+        </div>
+        <div class="btn-group radio-country">
+          <p class="filter">currency</p>
+          <label class="btn btn-sm btn-default" ng-model="currency" btn-radio="0" uncheckable>Pound</label>
+          <label class="btn btn-sm btn-default" ng-model="currency" btn-radio="1" uncheckable>National</label>
+        </div>
+        <div class="btn-group radio-country">
+          <p class="filter">group by</p>
+          <label class="btn btn-sm btn-default" ng-model="gbContinent" btn-radio="0" uncheckable>None</label>
+          <label class="btn btn-sm btn-default" ng-model="gbContinent" btn-radio="1" uncheckable>Continent</label>
         </div>
       </div>
     </div>
+  </div>
+  <div class="col-sm-9">
     <div class="row">
       <div class="col-sm-12">
         <div class="barchart-country" barchart-country></div>

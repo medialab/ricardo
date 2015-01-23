@@ -333,6 +333,11 @@ font-size: 1.1em;
   text-transform: uppercase;
   margin-bottom: 2px;
 }
+
+.radio-country {
+  margin: 10px 0px;
+}
+
 .white{
   background-color: white;
 }
@@ -348,6 +353,7 @@ font-size: 1.1em;
   background-color: white;
   border: 1px solid #e7e7e7;
   margin-top: 5px;
+  min-height: 500px;
 }
 
 /* world */
@@ -401,10 +407,6 @@ font-size: 1.1em;
 
 .modal-footer{
   text-align: center;
-}
-
-.currency {
-  margin-left: 20px;
 }
 
 /* alert */

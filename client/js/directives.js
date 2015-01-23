@@ -355,6 +355,11 @@ angular.module('ricardo.directives', [])
             scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
             scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
 
+            scope.barchartData.forEach(function(d){
+              d.continent = scope.RICentities[d.key+""].continent
+            })
+                
+
             scope.linechartData = d3.nest().key(function(d){return d.reporting_id}).entries(cfSourceLine.year().top(Infinity))
             
             if(!scope.$$phase) {
@@ -440,6 +445,9 @@ angular.module('ricardo.directives', [])
                 
                 scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
 
+                scope.barchartData.forEach(function(d){
+                  d.continent = scope.RICentities[d.key+""].continent
+                })
                 
                 
                 var flowsPerYear = cfSource.years().top(Infinity)
@@ -598,14 +606,30 @@ angular.module('ricardo.directives', [])
           }
         }, true)
 
+        scope.$watch("gbContinent", function(newValue, oldValue){
+          if(newValue != oldValue){
+            if(!newValue){
+                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+            }
+          }
+        }, true)
+
         scope.$watch("filter", function(newValue, oldValue){
           if(newValue != oldValue){
               if(newValue == "all"){
                 cfSource.type().filterAll()
                 scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+                scope.barchartData.forEach(function(d){
+                  d.continent = scope.RICentities[d.key+""].continent
+                })
+                
               }else{
                 cfSource.type().filterExact(newValue)
                 scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+                scope.barchartData.forEach(function(d){
+                  d.continent = scope.RICentities[d.key+""].continent
+                })
+                
               }
           }
         })
@@ -628,7 +652,20 @@ angular.module('ricardo.directives', [])
         scope.$watch("barchartData", function(newValue, oldValue){
 
           if(newValue != oldValue){
-            
+
+            if(scope.gbContinent){
+              newValue = d3.nest()
+                          .key(function(d){return d.continent})
+                          .rollup(function(leaves) { return {"count": leaves.length, "exp": d3.sum(leaves, function(d) {return d.value.exp}), "imp": d3.sum(leaves, function(d) {return d.value.imp}), "tot": d3.sum(leaves, function(d) {return d.value.tot})} })
+                          .entries(newValue.filter(function(d){ return d.continent && d.continent != "World"}))
+
+              newValue.forEach(function(d){
+                d['value'] = d['values'];
+                delete d['values'];
+              })
+
+            }
+
             chart.datum(newValue).call(doubleBar.RICentities(scope.RICentities))
           }
         })
@@ -638,6 +675,26 @@ angular.module('ricardo.directives', [])
             chart.call(doubleBar.order(newValue))
           }
         })
+
+        scope.$watch("gbContinent", function(newValue, oldValue){
+          if(newValue != oldValue){
+            if(newValue){
+              
+              var data = d3.nest()
+                          .key(function(d){return d.continent})
+                          .rollup(function(leaves) { return {"count": leaves.length, "exp": d3.sum(leaves, function(d) {return d.value.exp}), "imp": d3.sum(leaves, function(d) {return d.value.imp}), "tot": d3.sum(leaves, function(d) {return d.value.tot})} })
+                          .entries(scope.barchartData.filter(function(d){ return d.continent && d.continent != "World"}))
+
+              data.forEach(function(d){
+                d['value'] = d['values'];
+                delete d['values'];
+              })
+
+              chart.datum(data).call(doubleBar.RICentities(scope.RICentities))
+
+            }
+          }
+        }, true)
 
       }
     }
