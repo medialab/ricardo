@@ -10,7 +10,7 @@
     <h3 class="subtitle">choose a reporting country:</h3>
   </div>
   <div class="col-sm-9">
-    <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} by partners, {{startDate}} – {{endDate}}, in {{actualCurrency}}</h3>
+    <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} by partners, {{startDate}} – {{endDate}}, in <em>{{actualCurrency}}</em></h3>
   </div>
 </div>
 <div id="select-doubleChart" class="row">
@@ -27,8 +27,8 @@
     </div>
     <div class="row">
       <div class="col-sm-12">
+        <p class="filter">filtered by</p>
         <div class="btn-group radio-country">
-          <p class="filter">filtered by</p>
           <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'all'" uncheckable>all</label>
           <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'city/part_of'" uncheckable>city/part_of</label>
           <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'colonial_area'" uncheckable>colonial_area</label>
@@ -36,19 +36,19 @@
           <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'geographical_area'" uncheckable>geographical_area</label>
           <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'group'" uncheckable>group</label>
         </div>
+        <p class="filter">ordered by</p>
         <div class="btn-group radio-country">
-          <p class="filter">ordered by</p>
           <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'tot'" uncheckable>total</label>
           <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'imp'" uncheckable>imports</label>
           <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'exp'" uncheckable>exports</label>
         </div>
+        <p class="filter">currency</p>
         <div class="btn-group radio-country">
-          <p class="filter">currency</p>
           <label class="btn btn-sm btn-default" ng-model="currency" btn-radio="0" uncheckable>Pound</label>
           <label class="btn btn-sm btn-default" ng-model="currency" btn-radio="1" uncheckable>National</label>
         </div>
+        <p class="filter">group by</p>
         <div class="btn-group radio-country">
-          <p class="filter">group by</p>
           <label class="btn btn-sm btn-default" ng-model="gbContinent" btn-radio="0" uncheckable>None</label>
           <label class="btn btn-sm btn-default" ng-model="gbContinent" btn-radio="1" uncheckable>Continent</label>
         </div>
