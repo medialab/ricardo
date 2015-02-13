@@ -71,13 +71,14 @@ CREATE TABLE IF NOT EXISTS `Entity_Names v1`
 DROP TABLE IF EXISTS `RICentities v1`;
 CREATE TABLE IF NOT EXISTS `RICentities v1`
  (
-	`id`			INTEGER PRIMARY KEY AUTOINCREMENT,
+	`id`			TEXT,
 	`RICname`			TEXT UNIQUE, 
 	`type`			TEXT, 
 	`central_state`			TEXT,
 	`continent`		TEXT,
 	`COW_code` 		INTEGER
 );
+
 
 DROP TABLE IF EXISTS `RICentities_groups v1`;
 CREATE TABLE IF NOT EXISTS `RICentities_groups v1`

@@ -4,6 +4,8 @@
 import sqlite3
 import json
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 #flask
 from flask import Flask
 from flask import g
@@ -14,6 +16,11 @@ import config
 app = Flask(__name__)
 cors = CORS(app)
 app.config.from_object(config)
+
+# logging
+handler = RotatingFileHandler('ricardoapi.log', maxBytes=10000, backupCount=1)
+handler.setLevel(logging.INFO if app.debug else logging.ERROR)
+app.logger.addHandler(handler)
 
 
 def get_db():

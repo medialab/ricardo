@@ -11,7 +11,7 @@ import codecs
 def ric_entities_data(ids=[]):
     cursor = get_db().cursor()
     
-    where_clause="""WHERE id in (%s)"""%(",".join(ids)) if len(ids)>0 else ""
+    where_clause="""WHERE id in ("%s")"""%("\",\"".join(ids)) if len(ids)>0 else ""
 
     cursor.execute("""SELECT id,RICname,type,central_state,continent
                       FROM  RICentities 
@@ -186,11 +186,13 @@ def get_reporting_entities(types=[],to_world_only=False):
         where_clause = "WHERE "+where_clause if where_clause!="" else ""
     else:
         where_clause =""
-    cursor.execute("""SELECT RICentities.id,reporting,type,central_state,continent
+    sql="""SELECT RICentities.id,reporting,type,central_state,continent
                           FROM flow_joined
                           LEFT OUTER JOIN RICentities ON RICname=reporting
                           %s
-                          group by reporting"""%(where_clause))
+                          group by reporting"""%(where_clause)
+    app.logger.error(sql)
+    cursor.execute(sql)
     
     for (id,r,t,central,continent) in cursor:
         json_response.append({

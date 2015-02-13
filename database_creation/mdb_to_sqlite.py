@@ -56,6 +56,7 @@ c.execute("UPDATE `Exp-Imp-Standard` SET `Exp / Imp`=trim(lower(`Exp / Imp`)), `
 c.execute("UPDATE flow SET `Initial Currency`=trim(lower(`Initial Currency`)),`Reporting Entity_Original Name`=trim(lower(`Reporting Entity_Original Name`)) WHERE 1")
 c.execute("UPDATE `currency` SET `Original Currency`=trim(lower(`Original Currency`)),`Modified Currency`=trim(lower(`Modified Currency`)),`Reporting Entity (Original Name)`=trim(lower(`Reporting Entity (Original Name)`)) WHERE 1")
 c.execute("UPDATE `rate` SET `Modified Currency`=trim(lower(`Modified Currency`)) WHERE 1")
+c.execute("""UPDATE RICentities SET type=lower(replace(trim(type)," ","_")) WHERE 1""")
 
 # one lower on reporting 
 #c.execute("""UPDATE flow SET `Reporting Entity_Original Name`="espagne (îles baléares)" WHERE `Reporting Entity_Original Name`="espagne (Îles baléares)";""")
@@ -66,6 +67,18 @@ c.execute("DELETE FROM `Exp-Imp-Standard` WHERE `ID_Exp_spe` in (7,16,25)")
 
 # clean Land/Sea
 c.execute("UPDATE `flow` SET `Land/Sea` = null WHERE `Land/Sea` = ' '")
+
+# RICENTITIES
+# add a slug as RICentities id
+c.execute("""UPDATE RICentities SET id=REPLACE(RICname," ","") WHERE 1""")
+c.execute("""UPDATE RICentities SET id=REPLACE(id,"&","_") WHERE 1""")
+c.execute("""UPDATE RICentities SET id=REPLACE(id,"/","") WHERE 1""")
+c.execute("""UPDATE RICentities SET id=REPLACE(id,"(","") WHERE 1""")
+c.execute("""UPDATE RICentities SET id=REPLACE(id,")","") WHERE 1""")
+c.execute("""UPDATE RICentities SET id=REPLACE(id,"***","") WHERE 1""")
+#create indeces
+c.execute("""CREATE UNIQUE INDEX i_re_id ON RICentities (id)""")
+c.execute("""CREATE INDEX i_re_rn ON RICentities (RICname)""")
 
 
 # remove 770 'Pas de données' : a priori on tente de les garder 
@@ -117,7 +130,6 @@ c.execute("""CREATE INDEX i_pid ON flow_joined (partner_id)""")
 c.execute("""CREATE INDEX i_yr ON flow_joined (Yr)""")
 c.execute("""CREATE INDEX i_r ON flow_joined (reporting)""")
 c.execute("""CREATE INDEX i_p ON flow_joined (partner)""")
-c.execute("""CREATE INDEX i_re_rn ON RICentities (RICname)""")
 
 	 	
 
