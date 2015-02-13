@@ -7,11 +7,14 @@ import os
 #flask
 from flask import Flask
 from flask import g
+from flask.ext.cors import CORS
 # ricardo
 import config
 
 app = Flask(__name__)
+cors = CORS(app)
 app.config.from_object(config)
+
 
 def get_db():
     db = getattr(g, '_database', None)
