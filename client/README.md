@@ -31,6 +31,19 @@ install client-side dependencies:
 $ bower install
 ```
 
+edit configuration file
+
+```sh
+$ cd js
+$ cp config.sample.js config.js
+$ vi config.js
+# edit config.js and add the correct root to API
+'use strict';
+
+angular.module('ricardo')
+  .constant('BASE_API_URL', 'http://localhost:5000')
+```
+
 You can now run RICardo from your local web server. For example, you can run Python's built-in server:
 
 ``` sh
