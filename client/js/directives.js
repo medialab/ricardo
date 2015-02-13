@@ -195,13 +195,13 @@ angular.module('ricardo.directives', [])
 
         /* start initialize */
 
-        scope.entities.sourceEntity.selected = {"RICid": 885,
+        scope.entities.sourceEntity.selected = {"RICid": "France",
                                                 "RICname": "France",
                                                 "central_state": "France",
                                                 "continent": "Europe",
                                                 "type": "country"}
 
-        scope.entities.targetEntity.selected = {"RICid": 926,
+        scope.entities.targetEntity.selected = {"RICid": "Italy",
                                                 "RICname": "Italy",
                                                 "central_state": "Italy",
                                                 "continent": "Europe",
