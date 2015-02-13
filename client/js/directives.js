@@ -207,7 +207,7 @@ angular.module('ricardo.directives', [])
                                                 "continent": "Europe",
                                                 "type": "country"}
 
-        init(885,926)
+        init("France","Italy")
 
         /* end initialize */
 
