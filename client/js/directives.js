@@ -576,13 +576,13 @@ angular.module('ricardo.directives', [])
 
         /* start initialize */
 
-        scope.entities.sourceEntity.selected = {"RICid": 885,
+        scope.entities.sourceEntity.selected = {"RICid": "France",
                                                 "RICname": "France",
                                                 "central_state": "France",
                                                 "continent": "Europe",
                                                 "type": "country"}
 
-        init(885, 0)
+        init("France", 0)
 
         /* end initialize */
 
@@ -1159,7 +1159,7 @@ angular.module('ricardo.directives', [])
 
         /* start initialize */
 
-        scope.reporting = [{"RICid": 885,"RICname": "France","central_state": "France","continent": "Europe","type": "country"}]
+        scope.reporting = [{"RICid": "France","RICname": "France","central_state": "France","continent": "Europe","type": "country"}]
 
         init(scope.reporting)
 
