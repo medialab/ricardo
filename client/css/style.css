@@ -312,6 +312,10 @@ font-size: 1.1em;
   text-decoration: none;
 }
 
+.shdt{
+  padding-top: 20px;
+}
+
 /* country */
 
 .filter-group {
@@ -329,6 +333,11 @@ font-size: 1.1em;
   text-transform: uppercase;
   margin-bottom: 2px;
 }
+
+.radio-country {
+  margin: 10px 0px;
+}
+
 .white{
   background-color: white;
 }
@@ -344,6 +353,7 @@ font-size: 1.1em;
   background-color: white;
   border: 1px solid #e7e7e7;
   margin-top: 5px;
+  min-height: 500px;
 }
 
 /* world */
@@ -399,9 +409,15 @@ font-size: 1.1em;
   text-align: center;
 }
 
-.currency {
-  margin-left: 20px;
+/* alert */
+
+.alert{
+  border:none;
+  border-radius: 0px;
+  margin-bottom: 0px;
+  margin-top: 15px;
 }
+
 /* Page transition */
 .fade-view {
     position: absolute;

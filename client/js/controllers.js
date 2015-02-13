@@ -23,6 +23,11 @@ angular.module('ricardo.controllers', [])
     $scope.reportingEntities = reportingEntities;
     $scope.entities = {sourceEntity : {}, targetEntity : {}}
 
+    $scope.alerts = []
+    $scope.closeAlert = function(index) {
+      $scope.alerts.splice(index, 1);
+      };
+
     $scope.actualCurrency = "sterling pound"
     $scope.tableData = [];
     $scope.missingData = [];
@@ -32,6 +37,7 @@ angular.module('ricardo.controllers', [])
         pageSize: 50,
         currentPage: 1
     }; 
+    $scope.viewTable = 0;
 
     $scope.setPagingData = function(data, pageSize, page){
         var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
@@ -80,6 +86,7 @@ angular.module('ricardo.controllers', [])
     $scope.order = "tot"
     $scope.currency = 0
     $scope.actualCurrency = "sterling pound"
+    $scope.gbContinent = 0;
     $scope.RICentities = {}
     $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
           if(a.RICname < b.RICname) return -1;
@@ -92,7 +99,9 @@ angular.module('ricardo.controllers', [])
     $scope.reportingCountryEntities = [];
     $scope.reportingColonialEntities = [];
     $scope.reportingGeoEntities = [];
-    $scope.reportingContinentEntities = []
+    $scope.reportingContinentEntities = [];
+    $scope.missingData = [];
+    $scope.viewTable = 0;
 
     $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
 
@@ -210,11 +219,13 @@ angular.module('ricardo.controllers', [])
       })
 
     $scope.reporting = []
+    $scope.missingData = [];
 
     $scope.reportingCountryEntities = [];
     $scope.reportingColonialEntities = [];
     $scope.reportingGeoEntities = [];
-    $scope.reportingContinentEntities = []
+    $scope.reportingContinentEntities = [];
+    $scope.viewTable = 0;
 
     $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
 
@@ -323,11 +334,13 @@ angular.module('ricardo.controllers', [])
     })
 
     $scope.entities = {sourceCountryEntity : {}, sourceColonialEntity : {}, sourceGeoEntity : {}, sourceContinentEntity : {}}
-    $scope.reporting = []
+    $scope.reporting = [];
+    $scope.missingData = [];
     $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
 
     $scope.yValue = "total"
-    $scope.actualCurrency = "sterling pound"
+    $scope.actualCurrency = "sterling pound";
+    $scope.viewTable = 0;
 
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;

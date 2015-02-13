@@ -2,6 +2,7 @@
 	<div class="timeline-cont col-sm-12">
     <h4>Total trade of  <span ng-repeat="country in reporting">{{country.RICname}}<span ng-if="!$last">, </span></span> (aggregated), {{minDate}} – {{maxDate}}, in {{actualCurrency}}</h4>
     <div stacked-timeline-world></div>
+    <div missing></div>
   </div>
 </div>
 <div class="row">
@@ -63,8 +64,15 @@
     <!-- </div> -->
   </div>
 </div>
-<!-- <div class="row table-cont">
+<div class="row">
+  <div class="col-sm-12 text-center shdt">
+    <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
+        Show/Hide data table
+    </button>
+  </div>
+</div>
+<div ng-if="viewTable" class="row table-cont">
   <div class="col-sm-12 grid-cont">
     <div class="gridStyle" ng-grid="gridOptions"></div>
   </div>
-</div> -->
+</div>

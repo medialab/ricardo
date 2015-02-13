@@ -203,7 +203,14 @@
           .attr("font-size", "0.9em")
           .attr("dy", "-0.2em")
           .attr("fill", function(d){ if(d.value.tot == 0){return "#999"}else{return "#333"}})
-          .text(function(d){return RICentities[""+d.key].RICname})
+          .text(function(d){
+            var entity = RICentities[""+d.key];
+            if (entity){
+              return RICentities[""+d.key].RICname;
+            }else{
+              return d.key;
+            }
+          })
 
         barsLegend.exit().remove()
 

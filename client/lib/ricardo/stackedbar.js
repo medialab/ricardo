@@ -181,6 +181,74 @@
             .attr("font-size", "0.85em");
           }
 
+
+        /* voronoi for over labeling*/
+
+        // var voronoi = d3.geom.voronoi()
+        //     //.x(function(d) { return x(new Date(d.year, 0, 1)); })
+        //     .x(function(d) { return x(d.year); })
+        //     .y(function(d) { return y(d.y0 + d.y); })
+        //     .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]]);
+        
+
+
+        //   var voronoiGroup = chart.select(".voronoi")
+
+        //   if(voronoiGroup.empty()){
+        //         voronoiGroup = chart.append("g")
+        //                     .attr("class", "voronoi")
+        //                     .attr("fill", "none")
+        //                     .attr("stroke", "black")
+        //                     .attr("pointer-events", "all")
+        //       }
+
+        //   var voronoiGraph = voronoiGroup.selectAll("path")
+        //       .data(voronoi(d3.merge(layers.map(function(d) { return d.values; }))))
+
+
+        //   voronoiGraph.attr("d", function(d) { return "M" + d.join("L") + "Z"; })
+        //         .datum(function(d) { return d.point; })
+        //         .on("mouseover", mouseover)
+        //         .on("mouseout", mouseout);
+
+
+        //   voronoiGraph
+        //         .enter().append("path")
+        //         .attr("d", function(d) { return "M" + d.join("L") + "Z"; })
+        //         .datum(function(d) {return d.point; })
+        //         .on("mouseover", mouseover)
+        //         .on("mouseout", mouseout);
+
+        //   voronoiGraph.exit().remove()
+
+        //   var focus = chart.select(".focus")
+                    
+        //   if(focus.empty()){
+        //       focus = chart.append("g")
+        //           .attr("transform", "translate(-100,-100)")
+        //           .attr("class", "focus");
+        //         }
+
+        //   focus.append("circle")
+        //       .attr("r", 3);
+
+        //   focus.append("text")
+        //       .attr("y", -10)
+        //       .attr("text-anchor", "middle")
+
+        //   var format = d3.format("0,000");
+
+        //   function mouseover(d) {
+
+        //       console.log(d.point, d.y0, d.y)
+        //       focus.attr("transform", "translate(" + x(d.year) + "," + y(d.total) + ")");
+        //       focus.select("text").text(format(Math.round(d.total)));
+        //     }
+
+        //   function mouseout(d) {
+        //       focus.attr("transform", "translate(-100,-100)");
+        //     }
+
         /* Brush */
       
         var brush = d3.svg.brush()
@@ -233,7 +301,6 @@
             .call(brush)
             .call(brush.event);
         }
-
 
       }); //end selection
     } // end stackedBar
