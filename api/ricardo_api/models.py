@@ -47,6 +47,7 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
                       and rate is not null
                       and Flow is not null
                       GROUP BY reporting,partner,Yr
+                      ORDER BY  Yr ASC
                       """%(flow_field,source_field,'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause)
                 )
     elif group_reporting_by=="continent":
@@ -57,11 +58,13 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
                       and rate is not null
                       and Flow is not null
                       GROUP BY r.continent,partner,Yr
+                      ORDER BY Yr ASC
                       """%(flow_field,source_field,'","'.join(reporting_ids),'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause)
                 )
     #
     flows=[]
     partners_meta={}
+    last_y=None
     for fields in cursor:
         
         if with_sources:
@@ -71,6 +74,8 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
 
         imports=[]
         exports=[]
+        if not last_y:
+            last_y=y
         for i,ei in enumerate(expimp_g.split("|")):
             if ei == "Imp":
                 imports.append(float(flow_g.split("|")[i]))
@@ -94,6 +99,17 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
             imp=sum(imports)
             exp=sum(exports)
         total = (imp if imp else 0) + (exp if exp else 0)
+        # deal with missing years in flows list
+        for missing_year in (last_y+i+1 for i in range(y-(last_y+1))): 
+            flows.append({
+                "reporting_id":r_id,
+                "partner_id":p_id,
+                "year":missing_year,
+                "imp": None,
+                "exp": None,
+                "total": None,
+                "currency":currency if original_currency else "sterling pound",
+                })
         flows.append({
             "reporting_id":r_id,
             "partner_id":p_id,
@@ -103,6 +119,7 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
             "total": total,
             "currency":currency if original_currency else "sterling pound",
             })
+        last_y=y
         if with_sources:
             sources=set(source_g.split("|"))
             flows[-1]["sources"]=list(sources)[0]
