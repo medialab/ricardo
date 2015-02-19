@@ -31,6 +31,10 @@ import flow
 flow_status="OK" if flow.test(cursor) else "FAILED"
 print "FLOW TEST : %s"%flow_status
 
+import total_type
+total_type_status="OK" if total_type.test(cursor) else "FAILED"
+print "TOTAL_TYPE TEST : %s"%total_type_status
+
 
 # c.execute("""SELECT  `Reporting Entity_Original Name`
 # 	FROM flow

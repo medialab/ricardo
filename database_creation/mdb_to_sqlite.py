@@ -5,6 +5,7 @@ import os
 import json
 
 
+
 try :
 	conf=json.load(open("config.json","r"))
 except :
@@ -34,10 +35,14 @@ for table in subprocess.check_output("mdb-tables -1 %s 2>/dev/null"%mdb_filename
 	 	# print new_table_name
 		#c.executescript()
 		sql=subprocess.check_output("mdb-export -I sqlite %s '%s'"%(mdb_filename,table),shell=True)
-		print "%s: got %s lines of sql"%(table,len(sql.split("\n")))
+		print "%s: got %s lines of sql"%(table,len(sql.split(";\n")))
 		#c.execute("BEGIN TRANSACTION")
-		for insert in sql.split("\n"):
-			c.execute(insert)
+		for insert in sql.split(";\n"):
+			try :
+				c.execute(insert)
+			except Exception as e:
+				print "'%s'"%insert
+				raise e
 		#c.execute("END")
 
 print "inserts done"
@@ -67,6 +72,12 @@ c.execute("DELETE FROM `Exp-Imp-Standard` WHERE `ID_Exp_spe` in (7,16,25)")
 
 # clean Land/Sea
 c.execute("UPDATE `flow` SET `Land/Sea` = null WHERE `Land/Sea` = ' '")
+#clean total type
+c.execute("UPDATE `flow` SET `Total_type` = lower(`Total_type`) WHERE `Total_type` is not null")
+
+
+
+
 
 # RICENTITIES
 # add a slug as RICentities id
@@ -76,9 +87,7 @@ c.execute("""UPDATE RICentities SET id=REPLACE(id,"/","") WHERE 1""")
 c.execute("""UPDATE RICentities SET id=REPLACE(id,"(","") WHERE 1""")
 c.execute("""UPDATE RICentities SET id=REPLACE(id,")","") WHERE 1""")
 c.execute("""UPDATE RICentities SET id=REPLACE(id,"***","") WHERE 1""")
-#create indeces
-c.execute("""CREATE UNIQUE INDEX i_re_id ON RICentities (id)""")
-c.execute("""CREATE INDEX i_re_rn ON RICentities (RICname)""")
+
 
 
 # remove 770 'Pas de données' : a priori on tente de les garder 
@@ -118,18 +127,21 @@ c.execute("""CREATE TABLE IF NOT EXISTS flow_joined AS
 	 LEFT OUTER JOIN entity_names_cleaning as p ON trim(`Partner Entity_Original Name`)=p.original_name COLLATE NOCASE
 	 LEFT OUTER JOIN RICentities p2 ON p2.RICname=p.RICname
 	 WHERE 	
-		`Partner Entity_Sum` is null
-	 	and ((`Total Trade Estimation` is null and partner != "World" )or(`Total Trade Estimation`=1 and partner = "World"))
+		`Partner Entity_Sum` is null	 	
 	 	and partner is not null
 	 	and expimp != "Re-exp"
 	""")
 
-# INDEX
-c.execute("""CREATE INDEX i_rid ON flow_joined (reporting_id)""")
-c.execute("""CREATE INDEX i_pid ON flow_joined (partner_id)""")
-c.execute("""CREATE INDEX i_yr ON flow_joined (Yr)""")
-c.execute("""CREATE INDEX i_r ON flow_joined (reporting)""")
-c.execute("""CREATE INDEX i_p ON flow_joined (partner)""")
+# taking care of Total_type flag to define the world partner
+# and ((`Total Trade Estimation` is null and partner != "World" )or(`Total Trade Estimation`=1 and partner = "World"))
+c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldestimated","World_estimated","geographical_area","World")""")
+c.execute("""UPDATE flow_joined SET partner="World_estimated", partner_id="Worldestimated" WHERE partner="World" and Total_type="total_estimated" """)
+c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldasreported","World_as_reported","geographical_area","World")""")
+c.execute("""UPDATE flow_joined SET partner="World_as_reported", partner_id="Worldasreported" WHERE partner="World" and Total_type="total_reporting1" """)
+c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldasreported2","World_as_reported2","geographical_area","World")""")
+c.execute("""UPDATE flow_joined SET partner="World_as_reported2", partner_id="Worldasreported2" WHERE partner="World" and Total_type="total_reporting2" """)
+c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldundefined","World_undefined","geographical_area","World")""")
+c.execute("""UPDATE flow_joined SET partner="World_undefined", partner_id="Worldundefined" WHERE partner="World" and Total_type is null """)
 
 	 	
 
@@ -270,8 +282,14 @@ if ids_to_remove:
 		print ("removing %s Gen duplicates for %s"%(r,len(ids))).encode("utf8")
 		c.execute("DELETE FROM flow_joined WHERE id IN (%s)"%",".join(ids))
 
-
-
+# INDEX
+c.execute("""CREATE INDEX i_rid ON flow_joined (reporting_id)""")
+c.execute("""CREATE INDEX i_pid ON flow_joined (partner_id)""")
+c.execute("""CREATE INDEX i_yr ON flow_joined (Yr)""")
+c.execute("""CREATE INDEX i_r ON flow_joined (reporting)""")
+c.execute("""CREATE INDEX i_p ON flow_joined (partner)""")
+c.execute("""CREATE UNIQUE INDEX i_re_id ON RICentities (id)""")
+c.execute("""CREATE INDEX i_re_rn ON RICentities (RICname)""")
 
 print "cleaning done"
 conn.commit()
