@@ -71,16 +71,17 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
             (r_id,p_id,y,expimp_g,flow_g,currency,source_g)=fields
         else:
             (r_id,p_id,y,expimp_g,flow_g,currency)=fields
-
+        print fields
         imports=[]
         exports=[]
         if not last_y:
             last_y=y
-        for i,ei in enumerate(expimp_g.split("|")):
-            if ei == "Imp":
-                imports.append(float(flow_g.split("|")[i]))
-            elif ei == "Exp":
-                exports.append(float(flow_g.split("|")[i]))
+        if flow_g:
+            for i,ei in enumerate(expimp_g.split("|")):
+                if ei == "Imp":
+                    imports.append(float(flow_g.split("|")[i]))
+                elif ei == "Exp":
+                    exports.append(float(flow_g.split("|")[i]))
         if group_reporting_by=="":
             # duplicates are only possible when not grouping
             dups=[]
