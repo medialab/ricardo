@@ -54,6 +54,19 @@ c.execute("ALTER TABLE `Exp-Imp-Standard v1` RENAME TO `Exp-Imp-Standard`")
 c.execute("ALTER TABLE `RICentities v1` RENAME TO RICentities")
 c.execute("ALTER TABLE `RICentities_groups v1` RENAME TO RICentities_groups")
 print "renaming table done"
+
+# cleaning dups in to-be-joined tables
+
+# duplicates in currency
+c.execute(""" DELETE FROM currency WHERE ID_Curr_Yr_RepEntity IN (SELECT ID_Curr_Yr_RepEntity from currency GROUP BY `Original Currency`,`Reporting Entity (Original Name)`,Yr HAVING count(*)>1)""")
+# duplicates in exp-imp
+c.execute("DELETE FROM `Exp-Imp-Standard` WHERE `ID_Exp_spe` in (7,16,25)")
+
+# checking unique on to-be-joined tables
+c.execute(""" CREATE UNIQUE INDEX unique_currency ON  currency (`Original Currency`,`Reporting Entity (Original Name)`,Yr); """)
+c.execute(""" CREATE UNIQUE INDEX unique_expimp ON `Exp-Imp-Standard` (`Exp / Imp`,`Spe/Gen/Tot`)""")
+c.execute(""" CREATE UNIQUE INDEX unique_rate ON rate (Yr,`Modified Currency`)""")
+
 # clean data
 # trim and lower
 c.execute("UPDATE flow SET `Exp / Imp`=trim(lower(`Exp / Imp`)), `Spe/Gen/Tot`=trim(lower(`Spe/Gen/Tot`)) WHERE 1")
@@ -66,18 +79,10 @@ c.execute("""UPDATE RICentities SET type=lower(replace(trim(type)," ","_")) WHER
 # one lower on reporting 
 #c.execute("""UPDATE flow SET `Reporting Entity_Original Name`="espagne (îles baléares)" WHERE `Reporting Entity_Original Name`="espagne (Îles baléares)";""")
 
-
-# duplicates in exp-imp
-c.execute("DELETE FROM `Exp-Imp-Standard` WHERE `ID_Exp_spe` in (7,16,25)")
-
 # clean Land/Sea
 c.execute("UPDATE `flow` SET `Land/Sea` = null WHERE `Land/Sea` = ' '")
 #clean total type
 c.execute("UPDATE `flow` SET `Total_type` = lower(`Total_type`) WHERE `Total_type` is not null")
-
-
-
-
 
 # RICENTITIES
 # add a slug as RICentities id
