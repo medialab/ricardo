@@ -14,11 +14,13 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
-  .directive('stackedTimeline',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout', '$modal',function (cfSource, cfTarget, fileService, apiService, $timeout, $modal){
+  .directive('stackedTimeline',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout', '$modal','DEFAULT_REPORTING','DEFAULT_PARTNER',
+                        function (cfSource, cfTarget, fileService, apiService, $timeout, $modal,DEFAULT_REPORTING,DEFAULT_PARTNER){
     return {
       restrict: 'A',
       replace: false,
-      link: function(scope, element, attrs) {
+      link: function(scope, element, attrs) 
+      {
 
         var modalInstance;
 
@@ -163,7 +165,7 @@ angular.module('ricardo.directives', [])
                   }
                 ]
 
-                console.log(flows)
+                
                 timelineData = [{key:"imp", values:[]},{key:"exp", values:[]}];
                 flows.sort(function(a, b){ return d3.ascending(a.year, b.year); })
                 flows.forEach(function(d){
@@ -180,7 +182,7 @@ angular.module('ricardo.directives', [])
               }
             )
   
-          }
+        }
 
         var update = function(){
           chart.datum(timelineData).call(stacked)
@@ -194,20 +196,21 @@ angular.module('ricardo.directives', [])
         }, true)
 
         /* start initialize */
+        scope.entities.sourceEntity.selected=scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_REPORTING})[0]
+        scope.entities.targetEntity.selected=scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_PARTNER})[0]
+        // scope.entities.sourceEntity.selected = {"RICid": "France",
+        //                                         "RICname": "France",
+        //                                         "central_state": "France",
+        //                                         "continent": "Europe",
+        //                                         "type": "country"}
 
-        scope.entities.sourceEntity.selected = {"RICid": "France",
-                                                "RICname": "France",
-                                                "central_state": "France",
-                                                "continent": "Europe",
-                                                "type": "country"}
+        // scope.entities.targetEntity.selected = {"RICid": "Italy",
+        //                                         "RICname": "Italy",
+        //                                         "central_state": "Italy",
+        //                                         "continent": "Europe",
+        //                                         "type": "country"}
 
-        scope.entities.targetEntity.selected = {"RICid": "Italy",
-                                                "RICname": "Italy",
-                                                "central_state": "Italy",
-                                                "continent": "Europe",
-                                                "type": "country"}
-
-        init("France","Italy")
+        init(DEFAULT_REPORTING,DEFAULT_PARTNER)
 
         /* end initialize */
 
