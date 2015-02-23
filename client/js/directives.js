@@ -198,17 +198,6 @@ angular.module('ricardo.directives', [])
         /* start initialize */
         scope.entities.sourceEntity.selected=scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_REPORTING})[0]
         scope.entities.targetEntity.selected=scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_PARTNER})[0]
-        // scope.entities.sourceEntity.selected = {"RICid": "France",
-        //                                         "RICname": "France",
-        //                                         "central_state": "France",
-        //                                         "continent": "Europe",
-        //                                         "type": "country"}
-
-        // scope.entities.targetEntity.selected = {"RICid": "Italy",
-        //                                         "RICname": "Italy",
-        //                                         "central_state": "Italy",
-        //                                         "continent": "Europe",
-        //                                         "type": "country"}
 
         init(DEFAULT_REPORTING,DEFAULT_PARTNER)
 
