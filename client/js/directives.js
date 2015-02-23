@@ -310,7 +310,8 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
-  .directive('stackedTimelineCountry',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout','$modal',function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout,$modal){
+  .directive('stackedTimelineCountry',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout','$modal',
+                               function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout,$modal){
     return {
       restrict: 'A',
       replace: false,
@@ -567,14 +568,9 @@ angular.module('ricardo.directives', [])
         //init()
 
         /* start initialize */
+        scope.entities.sourceEntity.selected=scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_REPORTING})[0]
 
-        scope.entities.sourceEntity.selected = {"RICid": "France",
-                                                "RICname": "France",
-                                                "central_state": "France",
-                                                "continent": "Europe",
-                                                "type": "country"}
-
-        init("France", 0)
+        init(DEFAULT_REPORTING, 0)
 
         /* end initialize */
 
@@ -691,7 +687,8 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
-  .directive('stackedTimelineContinent',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout','$modal',function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout,$modal){
+  .directive('stackedTimelineContinent',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout','$modal','DEFAULT_CONTINENT',
+    function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout,$modal,DEFAULT_CONTINENT){
     return {
       restrict: 'A',
       replace: false,
@@ -935,12 +932,9 @@ angular.module('ricardo.directives', [])
         //init()
 
          /* start initialize */
+        scope.entities.sourceEntity.selected=scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_CONTINENT})[0]
 
-        scope.entities.sourceEntity.selected = {"RICid": "Europe",
-                                                "RICname": "Europe",
-                                                "type": "continent"}
-
-        init("Europe")
+        init(DEFAULT_CONTINENT)
 
         /* end initialize */
 
@@ -1150,9 +1144,8 @@ angular.module('ricardo.directives', [])
           }
 
         /* start initialize */
-
-        scope.reporting = [{"RICid": "France","RICname": "France","central_state": "France","continent": "Europe","type": "country"}]
-
+        scope.reporting =scope.reportingCountryEntities.filter(function(e){return e.RICid==DEFAULT_REPORTING})[0]
+       
         init(scope.reporting)
 
         /* end initialize */
