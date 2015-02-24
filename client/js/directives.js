@@ -310,8 +310,8 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
-  .directive('stackedTimelineCountry',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout','$modal',
-                               function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout,$modal){
+  .directive('stackedTimelineCountry',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout','$modal','DEFAULT_REPORTING',
+                               function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout,$modal,DEFAULT_REPORTING){
     return {
       restrict: 'A',
       replace: false,
@@ -346,7 +346,7 @@ angular.module('ricardo.directives', [])
             cfSourceLine.year().filterRange(d)
 
             scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
-            scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+            scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
 
             scope.barchartData.forEach(function(d){
               d.continent = scope.RICentities[d.key+""].continent
@@ -436,7 +436,7 @@ angular.module('ricardo.directives', [])
                 
                 scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
                 
-                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
 
                 scope.barchartData.forEach(function(d){
                   d.continent = scope.RICentities[d.key+""].continent
@@ -597,7 +597,7 @@ angular.module('ricardo.directives', [])
         scope.$watch("gbContinent", function(newValue, oldValue){
           if(newValue != oldValue){
             if(!newValue){
-                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
             }
           }
         }, true)
@@ -606,14 +606,14 @@ angular.module('ricardo.directives', [])
           if(newValue != oldValue){
               if(newValue == "all"){
                 cfSource.type().filterAll()
-                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
                 scope.barchartData.forEach(function(d){
                   d.continent = scope.RICentities[d.key+""].continent
                 })
                 
               }else{
                 cfSource.type().filterExact(newValue)
-                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
                 scope.barchartData.forEach(function(d){
                   d.continent = scope.RICentities[d.key+""].continent
                 })
@@ -723,7 +723,7 @@ angular.module('ricardo.directives', [])
             cfSourceLine.year().filterRange(d)
 
             scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
-            scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+            scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
 
             scope.linechartData = d3.nest().key(function(d){return d.reporting_id}).entries(cfSourceLine.year().top(Infinity))
             
@@ -808,7 +808,7 @@ angular.module('ricardo.directives', [])
                 scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
                 
 
-                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
                 
                 var flowsPerYear = cfSource.years().top(Infinity)
 
@@ -956,10 +956,10 @@ angular.module('ricardo.directives', [])
           if(newValue != oldValue){
               if(newValue == "all"){
                 cfSource.type().filterAll()
-                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
               }else{
                 cfSource.type().filterExact(newValue)
-                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
+                scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
               }
           }
         })
@@ -967,7 +967,8 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
-  .directive('stackedTimelineWorld',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout','$modal',function (cfSource, cfTarget, fileService, apiService, $timeout, $modal){
+  .directive('stackedTimelineWorld',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout','$modal','DEFAULT_REPORTING',
+    function (cfSource, cfTarget, fileService, apiService, $timeout, $modal,DEFAULT_REPORTING){
     return {
       restrict: 'A',
       replace: false,
@@ -1035,7 +1036,7 @@ angular.module('ricardo.directives', [])
         var initEntity = function(sourceID){
           var ids = sourceID.map(function(d){return d.RICid})
           apiService
-            .getFlows({reporting_ids:ids.join(","), partner_ids: 442})
+            .getFlows({reporting_ids:ids.join(","), partner_ids: "Worldestimated"})
             .then(
               function(data){
                 
@@ -1091,7 +1092,7 @@ angular.module('ricardo.directives', [])
         var initContinent = function(sourceID){
           var ids = sourceID.map(function(d){return d.RICname})
           apiService
-            .getContinentFlows({continents:ids.join(","), partner_ids: 442})
+            .getContinentFlows({continents:ids.join(","), partner_ids: "Worldestimated"})
             .then(
               function(data){
                 
@@ -1144,8 +1145,8 @@ angular.module('ricardo.directives', [])
           }
 
         /* start initialize */
-        scope.reporting =scope.reportingCountryEntities.filter(function(e){return e.RICid==DEFAULT_REPORTING})[0]
-       
+        scope.reporting =scope.reportingCountryEntities.filter(function(e){return e.RICid==DEFAULT_REPORTING})
+        
         init(scope.reporting)
 
         /* end initialize */
