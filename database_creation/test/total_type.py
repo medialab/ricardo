@@ -45,8 +45,8 @@ def test(cursor):
 		WHERE world_type_group="World_undefined"
 		group by world_type_group
 		""")
-	undefined=cursor.fetchone()[0]
-	print "%s flows to World with only undefined Total"%(undefined)
+	undefined=cursor.fetchone()
+	print "%s flows to World with only undefined Total"%(undefined[0] if undefined else 0)
 	# missing_world_flows_countryview=0
 	# undefined=0
 	
