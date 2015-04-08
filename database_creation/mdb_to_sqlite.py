@@ -259,32 +259,40 @@ lines=c.fetchall()
 ids_to_remove={}
 for n,spe_gens,sb,ids,reporting,partner,Yr,e_i,f in lines :
 	local_ids_to_remove=[]
-
-	if spe_gens and "Gen" in spe_gens.split("|") and "Spe" in spe_gens.split("|"):
-
+	dup_found=True
+	if spe_gens and "Gen" in spe_gens.split("|") and "Spe" in spe_gens.split("|") :
 		spe_indeces=[k for k,v in enumerate(spe_gens.split("|")) if v =="Spe"]
-		if len(spe_indeces)>1:
+		if len(spe_indeces)>1 :
+			#if we have more than 1 Spe as dups
 			speNS_indeces=[k for k,v in enumerate(sb.split("|")) if v =="NS" and k in spe_indeces]
 			if len(speNS_indeces)>1:
-				print ("duplicate found :%s flows for %s,%s,%s,%s,%s,%s"%(n,Yr,reporting,partner,e_i,spe_gens,sb)).encode("utf8")
-			else:
-				#remove
+			#if we have more than 1 NS in Spe dups
+				dup_found=False
+			elif len(ids.split("|"))==len(sb.split("|")):
+				#keep only the Spe & NS flow when duplicate and if no nulls in sb other wse we can't figure out which ID to remove
 				local_ids_to_remove=[v for k,v in enumerate(ids.split("|")) if k!=speNS_indeces[0]]
-		else:
-			#remove
+			else:
+				dup_found=False
+		elif len(ids.split("|"))==len(spe_gens.split("|")):
+			#remove the Gen flows which dups with one Spe flow and if no nulls in spe_gens other wise we can't figure out which ID to remove
 			local_ids_to_remove=[v for k,v in enumerate(ids.split("|")) if k!=spe_indeces[0]]
-
+		else:
+			dup_found=False
 		if len(local_ids_to_remove)>0:
 			if reporting in ids_to_remove.keys():
 				ids_to_remove[reporting]+=local_ids_to_remove
 			else:
 			 	ids_to_remove[reporting]=local_ids_to_remove
 	else:
+		dup_found=False
+
+	if not dup_found:
+		# flows are dups but not on GEN/SPE distinction or some null values in the groupings
 		print ("duplicate found :%s flows for %s,%s,%s,%s,%s,%s"%(n,Yr,reporting,partner,e_i,spe_gens,sb)).encode("utf8")
 
 if ids_to_remove:
 	for r,ids in ids_to_remove.iteritems():
-		print ("removing %s Gen duplicates for %s"%(r,len(ids))).encode("utf8")
+		print ("removing %s Gen or Species duplicates for %s"%(r,len(ids))).encode("utf8")
 		c.execute("DELETE FROM flow_joined WHERE id IN (%s)"%",".join(ids))
 
 # INDEX
