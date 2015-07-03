@@ -3,7 +3,7 @@ import subprocess
 import sqlite3
 import os
 import json
-
+import itertools
 
 
 try :
@@ -29,9 +29,8 @@ with open(conf["sqlite_schema"],"r") as schema:
 	#c.executescript(subprocess.check_output("mdb-schema %s sqlite 2>/dev/null"%mdb_filename,shell=True))
 	c.executescript(schema.read())
 
-for table in subprocess.check_output("mdb-tables -1 %s 2>/dev/null"%mdb_filename,shell=True).split("\n")[0:-1]:
- 	if table in ["RawData v1","Currency Name v1","Exchange Rate v1","Exp-Imp-Standard v1","Entity_Names v1","RICentities v1","RICentities_groups v1"]:
-	 	# new_table_name=table.lower().replace(" ","_").replace("-","_")
+for table in ["Entity_Names v1","RawData v1","Currency Name v1","Exchange Rate v1","Exp-Imp-Standard v1","RICentities v1","RICentities_groups v1"]:
+ 	 	# new_table_name=table.lower().replace(" ","_").replace("-","_")
 	 	# print new_table_name
 		#c.executescript()
 		sql=subprocess.check_output("mdb-export -I sqlite %s '%s'"%(mdb_filename,table),shell=True)
@@ -43,6 +42,7 @@ for table in subprocess.check_output("mdb-tables -1 %s 2>/dev/null"%mdb_filename
 			except Exception as e:
 				print "'%s'"%insert
 				raise e
+		conn.commit()
 		#c.execute("END")
 
 print "inserts done"
@@ -75,6 +75,8 @@ c.execute("UPDATE flow SET `Initial Currency`=trim(lower(`Initial Currency`)),`R
 c.execute("UPDATE `currency` SET `Original Currency`=trim(lower(`Original Currency`)),`Modified Currency`=trim(lower(`Modified Currency`)),`Reporting Entity (Original Name)`=trim(lower(`Reporting Entity (Original Name)`)) WHERE 1")
 c.execute("UPDATE `rate` SET `Modified Currency`=trim(lower(`Modified Currency`)) WHERE 1")
 c.execute("""UPDATE RICentities SET type=lower(replace(trim(type)," ","_")) WHERE 1""")
+
+# DELETE unused spe/gen cleaning rows ID=13 
 
 # one lower on reporting 
 #c.execute("""UPDATE flow SET `Reporting Entity_Original Name`="espagne (îles baléares)" WHERE `Reporting Entity_Original Name`="espagne (Îles baléares)";""")
@@ -148,7 +150,6 @@ c.execute("""UPDATE flow_joined SET partner="World_as_reported2", partner_id="Wo
 c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldundefined","World_undefined","geographical_area","World")""")
 c.execute("""UPDATE flow_joined SET partner="World_undefined", partner_id="Worldundefined" WHERE partner="World" and Total_type is null """)
 
-	 	
 
 # c.execute("""DROP VIEW IF EXISTS flow_impexp_total;""")
 # c.execute(""" CREATE VIEW IF NOT EXISTS flow_impexp_world AS 
@@ -294,6 +295,36 @@ if ids_to_remove:
 	for r,ids in ids_to_remove.iteritems():
 		print ("removing %s Gen or Species duplicates for %s"%(r,len(ids))).encode("utf8")
 		c.execute("DELETE FROM flow_joined WHERE id IN (%s)"%",".join(ids))
+
+# create the partner World as sum of partners 
+c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldsumpartners","World_sum_partners","geographical_area","World")""")
+c.execute("INSERT INTO flow_joined (flow,unit,reporting,reporting_id,Yr,expimp,currency,spegen,partner,partner_id,rate) SELECT sum(flow*unit) as flow, 1 as unit, reporting, reporting_id, Yr, expimp, currency, '' as spegen,  'World_sum_partners' as partner, 'Worldsumpartners' as partner_id,rate from flow_joined group by reporting,expimp,Yr ")
+
+# create the partnet World as best guess
+c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldbestguess","World_best_guess","geographical_area","World")""")
+
+conn.commit()
+
+c.execute("""SELECT Yr,expimp,partner,reporting,partner_id,reporting_id,flow,unit,currency,spegen,rate from flow_joined WHERE partner LIKE "World%"  """)
+data=list(c)
+data.sort(key=lambda _:(_[3],_[0],_[1]))
+for g,d in itertools.groupby(data,lambda _:(_[3],_[0],_[1])):
+	dd=list(d)
+	
+	world_best_guess=[sd for sd in dd if sd[2]==u"World_estimated"]
+	if len(world_best_guess)==0:
+		world_best_guess=[sd for sd in dd if sd[2]==u"World_as_reported"]
+	if len(world_best_guess)==0:
+		world_best_guess=[sd for sd in dd if sd[2]==u"World_sum_partners"]
+	if len(world_best_guess)==0:
+		print g,dd[:3]
+		print "ARG no best guess world flow found ?"
+	else:
+		world_best_guess=list(world_best_guess[0])
+		world_best_guess[2]=u"World_best_guess"
+		world_best_guess[4]=u"Worldbestguess"
+		c.execute("""INSERT INTO flow_joined (Yr,expimp,partner,reporting,partner_id,reporting_id,flow,unit,currency,spegen,rate) VALUES (?,?,?,?,?,?,?,?,?,?,?)""",world_best_guess)
+
 
 # INDEX
 c.execute("""CREATE INDEX i_rid ON flow_joined (reporting_id)""")
