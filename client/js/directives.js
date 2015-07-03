@@ -495,7 +495,7 @@ angular.module('ricardo.directives', [])
         var initEntityLinechart = function(sourceID, partnerID, startDate, endDate, currency){
           var ids = sourceID.map(function(d){return d.RICid})
           apiService
-            .getFlows({reporting_ids:ids.join(","), partner_ids: partnerID, from: startDate, to: endDate, original_currency: currency})
+            .getFlows({partner_ids:ids.join(","), reporting_ids: partnerID, from: startDate, to: endDate, original_currency: currency})
             .then(
               function(data){
                 
@@ -515,7 +515,7 @@ angular.module('ricardo.directives', [])
               
                 cfSourceLine.add(flows);
 
-                scope.linechartData = d3.nest().key(function(d){return d.reporting_id}).entries(cfSourceLine.year().top(Infinity))
+                scope.linechartData = d3.nest().key(function(d){return d.partner_id}).entries(cfSourceLine.year().top(Infinity))
                 
 
               },
