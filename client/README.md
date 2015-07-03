@@ -57,3 +57,12 @@ $ python -m http.server 4000
 ```
 
 Once this is running, go to [http://localhost:4000/](http://localhost:4000/)
+
+
+# angular app structure
+
+- one controller per view in js/controllers.js
+- one directive by viz component in js/directives.js
+- templates are in partials
+- api calls are in services.js
+- some files are in lib/ricardo/*.js ?
