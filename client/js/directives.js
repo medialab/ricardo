@@ -530,7 +530,7 @@ angular.module('ricardo.directives', [])
         var initContinentLinechart = function(sourceID, partnerID, startDate, endDate, currency){
           var ids = sourceID.map(function(d){return d.RICid})
           apiService
-            .getContinentFlows({continents:ids.join(","), partner_ids: partnerID, from: startDate, to: endDate, original_currency: currency})
+            .getContinentFlows({continents:ids.join(","), reporting_ids: partnerID, from: startDate, to: endDate, original_currency: currency})
             .then(
               function(data){
                 
@@ -550,7 +550,7 @@ angular.module('ricardo.directives', [])
               
                 cfSourceLine.add(flows);
 
-                scope.linechartData = d3.nest().key(function(d){return d.reporting_id}).entries(cfSourceLine.year().top(Infinity))
+                scope.linechartData = d3.nest().key(function(d){return d.partner_id}).entries(cfSourceLine.year().top(Infinity))
                 
 
               },
