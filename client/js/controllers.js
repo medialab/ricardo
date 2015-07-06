@@ -17,7 +17,7 @@ angular.module('ricardo.controllers', [])
     ]
 
   })
-  .controller('bilateral', function($scope, $location, reportingEntities) {
+  .controller('bilateral', function($scope, $location, reportingEntities, utils) {
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
@@ -73,8 +73,11 @@ angular.module('ricardo.controllers', [])
         }
     }, true);
 
+    $scope.download = function() {
+      utils.downloadCSV($scope.tableData);
+    };
   })
-  .controller('country', function($scope, $location, reportingEntities) {
+  .controller('country', function($scope, $location, reportingEntities, utils) {
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
@@ -203,8 +206,11 @@ angular.module('ricardo.controllers', [])
         }
     }, true);
 
+    $scope.download = function() {
+      utils.downloadCSV($scope.tableData);
+    };
   })
-  .controller('continent', function($scope, $location, reportingEntities) {
+  .controller('continent', function($scope, $location, reportingEntities, utils) {
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
@@ -335,8 +341,11 @@ angular.module('ricardo.controllers', [])
         }
     }, true);
 
+    $scope.download = function() {
+      utils.downloadCSV($scope.tableData);
+    };
   })
-  .controller('world', function($scope, $location, reportingCountryEntities, reportingColonialEntities, reportingGeoEntities, reportingContinentEntities) {
+  .controller('world', function($scope, $location, reportingCountryEntities, reportingColonialEntities, reportingGeoEntities, reportingContinentEntities, utils) {
 
     $scope.reportingCountryEntities = reportingCountryEntities;
     $scope.reportingColonialEntities = reportingColonialEntities;
@@ -452,7 +461,9 @@ angular.module('ricardo.controllers', [])
         }
     }, true);
 
-
+    $scope.download = function() {
+      utils.downloadCSV($scope.tableData);
+    };
   }).
 controller('ModalInstance', function ($scope, $modalInstance) {
 
