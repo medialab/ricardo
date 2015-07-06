@@ -35,7 +35,7 @@
   <div class="select-dropdown col-sm-3">
     <ui-select ng-model="entities.targetEntity.selected" theme="bootstrap">
     <match placeholder="Search and select a country...">{{$select.selected.RICname}}</match>
-    <choices repeat="item in reportingEntities | filter: $select.search">
+    <choices repeat="item in partnerEntities | filter: $select.search">
       <div ng-bind-html="item.RICname | highlight: $select.search"></div>
     </choices>
   </ui-select>

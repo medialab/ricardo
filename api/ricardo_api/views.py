@@ -51,14 +51,24 @@ def continent_flows():
 @app.route('/reporting_entities')
 def reporting_entities():
     type_filter = request.args.get('type_filter',None) #["countries","city","colonial_area","geographic_area"])
-    to_world_only = request.args.get('to_world_only','0')=='1'
+    to_partner_ids = request.args.get('to_partner_ids',None)
     types=type_filter.split(",") if type_filter else []
 
     try:
-        json_data=models.get_reporting_entities(types,to_world_only)
+        json_data=models.get_reporting_entities(types,to_partner_ids.split(",") if to_partner_ids else [])
     except Exception:
         raise
         abort(500)
+
+    return Response(json_data, status=200, mimetype='application/json')
+
+@app.route('/mirror_entities')
+def mirror_entities():
+    reporting_id = request.args.get('reporting_id',None)  #only one !
+    try:
+        json_data=models.get_mirror_entities(reporting_id)
+    except Exception:
+         abort(500)
 
     return Response(json_data, status=200, mimetype='application/json')
 

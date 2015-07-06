@@ -80,6 +80,15 @@ angular.module('ricardo.directives', [])
                     mirror_flows = data.mirror_flows || [];
                     
                     scope.alerts = [];
+
+                apiService.
+                getMirrorEntities({'reporting_id': sourceID})
+                .then(
+                    function(data){
+                      scope.partnerEntities=data
+                    }
+                  )
+ 
                 
                 //manage empty country couple
                 if(!flows.length){

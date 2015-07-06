@@ -80,6 +80,21 @@ angular.module('ricardo.services', [])
        });
 
        return deferred.promise;
+     },
+    getMirrorEntities : function(params){
+       var deferred = $q.defer();
+       var serviceUrl = '/mirror_entities'
+       $http({
+          method: 'GET',
+          url : BASE_API_URL + serviceUrl,
+          params : params
+        }).success(function(data){
+         deferred.resolve(data);
+       }).error(function(){
+         deferred.reject("An error occured while fetching data");
+       });
+
+       return deferred.promise;
      }
    }
   })

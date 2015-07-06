@@ -44,16 +44,16 @@ config(['$routeProvider', function($routeProvider) {
     controller: 'world',
     resolve: {
       reportingColonialEntities : function (apiService) {
-        return apiService.getReportingEntities({'type_filter': 'colonial_area','to_world_only': 1})
+        return apiService.getReportingEntities({'type_filter': 'colonial_area','to_partner_ids': "Worldbestguess"})
       },
       reportingCountryEntities : function (apiService) {
-        return apiService.getReportingEntities({'type_filter': 'country','to_world_only': 1})
+        return apiService.getReportingEntities({'type_filter': 'country','to_partner_ids': "Worldbestguess"})
       },
       reportingGeoEntities : function (apiService) {
-        return apiService.getReportingEntities({'type_filter': 'geographical_area','to_world_only': 1})
+        return apiService.getReportingEntities({'type_filter': 'geographical_area','to_partner_ids': "Worldbestguess"})
       },
       reportingContinentEntities : function (apiService) {
-        return apiService.getReportingEntities({'type_filter': 'continent','to_world_only': 1})
+        return apiService.getReportingEntities({'type_filter': 'continent','to_partner_ids': "Worldbestguess"})
       }
     }
   });

@@ -59,12 +59,11 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
                       ORDER BY Yr ASC
                       """%(flow_field,source_field,'","'.join(reporting_ids),'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause,flow_field)
                 )
-    #
+    
     flows=[]
     partners_meta={}
     last_y=None
     for fields in cursor:
-
         if with_sources:
             (r_id,p_id,y,expimp_g,flow_g,currency,source_g)=fields
         else:
@@ -173,9 +172,26 @@ def get_continent_flows(continents,partner_ids,from_year,to_year,with_sources):
 
     return json.dumps(json_response,encoding="UTF8",indent=4)
 
+def get_mirror_entities(reporting_id):
+    cursor = get_db().cursor()
+    cursor.execute("""SELECT reporting_id,reporting,rci.type,rci.central_state,rci.continent
+                          FROM flow_joined
+                          LEFT OUTER JOIN RICentities rci ON rci.id=reporting_id
+                          WHERE partner_id='%s' AND reporting_id IN (SELECT distinct(partner_id) from flow_joined where reporting_id='%s')
+                          group by reporting_id """%(reporting_id,reporting_id))
+    json_response=[]
+    for (id,r,t,central,continent) in cursor:
+        json_response.append({
+            "RICid":id,
+            "RICname":r,
+            "type":t,
+            "central_state":central,
+            "continent":continent
+            })
+    return json.dumps(json_response,encoding="UTF8",indent=4)
 
 
-def get_reporting_entities(types=[],to_world_only=False):
+def get_reporting_entities(types=[],to_partner_ids=[]):
 
     cursor = get_db().cursor()
     if "continent" in types:
@@ -198,7 +214,7 @@ def get_reporting_entities(types=[],to_world_only=False):
         json_response=[]
 
     type_clause='type IN ("%s")'%'","'.join(types) if len(types)>0 else ""
-    partner_clause=" partner IN ('World_best_guess') " if to_world_only else ""
+    partner_clause=" partner_id IN ('%s') "%"','".join(to_partner_ids) if len(to_partner_ids)>0 else ""
     if type_clause!="" or partner_clause!="":
         where_clause = " AND ".join(_ for _ in [type_clause,partner_clause] if _ != "")
         where_clause = "WHERE "+where_clause if where_clause!="" else ""
