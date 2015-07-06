@@ -41,6 +41,7 @@
           <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'tot'" uncheckable>total</label>
           <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'imp'" uncheckable>imports</label>
           <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'exp'" uncheckable>exports</label>
+          <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'name'" uncheckable>name</label>
         </div>
         <p class="filter">currency</p>
         <div class="btn-group radio-country">
@@ -97,6 +98,12 @@
         <ui-select ng-model="entities.sourceContinentEntity.selected" theme="bootstrap">
           <match placeholder="Select a Continent...">{{$select.selected.RICname}}</match>
           <choices repeat="item in reportingContinentEntities | filter: $select.search">
+            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
+        <ui-select ng-model="entities.sourceWorldEntity.selected" theme="bootstrap">
+          <match placeholder="Select a World aggregate...">{{$select.selected.RICname}}</match>
+          <choices repeat="item in reportingWorldEntities | filter: $select.search">
             <div ng-bind-html="item.RICname | highlight: $select.search"></div>
           </choices>
         </ui-select>

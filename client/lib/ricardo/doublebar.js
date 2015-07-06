@@ -17,15 +17,23 @@
     function doubleBarChart(selection){
       selection.each(function(data){
 
-        data.sort(function(a,b){return d3.descending(a.value[order],b.value[order])})
+        data.sort(function(a,b){
+
+          if (order === 'name') {
+            return d3.ascending(a.key, b.key);
+          }
+          else {
+            return d3.descending(a.value[order], b.value[order]);
+          }
+        });
 
 
-        
+
         data = data.filter(function(d){return d.value.tot > 0})
 
 
         height = data.length*(barHeigth+barGap)
-        
+
         var chart;
         var margin = {top: barGap, right: 20, bottom: 0, left: 10},
             chartWidth = width - margin.left - margin.right,
@@ -68,8 +76,8 @@
         //x.domain([xMin, xMax])
         x.domain([0, xMax])
 
-      var div = d3.select("body").append("div")   
-          .attr("class", "tooltip-elm")               
+      var div = d3.select("body").append("div")
+          .attr("class", "tooltip-elm")
 
         var barsImpGroup = chart.select(".barImpGroup")
 
@@ -77,8 +85,8 @@
           chart.append("g").attr("class", "barImpGroup").attr("transform", "translate(" + chartWidth/2 + ",0)")
           barsImpGroup = chart.select(".barImpGroup")
         }
-        
-        
+
+
         var barsImp = barsImpGroup
                       .selectAll(".imp")
                       .data(data, function(d){return d.key})
@@ -176,7 +184,7 @@
 
         barsExp.exit().remove()
 
-        
+
         var barsLegendGroup = chart.select(".barLegendGroup")
 
         if (barsLegendGroup.empty()){
@@ -239,10 +247,10 @@
           .text(function(d,i){if(i > 0){return format(d)}else{return format(d)}})
 
         barsLegendValue.exit().remove()
-        
+
 
         /* custom axis */
-        
+
         var lineFunction = d3.svg.line()
                           .x(function(d) {return d.x; })
                           .y(function(d) {return d.y; })
@@ -279,7 +287,7 @@
         var axisImp = axisImpGroup
                       .selectAll(".axis")
                       .data(axisImpData)
-        
+
         axisImp
            .attr("d", function(d){return lineFunction(d)})
 
@@ -295,7 +303,7 @@
         var axisExp = axisExpGroup
                       .selectAll(".axis")
                       .data(axisExpData)
-        
+
         axisExp
           .attr("d", function(d){return lineFunction(d)})
 
@@ -308,7 +316,7 @@
           .attr("stroke", "#777")
           .attr("stroke-dasharray", "2,2")
 
-        
+
 
       }); //end selection
     } // end doubleBarChart
