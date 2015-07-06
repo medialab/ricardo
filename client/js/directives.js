@@ -83,7 +83,6 @@ angular.module('ricardo.directives', [])
                 
                 //manage empty country couple
                 if(!flows.length){
-
                   scope.startDate = 1857
                   scope.endDate = 1938
 
@@ -139,7 +138,6 @@ angular.module('ricardo.directives', [])
 
                 cfSource.add(flows);
                 cfTarget.add(mirror_flows);
-
 
                 scope.startDate = cfSource.year().bottom(1)[0].year
                 scope.endDate = cfSource.year().top(1)[0].year
