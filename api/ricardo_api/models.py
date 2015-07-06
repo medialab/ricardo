@@ -209,7 +209,7 @@ def get_reporting_entities(types=[],to_world_only=False):
                           LEFT OUTER JOIN RICentities ON RICname=reporting
                           %s
                           group by reporting"""%(where_clause)
-   cursor.execute(sql)
+    cursor.execute(sql)
     
     for (id,r,t,central,continent) in cursor:
         json_response.append({
