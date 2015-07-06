@@ -17,7 +17,7 @@ angular.module('ricardo.controllers', [])
     ]
 
   })
-  .controller('bilateral', function($scope, $location, reportingEntities) {
+  .controller('bilateral', function($scope, $location, reportingEntities, TABLE_HEADERS) {
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
@@ -58,6 +58,7 @@ angular.module('ricardo.controllers', [])
       pagingOptions: $scope.pagingOptions,
       enableRowSelection: false,
       footerRowHeight: 45,
+      columnDefs: TABLE_HEADERS,
       plugins: [new ngGridCsvExportPlugin({data:'tableData'})]
     }
 
@@ -75,7 +76,7 @@ angular.module('ricardo.controllers', [])
     }, true);
 
   })
-  .controller('country', function($scope, $location, reportingEntities) {
+  .controller('country', function($scope, $location, reportingEntities, TABLE_HEADERS) {
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
@@ -189,6 +190,7 @@ angular.module('ricardo.controllers', [])
       pagingOptions: $scope.pagingOptions,
       enableRowSelection: false,
       footerRowHeight: 45,
+      columnDefs: TABLE_HEADERS,
       plugins: [new ngGridCsvExportPlugin({data:'tableData'})]
     }
 
@@ -206,7 +208,7 @@ angular.module('ricardo.controllers', [])
     }, true);
 
   })
-  .controller('continent', function($scope, $location, reportingEntities) {
+  .controller('continent', function($scope, $location, reportingEntities, TABLE_HEADERS) {
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
@@ -322,6 +324,7 @@ angular.module('ricardo.controllers', [])
       pagingOptions: $scope.pagingOptions,
       enableRowSelection: false,
       footerRowHeight: 45,
+      columnDefs: TABLE_HEADERS,
       plugins: [new ngGridCsvExportPlugin({data:'tableData'})]
     }
 
@@ -339,7 +342,7 @@ angular.module('ricardo.controllers', [])
     }, true);
 
   })
-  .controller('world', function($scope, $location, reportingCountryEntities, reportingColonialEntities, reportingGeoEntities, reportingContinentEntities) {
+  .controller('world', function($scope, $location, reportingCountryEntities, reportingColonialEntities, reportingGeoEntities, reportingContinentEntities, TABLE_HEADERS) {
 
     $scope.reportingCountryEntities = reportingCountryEntities;
     $scope.reportingColonialEntities = reportingColonialEntities;
@@ -440,6 +443,7 @@ angular.module('ricardo.controllers', [])
       pagingOptions: $scope.pagingOptions,
       enableRowSelection: false,
       footerRowHeight: 45,
+      columnDefs: TABLE_HEADERS,
       plugins: [new ngGridCsvExportPlugin({data:'tableData'})]
     }
 
