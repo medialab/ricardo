@@ -400,7 +400,8 @@ angular.module('ricardo.directives', [])
 
                 scope.reportingCountryEntities = scope.RICentitiesDD.filter(function(d){return d.type == "country"})
                 scope.reportingColonialEntities = scope.RICentitiesDD.filter(function(d){return d.type == "colonial_area"})
-                scope.reportingGeoEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area"})
+                scope.reportingGeoEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World_") !== 0})
+                scope.reportingWorldEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World_") === 0})
                 var continents = d3.nest()
                                   .key(function(d){return d.continent})
                                   .entries(scope.RICentitiesDD)
@@ -420,6 +421,7 @@ angular.module('ricardo.directives', [])
                 scope.entities.sourceColonialEntity = {}
                 scope.entities.sourceGeoEntity = {}
                 scope.entities.sourceContinentEntity = {}
+                scope.entities.sourceWorldEntity = {}
 
 
                 flows.forEach(function(d){
@@ -770,7 +772,8 @@ angular.module('ricardo.directives', [])
 
                 scope.reportingCountryEntities = scope.RICentitiesDD.filter(function(d){return d.type == "country"})
                 scope.reportingColonialEntities = scope.RICentitiesDD.filter(function(d){return d.type == "colonial_area"})
-                scope.reportingGeoEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area"})
+                scope.reportingGeoEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World_") !== 0})
+                scope.reportingWorldEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World_") === 0})
                 var continents = d3.nest()
                                   .key(function(d){return d.continent})
                                   .entries(scope.RICentitiesDD)
@@ -778,7 +781,6 @@ angular.module('ricardo.directives', [])
                                   .filter(function(d){return d})
 
                 scope.reportingContinentEntities = []
-
                 continents.forEach(function(d){
                   var elm = {RICname : d, type: "continent", RICid: d }
                   scope.reportingContinentEntities.push(elm)
@@ -791,6 +793,7 @@ angular.module('ricardo.directives', [])
                 scope.entities.sourceColonialEntity = {}
                 scope.entities.sourceGeoEntity = {}
                 scope.entities.sourceContinentEntity = {}
+                scope.entities.sourceWorldEntity = {}
 
 
                 flows.forEach(function(d){
