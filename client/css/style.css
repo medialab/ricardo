@@ -253,6 +253,18 @@ body > .container {
   stroke:none;
 }
 
+.area-imp{
+  fill: rgba(200, 200, 200, 0.2);
+  stroke: #cc6666;
+  stroke-width: 1.5px;
+}
+
+.area-exp{
+  fill: rgba(200, 200, 200, 0.2);
+  stroke: #663333;
+  stroke-width: 1.5px;
+}
+
 /* stream */
 
 .stream-legend h4{
