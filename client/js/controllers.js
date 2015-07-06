@@ -75,7 +75,15 @@ angular.module('ricardo.controllers', [])
     }, true);
 
     $scope.download = function() {
-      utils.downloadCSV($scope.tableData);
+      var headers = TABLE_HEADERS.map(function(h) {
+        return h.displayName;
+      });
+
+      var order = TABLE_HEADERS.map(function(h) {
+        return h.field;
+      });
+
+      utils.downloadCSV($scope.tableData, headers, order);
     };
   })
   .controller('country', function($scope, $location, reportingEntities, utils, TABLE_HEADERS) {
@@ -209,7 +217,15 @@ angular.module('ricardo.controllers', [])
     }, true);
 
     $scope.download = function() {
-      utils.downloadCSV($scope.tableData);
+      var headers = TABLE_HEADERS.map(function(h) {
+        return h.displayName;
+      });
+
+      var order = TABLE_HEADERS.map(function(h) {
+        return h.field;
+      });
+
+      utils.downloadCSV($scope.tableData, headers, order);
     };
   })
   .controller('continent', function($scope, $location, reportingEntities, utils, TABLE_HEADERS) {
@@ -345,7 +361,15 @@ angular.module('ricardo.controllers', [])
     }, true);
 
     $scope.download = function() {
-      utils.downloadCSV($scope.tableData);
+      var headers = TABLE_HEADERS.map(function(h) {
+        return h.displayName;
+      });
+
+      var order = TABLE_HEADERS.map(function(h) {
+        return h.field;
+      });
+
+      utils.downloadCSV($scope.tableData, headers, order);
     };
   })
   .controller('world', function($scope, $location, reportingCountryEntities, reportingColonialEntities, reportingGeoEntities, reportingContinentEntities, utils, TABLE_HEADERS) {
@@ -467,7 +491,15 @@ angular.module('ricardo.controllers', [])
     }, true);
 
     $scope.download = function() {
-      utils.downloadCSV($scope.tableData);
+      var headers = TABLE_HEADERS.map(function(h) {
+        return h.displayName;
+      });
+
+      var order = TABLE_HEADERS.map(function(h) {
+        return h.field;
+      });
+
+      utils.downloadCSV($scope.tableData, headers, order);
     };
   }).
 controller('ModalInstance', function ($scope, $modalInstance) {

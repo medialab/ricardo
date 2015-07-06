@@ -296,8 +296,8 @@ angular.module('ricardo.services', [])
       }).join('\n');
     }
 
-    function downloadCSV(data, headers) {
-      var csv = toCSVString(data),
+    function downloadCSV(data, headers, order) {
+      var csv = toCSVString(data, {headers: headers, order: order}),
           blob = new Blob([csv], {type: 'text/csv;charset=utf-8'}),
           dataUrl = URL.createObjectURL(blob);
 
