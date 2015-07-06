@@ -73,7 +73,7 @@ angular.module('ricardo.directives', [])
         var init = function(sourceID, targetID){
           
           apiService
-            .getFlows({reporting_ids: sourceID, partner_ids: targetID})
+            .getFlows({reporting_ids: sourceID, partner_ids: targetID, with_sources: 1})
             .then(
               function(data){
                 var flows = data.flows,
@@ -367,7 +367,7 @@ angular.module('ricardo.directives', [])
         var init = function(sourceID, currency){
           
           apiService
-            .getFlows({reporting_ids: sourceID, original_currency: currency})
+            .getFlows({reporting_ids: sourceID, original_currency: currency, with_sources: 1})
             .then(
               function(data){
                 
@@ -497,7 +497,7 @@ angular.module('ricardo.directives', [])
         var initEntityLinechart = function(sourceID, partnerID, startDate, endDate, currency){
           var ids = sourceID.map(function(d){return d.RICid})
           apiService
-            .getFlows({partner_ids:ids.join(","), reporting_ids: partnerID, from: startDate, to: endDate, original_currency: currency})
+            .getFlows({partner_ids:ids.join(","), reporting_ids: partnerID, from: startDate, to: endDate, original_currency: currency, with_sources: 1})
             .then(
               function(data){
                 
@@ -1039,7 +1039,7 @@ angular.module('ricardo.directives', [])
         var initEntity = function(sourceID){
           var ids = sourceID.map(function(d){return d.RICid})
           apiService
-            .getFlows({reporting_ids:ids.join(","), partner_ids: "Worldbestguess"})
+            .getFlows({reporting_ids:ids.join(","), partner_ids: "Worldbestguess", with_sources: 1})
             .then(
               function(data){
                 
