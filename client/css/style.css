@@ -253,16 +253,21 @@ body > .container {
   stroke:none;
 }
 
-.area-imp{
-  fill: rgba(200, 200, 200, 0.2);
-  stroke: #cc6666;
-  stroke-width: 1.5px;
+.area-imp, .area-exp{
+  fill: rgba(230, 230, 230, 0.4);
+  stroke: none;
 }
 
-.area-exp{
-  fill: rgba(200, 200, 200, 0.2);
+.line-imp{
+  stroke: #cc6666;
+  stroke-width: 1.5px;
+  fill: none;
+}
+
+.line-exp{
   stroke: #663333;
   stroke-width: 1.5px;
+  fill: none;
 }
 
 /* stream */

@@ -127,14 +127,26 @@ angular.module('ricardo.controllers', [])
             })
 
       var areaImp = d3.svg.area()
+          .defined(function(d) { return d.imp != null; })
           .x(function(d) { return x(d.date); })
           .y0(height)
           .y1(function(d) { return y(d.imp); });
 
+      var lineImp = d3.svg.line()
+          .defined(function(d) { return d.imp != null; })
+          .x(function(d) { return x(d.date); })
+          .y(function(d) { return y(d.imp); });
+
       var areaExp = d3.svg.area()
+          .defined(function(d) { return d.exp != null; })
           .x(function(d) { return x(d.date); })
           .y0(height)
           .y1(function(d) { return y(d.exp); });
+
+      var lineExp = d3.svg.area()
+          .defined(function(d) { return d.exp != null; })
+          .x(function(d) { return x(d.date); })
+          .y(function(d) { return y(d.exp); });
 
       var svg = d3.select("#dual-timeline-container").append("svg")
           .attr("width", width + margin.left + margin.right)
@@ -153,11 +165,21 @@ angular.module('ricardo.controllers', [])
           .datum(data)
           .attr("class", "area-imp")
           .attr("d", areaImp)
+
+      svg.append("path")
+          .datum(data)
+          .attr("class", "line-imp")
+          .attr("d", lineImp)
       
       svg.append("path")
           .datum(data)
           .attr("class", "area-exp")
           .attr("d", areaExp)
+
+      svg.append("path")
+          .datum(data)
+          .attr("class", "line-exp")
+          .attr("d", lineExp)
 
       /* axis */
 
