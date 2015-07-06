@@ -198,7 +198,7 @@ def get_reporting_entities(types=[],to_world_only=False):
         json_response=[]
 
     type_clause='type IN ("%s")'%'","'.join(types) if len(types)>0 else "" 
-    partner_clause=" partner IN ('World_estimated') " if to_world_only else ""
+    partner_clause=" partner IN ('World_best_guess') " if to_world_only else ""
     if type_clause!="" or partner_clause!="":
         where_clause = " AND ".join(_ for _ in [type_clause,partner_clause] if _ != "")
         where_clause = "WHERE "+where_clause if where_clause!="" else ""
@@ -209,7 +209,6 @@ def get_reporting_entities(types=[],to_world_only=False):
                           LEFT OUTER JOIN RICentities ON RICname=reporting
                           %s
                           group by reporting"""%(where_clause)
-    app.logger.error(sql)
     cursor.execute(sql)
     
     for (id,r,t,central,continent) in cursor:
