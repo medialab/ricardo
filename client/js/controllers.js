@@ -75,6 +75,7 @@ angular.module('ricardo.controllers', [])
     }, true);
 
   })
+
   .controller('country', function($scope, $location, reportingEntities) {
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
@@ -197,6 +198,7 @@ angular.module('ricardo.controllers', [])
     }, true);
 
   })
+
   .controller('continent', function($scope, $location, reportingEntities) {
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
@@ -321,6 +323,7 @@ angular.module('ricardo.controllers', [])
     }, true);
 
   })
+
   .controller('world', function($scope, $location, reportingCountryEntities, reportingColonialEntities, reportingGeoEntities, reportingContinentEntities) {
 
     $scope.reportingCountryEntities = reportingCountryEntities;
@@ -431,8 +434,9 @@ angular.module('ricardo.controllers', [])
     }, true);
 
 
-  }).
-controller('ModalInstance', function ($scope, $modalInstance) {
+  })
+  
+  .controller('ModalInstance', function ($scope, $modalInstance) {
 
   $scope.ok = function () {
     $modalInstance.close();
