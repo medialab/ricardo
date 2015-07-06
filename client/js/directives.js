@@ -1036,7 +1036,7 @@ angular.module('ricardo.directives', [])
         var initEntity = function(sourceID){
           var ids = sourceID.map(function(d){return d.RICid})
           apiService
-            .getFlows({reporting_ids:ids.join(","), partner_ids: "Worldestimated"})
+            .getFlows({reporting_ids:ids.join(","), partner_ids: "Worldbestguess"})
             .then(
               function(data){
                 
