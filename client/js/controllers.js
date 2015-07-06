@@ -75,13 +75,18 @@ angular.module('ricardo.controllers', [])
     }, true);
 
     // ADDENDUM from sprint 06 / 07 / 2015
-    // scope.entities.sourceEntity.selected=scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_REPORTING})[0]
-    // scope.entities.targetEntity.selected=scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_PARTNER})[0]
-
+    $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_REPORTING})[0]
+    $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_PARTNER})[0]
+    
     apiService
       .getFlows({reporting_ids: DEFAULT_REPORTING, partner_ids: DEFAULT_PARTNER})
       .then(function(data){
         console.log('Data loaded', data)
+        
+        $scope.minDate = d3.min( data.flows, function(d) { return d.year; })
+        $scope.maxDate = d3.max( data.flows, function(d) { return d.year; })
+
+         
         drawDualTimeline(data.flows)
       })
 
