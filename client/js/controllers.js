@@ -12,7 +12,7 @@ angular.module('ricardo.controllers', [])
     $scope.views = [
       {slug:"bilateral", label:"Bilateral view"},
       {slug:"country", label:"Country view"},
-      {slug:"continent", label:"Continent view"},
+      // {slug:"continent", label:"Continent view"},
       {slug:"world", label:"World view"}
     ]
 
