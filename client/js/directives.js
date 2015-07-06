@@ -73,7 +73,7 @@ angular.module('ricardo.directives', [])
         var init = function(sourceID, targetID){
           
           apiService
-            .getFlows({reporting_ids: sourceID, partner_ids: targetID})
+            .getFlows({reporting_ids: sourceID, partner_ids: targetID, with_sources: 1})
             .then(
               function(data){
                 var flows = data.flows,
@@ -83,7 +83,6 @@ angular.module('ricardo.directives', [])
                 
                 //manage empty country couple
                 if(!flows.length){
-
                   scope.startDate = 1857
                   scope.endDate = 1938
 
@@ -139,7 +138,6 @@ angular.module('ricardo.directives', [])
 
                 cfSource.add(flows);
                 cfTarget.add(mirror_flows);
-
 
                 scope.startDate = cfSource.year().bottom(1)[0].year
                 scope.endDate = cfSource.year().top(1)[0].year
@@ -367,7 +365,7 @@ angular.module('ricardo.directives', [])
         var init = function(sourceID, currency){
           
           apiService
-            .getFlows({reporting_ids: sourceID, original_currency: currency})
+            .getFlows({reporting_ids: sourceID, original_currency: currency, with_sources: 1})
             .then(
               function(data){
                 
@@ -400,13 +398,12 @@ angular.module('ricardo.directives', [])
 
                 scope.reportingCountryEntities = scope.RICentitiesDD.filter(function(d){return d.type == "country"})
                 scope.reportingColonialEntities = scope.RICentitiesDD.filter(function(d){return d.type == "colonial_area"})
-                scope.reportingGeoEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World_") !== 0})
-                scope.reportingWorldEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World_") === 0})
+                scope.reportingGeoEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World ") !== 0})
+                scope.reportingWorldEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World ") === 0})
                 var continents = d3.nest()
                                   .key(function(d){return d.continent})
-                                  .entries(scope.RICentitiesDD)
+                                  .entries(scope.RICentitiesDD.filter(function(d){return d.continent}))
                                   .map(function(d){return d.key})
-                                  .filter(function(d){return d})
 
                 scope.reportingContinentEntities = []
                 continents.forEach(function(d){
@@ -497,7 +494,7 @@ angular.module('ricardo.directives', [])
         var initEntityLinechart = function(sourceID, partnerID, startDate, endDate, currency){
           var ids = sourceID.map(function(d){return d.RICid})
           apiService
-            .getFlows({partner_ids:ids.join(","), reporting_ids: partnerID, from: startDate, to: endDate, original_currency: currency})
+            .getFlows({partner_ids:ids.join(","), reporting_ids: partnerID, from: startDate, to: endDate, original_currency: currency, with_sources: 1})
             .then(
               function(data){
                 
@@ -772,8 +769,8 @@ angular.module('ricardo.directives', [])
 
                 scope.reportingCountryEntities = scope.RICentitiesDD.filter(function(d){return d.type == "country"})
                 scope.reportingColonialEntities = scope.RICentitiesDD.filter(function(d){return d.type == "colonial_area"})
-                scope.reportingGeoEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World_") !== 0})
-                scope.reportingWorldEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World_") === 0})
+                scope.reportingGeoEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World ") !== 0})
+                scope.reportingWorldEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World ") === 0})
                 var continents = d3.nest()
                                   .key(function(d){return d.continent})
                                   .entries(scope.RICentitiesDD)
@@ -1039,7 +1036,7 @@ angular.module('ricardo.directives', [])
         var initEntity = function(sourceID){
           var ids = sourceID.map(function(d){return d.RICid})
           apiService
-            .getFlows({reporting_ids:ids.join(","), partner_ids: "Worldbestguess"})
+            .getFlows({reporting_ids:ids.join(","), partner_ids: "Worldbestguess", with_sources: 1})
             .then(
               function(data){
                 

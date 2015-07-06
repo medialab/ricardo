@@ -141,14 +141,14 @@ c.execute("""CREATE TABLE IF NOT EXISTS flow_joined AS
 
 # taking care of Total_type flag to define the world partner
 # and ((`Total Trade Estimation` is null and partner != "World" )or(`Total Trade Estimation`=1 and partner = "World"))
-c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldestimated","World_estimated","geographical_area","World")""")
-c.execute("""UPDATE flow_joined SET partner="World_estimated", partner_id="Worldestimated" WHERE partner="World" and Total_type="total_estimated" """)
-c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldasreported","World_as_reported","geographical_area","World")""")
-c.execute("""UPDATE flow_joined SET partner="World_as_reported", partner_id="Worldasreported" WHERE partner="World" and Total_type="total_reporting1" """)
-c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldasreported2","World_as_reported2","geographical_area","World")""")
-c.execute("""UPDATE flow_joined SET partner="World_as_reported2", partner_id="Worldasreported2" WHERE partner="World" and Total_type="total_reporting2" """)
-c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldundefined","World_undefined","geographical_area","World")""")
-c.execute("""UPDATE flow_joined SET partner="World_undefined", partner_id="Worldundefined" WHERE partner="World" and Total_type is null """)
+c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldestimated","World estimated","geographical_area","World")""")
+c.execute("""UPDATE flow_joined SET partner="World estimated", partner_id="Worldestimated" WHERE partner="World" and Total_type="total_estimated" """)
+c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldasreported","World as reported","geographical_area","World")""")
+c.execute("""UPDATE flow_joined SET partner="World as reported", partner_id="Worldasreported" WHERE partner="World" and Total_type="total_reporting1" """)
+c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldasreported2","World as reported2","geographical_area","World")""")
+c.execute("""UPDATE flow_joined SET partner="World as reported2", partner_id="Worldasreported2" WHERE partner="World" and Total_type="total_reporting2" """)
+c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldundefined","World undefined","geographical_area","World")""")
+c.execute("""UPDATE flow_joined SET partner="World undefined", partner_id="Worldundefined" WHERE partner="World" and Total_type is null """)
 
 
 # c.execute("""DROP VIEW IF EXISTS flow_impexp_total;""")
@@ -297,15 +297,15 @@ if ids_to_remove:
 		c.execute("DELETE FROM flow_joined WHERE id IN (%s)"%",".join(ids))
 
 # create the partner World as sum of partners 
-c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldsumpartners","World_sum_partners","geographical_area","World")""")
-c.execute("INSERT INTO flow_joined (flow,unit,reporting,reporting_id,Yr,expimp,currency,spegen,partner,partner_id,rate) SELECT sum(flow*unit) as flow, 1 as unit, reporting, reporting_id, Yr, expimp, currency, '' as spegen,  'World_sum_partners' as partner, 'Worldsumpartners' as partner_id,rate from flow_joined group by reporting,expimp,Yr ")
+c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldsumpartners","World sum partners","geographical_area","World")""")
+c.execute("INSERT INTO flow_joined (flow,unit,reporting,reporting_id,Yr,expimp,currency,spegen,partner,partner_id,rate,Source,`Source suite`) SELECT sum(flow*unit) as flow, 1 as unit, reporting, reporting_id, Yr, expimp, currency, '' as spegen,  'World_sum_partners' as partner, 'Worldsumpartners' as partner_id,rate,Source,`Source suite` from flow_joined group by reporting,expimp,Yr ")
 
 # create the partnet World as best guess
-c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldbestguess","World_best_guess","geographical_area","World")""")
+c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldbestguess","World best guess","geographical_area","World")""")
 
 conn.commit()
 
-c.execute("""SELECT Yr,expimp,partner,reporting,partner_id,reporting_id,flow,unit,currency,spegen,rate from flow_joined WHERE partner LIKE "World%"  """)
+c.execute("""SELECT Yr,expimp,partner,reporting,partner_id,reporting_id,flow,unit,currency,spegen,rate,Source,`Source suite` from flow_joined WHERE partner LIKE "World%"  """)
 data=list(c)
 data.sort(key=lambda _:(_[3],_[0],_[1]))
 for g,d in itertools.groupby(data,lambda _:(_[3],_[0],_[1])):
@@ -323,7 +323,7 @@ for g,d in itertools.groupby(data,lambda _:(_[3],_[0],_[1])):
 		world_best_guess=list(world_best_guess[0])
 		world_best_guess[2]=u"World_best_guess"
 		world_best_guess[4]=u"Worldbestguess"
-		c.execute("""INSERT INTO flow_joined (Yr,expimp,partner,reporting,partner_id,reporting_id,flow,unit,currency,spegen,rate) VALUES (?,?,?,?,?,?,?,?,?,?,?)""",world_best_guess)
+		c.execute("""INSERT INTO flow_joined (Yr,expimp,partner,reporting,partner_id,reporting_id,flow,unit,currency,spegen,rate,Source,`Source suite`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",world_best_guess)
 
 
 # INDEX

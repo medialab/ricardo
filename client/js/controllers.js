@@ -12,12 +12,12 @@ angular.module('ricardo.controllers', [])
     $scope.views = [
       {slug:"bilateral", label:"Bilateral view"},
       {slug:"country", label:"Country view"},
-      {slug:"continent", label:"Continent view"},
+      // {slug:"continent", label:"Continent view"},
       {slug:"world", label:"World view"}
     ]
 
   })
-  .controller('bilateral', function($scope, $location, reportingEntities, utils) {
+  .controller('bilateral', function($scope, $location, reportingEntities, utils, TABLE_HEADERS) {
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
@@ -57,7 +57,8 @@ angular.module('ricardo.controllers', [])
       totalServerItems:'totalServerItems',
       pagingOptions: $scope.pagingOptions,
       enableRowSelection: false,
-      footerRowHeight: 45
+      footerRowHeight: 45,
+      columnDefs: TABLE_HEADERS
     }
 
     $scope.$watch('tableData', function (newVal, oldVal) {
@@ -77,7 +78,7 @@ angular.module('ricardo.controllers', [])
       utils.downloadCSV($scope.tableData);
     };
   })
-  .controller('country', function($scope, $location, reportingEntities, utils) {
+  .controller('country', function($scope, $location, reportingEntities, utils, TABLE_HEADERS) {
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
@@ -190,7 +191,8 @@ angular.module('ricardo.controllers', [])
       totalServerItems:'totalServerItems',
       pagingOptions: $scope.pagingOptions,
       enableRowSelection: false,
-      footerRowHeight: 45
+      footerRowHeight: 45,
+      columnDefs: TABLE_HEADERS
     }
 
     $scope.$watch('tableData', function (newVal, oldVal) {
@@ -210,7 +212,7 @@ angular.module('ricardo.controllers', [])
       utils.downloadCSV($scope.tableData);
     };
   })
-  .controller('continent', function($scope, $location, reportingEntities, utils) {
+  .controller('continent', function($scope, $location, reportingEntities, utils, TABLE_HEADERS) {
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
@@ -325,7 +327,8 @@ angular.module('ricardo.controllers', [])
       totalServerItems:'totalServerItems',
       pagingOptions: $scope.pagingOptions,
       enableRowSelection: false,
-      footerRowHeight: 45
+      footerRowHeight: 45,
+      columnDefs: TABLE_HEADERS
     }
 
     $scope.$watch('tableData', function (newVal, oldVal) {
@@ -345,7 +348,8 @@ angular.module('ricardo.controllers', [])
       utils.downloadCSV($scope.tableData);
     };
   })
-  .controller('world', function($scope, $location, reportingCountryEntities, reportingColonialEntities, reportingGeoEntities, reportingContinentEntities, utils) {
+  .controller('world', function($scope, $location, reportingCountryEntities, reportingColonialEntities, reportingGeoEntities, reportingContinentEntities, utils, TABLE_HEADERS) {
+
 
     $scope.reportingCountryEntities = reportingCountryEntities;
     $scope.reportingColonialEntities = reportingColonialEntities;
@@ -445,7 +449,8 @@ angular.module('ricardo.controllers', [])
       totalServerItems:'totalServerItems',
       pagingOptions: $scope.pagingOptions,
       enableRowSelection: false,
-      footerRowHeight: 45
+      footerRowHeight: 45,
+      columnDefs: TABLE_HEADERS
     }
 
     $scope.$watch('tableData', function (newVal, oldVal) {
