@@ -92,7 +92,6 @@ angular.module('ricardo.directives', [])
                 
                 //manage empty country couple
                 if(!flows.length){
-
                   scope.startDate = 1857
                   scope.endDate = 1938
 
@@ -148,7 +147,6 @@ angular.module('ricardo.directives', [])
 
                 cfSource.add(flows);
                 cfTarget.add(mirror_flows);
-
 
                 scope.startDate = cfSource.year().bottom(1)[0].year
                 scope.endDate = cfSource.year().top(1)[0].year
@@ -409,13 +407,12 @@ angular.module('ricardo.directives', [])
 
                 scope.reportingCountryEntities = scope.RICentitiesDD.filter(function(d){return d.type == "country"})
                 scope.reportingColonialEntities = scope.RICentitiesDD.filter(function(d){return d.type == "colonial_area"})
-                scope.reportingGeoEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World_") !== 0})
-                scope.reportingWorldEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World_") === 0})
+                scope.reportingGeoEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World ") !== 0})
+                scope.reportingWorldEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World ") === 0})
                 var continents = d3.nest()
                                   .key(function(d){return d.continent})
-                                  .entries(scope.RICentitiesDD)
+                                  .entries(scope.RICentitiesDD.filter(function(d){return d.continent}))
                                   .map(function(d){return d.key})
-                                  .filter(function(d){return d})
 
                 scope.reportingContinentEntities = []
                 continents.forEach(function(d){
@@ -781,8 +778,8 @@ angular.module('ricardo.directives', [])
 
                 scope.reportingCountryEntities = scope.RICentitiesDD.filter(function(d){return d.type == "country"})
                 scope.reportingColonialEntities = scope.RICentitiesDD.filter(function(d){return d.type == "colonial_area"})
-                scope.reportingGeoEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World_") !== 0})
-                scope.reportingWorldEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World_") === 0})
+                scope.reportingGeoEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World ") !== 0})
+                scope.reportingWorldEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World ") === 0})
                 var continents = d3.nest()
                                   .key(function(d){return d.continent})
                                   .entries(scope.RICentitiesDD)

@@ -122,7 +122,7 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
         last_y=y
         if with_sources:
             sources=set(source_g.split("|") if source_g else [])
-            flows[-1]["sources"]=list(sources)[0] if sources else "unknown"
+            flows[-1]["sources"]=list(sources)[0] if sources else ""
 
     return flows
 
@@ -145,7 +145,7 @@ def get_flows_sources(reporting_ids,partner_ids,from_year,to_year):
 
 
 def get_flows(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources):
-    
+
     json_response={}
     json_response["flows"]=flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources)
     if len(partner_ids)==0:

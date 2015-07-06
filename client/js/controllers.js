@@ -5,10 +5,10 @@
 angular.module('ricardo.controllers', [])
   .controller('navbar', function($scope, $location) {
 
-  	$scope.isActive = function (viewLocation) { 
+  	$scope.isActive = function (viewLocation) {
         return viewLocation === $location.path();
     };
-    
+
     $scope.views = [
       {slug:"bilateral", label:"Bilateral view"},
       {slug:"country", label:"Country view"},
@@ -17,7 +17,7 @@ angular.module('ricardo.controllers', [])
     ]
 
   })
-  .controller('bilateral', function($scope, $location, reportingEntities) {
+  .controller('bilateral', function($scope, $location, reportingEntities, utils, TABLE_HEADERS) {
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
@@ -36,7 +36,7 @@ angular.module('ricardo.controllers', [])
         pageSizes: [50],
         pageSize: 50,
         currentPage: 1
-    }; 
+    };
     $scope.viewTable = 0;
 
     $scope.setPagingData = function(data, pageSize, page){
@@ -49,8 +49,8 @@ angular.module('ricardo.controllers', [])
     };
 
     $scope.tablePagedData = []
-    
-    $scope.gridOptions = { 
+
+    $scope.gridOptions = {
       data: 'tablePagedData',
       enablePaging: true,
       showFooter: true,
@@ -58,7 +58,7 @@ angular.module('ricardo.controllers', [])
       pagingOptions: $scope.pagingOptions,
       enableRowSelection: false,
       footerRowHeight: 45,
-      plugins: [new ngGridCsvExportPlugin({data:'tableData'})]
+      columnDefs: TABLE_HEADERS
     }
 
     $scope.$watch('tableData', function (newVal, oldVal) {
@@ -66,7 +66,7 @@ angular.module('ricardo.controllers', [])
           $scope.pagingOptions.currentPage = 1
           $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
         }
-    }, true);    
+    }, true);
 
     $scope.$watch('pagingOptions', function (newVal, oldVal) {
         if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
@@ -74,8 +74,19 @@ angular.module('ricardo.controllers', [])
         }
     }, true);
 
+    $scope.download = function() {
+      var headers = TABLE_HEADERS.map(function(h) {
+        return h.displayName;
+      });
+
+      var order = TABLE_HEADERS.map(function(h) {
+        return h.field;
+      });
+
+      utils.downloadCSV($scope.tableData, headers, order);
+    };
   })
-  .controller('country', function($scope, $location, reportingEntities) {
+  .controller('country', function($scope, $location, reportingEntities, utils, TABLE_HEADERS) {
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
@@ -111,7 +122,7 @@ angular.module('ricardo.controllers', [])
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
       if($scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid) > -1) return;
-      $scope.reporting.push(elm) 
+      $scope.reporting.push(elm)
       $scope.resetDD(elm.type)
     }
 
@@ -153,7 +164,7 @@ angular.module('ricardo.controllers', [])
         if (newVal !== oldVal && newVal.selected) {
           $scope.pushReporting(newVal.selected)
         }
-    }, true);    
+    }, true);
 
     $scope.$watch('entities.sourceWorldEntity', function (newVal, oldVal) {
         if (newVal !== oldVal && newVal.selected) {
@@ -168,7 +179,7 @@ angular.module('ricardo.controllers', [])
         pageSizes: [50],
         pageSize: 50,
         currentPage: 1
-    }; 
+    };
 
     $scope.setPagingData = function(data, pageSize, page){
         var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
@@ -180,8 +191,8 @@ angular.module('ricardo.controllers', [])
     };
 
     $scope.tablePagedData = []
-    
-    $scope.gridOptions = { 
+
+    $scope.gridOptions = {
       data: 'tablePagedData',
       enablePaging: true,
       showFooter: true,
@@ -189,7 +200,7 @@ angular.module('ricardo.controllers', [])
       pagingOptions: $scope.pagingOptions,
       enableRowSelection: false,
       footerRowHeight: 45,
-      plugins: [new ngGridCsvExportPlugin({data:'tableData'})]
+      columnDefs: TABLE_HEADERS
     }
 
     $scope.$watch('tableData', function (newVal, oldVal) {
@@ -197,7 +208,7 @@ angular.module('ricardo.controllers', [])
           $scope.pagingOptions.currentPage = 1
           $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
         }
-    }, true);    
+    }, true);
 
     $scope.$watch('pagingOptions', function (newVal, oldVal) {
         if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
@@ -205,8 +216,19 @@ angular.module('ricardo.controllers', [])
         }
     }, true);
 
+    $scope.download = function() {
+      var headers = TABLE_HEADERS.map(function(h) {
+        return h.displayName;
+      });
+
+      var order = TABLE_HEADERS.map(function(h) {
+        return h.field;
+      });
+
+      utils.downloadCSV($scope.tableData, headers, order);
+    };
   })
-  .controller('continent', function($scope, $location, reportingEntities) {
+  .controller('continent', function($scope, $location, reportingEntities, utils, TABLE_HEADERS) {
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
@@ -244,7 +266,7 @@ angular.module('ricardo.controllers', [])
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
       if($scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid) > -1) return;
-      $scope.reporting.push(elm) 
+      $scope.reporting.push(elm)
       $scope.resetDD(elm.type)
     }
 
@@ -286,7 +308,7 @@ angular.module('ricardo.controllers', [])
         if (newVal !== oldVal && newVal.selected) {
           $scope.pushReporting(newVal.selected)
         }
-    }, true);    
+    }, true);
 
     $scope.$watch('entities.sourceWorldEntity', function (newVal, oldVal) {
         if (newVal !== oldVal && newVal.selected) {
@@ -301,7 +323,7 @@ angular.module('ricardo.controllers', [])
         pageSizes: [50],
         pageSize: 50,
         currentPage: 1
-    }; 
+    };
 
     $scope.setPagingData = function(data, pageSize, page){
         var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
@@ -313,8 +335,8 @@ angular.module('ricardo.controllers', [])
     };
 
     $scope.tablePagedData = []
-    
-    $scope.gridOptions = { 
+
+    $scope.gridOptions = {
       data: 'tablePagedData',
       enablePaging: true,
       showFooter: true,
@@ -322,7 +344,7 @@ angular.module('ricardo.controllers', [])
       pagingOptions: $scope.pagingOptions,
       enableRowSelection: false,
       footerRowHeight: 45,
-      plugins: [new ngGridCsvExportPlugin({data:'tableData'})]
+      columnDefs: TABLE_HEADERS
     }
 
     $scope.$watch('tableData', function (newVal, oldVal) {
@@ -330,7 +352,7 @@ angular.module('ricardo.controllers', [])
           $scope.pagingOptions.currentPage = 1
           $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
         }
-    }, true);    
+    }, true);
 
     $scope.$watch('pagingOptions', function (newVal, oldVal) {
         if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
@@ -338,8 +360,20 @@ angular.module('ricardo.controllers', [])
         }
     }, true);
 
+    $scope.download = function() {
+      var headers = TABLE_HEADERS.map(function(h) {
+        return h.displayName;
+      });
+
+      var order = TABLE_HEADERS.map(function(h) {
+        return h.field;
+      });
+
+      utils.downloadCSV($scope.tableData, headers, order);
+    };
   })
-  .controller('world', function($scope, $location, reportingCountryEntities, reportingColonialEntities, reportingGeoEntities, reportingContinentEntities) {
+  .controller('world', function($scope, $location, reportingCountryEntities, reportingColonialEntities, reportingGeoEntities, reportingContinentEntities, utils, TABLE_HEADERS) {
+
 
     $scope.reportingCountryEntities = reportingCountryEntities;
     $scope.reportingColonialEntities = reportingColonialEntities;
@@ -363,7 +397,7 @@ angular.module('ricardo.controllers', [])
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
       if($scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid) > -1) return;
-      $scope.reporting.push(elm) 
+      $scope.reporting.push(elm)
       $scope.resetDD(elm.type)
     }
 
@@ -419,7 +453,7 @@ angular.module('ricardo.controllers', [])
         pageSizes: [50],
         pageSize: 50,
         currentPage: 1
-    }; 
+    };
 
     $scope.setPagingData = function(data, pageSize, page){
         var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
@@ -431,8 +465,8 @@ angular.module('ricardo.controllers', [])
     };
 
     $scope.tablePagedData = []
-    
-    $scope.gridOptions = { 
+
+    $scope.gridOptions = {
       data: 'tablePagedData',
       enablePaging: true,
       showFooter: true,
@@ -440,7 +474,7 @@ angular.module('ricardo.controllers', [])
       pagingOptions: $scope.pagingOptions,
       enableRowSelection: false,
       footerRowHeight: 45,
-      plugins: [new ngGridCsvExportPlugin({data:'tableData'})]
+      columnDefs: TABLE_HEADERS
     }
 
     $scope.$watch('tableData', function (newVal, oldVal) {
@@ -448,7 +482,7 @@ angular.module('ricardo.controllers', [])
           $scope.pagingOptions.currentPage = 1
           $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
         }
-    }, true);    
+    }, true);
 
     $scope.$watch('pagingOptions', function (newVal, oldVal) {
         if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
@@ -456,7 +490,17 @@ angular.module('ricardo.controllers', [])
         }
     }, true);
 
+    $scope.download = function() {
+      var headers = TABLE_HEADERS.map(function(h) {
+        return h.displayName;
+      });
 
+      var order = TABLE_HEADERS.map(function(h) {
+        return h.field;
+      });
+
+      utils.downloadCSV($scope.tableData, headers, order);
+    };
   }).
 controller('ModalInstance', function ($scope, $modalInstance) {
 
