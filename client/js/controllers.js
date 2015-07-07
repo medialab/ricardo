@@ -268,6 +268,18 @@ angular.module('ricardo.controllers', [])
 
     }
 
+    $scope.$watch('selectedMinDate', function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        updateDateRange()
+      }
+    })
+
+    $scope.$watch('selectedMaxDate', function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        updateDateRange()
+      }
+    })
+
     // First init
     $scope.entities.sourceEntity.selected=$scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_REPORTING})[0]
     init(DEFAULT_REPORTING);
