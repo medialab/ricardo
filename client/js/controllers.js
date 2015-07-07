@@ -21,7 +21,6 @@ angular.module('ricardo.controllers', [])
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
-    $scope.entities = {sourceEntity : {}, targetEntity : {}}
 
     $scope.alerts = []
     $scope.closeAlert = function(index) {
@@ -38,6 +37,23 @@ angular.module('ricardo.controllers', [])
         currentPage: 1
     }; 
     $scope.viewTable = 0;
+
+    // State
+    $scope.entities = {sourceEntity : {}, targetEntity : {}}
+    $scope.rawMinDate                               // Min year in data for the selected pair of countries
+    $scope.rawMaxDate                               // Max year in data for the selected pair of countries
+    $scope.selectedMinDate = {                      // Min year as selected by selector or brushing
+      name:'1857',                                  //   needs a name and value because selectors don't deal with numbers
+      value:1857
+    }
+    $scope.selectedMaxDate = {                      // Max year as selected by selector or brushing
+      name:'1938',                                  //   needs a name and value because selectors don't deal with numbers
+      value:1938
+    }
+    $scope.rawYearsRange                            // Range of years in data (useful for selectors)
+    $scope.rawYearsRange_forInf                     // Range of years in data adapted to inferior bound (useful for selectors)
+    $scope.rawYearsRange_forSup                     // Range of years in data adapted to superior bound (useful for selectors)
+    $scope.logMode = false                          // Log scale for the timeline
 
     $scope.setPagingData = function(data, pageSize, page){
         var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
@@ -77,18 +93,43 @@ angular.module('ricardo.controllers', [])
     // ADDENDUM from sprint 06 / 07 / 2015
     $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_REPORTING})[0]
     $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_PARTNER})[0]
-    
+
     apiService
       .getFlows({reporting_ids: DEFAULT_REPORTING, partner_ids: DEFAULT_PARTNER})
       .then(function(data){
         console.log('Data loaded', data)
         
-        $scope.minDate = d3.min( data.flows, function(d) { return d.year; })
-        $scope.maxDate = d3.max( data.flows, function(d) { return d.year; })
-        $scope.yearsRange = d3.range( $scope.minDate, $scope.maxDate + 1 ).map(function(d){return ''+d})
+        $scope.rawMinDate = d3.min( data.flows, function(d) { return d.year; })
+        $scope.rawMaxDate = d3.max( data.flows, function(d) { return d.year; })
+        var selectedMinDate = Math.max( $scope.selectedMinDate.value, $scope.rawMinDate )
+        $scope.selectedMinDate = {name: ''+selectedMinDate, value: selectedMinDate}
+        var selectedMaxDate = Math.min( $scope.selectedMaxDate.value, $scope.rawMaxDate )
+        $scope.selectedMaxDate = {name: ''+selectedMaxDate, value: selectedMaxDate}
+        updateDateRange()
          
         drawDualTimeline(data.flows)
       })
+
+    $scope.$watch('selectedMinDate', function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        updateDateRange()
+      }
+    })
+
+    $scope.$watch('selectedMaxDate', function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        updateDateRange()
+      }
+    })
+
+    function updateDateRange(){
+      $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
+        .map(function(d){return {value:d, name:''+d}})    // ui-select's model does not deal with numbers
+      $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate.value )
+        .map(function(d){return {value:d, name:''+d}})    // ui-select's model does not deal with numbers
+      $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate.value + 1, $scope.rawMaxDate + 1 )
+        .map(function(d){return {value:d, name:''+d}})    // ui-select's model does not deal with numbers
+    }
 
     function drawDualTimeline(data){
       var margin = {top: 10, right: 0, bottom: 30, left: 0},
