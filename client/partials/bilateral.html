@@ -8,9 +8,10 @@
       <br>Data Max Date = {{rawMaxDate}}
       <br>Selected Min Date = {{selectedMinDate}}
       <br>Selected Max Date = {{selectedMaxDate}}
+      <br>Timeline data length = {{timelineData.length}}
     </h6>
     <bilateral-title></bilateral-title>
-    <dual-timeline></dual-timeline>
+    <dual-timeline ng-data="timelineData" start-date="selectedMinDate.value" end-date="selectedMaxDate.value"></dual-timeline>
     <chart-of-missing></chart-of-missing>
     <brushing-timeline></brushing-timeline>
   </div>
