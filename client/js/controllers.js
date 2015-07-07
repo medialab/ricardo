@@ -114,17 +114,20 @@ angular.module('ricardo.controllers', [])
 
     $scope.$watch('selectedMinDate', function (newVal, oldVal) {
       if (newVal.value !== oldVal.value) {
+        $scope.selectedMinDate.name = ''+newVal.value
         updateDateRange()
       }
     })
 
     $scope.$watch('selectedMaxDate', function (newVal, oldVal) {
       if (newVal.value !== oldVal.value) {
+        $scope.selectedMaxDate.name = ''+newVal.value
         updateDateRange()
       }
     })
 
     function updateDateRange(){
+      console.log('Update Date Range');
 
       $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
         .map(function(d){return {value:d, name:''+d}})    // ui-select's model does not deal with numbers
