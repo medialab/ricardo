@@ -6,11 +6,18 @@
 // They do not use the same coding pattern
 
 angular.module('ricardo.directives-addendum', [])
-  
+
   .directive('bilateralTitle', [function(){
     return {
       restrict: 'E'
       ,templateUrl: 'partials/bilateralTitle.html'
+    }
+  }])
+
+  .directive('countryTitle', [function() {
+    return {
+      restrict: 'E'
+      ,templateUrl: 'partials/countryTitle.html'
     }
   }])
 
