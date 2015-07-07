@@ -5,10 +5,10 @@
 angular.module('ricardo.controllers', [])
   .controller('navbar', function($scope, $location) {
 
-  	$scope.isActive = function (viewLocation) { 
+  	$scope.isActive = function (viewLocation) {
         return viewLocation === $location.path();
     };
-    
+
     $scope.views = [
       {slug:"bilateral", label:"Bilateral view"},
       {slug:"country", label:"Country view"},
@@ -35,7 +35,7 @@ angular.module('ricardo.controllers', [])
         pageSizes: [50],
         pageSize: 50,
         currentPage: 1
-    }; 
+    };
     $scope.viewTable = 0;
 
     // State
@@ -66,8 +66,8 @@ angular.module('ricardo.controllers', [])
     };
 
     $scope.tablePagedData = []
-    
-    $scope.gridOptions = { 
+
+    $scope.gridOptions = {
       data: 'tablePagedData',
       enablePaging: true,
       showFooter: true,
@@ -83,7 +83,7 @@ angular.module('ricardo.controllers', [])
           $scope.pagingOptions.currentPage = 1
           $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
         }
-    }, true);    
+    }, true);
 
     $scope.$watch('pagingOptions', function (newVal, oldVal) {
         if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
@@ -99,7 +99,7 @@ angular.module('ricardo.controllers', [])
       .getFlows({reporting_ids: DEFAULT_REPORTING, partner_ids: DEFAULT_PARTNER})
       .then(function(data){
         console.log('Data loaded', data)
-        
+
         $scope.timelineData = data.flows
 
         $scope.rawMinDate = d3.min( data.flows, function(d) { return d.year; })
@@ -109,7 +109,7 @@ angular.module('ricardo.controllers', [])
         var selectedMaxDate = Math.min( $scope.selectedMaxDate.value, $scope.rawMaxDate )
         $scope.selectedMaxDate = {name: ''+selectedMaxDate, value: selectedMaxDate}
         updateDateRange()
-         
+
       })
 
     $scope.$watch('selectedMinDate', function (newVal, oldVal) {
@@ -138,7 +138,7 @@ angular.module('ricardo.controllers', [])
 
   })
 
-  .controller('country', function($scope, $location, reportingEntities) {
+  .controller('country', function($scope, $location, cfSource, cfTarget, apiService, reportingEntities, DEFAULT_REPORTING) {
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
@@ -170,10 +170,108 @@ angular.module('ricardo.controllers', [])
 
     $scope.yValue = "total"
 
+
+    // Calling the API
+    function init(sourceID, currency) {
+      apiService
+        .getFlows({reporting_ids: sourceID, original_currency: currency})
+        .then(function(data) {
+
+          var flows = data.flows;
+
+          if (cfSource.size() > 0) {
+            cfSource.year().filterAll();
+            cfSource.clear();
+          }
+
+          $scope.RICentities = {};
+
+          data.RICentities.partners.forEach(function(d){
+            $scope.RICentities[""+d.RICid] = {RICname : d.RICname, type: d.type, RICid: d.RICid, continent: d.continent }
+          })
+
+          $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
+              if(a.RICname < b.RICname) return -1;
+              if(a.RICname > b.RICname) return 1;
+              return 0;
+          })
+
+          $scope.reportingCountryEntities = $scope.RICentitiesDD.filter(function(d){return d.type == "country"})
+          $scope.reportingColonialEntities = $scope.RICentitiesDD.filter(function(d){return d.type == "colonial_area"})
+          $scope.reportingGeoEntities = $scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area"})
+          var continents = d3.nest()
+                            .key(function(d){return d.continent})
+                            .entries($scope.RICentitiesDD)
+                            .map(function(d){return d.key})
+                            .filter(function(d){return d})
+
+          $scope.reportingContinentEntities = []
+
+          continents.forEach(function(d){
+            var elm = {RICname : d, type: "continent", RICid: d }
+            $scope.reportingContinentEntities.push(elm)
+          })
+
+          $scope.reporting = []
+          //$scope.entities.multiEntity = {}
+          $scope.entities.sourceCountryEntity = {}
+          $scope.entities.sourceColonialEntity = {}
+          $scope.entities.sourceGeoEntity = {}
+          $scope.entities.sourceContinentEntity = {}
+
+
+          flows.forEach(function(d){
+            d.type = $scope.RICentities[""+d.partner_id].type
+          })
+
+          cfSource.add(flows);
+
+          $scope.startDate = cfSource.year().bottom(1)[0].year
+          $scope.endDate = cfSource.year().top(1)[0].year
+
+          $scope.minDate = cfSource.year().bottom(1)[0].year
+          $scope.maxDate = cfSource.year().top(1)[0].year
+
+          $scope.selectedMinDate = {name: ''+$scope.minDate, value: $scope.minDate};
+          $scope.selectedMaxDate = {name: ''+$scope.maxDate, value: $scope.maxDate};
+
+          $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
+          $scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
+
+          var flowsPerYear = cfSource.years().top(Infinity)
+
+          var missingData = [{key:"imp", values:[]},{key:"exp", values:[]}];
+          var timelineData = [];
+
+          flowsPerYear.sort(function(a, b){ return d3.ascending(a.key, b.key); })
+          flowsPerYear.forEach(function(d){
+              var td = $.extend(d.value, {year: (new Date(d.key)).getFullYear()});
+
+              if (!td.exp)
+                td.exp = null;
+              if (!td.imp)
+                td.imp = null;
+              if (!td.tot)
+                td.tot = null;
+
+              timelineData.push(td);
+              missingData[0].values.push({total: d.value.imp, year: d.key})
+              missingData[1].values.push({total: d.value.exp, year: d.key})
+          })
+
+          $scope.missingData = missingData;
+          $scope.timelineData = timelineData;
+        });
+    }
+
+    // First init
+    $scope.entities.sourceEntity.selected=$scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_REPORTING})[0]
+    init(DEFAULT_REPORTING);
+
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
       if($scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid) > -1) return;
-      $scope.reporting.push(elm) 
+      $scope.reporting.push(elm)
       $scope.resetDD(elm.type)
     }
 
@@ -213,7 +311,7 @@ angular.module('ricardo.controllers', [])
         if (newVal !== oldVal && newVal.selected) {
           $scope.pushReporting(newVal.selected)
         }
-    }, true);    
+    }, true);
 
     $scope.barchartData = [];
     $scope.tableData = [];
@@ -222,7 +320,7 @@ angular.module('ricardo.controllers', [])
         pageSizes: [50],
         pageSize: 50,
         currentPage: 1
-    }; 
+    };
 
     $scope.setPagingData = function(data, pageSize, page){
         var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
@@ -234,8 +332,8 @@ angular.module('ricardo.controllers', [])
     };
 
     $scope.tablePagedData = []
-    
-    $scope.gridOptions = { 
+
+    $scope.gridOptions = {
       data: 'tablePagedData',
       enablePaging: true,
       showFooter: true,
@@ -251,7 +349,7 @@ angular.module('ricardo.controllers', [])
           $scope.pagingOptions.currentPage = 1
           $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
         }
-    }, true);    
+    }, true);
 
     $scope.$watch('pagingOptions', function (newVal, oldVal) {
         if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
@@ -298,7 +396,7 @@ angular.module('ricardo.controllers', [])
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
       if($scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid) > -1) return;
-      $scope.reporting.push(elm) 
+      $scope.reporting.push(elm)
       $scope.resetDD(elm.type)
     }
 
@@ -338,7 +436,7 @@ angular.module('ricardo.controllers', [])
         if (newVal !== oldVal && newVal.selected) {
           $scope.pushReporting(newVal.selected)
         }
-    }, true);    
+    }, true);
 
     $scope.barchartData = [];
     $scope.tableData = [];
@@ -347,7 +445,7 @@ angular.module('ricardo.controllers', [])
         pageSizes: [50],
         pageSize: 50,
         currentPage: 1
-    }; 
+    };
 
     $scope.setPagingData = function(data, pageSize, page){
         var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
@@ -359,8 +457,8 @@ angular.module('ricardo.controllers', [])
     };
 
     $scope.tablePagedData = []
-    
-    $scope.gridOptions = { 
+
+    $scope.gridOptions = {
       data: 'tablePagedData',
       enablePaging: true,
       showFooter: true,
@@ -376,7 +474,7 @@ angular.module('ricardo.controllers', [])
           $scope.pagingOptions.currentPage = 1
           $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
         }
-    }, true);    
+    }, true);
 
     $scope.$watch('pagingOptions', function (newVal, oldVal) {
         if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
@@ -410,7 +508,7 @@ angular.module('ricardo.controllers', [])
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
       if($scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid) > -1) return;
-      $scope.reporting.push(elm) 
+      $scope.reporting.push(elm)
       $scope.resetDD(elm.type)
     }
 
@@ -458,7 +556,7 @@ angular.module('ricardo.controllers', [])
         pageSizes: [50],
         pageSize: 50,
         currentPage: 1
-    }; 
+    };
 
     $scope.setPagingData = function(data, pageSize, page){
         var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
@@ -470,8 +568,8 @@ angular.module('ricardo.controllers', [])
     };
 
     $scope.tablePagedData = []
-    
-    $scope.gridOptions = { 
+
+    $scope.gridOptions = {
       data: 'tablePagedData',
       enablePaging: true,
       showFooter: true,
@@ -487,7 +585,7 @@ angular.module('ricardo.controllers', [])
           $scope.pagingOptions.currentPage = 1
           $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
         }
-    }, true);    
+    }, true);
 
     $scope.$watch('pagingOptions', function (newVal, oldVal) {
         if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
@@ -497,7 +595,7 @@ angular.module('ricardo.controllers', [])
 
 
   })
-  
+
   .controller('ModalInstance', function ($scope, $modalInstance) {
 
   $scope.ok = function () {
