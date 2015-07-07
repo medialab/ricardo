@@ -332,6 +332,10 @@ body > .container {
   fill: none;
 }
 
+.baselineLabel{
+  font-size: 0.8em;
+}
+
 .importBaseline{
   stroke: #cc6666;
   stroke-width: 0.2px;

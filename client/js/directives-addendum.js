@@ -249,6 +249,8 @@ angular.module('ricardo.directives-addendum', [])
         ,endDate: '='
         ,rawStartDate: '='
         ,rawEndDate: '='
+        ,sourceCountry: '='
+        ,targetCountry: '='
       }
       ,link: function(scope, element, attrs){
         scope.$watch('ngData', function(newValue, oldValue) {
@@ -370,6 +372,18 @@ angular.module('ricardo.directives-addendum', [])
 
           // baselines
           
+          svg.append("text")
+              .attr("class", "baselineLabel")
+              .text("Available data reported by " + scope.sourceCountry)
+              .attr("x", 0)
+              .attr("y", hOffset / 4 - interline / 2 - 8)
+
+          svg.append("text")
+              .attr("class", "baselineLabel")
+              .text("Available data reported by " + scope.targetCountry)
+              .attr("x", 0)
+              .attr("y", 3 * hOffset / 4 - interline / 2 - 8)
+
           svg.append("line")
               .attr("class", "importBaseline")
               .attr("x1", 0)
