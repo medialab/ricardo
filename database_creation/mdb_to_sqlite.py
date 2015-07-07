@@ -74,6 +74,7 @@ c.execute("UPDATE `Exp-Imp-Standard` SET `Exp / Imp`=trim(lower(`Exp / Imp`)), `
 c.execute("UPDATE flow SET `Initial Currency`=trim(lower(`Initial Currency`)),`Reporting Entity_Original Name`=trim(lower(`Reporting Entity_Original Name`)) WHERE 1")
 c.execute("UPDATE `currency` SET `Original Currency`=trim(lower(`Original Currency`)),`Modified Currency`=trim(lower(`Modified Currency`)),`Reporting Entity (Original Name)`=trim(lower(`Reporting Entity (Original Name)`)) WHERE 1")
 c.execute("UPDATE `rate` SET `Modified Currency`=trim(lower(`Modified Currency`)) WHERE 1")
+c.execute("""UPDATE `rate` SET `FX rate (NCU/£)`=replace(`FX rate (NCU/£)`,",",".") WHERE 1""")
 c.execute("""UPDATE RICentities SET type=lower(replace(trim(type)," ","_")) WHERE 1""")
 
 # DELETE unused spe/gen cleaning rows ID=13 
