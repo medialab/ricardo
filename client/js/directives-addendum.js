@@ -194,10 +194,11 @@ angular.module('ricardo.directives-addendum', [])
     }
   }])
 
-  .directive('brushingTimeline', [function(){
+  .directive('brushingTimeline', ['cfSource', 'cfTarget',
+    function(                      cfSource ,  cfTarget ){
     return {
       restrict: 'E'
-      ,template: '<div id="brushing-timeline-container"></div>'
+      ,template: '<div id="brushing-timeline-container"></div>{{startDate}} - {{endDate}}'
       ,scope: {
         ngData: '='
         ,startDate: '='
@@ -206,30 +207,35 @@ angular.module('ricardo.directives-addendum', [])
       ,link: function(scope, element, attrs){
         scope.$watch('ngData', function(newValue, oldValue) {
           if ( newValue ) {
+            console.log('ngData change', newValue, oldValue)
             draw(scope.ngData)
           }
         })
 
-        scope.$watch('endDate', function(newValue, oldValue) {
-          if ( newValue && scope.ngData) {
-            draw(scope.ngData)
-          }
-        })
+        // TODO: apply state to brush selection
+        // scope.$watch('endDate', function(newValue, oldValue) {
+        //   if ( newValue && scope.ngData) {
+        //     console.log('endDate change', newValue, oldValue)
+        //     draw(scope.ngData)
+        //   }
+        // })
 
-        scope.$watch('startDate', function(newValue, oldValue) {
-          if ( newValue && scope.ngData) {
-            draw(scope.ngData)
-          }
-        })
+        // scope.$watch('startDate', function(newValue, oldValue) {
+        //   if ( newValue && scope.ngData) {
+        //     console.log('startDate change', newValue, oldValue)
+        //     draw(scope.ngData)
+        //   }
+        // })
 
         function draw(data){
-          document.querySelector('#brushing-timeline-container').innerHTML = null;
+          console.log('draw')
 
-          var svgHeight = 180
+          document.querySelector('#brushing-timeline-container').innerHTML = null;
 
           var margin = {top: 10, right: 0, bottom: 30, left: 0},
               width = document.querySelector('#brushing-timeline-container').offsetWidth - margin.left - margin.right,
-              height = 60 - margin.top - margin.bottom
+              svgHeight = 180 - margin.top - margin.bottom,
+              height = 20
 
           // Curve
           var x = d3.time.scale()
@@ -268,7 +274,7 @@ angular.module('ricardo.directives-addendum', [])
               .attr("width", width + margin.left + margin.right)
               .attr("height", svgHeight + margin.top + margin.bottom)
             .append("g")
-              .attr("transform", "translate(" + margin.left + "," + ( margin.top + svgHeight - height ) + ")");
+              .attr("transform", "translate(" + margin.left + "," + ( margin.top ) + ")");
 
           data.forEach(function(d){
             d.date = new Date(d.year, 0, 1)
@@ -297,34 +303,110 @@ angular.module('ricardo.directives-addendum', [])
               .attr("class", "line-exp")
               .attr("d", lineExp)
 
-          svg.on("brushing", function(d){
-                scope.startDate = d[0].getFullYear()
-                scope.endDate = d[1].getFullYear()
-                if(!scope.$$phase) {
-                  scope.$apply()
-                }
-              })
-              .on("brushed", function(d){
-                cfSource.year().filterRange(d)
-                cfTarget.year().filterRange(d)
 
-                scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
-                scope.streamData = [
-                  {key:"first", values:[
-                    {y: cfSource.imp(), x:0, key:"first"},
-                    {y: cfTarget.exp(), x:1, key:"second"}
-                    ]
-                  },
-                  {key:"second", values:[
-                    {y: cfSource.exp(), x:0, key:"second"},
-                    {y: cfTarget.imp(), x:1, key:"first"}
-                    ]
-                  }
-                ]
-                if(!scope.$$phase) {
-                  scope.$apply()
-                }
-              })
+          // Brush
+
+          var dispatch = d3.dispatch("brushed", "brushing")
+
+          var brush = d3.svg.brush()
+            .x(x)
+            .extent([new Date(scope.startDate), new Date(scope.endDate)])
+            .on("brush", function(){
+              if(brush.empty()){
+                brush.clear()
+                dispatch.brushing(x.domain())
+              }
+              else{
+                dispatch.brushing(brush.extent())
+              }
+            })
+            .on("brushend", brushended);
+
+          function brushended() {
+            if (!d3.event.sourceEvent) return; // only transition after input
+            console.log('brush extent', brush.extent())
+            var extent0 = brush.extent(),
+                extent1 = extent0.map(function(d){return d3.time.year(new Date(d))});
+
+            d3.select(this).transition()
+                .call(brush.extent(extent1))
+                .call(brush.event);
+            
+            if(brush.empty()){
+              brush.extent(x.domain())
+              dispatch.brushed(x.domain())
+              dispatch.brushing(x.domain())
+            }
+            else{
+              dispatch.brushed(brush.extent())
+              dispatch.brushing(brush.extent())
+            }
+
+            applyBrush()
+            
+          }
+          //selection.selectAll("g.brush").remove();
+          var gBrush = svg.select(".brush");
+
+          if(gBrush.empty()){
+            gBrush = svg.append("g")
+                .attr("class", "brush")
+                .call(brush)
+                .call(brush.event);
+
+            gBrush.selectAll("rect")
+                .attr("height", svgHeight);
+          }else{
+            gBrush
+              .call(brush)
+              .call(brush.event);
+          }
+
+          dispatch.on("brushing", function(d){
+            // console.log((new Date(d[0])).getFullYear())
+            // scope.startDate = (new Date(d[0])).getFullYear()
+            // scope.endDate = (new Date(d[1])).getFullYear()
+            if(!scope.$$phase) {
+              scope.$apply()
+            }
+          })
+          .on("brushed", function(d){
+            // cfSource.year().filterRange(d)
+            // cfTarget.year().filterRange(d)
+
+            // scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
+            // scope.streamData = [
+            //   {key:"first", values:[
+            //     {y: cfSource.imp(), x:0, key:"first"},
+            //     {y: cfTarget.exp(), x:1, key:"second"}
+            //     ]
+            //   },
+            //   {key:"second", values:[
+            //     {y: cfSource.exp(), x:0, key:"second"},
+            //     {y: cfTarget.imp(), x:1, key:"first"}
+            //     ]
+            //   }
+            // ]
+
+
+
+            if(!scope.$$phase) {
+              scope.$apply()
+            }
+          })
+
+          function applyBrush(){
+            scope.startDate = (brush.extent()[0]).getFullYear()
+            scope.endDate = (brush.extent()[1]).getFullYear()
+            /*console.log('APPLY BRUSH', (new Date(brush.extent()[0])).getFullYear())
+            scope.startDate = (new Date(brush.extent()[0])).getFullYear()
+            scope.endDate = (new Date(brush.extent()[1])).getFullYear()
+            console.log('scope.startDate', scope.startDate)
+            if(!scope.$$phase) {
+              scope.$apply()
+            }*/
+          }
+
 
           /* axis */
 
