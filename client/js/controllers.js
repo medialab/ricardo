@@ -163,6 +163,9 @@ angular.module('ricardo.controllers', [])
 
     // Calling the API
     function init(sourceID, currency) {
+      $scope.selectedMinDate = 0;                   // Min year as selected by selector or brushing
+      $scope.selectedMaxDate = 2000;                   // Max year as selected by selector or brushing
+
       apiService
         .getFlows({reporting_ids: sourceID, original_currency: currency})
         .then(function(data) {
@@ -219,11 +222,10 @@ angular.module('ricardo.controllers', [])
           $scope.startDate = cfSource.year().bottom(1)[0].year
           $scope.endDate = cfSource.year().top(1)[0].year
 
-          $scope.minDate = cfSource.year().bottom(1)[0].year
-          $scope.maxDate = cfSource.year().top(1)[0].year
-
-          $scope.selectedMinDate = {name: ''+$scope.minDate, value: $scope.minDate};
-          $scope.selectedMaxDate = {name: ''+$scope.maxDate, value: $scope.maxDate};
+          $scope.rawMinDate = d3.min( data.flows, function(d) { return d.year; })
+          $scope.rawMaxDate = d3.max( data.flows, function(d) { return d.year; })
+          $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
+          $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
 
           $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
           $scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
