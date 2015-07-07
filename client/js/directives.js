@@ -369,8 +369,6 @@ angular.module('ricardo.directives', [])
 
         var chart = d3.select(element[0])
 
-                
-        
         var init = function(sourceID, currency){
           
           apiService
@@ -538,7 +536,7 @@ angular.module('ricardo.directives', [])
         var initContinentLinechart = function(sourceID, partnerID, startDate, endDate, currency){
           var ids = sourceID.map(function(d){return d.RICid})
           apiService
-            .getContinentFlows({continents:ids.join(","), reporting_ids: partnerID, from: startDate, to: endDate, original_currency: currency})
+            .getContinentFlows({continents:ids.join(","), reporting_ids: partnerID, from: startDate, to: endDate, original_currency: currency, with_sources: 1})
             .then(
               function(data){
                 
@@ -742,8 +740,6 @@ angular.module('ricardo.directives', [])
 
         var chart = d3.select(element[0])
 
-                
-        
         var init = function(sourceID){
           
           apiService
@@ -1101,7 +1097,7 @@ angular.module('ricardo.directives', [])
         var initContinent = function(sourceID){
           var ids = sourceID.map(function(d){return d.RICname})
           apiService
-            .getContinentFlows({continents:ids.join(","), partner_ids: "Worldestimated"})
+            .getContinentFlows({continents:ids.join(","), reporting_ids: "Worldestimated", with_sources: 1})
             .then(
               function(data){
                 
@@ -1154,7 +1150,7 @@ angular.module('ricardo.directives', [])
           }
 
         /* start initialize */
-        scope.reporting =scope.reportingCountryEntities.filter(function(e){return e.RICid==DEFAULT_REPORTING})
+        scope.reporting = scope.reportingCountryEntities.filter(function(e){return e.RICid==DEFAULT_REPORTING})
         
         init(scope.reporting)
 

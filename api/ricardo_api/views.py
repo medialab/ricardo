@@ -30,19 +30,27 @@ def flows():
         abort(500)
     return Response(json_data, status=200, mimetype='application/json')
 
+def split_listarg(req, key):
+    arg = request.args.get(key, '')
+    return arg.split(",") if arg else []
+
 @app.route('/continent_flows')
 def continent_flows():
-    continents = request.args.get('continents', '')
-    partner_ids = request.args.get('partner_ids', '')
-    with_sources = request.args.get('with_sources','no parameter found')==""
+    continents = split_listarg(request, 'continents')
+    reporting_ids = split_listarg(request, 'reporting_ids')
+    partner_ids = split_listarg(request, 'partner_ids')
+    with_sources = request.args.get('with_sources', '0') == '1'
     from_year = request.args.get('from', '')
     to_year = request.args.get('to', '')
 
-    if continents=="":
+    if not continents or (reporting_ids and partner_ids):
         abort(400)
 
     try:
-        json_data=models.get_continent_flows(continents.split(","),partner_ids.split(",")if partner_ids!='' else [],from_year,to_year,with_sources)
+        if partner_ids or not reporting_ids:
+            json_data = models.get_continent_flows(continents, partner_ids, from_year, to_year, with_sources)
+        else:
+            json_data = models.get_continent_flows_for_reporting(continents, reporting_ids, from_year, to_year, with_sources)
     except Exception as e:
         app.logger.exception("exception occurs in flows")
         abort(500)
