@@ -10,7 +10,7 @@ angular.module('ricardo.directives-addendum', [])
   .directive('bilateralTitle', [function(){
     return {
       restrict: 'E'
-      ,template: '<h4>Trade reported by <inline-select ng-model="entities.sourceEntity.selected" list="reportingEntities"></inline-select> with <inline-select ng-model="entities.targetEntity.selected" list="reportingEntities"></inline-select> - {{minDate}} to {{maxDate}}</h4>'
+      ,templateUrl: 'partials/bilateralTitle'
     }
   }])
 
@@ -28,10 +28,21 @@ angular.module('ricardo.directives-addendum', [])
     }
   }])
 
-  .directive('inlineSelect', [function(){
+  .directive('inlineSelectCountry', [function(){
     return {
       restrict: 'E'
-      ,templateUrl: 'partials/inlineSelect.html'
+      ,templateUrl: 'partials/inlineSelectCountry.html'
+      ,scope: {
+        model: '=ngModel'
+        ,list: '=list'
+      }
+    }
+  }])
+
+  .directive('inlineSelectYear', [function(){
+    return {
+      restrict: 'E'
+      ,templateUrl: 'partials/inlineSelectYear.html'
       ,scope: {
         model: '=ngModel'
         ,list: '=list'

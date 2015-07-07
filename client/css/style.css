@@ -230,6 +230,7 @@ body > .container {
 .inline-select .ui-select-bootstrap button{
   padding-right: 30px;
   font-size: 16px;
+  font-weight: 600;
 }
 
 .inline-select .btn, .inline-select .form-control{
@@ -237,9 +238,7 @@ body > .container {
   border-radius: 0;
   -webkit-box-shadow: none;
   box-shadow: none;
-  color: #999;
-  /*width: 220px;*/
-  /*min-height: 70px;*/
+  color: #663333;
   background-color: #FAFAFA;
 }
 

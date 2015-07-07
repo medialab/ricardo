@@ -1,7 +1,12 @@
 <div class="row">
 	<div class="timeline-cont col-sm-12">
-    <!-- <h4>Trade flows between {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}}, {{minDate}} – {{maxDate}}, reported by {{entities.sourceEntity.selected.RICname}}, in {{actualCurrency}}</h4> -->
-    <h6>Monitoring: source selected = {{entities.sourceEntity.selected.RICid}} ; target selected = {{entities.targetEntity.selected.RICid}}</h6>
+    <h6>
+      TEMPORARY MONITORING
+      <br>Source selected = {{entities.sourceEntity.selected.RICid}}
+      <br>Target selected = {{entities.targetEntity.selected.RICid}}
+      <br>Min Date = {{minDate}}
+      <br>Max Date = {{maxDate}}
+    </h6>
     <bilateral-title></bilateral-title>
     <dual-timeline></dual-timeline>
     <chart-of-missing></chart-of-missing>

@@ -85,7 +85,7 @@ angular.module('ricardo.controllers', [])
         
         $scope.minDate = d3.min( data.flows, function(d) { return d.year; })
         $scope.maxDate = d3.max( data.flows, function(d) { return d.year; })
-
+        $scope.yearsRange = d3.range( $scope.minDate, $scope.maxDate + 1 ).map(function(d){return ''+d})
          
         drawDualTimeline(data.flows)
       })
