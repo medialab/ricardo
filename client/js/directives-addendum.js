@@ -21,6 +21,13 @@ angular.module('ricardo.directives-addendum', [])
     }
   }])
 
+  .directive('brushingTimeline', [function(){
+    return {
+      restrict: 'E'
+      ,template: '<div id="brushing-timeline-container"></div>'
+    }
+  }])
+
   .directive('chartOfMissing', [function(){
     return {
       restrict: 'E'
