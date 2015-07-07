@@ -277,9 +277,10 @@ angular.module('ricardo.directives-addendum', [])
 
           var margin = {top: 10, right: 0, bottom: 30, left: 0},
               width = document.querySelector('#brushing-timeline-container').offsetWidth - margin.left - margin.right,
-              svgHeight = 180,
+              svgHeight = 160,
               height = 20,
-              hOffset = svgHeight - height - margin.bottom - margin.top
+              hOffset = svgHeight - height - margin.bottom - margin.top,
+              interline = 12
 
           // Curve
           var x = d3.time.scale()
@@ -314,11 +315,31 @@ angular.module('ricardo.directives-addendum', [])
               .x(function(d) { return x(d.date); })
               .y(function(d) { return hOffset + y(d.exp); });
 
+          var availImp = d3.svg.line()
+              .defined(function(d) { return d.imp != null; })
+              .x(function(d) { return x(d.date); })
+              .y(function(d) { return hOffset / 4 - interline / 2; });
+
+          var availExp = d3.svg.line()
+              .defined(function(d) { return d.exp != null; })
+              .x(function(d) { return x(d.date); })
+              .y(function(d) { return hOffset / 4 + interline / 2; });
+
+          var availImpMirror = d3.svg.line()
+              .defined(function(d) { return d.imp_mirror != null; })
+              .x(function(d) { return x(d.date); })
+              .y(function(d) { return 3 * hOffset / 4 - interline / 2; });
+
+          var availExpMirror = d3.svg.line()
+              .defined(function(d) { return d.exp_mirror != null; })
+              .x(function(d) { return x(d.date); })
+              .y(function(d) { return 3 * hOffset / 4 + interline / 2; });
+
           var svg = d3.select("#brushing-timeline-container").append("svg")
               .attr("width", width + margin.left + margin.right)
               .attr("height", svgHeight + margin.top + margin.bottom)
             .append("g")
-              .attr("transform", "translate(" + margin.left + "," + ( margin.top ) + ")");
+              .attr("transform", "translate(" + margin.left + "," + ( margin.top ) + ")")
 
           data.forEach(function(d){
             d.date = new Date(d.year, 0, 1)
@@ -347,6 +368,55 @@ angular.module('ricardo.directives-addendum', [])
               .attr("class", "line-exp")
               .attr("d", lineExp)
 
+          // baselines
+          
+          svg.append("line")
+              .attr("class", "importBaseline")
+              .attr("x1", 0)
+              .attr("y1", hOffset / 4 - interline / 2)
+              .attr("x2", width)
+              .attr("y2", hOffset / 4 - interline / 2)
+
+          svg.append("line")
+              .attr("class", "exportBaseline")
+              .attr("x1", 0)
+              .attr("y1", hOffset / 4 + interline / 2)
+              .attr("x2", width)
+              .attr("y2", hOffset / 4 + interline / 2)
+
+          svg.append("line")
+              .attr("class", "importBaseline")
+              .attr("x1", 0)
+              .attr("y1", 3 * hOffset / 4 - interline / 2)
+              .attr("x2", width)
+              .attr("y2", 3 * hOffset / 4 - interline / 2)
+
+          svg.append("line")
+              .attr("class", "exportBaseline")
+              .attr("x1", 0)
+              .attr("y1", 3 * hOffset / 4 + interline / 2)
+              .attr("x2", width)
+              .attr("y2", 3 * hOffset / 4 + interline / 2)
+
+          svg.append("path")
+              .datum(data)
+              .attr("class", "line-imp")
+              .attr("d", availImp)
+
+          svg.append("path")
+              .datum(data)
+              .attr("class", "line-exp")
+              .attr("d", availExp)
+
+          svg.append("path")
+              .datum(data)
+              .attr("class", "line-imp")
+              .attr("d", availImpMirror)
+
+          svg.append("path")
+              .datum(data)
+              .attr("class", "line-exp")
+              .attr("d", availExpMirror)
 
           /* axis */
 

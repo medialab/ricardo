@@ -332,6 +332,18 @@ body > .container {
   fill: none;
 }
 
+.importBaseline{
+  stroke: #cc6666;
+  stroke-width: 0.2px;
+  fill: none;
+}
+
+.exportBaseline{
+  stroke: #663333;
+  stroke-width: 0.2px;
+  fill: none;
+}
+
 /* stream */
 
 .stream-legend h4{

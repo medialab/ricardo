@@ -94,6 +94,9 @@ angular.module('ricardo.controllers', [])
       .then(function(data){
         console.log('Data loaded', data)
 
+        // Consolidate
+        mergeMirrorInFlows(data)
+
         $scope.timelineData = data.flows
 
         $scope.rawMinDate = d3.min( data.flows, function(d) { return d.year; })
@@ -124,6 +127,27 @@ angular.module('ricardo.controllers', [])
 
       $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
 
+    }
+
+    function mergeMirrorInFlows(data){
+      var mirrorFlows_byYear = {}
+      data.mirror_flows.forEach(function(d){
+        var obj = mirrorFlows_byYear[d.year] || {}
+        obj.imp = d.imp || null
+        obj.exp = d.exp || null
+        mirrorFlows_byYear[d.year] = obj
+      })
+
+      data.flows.forEach(function(d){
+        var mirror = mirrorFlows_byYear[d.year]
+        if (mirror) {
+          d.imp_mirror = mirror.imp || null
+          d.exp_mirror = mirror.exp || null
+        } else {
+          d.imp_mirror = null
+          d.exp_mirror = null
+        }
+      })
     }
 
   })
