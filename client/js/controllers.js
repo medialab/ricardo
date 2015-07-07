@@ -117,7 +117,7 @@ angular.module('ricardo.controllers', [])
     })
 
     function updateDateRange(){
-      
+
       $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
 
       $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
@@ -257,6 +257,41 @@ angular.module('ricardo.controllers', [])
     // First init
     $scope.entities.sourceEntity.selected=$scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_REPORTING})[0]
     init(DEFAULT_REPORTING);
+
+    /* end initialize */
+    $scope.$watch("entities.sourceEntity.selected", function(newValue, oldValue){
+      if(newValue != oldValue && newValue){
+          init(newValue.RICid, $scope.currency)
+      }
+    })
+
+    $scope.$watch("filter", function(newValue, oldValue){
+      if(newValue != oldValue){
+          if(newValue == "all"){
+            cfSource.type().filterAll()
+            $scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
+            $scope.barchartData.forEach(function(d){
+              d.continent = $scope.RICentities[d.key+""].continent
+            })
+
+          }else{
+            cfSource.type().filterExact(newValue)
+            $scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
+            $scope.barchartData.forEach(function(d){
+              d.continent = $scope.RICentities[d.key+""].continent
+            })
+
+          }
+      }
+    })
+
+    $scope.$watch("currency", function(newValue, oldValue){
+      if(newValue != oldValue){
+        init($scope.entities.sourceEntity.selected.RICid, newValue)
+      }
+    }, true)
+
+    /* end directive salvage */
 
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
