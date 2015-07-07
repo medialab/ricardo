@@ -43,14 +43,8 @@ angular.module('ricardo.controllers', [])
     $scope.entities = {sourceEntity : {}, targetEntity : {}}
     $scope.rawMinDate                               // Min year in data for the selected pair of countries
     $scope.rawMaxDate                               // Max year in data for the selected pair of countries
-    $scope.selectedMinDate = {                      // Min year as selected by selector or brushing
-      name:'1857',                                  //   needs a name and value because selectors don't deal with numbers
-      value:1857
-    }
-    $scope.selectedMaxDate = {                      // Max year as selected by selector or brushing
-      name:'1938',                                  //   needs a name and value because selectors don't deal with numbers
-      value:1938
-    }
+    $scope.selectedMinDate = 1856                   // Min year as selected by selector or brushing
+    $scope.selectedMaxDate = 1939                   // Max year as selected by selector or brushing
     $scope.rawYearsRange                            // Range of years in data (useful for selectors)
     $scope.rawYearsRange_forInf                     // Range of years in data adapted to inferior bound (useful for selectors)
     $scope.rawYearsRange_forSup                     // Range of years in data adapted to superior bound (useful for selectors)
@@ -104,39 +98,32 @@ angular.module('ricardo.controllers', [])
 
         $scope.rawMinDate = d3.min( data.flows, function(d) { return d.year; })
         $scope.rawMaxDate = d3.max( data.flows, function(d) { return d.year; })
-        var selectedMinDate = Math.max( $scope.selectedMinDate.value, $scope.rawMinDate )
-        $scope.selectedMinDate = {name: ''+selectedMinDate, value: selectedMinDate}
-        var selectedMaxDate = Math.min( $scope.selectedMaxDate.value, $scope.rawMaxDate )
-        $scope.selectedMaxDate = {name: ''+selectedMaxDate, value: selectedMaxDate}
+        $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
+        $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
         updateDateRange()
          
       })
 
     $scope.$watch('selectedMinDate', function (newVal, oldVal) {
-      if (newVal.value !== oldVal.value) {
-        $scope.selectedMinDate.name = ''+newVal.value
+      if (newVal !== oldVal) {
         updateDateRange()
       }
     })
 
     $scope.$watch('selectedMaxDate', function (newVal, oldVal) {
-      if (newVal.value !== oldVal.value) {
-        $scope.selectedMaxDate.name = ''+newVal.value
+      if (newVal !== oldVal) {
         updateDateRange()
       }
     })
 
     function updateDateRange(){
-      console.log('Update Date Range');
-
+      
       $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
-        .map(function(d){return {value:d, name:''+d}})    // ui-select's model does not deal with numbers
 
-      $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate.value )
-        .map(function(d){return {value:d, name:''+d}})    // ui-select's model does not deal with numbers
+      $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
 
-      $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate.value + 1, $scope.rawMaxDate + 1 )
-        .map(function(d){return {value:d, name:''+d}})    // ui-select's model does not deal with numbers
+      $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
+
     }
 
   })

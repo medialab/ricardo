@@ -11,8 +11,8 @@
       <br>Timeline data length = {{timelineData.length}}
     </h6>
     <bilateral-title></bilateral-title>
-    <dual-timeline ng-data="timelineData" start-date="selectedMinDate.value" end-date="selectedMaxDate.value"></dual-timeline>
-    <brushing-timeline ng-data="timelineData" start-date="selectedMinDate.value" end-date="selectedMaxDate.value"></dual-timeline>
+    <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></dual-timeline>
+    <brushing-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate" raw-start-date="rawMinDate" raw-end-date="rawMaxDate"></brushing-timeline>
   </div>
 </div>
 <!-- <div class="row">
