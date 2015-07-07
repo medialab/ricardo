@@ -333,7 +333,7 @@ angular.module('ricardo.directives-addendum', [])
 
           // Brush
 
-          var dispatch = d3.dispatch("brushed", "brushing")
+          // var dispatch = d3.dispatch("brushed", "brushing")
 
           brush = d3.svg.brush()
             .x(x)
@@ -341,10 +341,10 @@ angular.module('ricardo.directives-addendum', [])
             .on("brush", function(){
               if(brush.empty()){
                 brush.clear()
-                dispatch.brushing(x.domain())
+                // dispatch.brushing(x.domain())
               }
               else{
-                dispatch.brushing(brush.extent())
+                // dispatch.brushing(brush.extent())
               }
             })
             .on("brushend", brushended);
@@ -361,12 +361,12 @@ angular.module('ricardo.directives-addendum', [])
             
             if(brush.empty()){
               brush.extent(x.domain())
-              dispatch.brushed(x.domain())
-              dispatch.brushing(x.domain())
+              // dispatch.brushed(x.domain())
+              // dispatch.brushing(x.domain())
             }
             else{
-              dispatch.brushed(brush.extent())
-              dispatch.brushing(brush.extent())
+              // dispatch.brushed(brush.extent())
+              // dispatch.brushing(brush.extent())
             }
 
             applyBrush()
@@ -389,12 +389,12 @@ angular.module('ricardo.directives-addendum', [])
               .call(brush.event);
           }
 
-          dispatch.on("brushing", function(d){
-            // Currently wo do nothing here (no live update)
-          })
-          .on("brushed", function(d){
-            // Currently wo do nothing here either
-          })
+          // dispatch.on("brushing", function(d){
+          //   // Currently wo do nothing here (no live update)
+          // })
+          // .on("brushed", function(d){
+          //   // Currently wo do nothing here either
+          // })
 
           function applyBrush(){
             scope.startDate = (brush.extent()[0]).getFullYear()
