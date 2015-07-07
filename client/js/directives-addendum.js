@@ -10,7 +10,7 @@ angular.module('ricardo.directives-addendum', [])
   .directive('bilateralTitle', [function(){
     return {
       restrict: 'E'
-      ,templateUrl: 'partials/bilateralTitle'
+      ,templateUrl: 'partials/bilateralTitle.html'
     }
   }])
 
