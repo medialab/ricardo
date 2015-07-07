@@ -299,7 +299,7 @@ if ids_to_remove:
 
 # create the partner World as sum of partners 
 c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldsumpartners","World sum partners","geographical_area","World")""")
-c.execute("INSERT INTO flow_joined (flow,unit,reporting,reporting_id,Yr,expimp,currency,spegen,partner,partner_id,rate,Source,`Source suite`) SELECT sum(flow*unit) as flow, 1 as unit, reporting, reporting_id, Yr, expimp, currency, '' as spegen,  'World_sum_partners' as partner, 'Worldsumpartners' as partner_id,rate,Source,`Source suite` from flow_joined group by reporting,expimp,Yr ")
+c.execute("INSERT INTO flow_joined (flow,unit,reporting,reporting_id,Yr,expimp,currency,spegen,partner,partner_id,rate,Source,`Source suite`) SELECT sum(flow*unit) as flow, 1 as unit, reporting, reporting_id, Yr, expimp, currency, '' as spegen,  'World_sum_partners' as partner, 'Worldsumpartners' as partner_id,rate,Source,`Source suite` from flow_joined WHERE partner not like 'World%' group by reporting,expimp,Yr ")
 
 # create the partnet World as best guess
 c.execute("""INSERT INTO RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldbestguess","World best guess","geographical_area","World")""")
@@ -312,13 +312,13 @@ data.sort(key=lambda _:(_[3],_[0],_[1]))
 for g,d in itertools.groupby(data,lambda _:(_[3],_[0],_[1])):
 	dd=list(d)
 	
-	world_best_guess=[sd for sd in dd if sd[2]==u"World_estimated"]
+	world_best_guess=[sd for sd in dd if sd[4]==u"Worldestimated"]
 	if len(world_best_guess)==0:
-		world_best_guess=[sd for sd in dd if sd[2]==u"World_as_reported"]
+		world_best_guess=[sd for sd in dd if sd[4]==u"Worldasreported"]
 	if len(world_best_guess)==0:
-		world_best_guess=[sd for sd in dd if sd[2]==u"World_sum_partners"]
+		world_best_guess=[sd for sd in dd if sd[4]==u"Worldsumpartners"]
 	if len(world_best_guess)==0:
-		print g,dd[:3]
+		print g
 		print "ARG no best guess world flow found ?"
 	else:
 		world_best_guess=list(world_best_guess[0])
