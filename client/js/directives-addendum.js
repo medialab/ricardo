@@ -194,38 +194,38 @@ angular.module('ricardo.directives-addendum', [])
     }
   }])
 
-  .directive('brushingTimeline', ['cfSource', 'cfTarget',
-    function(                      cfSource ,  cfTarget ){
+  .directive('brushingTimeline', [
+    function(                       ){
     return {
       restrict: 'E'
-      ,template: '<div id="brushing-timeline-container"></div>{{startDate}} - {{endDate}}'
+      ,template: '<div id="brushing-timeline-container"></div>'
       ,scope: {
         ngData: '='
         ,startDate: '='
         ,endDate: '='
+        ,rawStartDate: '='
+        ,rawEndDate: '='
       }
       ,link: function(scope, element, attrs){
         scope.$watch('ngData', function(newValue, oldValue) {
           if ( newValue ) {
-            console.log('ngData change', newValue, oldValue)
             draw(scope.ngData)
           }
         })
 
-        // TODO: apply state to brush selection
-        // scope.$watch('endDate', function(newValue, oldValue) {
-        //   if ( newValue && scope.ngData) {
-        //     console.log('endDate change', newValue, oldValue)
-        //     draw(scope.ngData)
-        //   }
-        // })
+        scope.$watch('endDate', function(newValue, oldValue) {
+          if ( newValue && scope.ngData ) {
+            updateBrush()
+          }
+        })
 
-        // scope.$watch('startDate', function(newValue, oldValue) {
-        //   if ( newValue && scope.ngData) {
-        //     console.log('startDate change', newValue, oldValue)
-        //     draw(scope.ngData)
-        //   }
-        // })
+        scope.$watch('startDate', function(newValue, oldValue) {
+          if ( newValue && scope.ngData ) {
+            updateBrush()
+          }
+        })
+        
+        var brush
 
         function draw(data){
           console.log('draw')
@@ -304,11 +304,38 @@ angular.module('ricardo.directives-addendum', [])
               .attr("d", lineExp)
 
 
+          /* axis */
+
+          var gy = svg.select("g.y.axis"),
+              gx = svg.select("g.x.axis");
+
+          if (svg.select("g.x.axis").empty() || svg.select("g.y.axis").empty()) {
+
+            gx = svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + height + ")")
+              .call(xAxis);
+
+          } else {
+
+            gx.transition().duration(duration)
+              .call(xAxis)
+
+          }
+
+          function customAxis(g) {
+            g.selectAll("text")
+              .attr("x", 4)
+              .attr("dy", -4)
+              .attr("font-size", "0.85em");
+          }
+
+
           // Brush
 
           var dispatch = d3.dispatch("brushed", "brushing")
 
-          var brush = d3.svg.brush()
+          brush = d3.svg.brush()
             .x(x)
             .extent([new Date(scope.startDate), new Date(scope.endDate)])
             .on("brush", function(){
@@ -324,7 +351,7 @@ angular.module('ricardo.directives-addendum', [])
 
           function brushended() {
             if (!d3.event.sourceEvent) return; // only transition after input
-            console.log('brush extent', brush.extent())
+            
             var extent0 = brush.extent(),
                 extent1 = extent0.map(function(d){return d3.time.year(new Date(d))});
 
@@ -363,76 +390,27 @@ angular.module('ricardo.directives-addendum', [])
           }
 
           dispatch.on("brushing", function(d){
-            // console.log((new Date(d[0])).getFullYear())
-            // scope.startDate = (new Date(d[0])).getFullYear()
-            // scope.endDate = (new Date(d[1])).getFullYear()
-            if(!scope.$$phase) {
-              scope.$apply()
-            }
+            // Currently wo do nothing here (no live update)
           })
           .on("brushed", function(d){
-            // cfSource.year().filterRange(d)
-            // cfTarget.year().filterRange(d)
-
-            // scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
-            // scope.streamData = [
-            //   {key:"first", values:[
-            //     {y: cfSource.imp(), x:0, key:"first"},
-            //     {y: cfTarget.exp(), x:1, key:"second"}
-            //     ]
-            //   },
-            //   {key:"second", values:[
-            //     {y: cfSource.exp(), x:0, key:"second"},
-            //     {y: cfTarget.imp(), x:1, key:"first"}
-            //     ]
-            //   }
-            // ]
-
-
-
-            if(!scope.$$phase) {
-              scope.$apply()
-            }
+            // Currently wo do nothing here either
           })
 
           function applyBrush(){
             scope.startDate = (brush.extent()[0]).getFullYear()
             scope.endDate = (brush.extent()[1]).getFullYear()
-            /*console.log('APPLY BRUSH', (new Date(brush.extent()[0])).getFullYear())
-            scope.startDate = (new Date(brush.extent()[0])).getFullYear()
-            scope.endDate = (new Date(brush.extent()[1])).getFullYear()
-            console.log('scope.startDate', scope.startDate)
             if(!scope.$$phase) {
               scope.$apply()
-            }*/
-          }
-
-
-          /* axis */
-
-          var gy = svg.select("g.y.axis"),
-              gx = svg.select("g.x.axis");
-
-          if (svg.select("g.x.axis").empty() || svg.select("g.y.axis").empty()) {
-
-            gx = svg.append("g")
-              .attr("class", "x axis")
-              .attr("transform", "translate(0," + height + ")")
-              .call(xAxis);
-
-          } else {
-
-            gx.transition().duration(duration)
-              .call(xAxis)
-
-          }
-
-          function customAxis(g) {
-            g.selectAll("text")
-              .attr("x", 4)
-              .attr("dy", -4)
-              .attr("font-size", "0.85em");
             }
+          }
+        }
+
+        function updateBrush(){
+          brush.extent([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)])
+          if(scope.rawStartDate == scope.startDate && scope.rawEndDate == scope.endDate){
+            brush.clear()
+          }
+          d3.select("#brushing-timeline-container svg").select(".brush").call(brush)
         }
       }
     }
@@ -443,8 +421,8 @@ angular.module('ricardo.directives-addendum', [])
       restrict: 'E'
       ,templateUrl: 'partials/inlineSelectCountry.html'
       ,scope: {
-        model: '=ngModel'
-        ,list: '=list'
+          model: '=ngModel'
+        , list: '=list'
       }
     }
   }])
@@ -454,8 +432,33 @@ angular.module('ricardo.directives-addendum', [])
       restrict: 'E'
       ,templateUrl: 'partials/inlineSelectYear.html'
       ,scope: {
-        model: '=ngModel'
-        ,list: '=list'
+          rawModel: '=ngModel'
+        , rawList: '=list'
+      }
+      ,link: function(scope, element, attrs){
+        if(scope.rawModel && scope.rawList){
+          scope.model = { name: '' + scope.rawModel, value: Number(scope.rawModel) }
+          scope.list = scope.rawList.map(function(d){ return { name: '' + d, value: Number(d) } })
+        }
+
+        scope.$watch('rawList', function(newValue, oldValue) {
+          if ( newValue ) {
+            scope.list = scope.rawList.map(function(d){ return { name: '' + d, value: Number(d) } })
+          }
+        })
+
+        scope.$watch('rawModel', function(newValue, oldValue) {
+          if ( newValue ) {
+            scope.model = { name: '' + scope.rawModel, value: Number(scope.rawModel) }
+          }
+        })
+
+        scope.$watch('model', function(newValue, oldValue) {
+          if ( newValue ) {
+            scope.rawModel = newValue.value
+          }
+        })
+
       }
     }
   }])
