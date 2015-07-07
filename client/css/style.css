@@ -295,7 +295,8 @@ body > .container {
 .axis path,
 .axis line {
   fill: none;
-  stroke: #000;
+  stroke: #CCC;
+  stroke-dasharray: 2,2;
   shape-rendering: crispEdges;
 }
 
@@ -304,9 +305,8 @@ body > .container {
   stroke-width:0;
 }
 
-.axis .minor line {
-  stroke: #777;
-  stroke-dasharray: 2,2;
+.tick text, .tick.minor text{
+  font-size: 0.8em;
 }
 
 .brush{
