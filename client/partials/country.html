@@ -1,159 +1,172 @@
-<div class="row">
-	<div class="timeline-cont col-sm-12">
-    <country-title></country-title>
-    <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></dual-timeline>
-    <!-- <div missing></div> -->
-    <brushing-timeline
-      ng-data="timelineData"
-      start-date="selectedMinDate"
-      end-date="selectedMaxDate"
-      raw-start-date="rawMinDate"
-      raw-end-date="rawMaxDate"
-      source-country="entities.sourceEntity.selected.RICname"
-      target-country="entities.targetEntity.selected.RICname"
-    ></brushing-timeline>
-  </div>
-</div>
-<div class="row">
-  <div class="col-sm-3">
-    <h3 class="subtitle">choose a reporting country:</h3>
-  </div>
-  <div class="col-sm-9">
-    <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} by partners, {{startDate}} – {{endDate}}, in <em>{{actualCurrency}}</em></h3>
-  </div>
-</div>
-<div id="select-doubleChart" class="row">
-  <div class="col-sm-3">
-    <div class="row">
-      <div class="select-dropdown col-sm-12">
-        <ui-select ng-model="entities.sourceEntity.selected" theme="bootstrap">
-          <match placeholder="Search and select a Country...">{{$select.selected.RICname}}</match>
-          <choices repeat="item in reportingEntities | filter: $select.search">
-            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-          </choices>
-        </ui-select>
-      </div>
+<div class="container">
+  <div class="row">
+  	<div class="timeline-cont col-sm-12">
+      <country-title></country-title>
+      <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></dual-timeline>
     </div>
-    <div class="row">
+  </div>
+</div>
+<div id="sticky-marker"></div>
+<div id="sticky-container">
+  <div class="container">
+    <div class="row" >
       <div class="col-sm-12">
-        <p class="filter">filtered by</p>
-        <div class="btn-group radio-country">
-          <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'all'" uncheckable>all</label>
-          <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'city/part_of'" uncheckable>city/part_of</label>
-          <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'colonial_area'" uncheckable>colonial_area</label>
-          <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'country'" uncheckable>country</label>
-          <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'geographical_area'" uncheckable>geographical_area</label>
-          <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'group'" uncheckable>group</label>
-        </div>
-        <p class="filter">ordered by</p>
-        <div class="btn-group radio-country">
-          <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'tot'" uncheckable>total</label>
-          <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'imp'" uncheckable>imports</label>
-          <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'exp'" uncheckable>exports</label>
-          <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'name'" uncheckable>name</label>
-        </div>
-        <p class="filter">currency</p>
-        <div class="btn-group radio-country">
-          <label class="btn btn-sm btn-default" ng-model="currency" btn-radio="0" uncheckable>Pound</label>
-          <label class="btn btn-sm btn-default" ng-model="currency" btn-radio="1" uncheckable>National</label>
-        </div>
-        <p class="filter">group by</p>
-        <div class="btn-group radio-country">
-          <label class="btn btn-sm btn-default" ng-model="gbContinent" btn-radio="0" uncheckable>None</label>
-          <label class="btn btn-sm btn-default" ng-model="gbContinent" btn-radio="1" uncheckable>Continent</label>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-9">
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="barchart-country" barchart-country></div>
+        <brushing-timeline
+          ng-data="timelineData"
+          start-date="selectedMinDate"
+          end-date="selectedMaxDate"
+          raw-start-date="rawMinDate"
+          raw-end-date="rawMaxDate"
+          source-country="entities.sourceEntity.selected.RICname"
+          target-country="entities.targetEntity.selected.RICname"
+        ></brushing-timeline>
       </div>
     </div>
   </div>
 </div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3">
+      <h3 class="subtitle">choose a reporting country:</h3>
+    </div>
+    <div class="col-sm-9">
+      <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} by partners, {{startDate}} – {{endDate}}, in <em>{{actualCurrency}}</em></h3>
+    </div>
+  </div>
+  <div id="select-doubleChart" class="row">
+    <div class="col-sm-3">
+      <div class="row">
+        <div class="select-dropdown col-sm-12">
+          <ui-select ng-model="entities.sourceEntity.selected" theme="bootstrap">
+            <match placeholder="Search and select a Country...">{{$select.selected.RICname}}</match>
+            <choices repeat="item in reportingEntities | filter: $select.search">
+              <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+            </choices>
+          </ui-select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <p class="filter">filtered by</p>
+          <div class="btn-group radio-country">
+            <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'all'" uncheckable>all</label>
+            <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'city/part_of'" uncheckable>city/part_of</label>
+            <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'colonial_area'" uncheckable>colonial_area</label>
+            <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'country'" uncheckable>country</label>
+            <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'geographical_area'" uncheckable>geographical_area</label>
+            <label class="btn btn-sm btn-default" ng-model="filter" btn-radio="'group'" uncheckable>group</label>
+          </div>
+          <p class="filter">ordered by</p>
+          <div class="btn-group radio-country">
+            <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'tot'" uncheckable>total</label>
+            <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'imp'" uncheckable>imports</label>
+            <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'exp'" uncheckable>exports</label>
+            <label class="btn btn-sm btn-default" ng-model="order" btn-radio="'name'" uncheckable>name</label>
+          </div>
+          <p class="filter">currency</p>
+          <div class="btn-group radio-country">
+            <label class="btn btn-sm btn-default" ng-model="currency" btn-radio="0" uncheckable>Pound</label>
+            <label class="btn btn-sm btn-default" ng-model="currency" btn-radio="1" uncheckable>National</label>
+          </div>
+          <p class="filter">group by</p>
+          <div class="btn-group radio-country">
+            <label class="btn btn-sm btn-default" ng-model="gbContinent" btn-radio="0" uncheckable>None</label>
+            <label class="btn btn-sm btn-default" ng-model="gbContinent" btn-radio="1" uncheckable>Continent</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-9">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="barchart-country" barchart-country></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<div class="row">
-  <div class="col-sm-3">
-    <h3 class="subtitle">select up to 5 partners:</h3>
-  </div>
-  <div class="col-sm-9">
-    <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} with <span ng-repeat="country in reporting">{{country.RICname}}<span ng-if="!$last">, </span></span>, {{startDate}} – {{endDate}}, in {{actualCurrency}}</h3>
-  </div>
-</div>
-<div id="select-lineChart" class="row">
-  <div class="col-sm-3">
-    <div class="row">
-      <div class="select-dropdown col-sm-12" ng-show="RICentitiesDD.length">
-        <ui-select ng-model="entities.sourceCountryEntity.selected" theme="bootstrap">
-          <match placeholder="Select a Country...">{{$select.selected.RICname}}</match>
-          <choices repeat="item in reportingCountryEntities | filter: $select.search">
-            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-          </choices>
-        </ui-select>
-          <ui-select ng-model="entities.sourceColonialEntity.selected" theme="bootstrap">
-          <match placeholder="Select a Colonial area...">{{$select.selected.RICname}}</match>
-          <choices repeat="item in reportingColonialEntities | filter: $select.search">
-            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-          </choices>
-        </ui-select>
-        <ui-select ng-model="entities.sourceGeoEntity.selected" theme="bootstrap">
-          <match placeholder="Select a Geographical area...">{{$select.selected.RICname}}</match>
-          <choices repeat="item in reportingGeoEntities | filter: $select.search">
-            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-          </choices>
-        </ui-select>
-        <ui-select ng-model="entities.sourceContinentEntity.selected" theme="bootstrap">
-          <match placeholder="Select a Continent...">{{$select.selected.RICname}}</match>
-          <choices repeat="item in reportingContinentEntities | filter: $select.search">
-            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-          </choices>
-        </ui-select>
-        <ui-select ng-model="entities.sourceWorldEntity.selected" theme="bootstrap">
-          <match placeholder="Select a World aggregate...">{{$select.selected.RICname}}</match>
-          <choices repeat="item in reportingWorldEntities | filter: $select.search">
-            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-          </choices>
-        </ui-select>
-      </div>
+  <div class="row">
+    <div class="col-sm-3">
+      <h3 class="subtitle">select up to 5 partners:</h3>
     </div>
-    <div class="row">
-      <div class="col-sm-12">
-        <p class="filter">selected partners:</p>
-        <div list-world></div>
-      </div>
+    <div class="col-sm-9">
+      <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} with <span ng-repeat="country in reporting">{{country.RICname}}<span ng-if="!$last">, </span></span>, {{startDate}} – {{endDate}}, in {{actualCurrency}}</h3>
     </div>
   </div>
-  <div class="col-sm-9">
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="filter-group" ng-show="RICentitiesDD.length">
-            <div class="btn-group pull-right">
-              <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'total'" uncheckable>total</label>
-              <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'imp'" uncheckable>imports</label>
-              <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'exp'" uncheckable>exports</label>
-            </div>
+  <div id="select-lineChart" class="row">
+    <div class="col-sm-3">
+      <div class="row">
+        <div class="select-dropdown col-sm-12" ng-show="RICentitiesDD.length">
+          <ui-select ng-model="entities.sourceCountryEntity.selected" theme="bootstrap">
+            <match placeholder="Select a Country...">{{$select.selected.RICname}}</match>
+            <choices repeat="item in reportingCountryEntities | filter: $select.search">
+              <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+            </choices>
+          </ui-select>
+            <ui-select ng-model="entities.sourceColonialEntity.selected" theme="bootstrap">
+            <match placeholder="Select a Colonial area...">{{$select.selected.RICname}}</match>
+            <choices repeat="item in reportingColonialEntities | filter: $select.search">
+              <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+            </choices>
+          </ui-select>
+          <ui-select ng-model="entities.sourceGeoEntity.selected" theme="bootstrap">
+            <match placeholder="Select a Geographical area...">{{$select.selected.RICname}}</match>
+            <choices repeat="item in reportingGeoEntities | filter: $select.search">
+              <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+            </choices>
+          </ui-select>
+          <ui-select ng-model="entities.sourceContinentEntity.selected" theme="bootstrap">
+            <match placeholder="Select a Continent...">{{$select.selected.RICname}}</match>
+            <choices repeat="item in reportingContinentEntities | filter: $select.search">
+              <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+            </choices>
+          </ui-select>
+          <ui-select ng-model="entities.sourceWorldEntity.selected" theme="bootstrap">
+            <match placeholder="Select a World aggregate...">{{$select.selected.RICname}}</match>
+            <choices repeat="item in reportingWorldEntities | filter: $select.search">
+              <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+            </choices>
+          </ui-select>
         </div>
       </div>
-      <div class="col-sm-12">
-        <div id="linechart-world" linechart-world></div>
+      <div class="row">
+        <div class="col-sm-12">
+          <p class="filter">selected partners:</p>
+          <div list-world></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-9">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="filter-group" ng-show="RICentitiesDD.length">
+              <div class="btn-group pull-right">
+                <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'total'" uncheckable>total</label>
+                <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'imp'" uncheckable>imports</label>
+                <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'exp'" uncheckable>exports</label>
+              </div>
+          </div>
+        </div>
+        <div class="col-sm-12">
+          <div id="linechart-world" linechart-world></div>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<div class="row">
-  <div class="col-sm-12 text-center shdt">
-    <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
-        Show/Hide data table
-    </button>
-    <button type="button" ng-click="download()" class="btn">
-        Download data
-    </button>
+  <div class="row">
+    <div class="col-sm-12 text-center shdt">
+      <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
+          Show/Hide data table
+      </button>
+      <button type="button" ng-click="download()" class="btn">
+          Download data
+      </button>
+    </div>
   </div>
-</div>
-<div ng-if="viewTable" class="row table-cont">
-  <div class="col-sm-12 grid-cont">
-    <div class="gridStyle" ng-grid="gridOptions"></div>
+  <div ng-if="viewTable" class="row table-cont">
+    <div class="col-sm-12 grid-cont">
+      <div class="gridStyle" ng-grid="gridOptions"></div>
+    </div>
   </div>
+
 </div>

@@ -1,37 +1,54 @@
-<div class="row">
-	<div class="timeline-cont col-sm-12">
-    <bilateral-title></bilateral-title>
-    <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></dual-timeline>
-    <brushing-timeline
-      ng-data="timelineData"
-      start-date="selectedMinDate"
-      end-date="selectedMaxDate"
-      raw-start-date="rawMinDate"
-      raw-end-date="rawMaxDate"
-      source-country="entities.sourceEntity.selected.RICname"
-      target-country="entities.targetEntity.selected.RICname"
-      mirror-lines="true"
-    ></brushing-timeline>
-    <br>
-    <h4>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
-    <comparison-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></comparison-timeline>
-    <br>
-    <h4>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
-    <comparison-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate" reverse="true"></comparison-timeline>
+<div class="container">
+  <div class="row">
+  	<div class="timeline-cont col-sm-12">
+      <bilateral-title></bilateral-title>
+      <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></dual-timeline>
+    </div>
   </div>
 </div>
-<div class="row">
-  <div class="col-sm-12 text-center shdt">
-    <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
-        Show/Hide data table
-    </button>
-    <button type="button" ng-click="download()" class="btn">
-        Download data
-    </button>
+<div id="sticky-marker"></div>
+<div id="sticky-container">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <brushing-timeline
+          ng-data="timelineData"
+          start-date="selectedMinDate"
+          end-date="selectedMaxDate"
+          raw-start-date="rawMinDate"
+          raw-end-date="rawMaxDate"
+          source-country="entities.sourceEntity.selected.RICname"
+          target-country="entities.targetEntity.selected.RICname"
+          mirror-lines="true"
+        ></brushing-timeline>
+      </div>
+    </div>
   </div>
 </div>
-<div ng-if="viewTable" class="row table-cont">
-  <div class="col-sm-12 grid-cont">
-    <div class="gridStyle" ng-grid="gridOptions"></div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <br>
+      <h4>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
+      <comparison-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></comparison-timeline>
+      <br>
+      <h4>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
+      <comparison-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate" reverse="true"></comparison-timeline>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 text-center shdt">
+      <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
+          Show/Hide data table
+      </button>
+      <button type="button" ng-click="download()" class="btn">
+          Download data
+      </button>
+    </div>
+  </div>
+  <div ng-if="viewTable" class="row table-cont">
+    <div class="col-sm-12 grid-cont">
+      <div class="gridStyle" ng-grid="gridOptions"></div>
+    </div>
   </div>
 </div>

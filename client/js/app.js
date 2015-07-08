@@ -72,3 +72,15 @@ config(['$routeProvider', function($routeProvider) {
   .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
     cfpLoadingBarProvider.includeBar = false;
   }])
+
+
+// Scroll spy for sticky brushing timeline
+$(window).scroll(function(){
+  var offset = $('#sticky-marker').offset().top
+    , scrollPos = $(window).scrollTop()
+  if(scrollPos >= offset - 50){
+    $('#sticky-container').addClass('sticky-container-fixed')
+  } else {
+    $('#sticky-container').removeClass('sticky-container-fixed')
+  }
+})
