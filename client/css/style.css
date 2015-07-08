@@ -285,15 +285,10 @@ body > .container {
 
 /* timeline */
 
-.timeline-cont{
-  /*height: 250px;*/
-  overflow: hidden;
-}
-
-.timeline-cont h4{
-  border-bottom: 3px solid #e5e5e5;
-  margin-bottom: 5px;
-  margin-top: 15px;
+h4{
+  /*border-bottom: 3px solid #e5e5e5;*/
+  margin-bottom: 0;
+  margin-top: 35px;
   padding-bottom: 10px;
 }
 .axis path,
@@ -381,10 +376,39 @@ body > .container {
   left: 0;
   top: 0;
   z-index: 10;
--webkit-box-shadow: 0px 3px 4px -3px rgba(0,0,0,0.38);
--moz-box-shadow: 0px 3px 4px -3px rgba(0,0,0,0.38);
-box-shadow: 0px 3px 4px -3px rgba(0,0,0,0.38);
+  -webkit-box-shadow: 0px 3px 4px -3px rgba(0,0,0,0.38);
+     -moz-box-shadow: 0px 3px 4px -3px rgba(0,0,0,0.38);
+          box-shadow: 0px 3px 4px -3px rgba(0,0,0,0.38);
 }
+
+/* Legend */
+
+.legend .legend-item{
+  display: inline-block;
+  margin-right: 12px;
+  font-size: 0.8em;
+}
+
+.legend .square{
+  display: inline-block;
+  margin-bottom: -2px;
+  width: 12px;
+  height: 12px;
+  background-color: #666;
+}
+
+.legend .square.import{ background-color: #cc6666; }
+.legend .square.export{ background-color: #663333; }
+
+.legend .line{
+  display: inline-block;
+  margin-bottom: 4px;
+  width: 16px;
+  border-bottom: 2px solid #666;
+}
+
+.legend .line.available{      border-color: #cc6666; }
+.legend .line.unavailable{  border-bottom: 1px solid #e5b2b2; }
 
 /* stream */
 

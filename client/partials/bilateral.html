@@ -2,6 +2,23 @@
   <div class="row">
   	<div class="timeline-cont col-sm-12">
       <bilateral-title></bilateral-title>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="square import"></div> Import
+        </div>
+        <div class="legend-item">
+          <div class="square export"></div> Export
+        </div>
+        <div class="legend-item">
+          <div class="line available"></div> Available data
+        </div>
+        <div class="legend-item">
+          <div class="line unavailable"></div> Unavailable data
+        </div>
+        <div class="legend-item">
+          Data expressed in <strong>{{actualCurrency}}</strong>
+        </div>
+      </div>
       <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></dual-timeline>
     </div>
   </div>
