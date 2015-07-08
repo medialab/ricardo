@@ -344,6 +344,10 @@ body > .container {
   fill: none;
 }
 
+.baselineLabel{
+  font-size: 0.8em;
+}
+
 /* stream */
 
 .stream-legend h4{

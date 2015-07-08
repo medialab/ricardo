@@ -249,8 +249,13 @@ angular.module('ricardo.directives-addendum', [])
         ,endDate: '='
         ,rawStartDate: '='
         ,rawEndDate: '='
+        ,sourceCountry: '='
+        ,targetCountry: '='
+        ,mirrorLines: '@'
       }
       ,link: function(scope, element, attrs){
+        scope.mirrorLines = !!scope.mirrorLines;
+
         scope.$watch('ngData', function(newValue, oldValue) {
           if ( newValue ) {
             draw(scope.ngData)
@@ -277,10 +282,10 @@ angular.module('ricardo.directives-addendum', [])
 
           var margin = {top: 10, right: 0, bottom: 30, left: 0},
               width = document.querySelector('#brushing-timeline-container').offsetWidth - margin.left - margin.right,
-              svgHeight = 160,
+              svgHeight = 140,
               height = 20,
               hOffset = svgHeight - height - margin.bottom - margin.top,
-              interline = 12
+              interline = 8
 
           // Curve
           var x = d3.time.scale()
@@ -370,6 +375,12 @@ angular.module('ricardo.directives-addendum', [])
 
           // baselines
           
+          svg.append("text")
+              .attr("class", "baselineLabel")
+              .text("Available data reported by " + scope.sourceCountry)
+              .attr("x", 0)
+              .attr("y", hOffset / 4 - interline / 2 - 8)
+
           svg.append("line")
               .attr("class", "importBaseline")
               .attr("x1", 0)
@@ -384,19 +395,29 @@ angular.module('ricardo.directives-addendum', [])
               .attr("x2", width)
               .attr("y2", hOffset / 4 + interline / 2)
 
-          svg.append("line")
-              .attr("class", "importBaseline")
-              .attr("x1", 0)
-              .attr("y1", 3 * hOffset / 4 - interline / 2)
-              .attr("x2", width)
-              .attr("y2", 3 * hOffset / 4 - interline / 2)
+          if ( scope.mirrorLines ){
 
-          svg.append("line")
-              .attr("class", "exportBaseline")
-              .attr("x1", 0)
-              .attr("y1", 3 * hOffset / 4 + interline / 2)
-              .attr("x2", width)
-              .attr("y2", 3 * hOffset / 4 + interline / 2)
+            svg.append("text")
+                .attr("class", "baselineLabel")
+                .text("Available data reported by " + scope.targetCountry)
+                .attr("x", 0)
+                .attr("y", 3 * hOffset / 4 - interline / 2 - 8)
+
+            svg.append("line")
+                .attr("class", "importBaseline")
+                .attr("x1", 0)
+                .attr("y1", 3 * hOffset / 4 - interline / 2)
+                .attr("x2", width)
+                .attr("y2", 3 * hOffset / 4 - interline / 2)
+
+            svg.append("line")
+                .attr("class", "exportBaseline")
+                .attr("x1", 0)
+                .attr("y1", 3 * hOffset / 4 + interline / 2)
+                .attr("x2", width)
+                .attr("y2", 3 * hOffset / 4 + interline / 2)
+
+          }
 
           svg.append("path")
               .datum(data)

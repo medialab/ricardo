@@ -3,7 +3,15 @@
     <country-title></country-title>
     <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></dual-timeline>
     <!-- <div missing></div> -->
-    <brushing-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate" raw-start-date="rawMinDate" raw-end-date="rawMaxDate"></brushing-timeline>
+    <brushing-timeline
+      ng-data="timelineData"
+      start-date="selectedMinDate"
+      end-date="selectedMaxDate"
+      raw-start-date="rawMinDate"
+      raw-end-date="rawMaxDate"
+      source-country="entities.sourceEntity.selected.RICname"
+      target-country="entities.targetEntity.selected.RICname"
+    ></brushing-timeline>
   </div>
 </div>
 <div class="row">

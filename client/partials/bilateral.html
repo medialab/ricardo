@@ -12,7 +12,16 @@
     </h6> -->
     <bilateral-title></bilateral-title>
     <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></dual-timeline>
-    <brushing-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate" raw-start-date="rawMinDate" raw-end-date="rawMaxDate"></brushing-timeline>
+    <brushing-timeline
+      ng-data="timelineData"
+      start-date="selectedMinDate"
+      end-date="selectedMaxDate"
+      raw-start-date="rawMinDate"
+      raw-end-date="rawMaxDate"
+      source-country="entities.sourceEntity.selected.RICname"
+      target-country="entities.targetEntity.selected.RICname"
+      mirror-lines="true"
+    ></brushing-timeline>
   </div>
 </div>
 <!-- <div class="row">
