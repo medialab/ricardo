@@ -42,8 +42,8 @@ angular.module('ricardo.controllers', [])
     $scope.entities = {sourceEntity : {}, targetEntity : {}}
     $scope.rawMinDate                               // Min year in data for the selected pair of countries
     $scope.rawMaxDate                               // Max year in data for the selected pair of countries
-    $scope.selectedMinDate = 1856                   // Min year as selected by selector or brushing
-    $scope.selectedMaxDate = 1939                   // Max year as selected by selector or brushing
+    $scope.selectedMinDate = 1800                   // Min year as selected by selector or brushing
+    $scope.selectedMaxDate = 2000                   // Max year as selected by selector or brushing
     $scope.rawYearsRange                            // Range of years in data (useful for selectors)
     $scope.rawYearsRange_forInf                     // Range of years in data adapted to inferior bound (useful for selectors)
     $scope.rawYearsRange_forSup                     // Range of years in data adapted to superior bound (useful for selectors)
@@ -100,26 +100,47 @@ angular.module('ricardo.controllers', [])
     $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_REPORTING})[0]
     $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid==DEFAULT_PARTNER})[0]
 
-    apiService
-      .getFlows({reporting_ids: DEFAULT_REPORTING, partner_ids: DEFAULT_PARTNER})
-      .then(function(data){
-        console.log('Data loaded', data)
+    function init(sourceID, targetID) {
 
-        // Consolidate
-        mergeMirrorInFlows(data)
+      apiService
+        .getFlows({reporting_ids: sourceID, partner_ids: targetID})
+        .then(function(data){
+          console.log('Data loaded', data)
 
-        $scope.timelineData = data.flows
+          $scope.selectedMinDate = 1800                   // Min year as selected by selector or brushing
+          $scope.selectedMaxDate = 2000                   // Max year as selected by selector or brushing
 
-        $scope.rawMinDate = d3.min( data.flows, function(d) { return d.year; })
-        $scope.rawMaxDate = d3.max( data.flows, function(d) { return d.year; })
-        $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
-        $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
-        updateDateRange()
+          // Consolidate
+          mergeMirrorInFlows(data)
 
-        cfSource.add(data.flows);
-        cfTarget.add(data.mirror_flows);
-        $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
-      })
+          $scope.timelineData = data.flows
+
+          $scope.rawMinDate = d3.min( data.flows, function(d) { return d.year; })
+          $scope.rawMaxDate = d3.max( data.flows, function(d) { return d.year; })
+          $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
+          $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
+          updateDateRange()
+
+          cfSource.add(data.flows);
+          cfTarget.add(data.mirror_flows);
+          $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
+        })
+    }
+
+    // Initialization
+    init(DEFAULT_REPORTING, DEFAULT_PARTNER);
+
+    $scope.$watch("entities.sourceEntity.selected", function(newValue, oldValue){
+      if(newValue != oldValue && newValue){
+        init(newValue.RICid, $scope.entities.targetEntity.selected.RICid);
+      }
+    })
+
+    $scope.$watch("entities.targetEntity.selected", function(newValue, oldValue){
+      if(newValue != oldValue && newValue){
+        init($scope.entities.sourceEntity.selected.RICid, newValue.RICid);
+      }
+    })
 
     $scope.$watch('selectedMinDate', function (newVal, oldVal) {
       if (newVal !== oldVal) {
