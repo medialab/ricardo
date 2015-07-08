@@ -1,8 +1,9 @@
 <div class="row">
 	<div class="timeline-cont col-sm-12">
-    <h4>Sum of partners Trade flows for {{entities.sourceEntity.selected.RICname}}, {{minDate}} – {{maxDate}}, in {{actualCurrency}}</h4>
-    <div stacked-timeline-country></div>
-    <div missing></div>
+    <country-title></country-title>
+    <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></dual-timeline>
+    <!-- <div missing></div> -->
+    <brushing-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate" raw-start-date="rawMinDate" raw-end-date="rawMaxDate"></brushing-timeline>
   </div>
 </div>
 <div class="row">

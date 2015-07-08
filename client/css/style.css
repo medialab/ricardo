@@ -217,6 +217,68 @@ body > .container {
   padding: 10px 20px;
 }
 
+/* inline selector */
+
+.inline-select, .inline-select .ui-select-bootstrap{
+  display: inline-block;
+}
+
+.inline-select input{
+  display: inline;
+}
+
+.inline-select .ui-select-bootstrap button{
+  padding-right: 30px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.inline-select .btn, .inline-select .form-control{
+  border: 0;
+  border-radius: 0;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  color: #663333;
+  background-color: #FAFAFA;
+}
+
+.inline-select .btn:hover{
+  background-color: #FFF;
+}
+
+.inline-select *:focus, .inline-select *:active:focus{
+  outline: 0;
+}
+
+.inline-select .dropdown-menu{
+  border-color:#e7e7e7;
+  border-radius: 0;
+  border-width: 0 1px 1px 1px;
+  font-size: 13px; 
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  min-width: 294px;
+  left: -16px;
+}
+
+.inline-select .dropdown-menu > .active > a, .dropdown-menu > .active > a:hover, .dropdown-menu > .active > a:focus{
+  color: #222;
+  background-color: #e8e8e8;
+}
+
+.inline-select  .dropdown-menu > li > a {
+  padding: 10px 20px;
+}
+
+/*
+.inline-select .ui-select-bootstrap > .ui-select-choices{
+  width: 300px;
+}
+
+.inline-select .dropdown-menu{
+  margin: 10px 0 0 -155px;
+}*/
+
 /* timeline */
 
 .timeline-cont{
@@ -233,7 +295,8 @@ body > .container {
 .axis path,
 .axis line {
   fill: none;
-  stroke: #000;
+  stroke: #CCC;
+  stroke-dasharray: 2,2;
   shape-rendering: crispEdges;
 }
 
@@ -242,15 +305,43 @@ body > .container {
   stroke-width:0;
 }
 
-.axis .minor line {
-  stroke: #777;
-  stroke-dasharray: 2,2;
+.tick text, .tick.minor text{
+  font-size: 0.8em;
 }
 
 .brush{
   fill:black;
   fill-opacity:0.2;
   stroke:none;
+}
+
+.area-imp, .area-exp{
+  fill: rgba(230, 230, 230, 0.4);
+  stroke: none;
+}
+
+.line-imp{
+  stroke: #cc6666;
+  stroke-width: 1.5px;
+  fill: none;
+}
+
+.line-exp{
+  stroke: #663333;
+  stroke-width: 1.5px;
+  fill: none;
+}
+
+.importBaseline{
+  stroke: #cc6666;
+  stroke-width: 0.2px;
+  fill: none;
+}
+
+.exportBaseline{
+  stroke: #663333;
+  stroke-width: 0.2px;
+  fill: none;
 }
 
 /* stream */
