@@ -501,11 +501,31 @@ font-size: 1.1em;
   background-color: white;
 }
 
-.barchart-country{
+.partners-histogram{
   max-height: 500px;
   overflow-y: scroll;
   overflow-x: hidden;
   margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.partners-tooltip {
+  position: absolute;
+  background: #333;
+  color: #ddd;
+  padding: 2px;
+  border: 0px;
+  border-radius: 5px;
+  opacity: 0;
+  text-align: center;
+}
+.partners-tooltip h3 {
+  margin: 3px 5px;
+  font-size: 14px;
+}
+.partners-tooltip p {
+  margin: 0px 5px;
+  font-size: 11px;
 }
 
 #select-lineChart, #select-doubleChart{

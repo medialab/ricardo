@@ -631,6 +631,25 @@ angular.module('ricardo.directives', [])
       }
     }
   }])
+  .directive('partnersHistogram', ['cfSource', 'cfTarget', 'fileService', 'apiService', '$timeout', function(cfSource, cfTarget, fileService, apiService, $timeout){
+    return {
+      restrict: 'A',
+      replace: false,
+      link: function(scope, element, attrs) {
+
+        var histogram = ricardo.partnersHistogram()
+            .width(element.width())
+        var chart = d3.select(element[0])
+        scope.$watch("tableData", function(newValue, oldValue){
+          if(newValue != oldValue){
+            chart.datum(newValue).call(histogram.RICentities(scope.RICentities))
+          }
+        });
+
+      }
+    }
+  }])
+
   .directive('barchartCountry',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
     return {
       restrict: 'A',
@@ -639,7 +658,6 @@ angular.module('ricardo.directives', [])
 
           var doubleBar = ricardo.doubleBarChart()
             .width(element.width())
-
 
           var chart = d3.select(element[0])
 
@@ -812,7 +830,6 @@ angular.module('ricardo.directives', [])
                 
                 scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
                 
-
                 scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
                 
                 var flowsPerYear = cfSource.years().top(Infinity)
