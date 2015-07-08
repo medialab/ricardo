@@ -409,6 +409,8 @@ h4{
 
 .legend .line.available{      border-color: #cc6666; }
 .legend .line.unavailable{  border-bottom: 1px solid #e5b2b2; }
+.legend .line.diff-import{    border-color: #cc6666; }
+.legend .line.diff-export{    border-color: #dbb994; }
 
 /* stream */
 
