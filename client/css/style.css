@@ -334,18 +334,34 @@ body > .container {
 
 .importBaseline{
   stroke: #cc6666;
-  stroke-width: 0.2px;
+  stroke-opacity: 0.2;
+  stroke-width: 1;
   fill: none;
+  shape-rendering: crispEdges;
 }
 
 .exportBaseline{
   stroke: #663333;
-  stroke-width: 0.2px;
+  stroke-opacity: 0.2;
+  stroke-width: 1;
   fill: none;
+  shape-rendering: crispEdges;
 }
 
 .baselineLabel{
   font-size: 0.8em;
+}
+
+.line-compare{
+  stroke: #cc6666;
+  stroke-width: 1.5px;
+  fill: none;
+}
+
+.line-compare-alt{
+  stroke: #dbb994;
+  stroke-width: 1.5px;
+  fill: none;
 }
 
 /* stream */

@@ -22,44 +22,10 @@
       target-country="entities.targetEntity.selected.RICname"
       mirror-lines="true"
     ></brushing-timeline>
+    <comparison-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></comparison-timeline>
+    <comparison-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate" reverse="true"></comparison-timeline>
   </div>
 </div>
-<!-- <div class="row">
-  <div class="col-sm-3">
-    <h3 class="subtitle">choose a reporting country:</h3>
-  </div>
-  <div class="col-sm-6">
-    <h3 class="subtitle">Mirror flows between {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}}, {{startDate}} -{{endDate}}, in {{actualCurrency}}</h3>
-  </div>
-  <div class="col-sm-3">
-    <h3 class="subtitle">choose a partner country:</h3>
-  </div>
-</div>
-<div id="select" class="row">
-  <div class="select-dropdown col-sm-3">
-    <ui-select ng-model="entities.sourceEntity.selected" theme="bootstrap">
-    <match placeholder="Search and select a country...">{{$select.selected.RICname}}</match>
-    <choices repeat="item in reportingEntities | filter: $select.search">
-      <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-    </choices>
-  </ui-select>
-  </div>
-  <div class="col-sm-6">
-    <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
-    <div stream></div>
-    <div class="row">
-      <div class="stream-legend" stream-legend></div>
-    </div>
-  </div>
-  <div class="select-dropdown col-sm-3">
-    <ui-select ng-model="entities.targetEntity.selected" theme="bootstrap">
-    <match placeholder="Search and select a country...">{{$select.selected.RICname}}</match>
-    <choices repeat="item in partnerEntities | filter: $select.search">
-      <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-    </choices>
-  </ui-select>
-  </div>
-</div> -->
 <div class="row">
   <div class="col-sm-12 text-center shdt">
     <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">

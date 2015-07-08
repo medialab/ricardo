@@ -238,6 +238,254 @@ angular.module('ricardo.directives-addendum', [])
     }
   }])
 
+  .directive('comparisonTimeline', [function(){
+    return {
+      restrict: 'E'
+      ,template: '<div id="comparison-timeline-container{{reverse ? \'-reverse\' : \'\'}}"></div>'
+      ,scope: {
+        ngData: '='
+        ,startDate: '='
+        ,endDate: '='
+        ,reverse: '@'
+      }
+      ,link: function(scope, element, attrs){
+        scope.$watch('ngData', function(newValue, oldValue) {
+          if ( newValue ) {
+            draw(scope.ngData)
+          }
+        })
+
+        scope.$watch('endDate', function(newValue, oldValue) {
+          if ( newValue && scope.ngData) {
+            update(scope.ngData)
+          }
+        })
+
+        scope.$watch('startDate', function(newValue, oldValue) {
+          if ( newValue && scope.ngData) {
+            update(scope.ngData)
+          }
+        })
+
+        var x
+          , y
+          , xAxis
+          , yAxis
+          , diffImpLine
+          , diffExpLine
+          , diffImp
+          , diffImpDefined
+          , diffExp
+          , diffExpDefined
+
+        if (!scope.reverse){
+          
+          diffImp = function(d){
+            return ( d.imp - d.exp_mirror ) / d.imp ;
+          }
+
+          diffImpDefined = function(d){
+            return d.imp != null && d.exp_mirror != null && d.imp > 0 ;
+          }
+
+          diffExp = function(d){
+            return ( d.exp - d.imp_mirror ) / d.exp ;
+          }
+
+          diffExpDefined = function(d){
+            return d.exp != null && d.imp_mirror != null && d.exp > 0 ;
+          }
+
+        } else {
+
+          diffImp = function(d){
+            return ( d.imp_mirror - d.exp ) / d.imp_mirror ;
+          }
+
+          diffImpDefined = function(d){
+            return d.imp_mirror != null && d.exp != null && d.imp_mirror > 0 ;
+          }
+
+          diffExp = function(d){
+            return ( d.exp_mirror - d.imp ) / d.exp_mirror ;
+          }
+
+          diffExpDefined = function(d){
+            return d.exp_mirror != null && d.imp != null && d.exp_mirror > 0 ;
+          }
+
+        }
+
+        function update(data){
+          
+          if(xAxis && yAxis){
+
+            x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
+            y.domain([
+              d3.min( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
+                  if (diffImpDefined(d) && diffExpDefined(d)) {
+                    return Math.min( diffImp(d), diffExp(d) );            
+                  } else {
+                    return false
+                  }
+                }),
+              d3.max( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
+                  if (diffImpDefined(d) && diffExpDefined(d)) {
+                    return Math.max( diffImp(d), diffExp(d) );            
+                  } else {
+                    return false
+                  }
+                })
+            ]);
+
+            var svg = d3.select("#comparison-timeline-container" + (scope.reverse ? '-reverse' : '')).transition()
+
+            svg.select(".line-compare")
+                .duration(750)
+                .attr("d", diffImpLine)
+
+            svg.select(".line-compare-alt")
+                .duration(750)
+                .attr("d", diffExpLine)
+
+            svg.select(".x.axis")
+                .duration(750)
+                .call(xAxis);
+
+            svg.select(".y.axis")
+                .duration(750)
+                .call(yAxis);
+          }
+        }
+
+        function draw(data){
+          document.querySelector('#comparison-timeline-container' + (scope.reverse ? '-reverse' : '') ).innerHTML = null;
+
+          var margin = {top: 10, right: 0, bottom: 30, left: 0},
+              width = document.querySelector('#comparison-timeline-container' + (scope.reverse ? '-reverse' : '') ).offsetWidth - margin.left - margin.right,
+              height = 180 - margin.top - margin.bottom;
+
+          x = d3.time.scale()
+              .range([0, width]);
+
+          y = d3.scale.linear()
+              .range([height, 0]);
+
+          xAxis = d3.svg.axis()
+              .scale(x)
+              .orient("bottom");
+
+          yAxis = d3.svg.axis()
+              .scale(y)
+              .orient("right")
+              .ticks(4)
+              .tickSize(0)
+              .tickFormat(function(d,i){
+                var prefix = d3.formatPrefix(d)
+                if(i == 0){
+                  return
+                }
+                else{
+                  var symbol;
+                  if(prefix.symbol == "G"){
+                    symbol = "billion"
+                  }else if(prefix.symbol == "M"){
+                    symbol = "million"
+                  }else if(prefix.symbol == "k"){
+                    symbol = "thousand"
+                  }else{
+                    symbol = ""
+                  }
+                  return prefix.scale(d) + " " + symbol
+                }
+                
+              })
+
+          diffImpLine = d3.svg.line()
+              .defined(diffImpDefined)
+              .x(function(d) { return x(d.date); })
+              .y(function(d) { return y( diffImp(d) ); });
+
+          diffExpLine = d3.svg.area()
+              .defined(diffImpDefined)
+              .x(function(d) { return x(d.date); })
+              .y(function(d) { return y( diffExp(d) ); });
+
+          var svg = d3.select("#comparison-timeline-container" + (scope.reverse ? '-reverse' : '')).append("svg")
+              .attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+          data.forEach(function(d){
+            d.date = new Date(d.year, 0, 1)
+          })
+
+          x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
+          y.domain([0, d3.max( data, function(d) {
+            if (diffImpDefined(d) && diffExpDefined(d)) {
+              return Math.max( diffImp(d), diffExp(d) );            
+            } else {
+              return false
+            }
+          })]);
+
+          svg.append("path")
+              .datum(data)
+              .attr("class", "line-compare-alt")
+              .attr("d", diffExpLine)
+
+          svg.append("path")
+              .datum(data)
+              .attr("class", "line-compare")
+              .attr("d", diffImpLine)
+          
+          /* axis */
+
+          var gy = svg.select("g.y.axis"),
+              gx = svg.select("g.x.axis");
+
+          if (svg.select("g.x.axis").empty() || svg.select("g.y.axis").empty()) {
+
+            gx = svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + height + ")")
+              .call(xAxis);
+
+            gy = svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .call(customAxis);
+                
+            gy.selectAll("g").filter(function(d) { return d; })
+                .classed("minor", true);
+
+          } else {
+
+            gx.transition().duration(duration)
+              .call(xAxis)
+
+            gy.transition().duration(duration)
+              .call(yAxis)
+              .call(customAxis);
+
+            gy.selectAll("g").filter(function(d) { return d; })
+                .classed("minor", true);
+            
+          }
+
+          function customAxis(g) {
+            g.selectAll("text")
+              .attr("x", 4)
+              .attr("dy", -4)
+              .attr("font-size", "0.85em");
+            }
+
+        }
+      }
+    }
+  }])
+
   .directive('brushingTimeline', [
     function(                       ){
     return {
