@@ -18,6 +18,9 @@ angular.module('ricardo.controllers', [])
 
   })
   .controller('bilateral', function($scope, $location, reportingEntities, cfSource, cfTarget, apiService, utils, DEFAULT_REPORTING, DEFAULT_PARTNER, TABLE_HEADERS) {
+
+    var data
+
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
 
@@ -47,7 +50,6 @@ angular.module('ricardo.controllers', [])
     $scope.rawYearsRange                            // Range of years in data (useful for selectors)
     $scope.rawYearsRange_forInf                     // Range of years in data adapted to inferior bound (useful for selectors)
     $scope.rawYearsRange_forSup                     // Range of years in data adapted to superior bound (useful for selectors)
-    $scope.logMode = false                          // Log scale for the timeline
 
     $scope.setPagingData = function(data, pageSize, page){
         var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
@@ -104,8 +106,9 @@ angular.module('ricardo.controllers', [])
 
       apiService
         .getFlows({reporting_ids: sourceID, partner_ids: targetID})
-        .then(function(data){
-          console.log('Data loaded', data)
+        .then(function(result){
+
+          data = result
 
           $scope.selectedMinDate = 1800                   // Min year as selected by selector or brushing
           $scope.selectedMaxDate = 2000                   // Max year as selected by selector or brushing
@@ -119,11 +122,9 @@ angular.module('ricardo.controllers', [])
           $scope.rawMaxDate = d3.max( data.flows, function(d) { return d.year; })
           $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
           $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
+
           updateDateRange()
 
-          cfSource.add(data.flows);
-          cfTarget.add(data.mirror_flows);
-          $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
         })
     }
 
@@ -161,6 +162,16 @@ angular.module('ricardo.controllers', [])
       $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
 
       $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
+
+      cfSource.clear()
+      cfSource.add(data.flows.filter(function(d){
+        return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
+      }));
+      cfTarget.clear()
+      cfTarget.add(data.mirror_flows.filter(function(d){
+        return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
+      }));
+      $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
 
     }
 
