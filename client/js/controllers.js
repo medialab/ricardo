@@ -105,7 +105,7 @@ angular.module('ricardo.controllers', [])
     function init(sourceID, targetID) {
 
       apiService
-        .getFlows({reporting_ids: sourceID, partner_ids: targetID})
+        .getFlows({reporting_ids: sourceID, partner_ids: targetID, with_sources: 1})
         .then(function(result){
 
           data = result
@@ -234,7 +234,7 @@ angular.module('ricardo.controllers', [])
     function init(sourceID, currency) {
 
       apiService
-        .getFlows({reporting_ids: sourceID, original_currency: currency})
+        .getFlows({reporting_ids: sourceID, original_currency: currency, with_sources: 1})
         .then(function(data) {
           $scope.selectedMinDate = 0;                   // Min year as selected by selector or brushing
           $scope.selectedMaxDate = 2000;                   // Max year as selected by selector or brushing

@@ -2,7 +2,6 @@
 
 /* Directives */
 
-
 angular.module('ricardo.directives', [])
   .directive('navbar',[ 'fileService', '$timeout', function (fileService, $timeout){
     return {
