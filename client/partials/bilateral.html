@@ -1,15 +1,5 @@
 <div class="row">
 	<div class="timeline-cont col-sm-12">
-    <!-- <h6>
-      TEMPORARY MONITORING
-      <br>Source selected = {{entities.sourceEntity.selected.RICid}}
-      <br>Target selected = {{entities.targetEntity.selected.RICid}}
-      <br>Data Min Date = {{rawMinDate}}
-      <br>Data Max Date = {{rawMaxDate}}
-      <br>Selected Min Date = {{selectedMinDate}}
-      <br>Selected Max Date = {{selectedMaxDate}}
-      <br>Timeline data length = {{timelineData.length}}
-    </h6> -->
     <bilateral-title></bilateral-title>
     <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></dual-timeline>
     <brushing-timeline
@@ -22,7 +12,11 @@
       target-country="entities.targetEntity.selected.RICname"
       mirror-lines="true"
     ></brushing-timeline>
+    <br>
+    <h4>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
     <comparison-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></comparison-timeline>
+    <br>
+    <h4>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
     <comparison-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate" reverse="true"></comparison-timeline>
   </div>
 </div>

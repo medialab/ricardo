@@ -311,7 +311,7 @@ body > .container {
 
 .brush{
   fill:black;
-  fill-opacity:0.2;
+  fill-opacity:0.1;
   stroke:none;
 }
 
@@ -362,6 +362,10 @@ body > .container {
   stroke: #dbb994;
   stroke-width: 1.5px;
   fill: none;
+}
+
+#brushing-timeline-container{
+  background-color: #FAFAFA;
 }
 
 /* stream */
