@@ -17,7 +17,7 @@ angular.module('ricardo.controllers', [])
     ]
 
   })
-  .controller('bilateral', function($scope, $location, reportingEntities, apiService, utils, DEFAULT_REPORTING, DEFAULT_PARTNER, TABLE_HEADERS) {
+  .controller('bilateral', function($scope, $location, reportingEntities, cfSource, cfTarget, apiService, utils, DEFAULT_REPORTING, DEFAULT_PARTNER, TABLE_HEADERS) {
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
 
@@ -116,6 +116,9 @@ angular.module('ricardo.controllers', [])
         $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
         updateDateRange()
 
+        cfSource.add(data.flows);
+        cfTarget.add(data.mirror_flows);
+        $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
       })
 
     $scope.$watch('selectedMinDate', function (newVal, oldVal) {
