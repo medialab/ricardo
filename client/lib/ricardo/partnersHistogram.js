@@ -8,7 +8,7 @@
         chartWidth = 370,
         marginTop = 15,
         marginLeft = 200,
-        marginRight = 30,
+        marginRight = 40,
         duration = 1000,
         yearWidth = 5,
         barWidth = 4,
@@ -56,7 +56,6 @@
 
     function partnersHistogram(selection){
       selection.each(function(data){
-        currency = data[0].currency;
         data = data.filter(function(d){
           return !/^World/.test(d.partner_id) && (!continents || d.continent);
         })
@@ -116,7 +115,8 @@
 
         var x0, y0,
             years = Object.keys(indexYears),
-            maxWidth = yearWidth * years.length
+            limits = d3.extent(years),
+            maxWidth = yearWidth * (limits[1]-limits[0]+1),
             x = d3.scale.linear()
               .domain(d3.extent(years))
               .range([0, maxWidth]),
@@ -198,7 +198,8 @@
             .attr("font-size", "0.8em")
             .text(function(d){ return shorten(name) })
 
-          histo.append("text")
+          if (order !== "name")
+            histo.append("text")
             .attr("class", "legend")
             .attr("x", -8)
             .attr("y", 0)
@@ -222,7 +223,7 @@
       if (!arguments.length) return width;
       width = x;
       chartWidth = width - marginLeft - marginRight;
-      yearWidth = chartWidth / 150;
+      yearWidth = chartWidth / 152;
       barWidth = 4 / 5 * yearWidth;
       return partnersHistogram;
     }

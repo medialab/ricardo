@@ -457,7 +457,7 @@ angular.module('ricardo.controllers', [])
         init($scope.entities.sourceEntity.selected.RICid, newValue)
         updateDateRange()
       }
-    }, true)
+    })
 
     /* end directive salvage */
 
