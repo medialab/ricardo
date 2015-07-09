@@ -380,26 +380,6 @@ angular.module('ricardo.directives-addendum', [])
               .orient("right")
               .ticks(4)
               .tickSize(0)
-              .tickFormat(function(d,i){
-                var prefix = d3.formatPrefix(d)
-                if(i == 0){
-                  return
-                }
-                else{
-                  var symbol;
-                  if(prefix.symbol == "G"){
-                    symbol = "billion"
-                  }else if(prefix.symbol == "M"){
-                    symbol = "million"
-                  }else if(prefix.symbol == "k"){
-                    symbol = "thousand"
-                  }else{
-                    symbol = ""
-                  }
-                  return prefix.scale(d) + " " + symbol
-                }
-                
-              })
 
           diffImpLine = d3.svg.line()
               .defined(diffImpDefined)

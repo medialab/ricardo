@@ -170,7 +170,10 @@ def get_flows(reporting_ids,partner_ids,original_currency,from_year,to_year,with
 
     if len(reporting_ids)==1 and len(partner_ids)==1:
         #bilateral : add mirror
-        json_response["mirror_flows"]=flows_data(partner_ids,reporting_ids,original_currency,from_year,to_year,with_sources)
+        #restrict the mirror flows to the time span of the reporting flows to the partner
+        from_year_in_flow=min(_["year"] for _ in json_response["flows"])
+        to_year_in_flow=max(_["year"] for _ in json_response["flows"])
+        json_response["mirror_flows"]=flows_data(partner_ids,reporting_ids,original_currency,from_year_in_flow,to_year_in_flow,with_sources)
 
     return json.dumps(json_response,encoding="UTF8",indent=4)
 
@@ -200,13 +203,22 @@ def get_continent_flows_for_reporting(continents, reporting_ids, from_year, to_y
 
 def get_mirror_entities(reporting_id):
     cursor = get_db().cursor()
-    cursor.execute("""SELECT reporting_id,reporting,rci.type,rci.central_state,rci.continent
-                          FROM flow_joined
-                          LEFT OUTER JOIN RICentities rci ON rci.id=reporting_id
-                          WHERE partner_id='%s' AND reporting_id IN (SELECT distinct(partner_id) from flow_joined where reporting_id='%s')
-                          group by reporting_id """%(reporting_id,reporting_id))
+    cursor.execute("""SELECT f.reporting_id,f.reporting,rci.type,rci.central_state,rci.continent,group_concat(f.Yr),rpp.years_from_reporting
+                          FROM flow_joined f
+                          LEFT OUTER JOIN RICentities rci ON rci.id=f.reporting_id
+                          LEFT OUTER JOIN (
+                                SELECT partner_id,group_concat(Yr) as years_from_reporting 
+                                from flow_joined where reporting_id='%s' 
+                                group by partner_id)
+                                rpp
+                                on rpp.partner_id=f.reporting_id
+                          WHERE f.partner_id='%s' and rpp.partner_id not null
+                          group by f.reporting_id
+                          """%(reporting_id,reporting_id))
     json_response=[]
-    for (id,r,t,central,continent) in cursor:
+    for (id,r,t,central,continent,years_from_partner,years_from_reporting) in cursor:
+      # let's check if the mirror flows partner->reporting match the time span of the reporting->partner flows
+      if len(set(years_from_partner.split(",")) & set(years_from_reporting.split(",")))>0:
         json_response.append({
             "RICid":id,
             "RICname":r,
