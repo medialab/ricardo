@@ -347,7 +347,7 @@ angular.module('ricardo.controllers', [])
     function updateTableData(){
       $scope.tableData = cfSource.year().top(Infinity);
       $scope.tableData.forEach(function(d){
-        d.continent = scope.RICentities[d.partner_id+""].continent
+        d.continent = $scope.RICentities[d.partner_id+""].continent
       })
     }
 
