@@ -115,7 +115,8 @@
 
         var x0, y0,
             years = Object.keys(indexYears),
-            maxWidth = yearWidth * years.length
+            limits = d3.extent(years),
+            maxWidth = yearWidth * (limits[1]-limits[0]+1),
             x = d3.scale.linear()
               .domain(d3.extent(years))
               .range([0, maxWidth]),
@@ -222,7 +223,7 @@
       if (!arguments.length) return width;
       width = x;
       chartWidth = width - marginLeft - marginRight;
-      yearWidth = chartWidth / 150;
+      yearWidth = chartWidth / 152;
       barWidth = 4 / 5 * yearWidth;
       return partnersHistogram;
     }
