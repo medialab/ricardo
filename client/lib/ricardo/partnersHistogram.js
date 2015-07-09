@@ -8,7 +8,7 @@
         chartWidth = 370,
         marginTop = 15,
         marginLeft = 200,
-        marginRight = 30,
+        marginRight = 40,
         duration = 1000,
         yearWidth = 5,
         barWidth = 4,
@@ -56,7 +56,6 @@
 
     function partnersHistogram(selection){
       selection.each(function(data){
-        currency = data[0].currency;
         data = data.filter(function(d){
           return !/^World/.test(d.partner_id) && (!continents || d.continent);
         })
@@ -198,7 +197,8 @@
             .attr("font-size", "0.8em")
             .text(function(d){ return shorten(name) })
 
-          histo.append("text")
+          if (order !== "name")
+            histo.append("text")
             .attr("class", "legend")
             .attr("x", -8)
             .attr("y", 0)
