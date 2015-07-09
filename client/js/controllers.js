@@ -268,9 +268,8 @@ angular.module('ricardo.controllers', [])
           $scope.reportingWorldEntities = $scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World ") === 0})
           var continents = d3.nest()
             .key(function(d){return d.continent})
-            .entries($scope.RICentitiesDD)
+            .entries($scope.RICentitiesDD.filter(function(d){return d.continent}))
             .map(function(d){return d.key})
-            .filter(function(d){return d && d.key})
 
           $scope.reportingContinentEntities = []
 
