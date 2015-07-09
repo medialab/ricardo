@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ricardo')
-  .constant('BASE_API_URL', 'your base api url')
+  .constant('BASE_API_URL', 'http://localhost:5000')
   .constant('DEFAULT_REPORTING', 'France')
   .constant('DEFAULT_PARTNER', 'Italy')
   .constant('DEFAULT_CONTINENT', 'Europe')

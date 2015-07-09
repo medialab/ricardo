@@ -640,26 +640,32 @@ angular.module('ricardo.directives', [])
             .width(element.width())
         var chart = d3.select(element[0])
         
+window.scope = scope
         var refresh = function(newValue, oldValue){
           if(newValue != oldValue){
             chart.empty();
-            var data = scope.tableData;
+            var data = scope.tableData
             if(scope.gbContinent && newValue){
-              data = d3.nest()
+              data = data.filter(function(d){
+                return d.continent;
+              });
+              /*data = d3.nest()
                 .key(function(d){return d.continent})
                 .rollup(function(leaves) {
                   return {
                     count: leaves.length,
-                    exp: d3.sum(leaves, function(d) {return d.value.exp}),
-                    imp: d3.sum(leaves, function(d) {return d.value.imp}),
-                    tot: d3.sum(leaves, function(d) {return d.value.tot})
+                    exp: d3.sum(leaves, function(d) {return d.exp}),
+                    imp: d3.sum(leaves, function(d) {return d.imp}),
+                    tot: d3.sum(leaves, function(d) {return d.tot})
+                    year: leaves, function(d) {return d.tot})
                   };
                 })
                 .entries(scope.tableData.filter(function(d){ return d.continent && d.continent != "World"}))
-
+*/
               data.forEach(function(d){
-                d['value'] = d['values'];
-                delete d['values'];
+                d.partner_id = d.continent;
+                //d['value'] = d['values'];
+                //delete d['values'];
               })
             }
             chart.datum(data).call(histogram.RICentities(scope.RICentities));
@@ -1145,18 +1151,6 @@ angular.module('ricardo.directives', [])
             init(newValue)
           }
         }, true)
-
-        // scope.$watch("filter", function(newValue, oldValue){
-        //   if(newValue != oldValue){
-        //       if(newValue == "all"){
-        //         cfSource.type().filterAll()
-        //         scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
-        //       }else{
-        //         cfSource.type().filterExact(newValue)
-        //         scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return d.key != 442})
-        //       }
-        //   }
-        // })
 
       }
     }

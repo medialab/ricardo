@@ -541,8 +541,8 @@ angular.module('ricardo.controllers', [])
 
     $scope.$watch("reporting", function(newValue, oldValue){
       if(newValue != oldValue && newValue){
-          //var partnerID = scope.entities.sourceEntity.selected.RICid;
-          //initLinechart(newValue, partnerID, scope.startDate, scope.endDate)
+          //var partnerID = $scope.entities.sourceEntity.selected.RICid;
+          //initLinechart(newValue, partnerID, $scope.startDate, $scope.endDate)
           initLinechart(newValue)
       }
     }, true)

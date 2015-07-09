@@ -65,6 +65,10 @@
 
         var partners = d3.nest()
           .key(function(d){ return d.partner_id })
+          .key(function(d){ return d.year })
+          .rollup(function(){
+            
+          })
           .entries(data)
 
         partners.forEach(function(p){
