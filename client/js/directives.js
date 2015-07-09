@@ -407,9 +407,9 @@ angular.module('ricardo.directives', [])
                 scope.reportingGeoEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World ") !== 0})
                 scope.reportingWorldEntities = scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World ") === 0})
                 var continents = d3.nest()
-                                  .key(function(d){return d.continent})
-                                  .entries(scope.RICentitiesDD.filter(function(d){return d.continent}))
-                                  .map(function(d){return d.key})
+                  .key(function(d){return d.continent})
+                  .entries(scope.RICentitiesDD.filter(function(d){return d.continent}))
+                  .map(function(d){return d.key})
 
                 scope.reportingContinentEntities = []
                 continents.forEach(function(d){
@@ -645,28 +645,13 @@ window.scope = scope
           if(newValue != oldValue){
             chart.empty();
             var data = scope.tableData
-            if(scope.gbContinent && newValue){
+            if(scope.gbContinent){
               data = data.filter(function(d){
                 return d.continent;
               });
-              /*data = d3.nest()
-                .key(function(d){return d.continent})
-                .rollup(function(leaves) {
-                  return {
-                    count: leaves.length,
-                    exp: d3.sum(leaves, function(d) {return d.exp}),
-                    imp: d3.sum(leaves, function(d) {return d.imp}),
-                    tot: d3.sum(leaves, function(d) {return d.tot})
-                    year: leaves, function(d) {return d.tot})
-                  };
-                })
-                .entries(scope.tableData.filter(function(d){ return d.continent && d.continent != "World"}))
-*/
               data.forEach(function(d){
                 d.partner_id = d.continent;
-                //d['value'] = d['values'];
-                //delete d['values'];
-              })
+              });
             }
             chart.datum(data).call(histogram.RICentities(scope.RICentities));
           }

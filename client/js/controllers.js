@@ -303,25 +303,21 @@ angular.module('ricardo.controllers', [])
 
     var initLinechart = function(entities){
 
-          if(cfSourceLine.size()>0){
-            cfSourceLine.year().filterAll()
-            cfSourceLine.clear();
-          }
+      if(cfSourceLine.size()>0){
+        cfSourceLine.year().filterAll()
+        cfSourceLine.clear();
+      }
 
-          //scope.RICentities = {}
+      //scope.RICentities = {}
 
-          var partnerID = $scope.entities.sourceEntity.selected.RICid;
+      var partnerID = $scope.entities.sourceEntity.selected.RICid;
 
-
-          var values = d3.nest().key(function(d){return d.type}).entries(entities)
-          values.forEach(function(d){
-            if(d.key != "continent"){
-              initEntityLinechart(d.values, partnerID, $scope.startDate, $scope.endDate, $scope.currency)
-            }
-            else{
-              initContinentLinechart(d.values, partnerID, $scope.startDate, $scope.endDate, $scope.currency)
-            }
-          })
+      var values = d3.nest().key(function(d){return d.type}).entries(entities)
+      values.forEach(function(d){
+        if(d.key != "continent")
+          initEntityLinechart(d.values, partnerID, $scope.startDate, $scope.endDate, $scope.currency)
+        else initContinentLinechart(d.values, partnerID, $scope.startDate, $scope.endDate, $scope.currency)
+      })
 
     }
 
@@ -345,20 +341,16 @@ angular.module('ricardo.controllers', [])
             //   cfSourceLine.clear();
             // }
 
-
             cfSourceLine.add(flows);
 
             $scope.linechartData = d3.nest().key(function(d){return d.partner_id}).entries(cfSourceLine.year().top(Infinity))
-
 
           },
           function(error) {
             console.log(error)
           }
         )
-
-      }
-
+    }
 
     var initContinentLinechart = function(sourceID, partnerID, startDate, endDate, currency){
       var ids = sourceID.map(function(d){return d.RICid})
@@ -385,14 +377,12 @@ angular.module('ricardo.controllers', [])
 
             $scope.linechartData = d3.nest().key(function(d){return d.partner_id}).entries(cfSourceLine.year().top(Infinity))
 
-
           },
           function(error) {
             console.log(error)
           }
         )
-
-      }
+    }
 
     function updateDateRange(){
 
@@ -401,7 +391,6 @@ angular.module('ricardo.controllers', [])
       $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
 
       $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
-
 
       cfSource.clear()
       cfSource.add(data.flows.filter(function(d){
@@ -444,14 +433,8 @@ angular.module('ricardo.controllers', [])
       })
     }
 
-    $scope.$watch('selectedMinDate', function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        updateDateRange()
-      }
-    })
-
-    $scope.$watch('selectedMaxDate', function (newVal, oldVal) {
-      if (newVal !== oldVal) {
+    $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {
+      if (newVal !== oldVal && newVal[0] != newVal[1]) {
         updateDateRange()
       }
     })
