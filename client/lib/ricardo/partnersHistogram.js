@@ -5,17 +5,20 @@
   ricardo.partnersHistogram = function(){
     var height = 600,
         width = 600,
-        barColors = ["#7CA49E", "#D35530"],
+        chartWidth = 370,
+        marginTop = 15,
+        marginLeft = 200,
+        marginRight = 30,
         duration = 1000,
+        yearWidth = 5,
         barWidth = 4,
         barMinHeigth = 2,
         barMaxHeigth = 20,
         barGap = 4,
+        barColors = ["#663333", "#cc6666"],
         RICentities,
         order = "tot",
-        marginTop = 15,
-        marginLeft = 200,
-        marginRight = 30;
+        currency = "sterling pound";
 
     function cleanids(str){
       return str.replace(/\W/g, '');
@@ -25,7 +28,7 @@
     }
     function formatAmount(line, field){
       var res = parseInt(line[field]);
-      return (res ? res : 0) + "&nbsp;" + line.currency.replace(/\s+/, '&nbsp;');
+      return (res ? res : 0) + "&nbsp;" + currency.replace(/\s+/, '&nbsp;');
     }
     function formatPercent(val){
       var res = parseInt(val);
@@ -37,8 +40,22 @@
       .append("div")
       .attr("class", "partners-tooltip");
 
+    function rollupYears(leaves){
+      var res = {
+        exp: d3.sum(leaves, function(d){
+          return d.exp
+        }),
+        imp: d3.sum(leaves, function(d){
+          return d.imp
+        }),
+      };
+      res.tot = res.exp + res.imp;
+      return res;
+    }
+
     function partnersHistogram(selection){
       selection.each(function(data){
+        currency = data[0].currency;
         data = data.filter(function(d){
           return !/^World/.test(d.partner_id);
         })
@@ -46,18 +63,7 @@
         var indexYears = {};
         d3.nest()
           .key(function(d){ return d.year })
-          .rollup(function(leaves){
-            var res = {
-              exp: d3.sum(leaves, function(d){
-                return d.exp
-              }),
-              imp: d3.sum(leaves, function(d){
-                return d.imp
-              }),
-            };
-            res.tot = res.exp + res.imp;
-            return res;
-          })
+          .rollup(rollupYears)
           .entries(data)
           .forEach(function(y){
             indexYears[y.key] = y.values;
@@ -66,23 +72,20 @@
         var partners = d3.nest()
           .key(function(d){ return d.partner_id })
           .key(function(d){ return d.year })
-          .rollup(function(){
-            
-          })
+          .rollup(rollupYears)
           .entries(data)
 
         partners.forEach(function(p){
           p.years = []
           p.values.forEach(function(d){
             p.years.push({
-              key: d.year,
-              currency: d.currency,
-              balance: (d.exp - d.imp) / (d.exp + d.imp) || 0,
-              exp: d.exp,
-              pct_exp: d.exp / indexYears[d.year].exp * 100,
-              imp: d.imp,
-              pct_imp: d.imp / indexYears[d.year].imp * 100,
-              pct_tot: (d.exp + d.imp) / indexYears[d.year].tot * 100
+              key: d.key,
+              balance: (d.values.exp - d.values.imp) / (d.values.exp + d.values.imp) || 0,
+              exp: d.values.exp,
+              pct_exp: d.values.exp / indexYears[d.key].exp * 100,
+              imp: d.values.imp,
+              pct_imp: d.values.imp / indexYears[d.key].imp * 100,
+              pct_tot: (d.values.exp + d.values.imp) / indexYears[d.key].tot * 100
             });
           });
           delete p.values;
@@ -112,12 +115,10 @@
 
         var x0, y0,
             years = Object.keys(indexYears),
-            //chartWidth = width - marginLeft - marginRight,
-            lineWidth = 4 / 5 * barWidth//chartWidth / years.length,
-            chartWidth = barWidth * years.length,
+            maxWidth = yearWidth * years.length
             x = d3.scale.linear()
               .domain(d3.extent(years))
-              .range([0, chartWidth]),
+              .range([0, maxWidth]),
             y = d3.scale.linear()
               .range([0, barMaxHeigth/2]);
 
@@ -136,7 +137,7 @@
 
           histo.append("line")
             .attr("x0", 0)
-            .attr("x1", chartWidth)
+            .attr("x1", maxWidth)
             .attr("y0", 0)
             .attr("y1", 0)
             .attr("stroke", "#666")
@@ -148,11 +149,11 @@
             .data(p.years)
             .enter().append("rect")
             .attr("class", "bar")
-            .attr("x", function(d){ return x(d.key) })
+            .attr("x", function(d){ return x(d.key) + (lineWidth - barWidth)/2 })
             .attr("y", function(d){
               return (d.balance >= 0 ? -y(Math.abs(d.balance)) : 0);
             })
-            .attr("width", lineWidth)
+            .attr("width", barWidth)
             .attr("height", function(d) { return (d.balance ? Math.max(barMinHeigth, y(Math.abs(d.balance))) : 0); })
             .attr("fill", function(d){ return barColors[+(d.balance >=0)] })
             .attr("opacity", function(d){ return (d.imp !== null && d.exp !== null ? 1 : 0.3) });
@@ -163,7 +164,7 @@
             .attr("class", "bar")
             .attr("x", function(d){ return x(d.key) })
             .attr("y", -barMaxHeigth/2)
-            .attr("width", barWidth)
+            .attr("width", yearWidth)
             .attr("height", barMaxHeigth)
             .attr("opacity", 0)
             .on('mouseover', function(d) {
@@ -219,6 +220,9 @@
     partnersHistogram.width = function(x){
       if (!arguments.length) return width;
       width = x;
+      chartWidth = width - marginLeft - marginRight;
+      yearWidth = chartWidth / 150;
+      barWidth = 4 / 5 * yearWidth;
       return partnersHistogram;
     }
 
