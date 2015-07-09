@@ -508,7 +508,7 @@ angular.module('ricardo.directives-addendum', [])
 
           document.querySelector('#brushing-timeline-container').innerHTML = null;
 
-          var margin = {top: 6, right: 6, bottom: 6, left: 6},
+          var margin = {top: 6, right: 0, bottom: 6, left: 0},
               width = document.querySelector('#brushing-timeline-container').offsetWidth - margin.left - margin.right,
               svgHeight = scope.mirrorLines ? 140 : 90,
               height = 20,
