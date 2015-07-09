@@ -270,7 +270,7 @@ angular.module('ricardo.controllers', [])
             .key(function(d){return d.continent})
             .entries($scope.RICentitiesDD)
             .map(function(d){return d.key})
-            .filter(function(d){return d})
+            .filter(function(d){return d && d.key})
 
           $scope.reportingContinentEntities = []
 
