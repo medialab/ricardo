@@ -828,3 +828,73 @@ angular.module('ricardo.directives-addendum', [])
       }
     }
   }])
+
+  .directive('partnersHistogram', ['cfSource', 'cfTarget', 'fileService', 'apiService', '$timeout', function(cfSource, cfTarget, fileService, apiService, $timeout){
+    return {
+      restrict: 'A',
+      replace: false,
+      link: function(scope, element, attrs) {
+
+        var histogram = ricardo.partnersHistogram()
+            .width(element.width())
+        var chart = d3.select(element[0])
+
+        var refresh = function(newValue, oldValue){
+          if(newValue != oldValue){
+            chart.datum(scope.tableData).call(histogram.RICentities(scope.RICentities));
+          }
+        }
+        scope.$watch("tableData", refresh, true);
+        scope.$watch("currency", refresh);
+
+        scope.$watch("gbContinent", function(newValue, oldValue){
+          if(newValue != oldValue){
+            chart.call(histogram.continents(newValue));
+          }
+        });
+        scope.$watch("order", function(newValue, oldValue){
+          if(newValue != oldValue){
+            chart.call(histogram.order(newValue))
+          }
+        }, true);
+
+      }
+    }
+  }])
+
+  .directive('linechartWorld',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
+    return {
+      restrict: 'A',
+      replace: false,
+      link: function(scope, element, attrs) {
+
+          var linechart = ricardo.linechart()
+            .width(element.width())
+            .height(400)
+
+
+          var chart = d3.select(element[0])
+
+        scope.$watch("linechartData", function(newValue, oldValue){
+          if(newValue != oldValue){
+            var reportingId = scope.reporting.map(function(d){return ""+d.RICid})
+            var colors = []
+            var repNumber = d3.range(reportingId.length)
+            repNumber.forEach(function(d){
+              var color = scope.lineColors[d]
+              colors.push(color)
+            })
+            chart.datum(newValue).call(linechart.lineColors(colors).sort(reportingId))
+          }
+        })
+
+        scope.$watch("yValue", function(newValue, oldValue){
+          if(newValue != oldValue){
+            chart.call(linechart.yValue(newValue))
+          }
+        })
+
+      }
+    }
+  }])
+ 
