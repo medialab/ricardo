@@ -7,6 +7,7 @@
         width = 600,
         barColors = ["#7CA49E", "#D35530"],
         duration = 1000,
+        barWidth = 4,
         barMinHeigth = 2,
         barMaxHeigth = 20,
         barGap = 4,
@@ -102,12 +103,14 @@
           chart = selection.select('svg')
           .attr('width', width)
           .attr('height', height)
+          .html("")
         }
 
         var x0, y0,
             years = Object.keys(indexYears),
-            chartWidth = width - marginLeft - marginRight,
-            barWidth = 4 / 5 * chartWidth / years.length,
+            //chartWidth = width - marginLeft - marginRight,
+            lineWidth = 4 / 5 * barWidth//chartWidth / years.length,
+            chartWidth = barWidth * years.length,
             x = d3.scale.linear()
               .domain(d3.extent(years))
               .range([0, chartWidth]),
@@ -145,7 +148,7 @@
             .attr("y", function(d){
               return (d.balance >= 0 ? -y(Math.abs(d.balance)) : 0);
             })
-            .attr("width", barWidth)
+            .attr("width", lineWidth)
             .attr("height", function(d) { return (d.balance ? Math.max(barMinHeigth, y(Math.abs(d.balance))) : 0); })
             .attr("fill", function(d){ return barColors[+(d.balance >=0)] })
             .attr("opacity", function(d){ return (d.imp !== null && d.exp !== null ? 1 : 0.3) });
@@ -156,7 +159,7 @@
             .attr("class", "bar")
             .attr("x", function(d){ return x(d.key) })
             .attr("y", -barMaxHeigth/2)
-            .attr("width", 5/4*barWidth)
+            .attr("width", barWidth)
             .attr("height", barMaxHeigth)
             .attr("opacity", 0)
             .on('mouseover', function(d) {

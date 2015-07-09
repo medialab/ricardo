@@ -639,77 +639,45 @@ angular.module('ricardo.directives', [])
         var histogram = ricardo.partnersHistogram()
             .width(element.width())
         var chart = d3.select(element[0])
-        scope.$watch("tableData", function(newValue, oldValue){
+        
+        var refresh = function(newValue, oldValue){
           if(newValue != oldValue){
-            chart.datum(newValue).call(histogram.RICentities(scope.RICentities))
-          }
-        });
-
-      }
-    }
-  }])
-
-  .directive('barchartCountry',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
-    return {
-      restrict: 'A',
-      replace: false,
-      link: function(scope, element, attrs) {
-
-          var doubleBar = ricardo.doubleBarChart()
-            .width(element.width())
-
-          var chart = d3.select(element[0])
-
-        scope.$watch("barchartData", function(newValue, oldValue){
-
-          if(newValue != oldValue){
-
-            if(scope.gbContinent){
-              newValue = d3.nest()
-                          .key(function(d){return d.continent})
-                          .rollup(function(leaves) { return {"count": leaves.length, "exp": d3.sum(leaves, function(d) {return d.value.exp}), "imp": d3.sum(leaves, function(d) {return d.value.imp}), "tot": d3.sum(leaves, function(d) {return d.value.tot})} })
-                          .entries(newValue.filter(function(d){ return d.continent && d.continent != "World"}))
-
-              newValue.forEach(function(d){
-                d['value'] = d['values'];
-                delete d['values'];
-              })
-
-            }
-
-            chart.datum(newValue).call(doubleBar.RICentities(scope.RICentities))
-          }
-        })
-
-        scope.$watch("order", function(newValue, oldValue){
-          if(newValue != oldValue){
-            chart.call(doubleBar.order(newValue))
-          }
-        })
-
-        scope.$watch("gbContinent", function(newValue, oldValue){
-          if(newValue != oldValue){
-            if(newValue){
-              
-              var data = d3.nest()
-                          .key(function(d){return d.continent})
-                          .rollup(function(leaves) { return {"count": leaves.length, "exp": d3.sum(leaves, function(d) {return d.value.exp}), "imp": d3.sum(leaves, function(d) {return d.value.imp}), "tot": d3.sum(leaves, function(d) {return d.value.tot})} })
-                          .entries(scope.barchartData.filter(function(d){ return d.continent && d.continent != "World"}))
+            chart.empty();
+            var data = scope.tableData;
+            if(scope.gbContinent && newValue){
+              data = d3.nest()
+                .key(function(d){return d.continent})
+                .rollup(function(leaves) {
+                  return {
+                    count: leaves.length,
+                    exp: d3.sum(leaves, function(d) {return d.value.exp}),
+                    imp: d3.sum(leaves, function(d) {return d.value.imp}),
+                    tot: d3.sum(leaves, function(d) {return d.value.tot})
+                  };
+                })
+                .entries(scope.tableData.filter(function(d){ return d.continent && d.continent != "World"}))
 
               data.forEach(function(d){
                 d['value'] = d['values'];
                 delete d['values'];
               })
-
-              chart.datum(data).call(doubleBar.RICentities(scope.RICentities))
-
             }
+            chart.datum(data).call(histogram.RICentities(scope.RICentities));
           }
-        }, true)
+        }
+        scope.$watch("tableData", refresh, true);
+        scope.$watch("gbContinent", refresh, true);
+
+        scope.$watch("order", function(newValue, oldValue){
+          if(newValue != oldValue){
+            chart.call(histogram.order(newValue))
+          }
+        }, true);
 
       }
     }
   }])
+
   .directive('stackedTimelineContinent',[ 'cfSource', 'cfTarget', 'cfSourceLine', 'fileService', 'apiService', '$timeout','$modal','DEFAULT_CONTINENT',
     function (cfSource, cfTarget, cfSourceLine, fileService, apiService, $timeout,$modal,DEFAULT_CONTINENT){
     return {

@@ -45,7 +45,7 @@ angular.module('ricardo.controllers', [])
     $scope.entities = {sourceEntity : {}, targetEntity : {}}
     $scope.rawMinDate                               // Min year in data for the selected pair of countries
     $scope.rawMaxDate                               // Max year in data for the selected pair of countries
-    $scope.selectedMinDate = 1800                   // Min year as selected by selector or brushing
+    $scope.selectedMinDate = 1600                   // Min year as selected by selector or brushing
     $scope.selectedMaxDate = 2000                   // Max year as selected by selector or brushing
     $scope.rawYearsRange                            // Range of years in data (useful for selectors)
     $scope.rawYearsRange_forInf                     // Range of years in data adapted to inferior bound (useful for selectors)
@@ -110,7 +110,7 @@ angular.module('ricardo.controllers', [])
 
           data = result
 
-          $scope.selectedMinDate = 1800                   // Min year as selected by selector or brushing
+          $scope.selectedMinDate = 1600                   // Min year as selected by selector or brushing
           $scope.selectedMaxDate = 2000                   // Max year as selected by selector or brushing
 
           // Consolidate
@@ -124,7 +124,6 @@ angular.module('ricardo.controllers', [])
           $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
 
           updateDateRange()
-
         })
     }
 
@@ -143,8 +142,8 @@ angular.module('ricardo.controllers', [])
       }
     })
 
-    $scope.$watch('selectedMinDate', function (newVal, oldVal) {
-      if (newVal !== oldVal) {
+    $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {
+      if (newVal !== oldVal && newVal[0] != newVal[1]) {
         updateDateRange()
       }
     })
@@ -198,6 +197,8 @@ angular.module('ricardo.controllers', [])
   })
   .controller('country', function($scope, $location, cfSource, cfTarget, apiService, reportingEntities, utils, DEFAULT_REPORTING, TABLE_HEADERS) {
 
+    var data
+
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
 
@@ -235,17 +236,20 @@ angular.module('ricardo.controllers', [])
 
       apiService
         .getFlows({reporting_ids: sourceID, original_currency: currency, with_sources: 1})
-        .then(function(data) {
-          $scope.selectedMinDate = 0;                   // Min year as selected by selector or brushing
+        .then(function(result) {
+
+          data = result
+
+          $scope.selectedMinDate = 1600;                   // Min year as selected by selector or brushing
           $scope.selectedMaxDate = 2000;                   // Max year as selected by selector or brushing
 
-          var flows = data.flows;
 
           if (cfSource.size() > 0) {
             cfSource.year().filterAll();
             cfSource.clear();
           }
 
+          $scope.actualCurrency = data.flows[0].currency;
           $scope.RICentities = {};
 
           data.RICentities.partners.forEach(function(d){
@@ -261,11 +265,12 @@ angular.module('ricardo.controllers', [])
           $scope.reportingCountryEntities = $scope.RICentitiesDD.filter(function(d){return d.type == "country"})
           $scope.reportingColonialEntities = $scope.RICentitiesDD.filter(function(d){return d.type == "colonial_area"})
           $scope.reportingGeoEntities = $scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area"})
+          $scope.reportingWorldEntities = $scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World ") === 0})
           var continents = d3.nest()
-                            .key(function(d){return d.continent})
-                            .entries($scope.RICentitiesDD)
-                            .map(function(d){return d.key})
-                            .filter(function(d){return d})
+            .key(function(d){return d.continent})
+            .entries($scope.RICentitiesDD)
+            .map(function(d){return d.key})
+            .filter(function(d){return d})
 
           $scope.reportingContinentEntities = []
 
@@ -274,6 +279,8 @@ angular.module('ricardo.controllers', [])
             $scope.reportingContinentEntities.push(elm)
           })
 
+          d3.select("#linechart-world > svg").remove()
+
           $scope.reporting = []
           //$scope.entities.multiEntity = {}
           $scope.entities.sourceCountryEntity = {}
@@ -281,50 +288,17 @@ angular.module('ricardo.controllers', [])
           $scope.entities.sourceGeoEntity = {}
           $scope.entities.sourceContinentEntity = {}
 
-
-          flows.forEach(function(d){
-            d.type = $scope.RICentities[""+d.partner_id].type
-          })
-
-          cfSource.add(flows);
-
-          $scope.startDate = cfSource.year().bottom(1)[0].year
-          $scope.endDate = cfSource.year().top(1)[0].year
-
           $scope.rawMinDate = d3.min( data.flows, function(d) { return d.year; })
           $scope.rawMaxDate = d3.max( data.flows, function(d) { return d.year; })
           $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
           $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
 
-          updateDateRange();
-
-          $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity))
-          $scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
-
-          var flowsPerYear = cfSource.years().top(Infinity)
-
-          var missingData = [{key:"imp", values:[]},{key:"exp", values:[]}];
-          var timelineData = [];
-
-          flowsPerYear.sort(function(a, b){ return d3.ascending(a.key, b.key); })
-          flowsPerYear.forEach(function(d){
-              var td = $.extend(d.value, {year: (new Date(d.key)).getFullYear()});
-
-              if (!td.exp)
-                td.exp = null;
-              if (!td.imp)
-                td.imp = null;
-              if (!td.tot)
-                td.tot = null;
-
-              timelineData.push(td);
-              missingData[0].values.push({total: d.value.imp, year: d.key})
-              missingData[1].values.push({total: d.value.exp, year: d.key})
+          data.flows.forEach(function(d){
+            d.type = $scope.RICentities[""+d.partner_id].type
           })
 
-          $scope.missingData = missingData;
-          $scope.timelineData = timelineData;
-        });
+      });
+
     }
 
     function updateDateRange(){
@@ -335,6 +309,46 @@ angular.module('ricardo.controllers', [])
 
       $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
 
+
+      cfSource.clear()
+      cfSource.add(data.flows.filter(function(d){
+        return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
+      }));
+
+      $scope.startDate = cfSource.year().bottom(1)[0].year
+      $scope.endDate = cfSource.year().top(1)[0].year
+
+      var flowsPerYear = cfSource.years().top(Infinity)
+
+      var missingData = [{key:"imp", values:[]},{key:"exp", values:[]}];
+      var timelineData = [];
+
+      flowsPerYear.sort(function(a, b){ return d3.ascending(a.key, b.key); })
+      flowsPerYear.forEach(function(d){
+          var td = $.extend(d.value, {year: (new Date(d.key)).getFullYear()});
+
+          if (!td.exp)
+            td.exp = null;
+          if (!td.imp)
+            td.imp = null;
+          if (!td.tot)
+            td.tot = null;
+
+          timelineData.push(td);
+          missingData[0].values.push({total: d.value.imp, year: d.key})
+          missingData[1].values.push({total: d.value.exp, year: d.key})
+      });
+
+      $scope.missingData = missingData;
+      $scope.timelineData = timelineData;
+      updateTableData();
+    }
+
+    function updateTableData(){
+      $scope.tableData = cfSource.year().top(Infinity);
+      $scope.tableData.forEach(function(d){
+        d.continent = scope.RICentities[d.partner_id+""].continent
+      })
     }
 
     $scope.$watch('selectedMinDate', function (newVal, oldVal) {
@@ -356,33 +370,24 @@ angular.module('ricardo.controllers', [])
     /* end initialize */
     $scope.$watch("entities.sourceEntity.selected", function(newValue, oldValue){
       if(newValue != oldValue && newValue){
-          init(newValue.RICid, $scope.currency)
+        init(newValue.RICid, $scope.currency)
+        updateDateRange()
       }
     })
 
     $scope.$watch("filter", function(newValue, oldValue){
       if(newValue != oldValue){
-          if(newValue == "all"){
-            cfSource.type().filterAll()
-            $scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
-            $scope.barchartData.forEach(function(d){
-              d.continent = $scope.RICentities[d.key+""].continent
-            })
-
-          }else{
-            cfSource.type().filterExact(newValue)
-            $scope.barchartData = cfSource.partners().top(Infinity).filter(function(d){return !d.key.match(/World*/)})
-            $scope.barchartData.forEach(function(d){
-              d.continent = $scope.RICentities[d.key+""].continent
-            })
-
-          }
+        if(newValue == "all")
+          cfSource.type().filterAll()
+        else cfSource.type().filterExact(newValue)
+        updateTableData();
       }
     })
 
     $scope.$watch("currency", function(newValue, oldValue){
       if(newValue != oldValue){
         init($scope.entities.sourceEntity.selected.RICid, newValue)
+        updateDateRange()
       }
     }, true)
 
@@ -441,7 +446,6 @@ angular.module('ricardo.controllers', [])
         }
     }, true);
 
-    $scope.barchartData = [];
     $scope.tableData = [];
     $scope.totalServerItems = 0;
     $scope.pagingOptions = {
@@ -585,7 +589,6 @@ angular.module('ricardo.controllers', [])
         }
     }, true);
 
-    $scope.barchartData = [];
     $scope.tableData = [];
     $scope.totalServerItems = 0;
     $scope.pagingOptions = {
