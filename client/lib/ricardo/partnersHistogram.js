@@ -18,6 +18,7 @@
         barColors = ["#663333", "#cc6666"],
         RICentities,
         order = "tot",
+        continents = false,
         currency = "sterling pound";
 
     function cleanids(str){
@@ -57,7 +58,7 @@
       selection.each(function(data){
         currency = data[0].currency;
         data = data.filter(function(d){
-          return !/^World/.test(d.partner_id);
+          return !/^World/.test(d.partner_id) && (!continents || d.continent);
         })
 
         var indexYears = {};
@@ -70,7 +71,7 @@
           })
 
         var partners = d3.nest()
-          .key(function(d){ return d.partner_id })
+          .key(function(d){ return d[continents ? "continent" : "partner_id"] })
           .key(function(d){ return d.year })
           .rollup(rollupYears)
           .entries(data)
@@ -244,6 +245,12 @@
       return partnersHistogram;
     }
   
+    partnersHistogram.continents = function(x){
+      if (!arguments.length) return continents;
+      continents = x;
+      return partnersHistogram;
+    }
+
     partnersHistogram.duration = function(x){
       if (!arguments.length) return duration;
       duration = x;

@@ -643,22 +643,17 @@ angular.module('ricardo.directives', [])
 window.scope = scope
         var refresh = function(newValue, oldValue){
           if(newValue != oldValue){
-            chart.empty();
-            if(scope.gbContinent){
-              var data = [];
-              scope.tableData.filter(function(d){
-                return d.continent;
-              }).forEach(function(d){
-                var continentVersion = $.extend({}, d, {partner_id: d.continent})
-                data.push(continentVersion);
-              });
-              chart.datum(data).call(histogram.RICentities(scope.RICentities));
-            } else chart.datum(scope.tableData).call(histogram.RICentities(scope.RICentities));
+            chart.datum(scope.tableData).call(histogram.RICentities(scope.RICentities));
           }
         }
         scope.$watch("tableData", refresh, true);
-        scope.$watch("gbContinent", refresh, true);
+        scope.$watch("currency", refresh);
 
+        scope.$watch("gbContinent", function(newValue, oldValue){
+          if(newValue != oldValue){
+            chart.call(histogram.continents(newValue));
+          }
+        });
         scope.$watch("order", function(newValue, oldValue){
           if(newValue != oldValue){
             chart.call(histogram.order(newValue))
