@@ -195,7 +195,7 @@ angular.module('ricardo.controllers', [])
       })
     }
   })
-  .controller('country', function($scope, $location, cfSource, cfTarget, apiService, reportingEntities, utils, DEFAULT_REPORTING, TABLE_HEADERS) {
+  .controller('country', function($scope, $location, cfSource, cfTarget, cfSourceLine, apiService, reportingEntities, utils, DEFAULT_REPORTING, TABLE_HEADERS) {
 
     var data
 
@@ -297,9 +297,102 @@ angular.module('ricardo.controllers', [])
             d.type = $scope.RICentities[""+d.partner_id].type
           })
 
+        initLinechart($scope.reporting);
       });
+    }
+
+    var initLinechart = function(entities){
+
+          if(cfSourceLine.size()>0){
+            cfSourceLine.year().filterAll()
+            cfSourceLine.clear();
+          }
+
+          //scope.RICentities = {}
+
+          var partnerID = $scope.entities.sourceEntity.selected.RICid;
+
+
+          var values = d3.nest().key(function(d){return d.type}).entries(entities)
+          values.forEach(function(d){
+            if(d.key != "continent"){
+              initEntityLinechart(d.values, partnerID, $scope.startDate, $scope.endDate, $scope.currency)
+            }
+            else{
+              initContinentLinechart(d.values, partnerID, $scope.startDate, $scope.endDate, $scope.currency)
+            }
+          })
 
     }
+
+    var initEntityLinechart = function(sourceID, partnerID, startDate, endDate, currency){
+      var ids = sourceID.map(function(d){return d.RICid})
+      apiService
+        .getFlows({partner_ids:ids.join(","), reporting_ids: partnerID, from: startDate, to: endDate, original_currency: currency, with_sources: 1})
+        .then(
+          function(data){
+
+            var flows = data.flows;
+
+            if(!flows.length){
+              $scope.open()
+              $scope.reporting.pop()
+              return
+            }
+
+            // if(cfSourceLine.size()>0){
+            //   cfSourceLine.year().filterAll()
+            //   cfSourceLine.clear();
+            // }
+
+
+            cfSourceLine.add(flows);
+
+            $scope.linechartData = d3.nest().key(function(d){return d.partner_id}).entries(cfSourceLine.year().top(Infinity))
+
+
+          },
+          function(error) {
+            console.log(error)
+          }
+        )
+
+      }
+
+
+    var initContinentLinechart = function(sourceID, partnerID, startDate, endDate, currency){
+      var ids = sourceID.map(function(d){return d.RICid})
+      apiService
+        .getContinentFlows({continents:ids.join(","), reporting_ids: partnerID, from: startDate, to: endDate, original_currency: currency, with_sources: 1})
+        .then(
+          function(data){
+
+            var flows = data.flows;
+
+            if(!flows.length){
+              $scope.open()
+              $scope.reporting.pop()
+              return
+            }
+
+            // if(cfSourceLine.size()>0){
+            //   cfSourceLine.year().filterAll()
+            //   cfSourceLine.clear();
+            // }
+
+
+            cfSourceLine.add(flows);
+
+            $scope.linechartData = d3.nest().key(function(d){return d.partner_id}).entries(cfSourceLine.year().top(Infinity))
+
+
+          },
+          function(error) {
+            console.log(error)
+          }
+        )
+
+      }
 
     function updateDateRange(){
 
@@ -445,6 +538,14 @@ angular.module('ricardo.controllers', [])
           $scope.pushReporting(newVal.selected)
         }
     }, true);
+
+    $scope.$watch("reporting", function(newValue, oldValue){
+      if(newValue != oldValue && newValue){
+          //var partnerID = scope.entities.sourceEntity.selected.RICid;
+          //initLinechart(newValue, partnerID, scope.startDate, scope.endDate)
+          initLinechart(newValue)
+      }
+    }, true)
 
     $scope.tableData = [];
     $scope.totalServerItems = 0;
