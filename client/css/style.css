@@ -435,7 +435,7 @@ h4{
 /* grid */
 
 .table-cont{
-  margin-top: 20px;
+  margin-bottom: 20px;
   background-color: white;
   border-top: 3px solid #222;  
   height: 500px;
@@ -476,7 +476,7 @@ font-size: 1.1em;
 }
 
 .shdt{
-  padding-top: 20px;
+  padding: 20px;
 }
 
 /* country */
