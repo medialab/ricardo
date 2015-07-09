@@ -644,16 +644,16 @@ window.scope = scope
         var refresh = function(newValue, oldValue){
           if(newValue != oldValue){
             chart.empty();
-            var data = scope.tableData
             if(scope.gbContinent){
-              data = data.filter(function(d){
+              var data = [];
+              scope.tableData.filter(function(d){
                 return d.continent;
+              }).forEach(function(d){
+                var continentVersion = $.extend({}, d, {partner_id: d.continent})
+                data.push(continentVersion);
               });
-              data.forEach(function(d){
-                d.partner_id = d.continent;
-              });
-            }
-            chart.datum(data).call(histogram.RICentities(scope.RICentities));
+              chart.datum(data).call(histogram.RICentities(scope.RICentities));
+            } else chart.datum(scope.tableData).call(histogram.RICentities(scope.RICentities));
           }
         }
         scope.$watch("tableData", refresh, true);

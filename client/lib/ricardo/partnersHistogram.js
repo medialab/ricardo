@@ -149,7 +149,7 @@
             .data(p.years)
             .enter().append("rect")
             .attr("class", "bar")
-            .attr("x", function(d){ return x(d.key) + (lineWidth - barWidth)/2 })
+            .attr("x", function(d){ return x(d.key) + (yearWidth - barWidth)/2 })
             .attr("y", function(d){
               return (d.balance >= 0 ? -y(Math.abs(d.balance)) : 0);
             })
