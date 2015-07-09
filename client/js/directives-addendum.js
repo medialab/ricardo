@@ -510,10 +510,13 @@ angular.module('ricardo.directives-addendum', [])
 
           var margin = {top: 6, right: 6, bottom: 6, left: 6},
               width = document.querySelector('#brushing-timeline-container').offsetWidth - margin.left - margin.right,
-              svgHeight = 140,
+              svgHeight = scope.mirrorLines ? 140 : 90,
               height = 20,
               hOffset = svgHeight - height - margin.bottom - margin.top,
-              interline = 8
+              interline = 8,
+              baselineHeight_1on1 = hOffset / 2,
+              baselineHeight_1on2 = scope.mirrorLines ? hOffset / 4 : baselineHeight_1on1,
+              baselineHeight_2on2 = 3 * hOffset / 4
 
           // Curve
           var x = d3.time.scale()
@@ -551,22 +554,22 @@ angular.module('ricardo.directives-addendum', [])
           var availImp = d3.svg.line()
               .defined(function(d) { return d.imp != null; })
               .x(function(d) { return x(d.date); })
-              .y(function(d) { return hOffset / 4 - interline / 2; });
+              .y(function(d) { return baselineHeight_1on2 - interline / 2; });
 
           var availExp = d3.svg.line()
               .defined(function(d) { return d.exp != null; })
               .x(function(d) { return x(d.date); })
-              .y(function(d) { return hOffset / 4 + interline / 2; });
+              .y(function(d) { return baselineHeight_1on2 + interline / 2; });
 
           var availImpMirror = d3.svg.line()
               .defined(function(d) { return d.imp_mirror != null; })
               .x(function(d) { return x(d.date); })
-              .y(function(d) { return 3 * hOffset / 4 - interline / 2; });
+              .y(function(d) { return baselineHeight_2on2 - interline / 2; });
 
           var availExpMirror = d3.svg.line()
               .defined(function(d) { return d.exp_mirror != null; })
               .x(function(d) { return x(d.date); })
-              .y(function(d) { return 3 * hOffset / 4 + interline / 2; });
+              .y(function(d) { return baselineHeight_2on2 + interline / 2; });
 
           var svg = d3.select("#brushing-timeline-container").append("svg")
               .attr("width", width + margin.left + margin.right)
@@ -607,21 +610,21 @@ angular.module('ricardo.directives-addendum', [])
               .attr("class", "baselineLabel")
               .text("Available data reported by " + scope.sourceCountry)
               .attr("x", 0)
-              .attr("y", hOffset / 4 - interline / 2 - 8)
+              .attr("y", baselineHeight_1on2 - interline / 2 - 8)
 
           svg.append("line")
               .attr("class", "importBaseline")
               .attr("x1", 0)
-              .attr("y1", hOffset / 4 - interline / 2)
+              .attr("y1", baselineHeight_1on2 - interline / 2)
               .attr("x2", width)
-              .attr("y2", hOffset / 4 - interline / 2)
+              .attr("y2", baselineHeight_1on2 - interline / 2)
 
           svg.append("line")
               .attr("class", "exportBaseline")
               .attr("x1", 0)
-              .attr("y1", hOffset / 4 + interline / 2)
+              .attr("y1", baselineHeight_1on2 + interline / 2)
               .attr("x2", width)
-              .attr("y2", hOffset / 4 + interline / 2)
+              .attr("y2", baselineHeight_1on2 + interline / 2)
 
           if ( scope.mirrorLines ){
 
@@ -629,21 +632,21 @@ angular.module('ricardo.directives-addendum', [])
                 .attr("class", "baselineLabel")
                 .text("Available data reported by " + scope.targetCountry)
                 .attr("x", 0)
-                .attr("y", 3 * hOffset / 4 - interline / 2 - 8)
+                .attr("y", baselineHeight_2on2 - interline / 2 - 8)
 
             svg.append("line")
                 .attr("class", "importBaseline")
                 .attr("x1", 0)
-                .attr("y1", 3 * hOffset / 4 - interline / 2)
+                .attr("y1", baselineHeight_2on2 - interline / 2)
                 .attr("x2", width)
-                .attr("y2", 3 * hOffset / 4 - interline / 2)
+                .attr("y2", baselineHeight_2on2 - interline / 2)
 
             svg.append("line")
                 .attr("class", "exportBaseline")
                 .attr("x1", 0)
-                .attr("y1", 3 * hOffset / 4 + interline / 2)
+                .attr("y1", baselineHeight_2on2 + interline / 2)
                 .attr("x2", width)
-                .attr("y2", 3 * hOffset / 4 + interline / 2)
+                .attr("y2", baselineHeight_2on2 + interline / 2)
 
           }
 

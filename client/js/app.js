@@ -78,11 +78,18 @@ config(['$routeProvider', function($routeProvider) {
 $(window).scroll(function(){
   var offset = $('#sticky-marker').offset().top
     , scrollPos = $(window).scrollTop()
-  if(scrollPos >= offset - 50){
+
+  if(scrollPos >= offset - 50 - 50){
+    
     $('#sticky-container').addClass('sticky-container-fixed')
     $('#sticky-marker').addClass('sticky-placeholder')
+    $('#alt-title').show()
+
   } else {
+    
     $('#sticky-container').removeClass('sticky-container-fixed')
     $('#sticky-marker').removeClass('sticky-placeholder')
+    $('#alt-title').hide()
+
   }
 })
