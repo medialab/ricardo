@@ -1,58 +1,93 @@
-<div class="row">
-	<div class="timeline-cont col-sm-12">
-    <h4>Trade flows between {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}}, {{minDate}} – {{maxDate}}, reported by {{entities.sourceEntity.selected.RICname}}, in {{actualCurrency}}</h4>
-    <div stacked-timeline></div>
-    <div missing></div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-sm-3">
-    <h3 class="subtitle">choose a reporting country:</h3>
-  </div>
-  <div class="col-sm-6">
-    <h3 class="subtitle">Mirror flows between {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}}, {{startDate}} -{{endDate}}, in {{actualCurrency}}</h3>
-  </div>
-  <div class="col-sm-3">
-    <h3 class="subtitle">choose a partner country:</h3>
-  </div>
-</div>
-<div id="select" class="row">
-  <div class="select-dropdown col-sm-3">
-    <ui-select ng-model="entities.sourceEntity.selected" theme="bootstrap">
-    <match placeholder="Search and select a country...">{{$select.selected.RICname}}</match>
-    <choices repeat="item in reportingEntities | filter: $select.search">
-      <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-    </choices>
-  </ui-select>
-  </div>
-  <div class="col-sm-6">
-    <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
-    <div stream></div>
-    <div class="row">
-      <div class="stream-legend" stream-legend></div>
+<div class="container">
+  <div class="row">
+  	<div class="timeline-cont col-sm-12">
+      <bilateral-title></bilateral-title>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="square import"></div> Import
+        </div>
+        <div class="legend-item">
+          <div class="square export"></div> Export
+        </div>
+        <div class="legend-item">
+          <div class="line available"></div> Available data
+        </div>
+        <div class="legend-item">
+          <div class="line unavailable"></div> Unavailable data
+        </div>
+        <div class="legend-item">
+          Data expressed in <strong>{{actualCurrency}}</strong>
+        </div>
+      </div>
+      <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></dual-timeline>
     </div>
   </div>
-  <div class="select-dropdown col-sm-3">
-    <ui-select ng-model="entities.targetEntity.selected" theme="bootstrap">
-    <match placeholder="Search and select a country...">{{$select.selected.RICname}}</match>
-    <choices repeat="item in partnerEntities | filter: $select.search">
-      <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-    </choices>
-  </ui-select>
+</div>
+<div id="sticky-marker"></div>
+<div id="sticky-container">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <brushing-timeline
+          ng-data="timelineData"
+          start-date="selectedMinDate"
+          end-date="selectedMaxDate"
+          raw-start-date="rawMinDate"
+          raw-end-date="rawMaxDate"
+          source-country="entities.sourceEntity.selected.RICname"
+          target-country="entities.targetEntity.selected.RICname"
+          mirror-lines="true"
+        ></brushing-timeline>
+      </div>
+    </div>
   </div>
 </div>
-<div class="row">
-  <div class="col-sm-12 text-center shdt">
-    <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
-        Show/Hide data table
-    </button>
-    <button type="button" ng-click="download()" class="btn">
-        Download data
-    </button>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <br>
+      <br>
+      <h4>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="line diff-import"></div>
+          ( {{entities.sourceEntity.selected.RICname}} imports - {{entities.targetEntity.selected.RICname}} exports ) / {{entities.sourceEntity.selected.RICname}} imports
+        </div>
+        <div class="legend-item">
+          <div class="line diff-export"></div>
+          ( {{entities.sourceEntity.selected.RICname}} exports - {{entities.targetEntity.selected.RICname}} imports ) / {{entities.sourceEntity.selected.RICname}} exports
+        </div>
+      </div>
+      <comparison-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></comparison-timeline>
+      <br>
+      <br>
+      <h4>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="line diff-import"></div>
+          ( {{entities.targetEntity.selected.RICname}} imports - {{entities.sourceEntity.selected.RICname}} exports ) / {{entities.targetEntity.selected.RICname}} imports
+        </div>
+        <div class="legend-item">
+          <div class="line diff-export"></div>
+          ( {{entities.targetEntity.selected.RICname}} exports - {{entities.sourceEntity.selected.RICname}} imports ) / {{entities.targetEntity.selected.RICname}} exports
+        </div>
+      </div>
+      <comparison-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate" reverse="true"></comparison-timeline>
+    </div>
   </div>
-</div>
-<div ng-if="viewTable" class="row table-cont">
-  <div class="col-sm-12 grid-cont">
-    <div class="gridStyle" ng-grid="gridOptions"></div>
+  <div class="row">
+    <div class="col-sm-12 text-center shdt">
+      <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
+          Show/Hide data table
+      </button>
+      <button type="button" ng-click="download()" class="btn">
+          Download data
+      </button>
+    </div>
+  </div>
+  <div ng-if="viewTable" class="row table-cont">
+    <div class="col-sm-12 grid-cont">
+      <div class="gridStyle" ng-grid="gridOptions"></div>
+    </div>
   </div>
 </div>
