@@ -385,6 +385,14 @@ h4{
   height: 150px;
 }
 
+#alt-title{
+  height: 50px;
+}
+#alt-title h4{
+  margin-top: 6px;
+  padding-bottom: 0px;
+}
+
 /* Legend */
 
 .legend .legend-item{
