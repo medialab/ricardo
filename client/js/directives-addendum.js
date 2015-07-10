@@ -877,14 +877,11 @@ angular.module('ricardo.directives-addendum', [])
 
         scope.$watch("linechartData", function(newValue, oldValue){
           if(newValue != oldValue){
-            var reportingId = scope.reporting.map(function(d){return ""+d.RICid})
-            var colors = []
-            var repNumber = d3.range(reportingId.length)
-            repNumber.forEach(function(d){
-              var color = scope.lineColors[d]
-              colors.push(color)
-            })
-            chart.datum(newValue).call(linechart.lineColors(colors).sort(reportingId))
+          
+            newValue.forEach(function(e){
+                e.color=scope.reporting.filter(function(r){return r.RICid==e.key})[0]["color"]})
+
+            chart.datum(newValue).call(linechart)
           }
         })
 

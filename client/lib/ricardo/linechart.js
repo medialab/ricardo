@@ -6,7 +6,6 @@
 
     var height = 400,
         width = 600,
-        lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c'],
         sort = [],
         yValue = 'total',
         duration = 500;
@@ -14,6 +13,7 @@
 
     function linechart(selection){
       selection.each(function(data){
+        
         var chart;
         var margin = {top: 20, right: 5, bottom: 30, left: 5},
             chartWidth = width - margin.left - margin.right,
@@ -43,9 +43,7 @@
 
         var colorDomain = sort;
 
-        var color = d3.scale.ordinal().range(lineColors).domain(colorDomain);
-        
-
+      
         var yMax = d3.max(data, function(elm) {return d3.max(elm.values, function(d) { return d[yValue]; }); });
         var xMax = d3.max(data, function(elm) {return d3.max(elm.values, function(d) { return new Date(d.year, 0, 1) }); });
         var xMin = d3.min(data, function(elm) {return d3.min(elm.values, function(d) { return new Date(d.year, 0, 1) }); });
@@ -128,25 +126,28 @@
        /* lines */
 
         var line = d3.svg.line()
+            .defined(function(d) {return d[yValue] !== null; })
             .x(function(d) { return x(new Date(d.year, 0, 1)); })
             .y(function(d) { return y(d[yValue]); });
 
         var entities = chart.selectAll(".line")
-            .data(data, function(d){return d.key})
-          
-        entities.transition()
-          .duration(duration)
-                .attr("d", function(d) { return line(d.values); })
-                .attr("stroke", function(d,i) { return color(d.key); })
-                .attr("fill", "none")
+            .data(data, function(d){return d.key});
 
-        entities.enter()
+        var enter = entities.enter()
               .append("path")
                 .attr("class", "line")
-                .attr("d", function(d) { return line(d.values); })
-                .attr("stroke", function(d,i) { return color(d.key); })
+                .attr("stroke", function(d,i) { return d["color"]; })
                 .attr("fill", "none")
                 .attr("stroke-width", "2px")
+               // .attr("d", function(d) { return line(d.values); })
+          
+        entities/*.transition()
+          .duration(duration)*/
+                .attr("d", function(d) { return line(d.values); })
+                .attr("stroke", function(d,i) { return d["color"]; })
+                .attr("fill", "none")
+
+        
 
         entities.exit().remove()
 
@@ -168,8 +169,8 @@
               }
 
           var voronoiGraph = voronoiGroup.selectAll("path")
-              .data(voronoi(d3.merge(data.map(function(d) { return d.values; }))))
-
+              .data(voronoi(d3.merge(data.map(function(d) { return d.values.filter(function(d){return d[yValue]!=null}); }))))
+              
           voronoiGraph.attr("d", function(d) { return "M" + d.join("L") + "Z"; })
                 .datum(function(d) { return d.point; })
                 .on("mouseover", mouseover)
@@ -203,8 +204,11 @@
           var format = d3.format("0,000");
 
           function mouseover(d) {
-              focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
-              focus.select("text").text(format(Math.round(d[yValue])));
+              if(d[yValue]!=null)
+              {
+                focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
+                focus.select("text").text(format(Math.round(d[yValue])));
+              }
             }
 
           function mouseout(d) {

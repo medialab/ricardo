@@ -226,7 +226,7 @@ angular.module('ricardo.controllers', [])
     $scope.missingData = [];
     $scope.viewTable = 0;
 
-    $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
+    $scope.lineColors = ["#1A810F","#928DF1","#201C30","#B10B72","#67A891"]
 
     $scope.yValue = "total"
 
@@ -262,7 +262,7 @@ angular.module('ricardo.controllers', [])
               return 0;
           })
 
-          $scope.reportingCountryEntities = $scope.RICentitiesDD.filter(function(d){return d.type == "country"})
+          $scope.reportingCountryEntities = $scope.RICentitiesDD.filter(function(d){return d.type == "country"||d.type == "group"})
           $scope.reportingColonialEntities = $scope.RICentitiesDD.filter(function(d){return d.type == "colonial_area"})
           $scope.reportingGeoEntities = $scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area"})
           $scope.reportingWorldEntities = $scope.RICentitiesDD.filter(function(d){return d.type == "geographical_area" && d.RICname.indexOf("World ") === 0})
@@ -343,13 +343,14 @@ angular.module('ricardo.controllers', [])
 
     var initEntityLinechart = function(sourceID, partnerID, startDate, endDate, currency){
       var ids = sourceID.map(function(d){return d.RICid})
+     
       apiService
         .getFlows({partner_ids:ids.join(","), reporting_ids: partnerID, original_currency: currency, with_sources: 1})
         .then(
           function(data){
 
             var flows = data.flows;
-
+            
             if(!flows.length){
               $scope.open()
               $scope.reporting.pop()
@@ -464,7 +465,10 @@ angular.module('ricardo.controllers', [])
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
       if($scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid) > -1) return;
+      //assign a color
+      elm["color"]=$scope.lineColors.pop()
       $scope.reporting.push(elm)
+
       $scope.resetDD(elm.type)
     }
 
@@ -472,10 +476,14 @@ angular.module('ricardo.controllers', [])
       if($scope.reporting.length == 1) return;
       if($scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid) < 0) return;
       var i = $scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid)
+      // push the color back in linecolor
+      $scope.lineColors.push(elm["color"])
       $scope.reporting.splice(i, 1);
+      
     }
 
     $scope.resetDD = function(t){
+     
       if(t == "country"){$scope.entities.sourceCountryEntity.selected = undefined}
       else if(t == "colonial_area"){$scope.entities.sourceColonialEntity.selected = undefined}
       else if(t == "geographical_area"){
