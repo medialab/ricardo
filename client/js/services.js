@@ -106,6 +106,8 @@ angular.module('ricardo.services', [])
     years = year.group(d3.time.year).reduce(reduceAdd, reduceRemove, reduceInitial),
     partner = cf.dimension(function(d) { return d.partner_id}),
     partners = partner.group().reduce(reduceAdd, reduceRemove, reduceInitial).order(order),
+    continent = cf.dimension(function(d){return d.continent }),
+    continents = continent.group().reduce(reduceAddContinent, reduceRemoveContinent, reduceInitialContinent).order(order),
     type = cf.dimension(function(d){return d.type}),
     types = type.group();
 
@@ -129,6 +131,31 @@ angular.module('ricardo.services', [])
       return {count:0, imp: 0, exp: 0, tot: 0};
     }
 
+     function reduceAddContinent(p, v) {
+      ++p.count;
+      p.imp += Math.round(v.imp);
+      p.exp += Math.round(v.exp);
+      p.tot = p.imp + p.exp;
+      p.partner_id=p.continent;
+      p.year=p.year;
+      return p;
+    }
+
+    function reduceRemoveContinent(p, v) {
+      --p.count;
+      p.imp -= Math.round(v.imp);
+      p.exp -= Math.round(v.exp);
+      p.tot = p.imp + p.exp
+      p.partner_id=p.continent;
+      p.year=p.year;
+      return p;
+    }
+
+    function reduceInitialContinent() {
+      return {count:0, imp: 0, exp: 0, tot: 0, partner_id:"", year:""};
+    }
+
+
     function order(p) {
       return p.tot;
     }
@@ -144,6 +171,8 @@ angular.module('ricardo.services', [])
     exports.years = function() { return years};
     exports.partner = function() { return partner};
     exports.partners = function() { return partners};
+    exports.continent = function() { return continent};
+    exports.continents = function() { return continents};
     exports.type = function() { return type};
     exports.types = function() { return types};
     exports.imp = function() { return all.reduceSum(function(d) { return d.imp; }).value()};
