@@ -77,7 +77,7 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
 
     flows=[]
     partners_meta={}
-    last_y=None
+    last_y={}
     for fields in cursor:
         if with_sources:
             (r_id,p_id,y,expimp_g,flow_g,currency,source_g)=fields
@@ -86,8 +86,8 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
 
         imports=[]
         exports=[]
-        if not last_y:
-            last_y=y
+        if p_id not in last_y.keys():
+            last_y[p_id]=y
         if flow_g:
             if len(expimp_g.split("|")) != len(flow_g.split("|")) :
                 app.logger.debug("%s %s"%(expimp_g,flow_g))
@@ -115,7 +115,7 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
             exp=sum(exports)
         total = (imp if imp else 0) + (exp if exp else 0)
         # deal with missing years in flows list
-        for missing_year in (last_y+i+1 for i in range(y-(last_y+1))):
+        for missing_year in (last_y[p_id]+i+1 for i in range(y-(last_y[p_id]+1))):
             flows.append({
                 "reporting_id":r_id,
                 "partner_id":p_id,
@@ -134,7 +134,7 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
             "total": total,
             "currency":currency if original_currency else "sterling pound",
             })
-        last_y=y
+        last_y[p_id]=y
         if with_sources:
             sources=set(source_g.split("|") if source_g else [])
             flows[-1]["sources"]=list(sources)[0] if sources else ""
