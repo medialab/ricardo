@@ -18,7 +18,7 @@ cors = CORS(app)
 app.config.from_object(config)
 
 # logging
-handler = RotatingFileHandler('ricardoapi.log', maxBytes=10000, backupCount=1)
+handler = RotatingFileHandler(os.path.join(os.path.dirname(os.path.realpath(__file__)),'ricardoapi.log'), maxBytes=10000, backupCount=1)
 handler.setLevel(logging.INFO if app.debug else logging.ERROR)
 app.logger.addHandler(handler)
 
