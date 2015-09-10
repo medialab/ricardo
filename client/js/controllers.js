@@ -33,11 +33,13 @@ angular.module('ricardo.controllers', [])
     $scope.tableData = [];
     $scope.missingData = [];
     $scope.totalServerItems = 0;
+
     $scope.pagingOptions = {
         pageSizes: [50],
         pageSize: 50,
         currentPage: 1
     };
+
     $scope.viewTable = 0;
 
     // State
@@ -55,10 +57,24 @@ angular.module('ricardo.controllers', [])
         var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
         $scope.tablePagedData = pagedData;
         $scope.totalServerItems = data.length;
+        $scope.loading = false;
         if (!$scope.$$phase) {
             $scope.$apply();
         }
     };
+
+    function sortData(data, field, direction) {
+      var dataS = data
+      if (dataS) {
+        dataS.sort(function (a, b) {
+              if (direction == "asc") {
+            return a[field]> b[field]? 1 : -1;
+          } else {
+            return a[field]> b[field]? -1 : 1;
+          }
+        })     
+      }
+    }
 
     $scope.tablePagedData = []
 
@@ -70,19 +86,34 @@ angular.module('ricardo.controllers', [])
       pagingOptions: $scope.pagingOptions,
       enableRowSelection: false,
       footerRowHeight: 45,
-      columnDefs: TABLE_HEADERS
+      //useExternalPagination: true,
+      useExternalSorting: true,
+      columnDefs: TABLE_HEADERS,
+      sortInfo: {
+        fields: ["year", "partner"],
+        directions: ["asc"]
+      }
     }
 
     $scope.$watch('tableData', function (newVal, oldVal) {
         if (newVal !== oldVal) {
-          $scope.pagingOptions.currentPage = 1
-          $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+          $scope.setPagingData($scope.tableData, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
         }
     }, true);
 
     $scope.$watch('pagingOptions', function (newVal, oldVal) {
         if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
           $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+        }
+    }, true);
+
+        /* watch filter on colomn and changed data */
+    $scope.$watch('gridOptions.sortInfo', function (newVal, oldVal) {
+        if ($scope.tableData) {
+          $scope.loading = true;
+          sortData($scope.tableData, newVal.fields[0], newVal.directions[0]);
+          $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage); 
+          $scope.pagingOptions.currentPage = $scope.pagingOptions.currentPage;
         }
     }, true);
 
@@ -113,7 +144,7 @@ angular.module('ricardo.controllers', [])
           $scope.selectedMinDate = 1600                   // Min year as selected by selector or brushing
           $scope.selectedMaxDate = 2000                   // Max year as selected by selector or brushing
 
-          // Consolidate
+          // Consolidate data, add mirror's data to flows array
           mergeMirrorInFlows(data)
 
           $scope.timelineData = data.flows
@@ -154,7 +185,9 @@ angular.module('ricardo.controllers', [])
       }
     })
 
+    /* update Range from date on flows array */
     function updateDateRange(){
+      //console.log("updateDateRange mirror_flows", data.mirror_flows);
 
       $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
 
@@ -174,15 +207,21 @@ angular.module('ricardo.controllers', [])
 
     }
 
+    /* Merge mirror array in flows array */
     function mergeMirrorInFlows(data){
-      var mirrorFlows_byYear = {}
+      //console.log("mergeMirrorInFlows data", data);
+
+      var mirrorFlows_byYear = {} // exchange between countries by year 
+
+      // first step : clean mirror_flows and push data into mirrorFlos_byYear
       data.mirror_flows.forEach(function(d){
         var obj = mirrorFlows_byYear[d.year] || {}
         obj.imp = d.imp || null
         obj.exp = d.exp || null
-        mirrorFlows_byYear[d.year] = obj
+        mirrorFlows_byYear[d.year] = obj // useless ?
       })
 
+      // second step : add mirror_flow to flow
       data.flows.forEach(function(d){
         var mirror = mirrorFlows_byYear[d.year]
         if (mirror) {
@@ -197,6 +236,7 @@ angular.module('ricardo.controllers', [])
   })
   .controller('country', function($scope, $location, cfSource, cfTarget, cfSourceLine, apiService, reportingEntities, utils, DEFAULT_REPORTING, TABLE_HEADERS) {
 
+    /* all var declarations */
     var data
 
     $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
@@ -228,7 +268,7 @@ angular.module('ricardo.controllers', [])
 
     $scope.lineColors = ["#1A810F","#928DF1","#201C30","#B10B72","#67A891"]
 
-    $scope.yValue = "total"
+    $scope.yValue = "total"; 
 
 
     // Calling the API
@@ -278,6 +318,8 @@ angular.module('ricardo.controllers', [])
             $scope.reportingContinentEntities.push(elm)
           })
 
+          /*  */
+
           d3.select("#linechart-world > svg").remove()
 
           $scope.reporting = []
@@ -323,7 +365,7 @@ angular.module('ricardo.controllers', [])
     }
 
     var initLinechart = function(partners){
-        
+        console.log("partners", partners);
         var linechart_flows=[]
         if(partners.length>0)
         {
@@ -410,6 +452,7 @@ angular.module('ricardo.controllers', [])
     /* end initialize */
     $scope.$watch("entities.sourceEntity.selected", function(newValue, oldValue){
       if(newValue != oldValue && newValue){
+        console.log("entities.sourceEntity.selected");
         init(newValue.RICid, $scope.currency)
         updateDateRange()
       }
@@ -421,6 +464,7 @@ angular.module('ricardo.controllers', [])
           cfSource.type().filterAll()
         else cfSource.type().filterExact(newValue)
         updateTableData();
+        console.log("filter");
       }
     })
 
@@ -428,6 +472,7 @@ angular.module('ricardo.controllers', [])
       if(newValue != oldValue){
         init($scope.entities.sourceEntity.selected.RICid, newValue)
         updateDateRange()
+        console.log("currency");
       }
     })
 
@@ -501,6 +546,8 @@ angular.module('ricardo.controllers', [])
       }
     }, true)
 
+
+    /* Display and sort table data */
     $scope.tableData = [];
     $scope.totalServerItems = 0;
     $scope.pagingOptions = {
@@ -509,10 +556,24 @@ angular.module('ricardo.controllers', [])
         currentPage: 1
     };
 
+    function sortData(data, field, direction) {
+      var dataS = data
+      if (dataS) {
+        dataS.sort(function (a, b) {
+              if (direction == "asc") {
+            return a[field]> b[field]? 1 : -1;
+          } else {
+            return a[field]> b[field]? -1 : 1;
+          }
+        })     
+      }
+    }
+
     $scope.setPagingData = function(data, pageSize, page){
         var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
         $scope.tablePagedData = pagedData;
         $scope.totalServerItems = data.length;
+        $scope.loading = false;
         if (!$scope.$$phase) {
             $scope.$apply();
         }
@@ -528,19 +589,37 @@ angular.module('ricardo.controllers', [])
       pagingOptions: $scope.pagingOptions,
       enableRowSelection: false,
       footerRowHeight: 45,
-      columnDefs: TABLE_HEADERS
+      columnDefs: TABLE_HEADERS,
+      showFilter: true,
+      sortInfo: {
+        fields: ["year", "partner"],
+        directions: ["asc"]
+      }
     }
 
+    /* first load data */ 
     $scope.$watch('tableData', function (newVal, oldVal) {
         if (newVal !== oldVal) {
-          $scope.pagingOptions.currentPage = 1
           $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
         }
     }, true);
 
+    /* load data when page changed */
     $scope.$watch('pagingOptions', function (newVal, oldVal) {
         if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
           $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+        }
+    }, true);
+
+    /* watch filter on colomn and changed data */
+    $scope.$watch('gridOptions.sortInfo', function (newVal, oldVal) {
+        if ($scope.tableData) {
+          console.log("$scope.loading 1 : ", $scope.loading);
+          $scope.loading = true;
+          console.log("$scope.loading 2 : ", $scope.loading);
+          sortData($scope.tableData, newVal.fields[0], newVal.directions[0]);
+          $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage); 
+          $scope.pagingOptions.currentPage = $scope.pagingOptions.currentPage;
         }
     }, true);
 
@@ -555,6 +634,8 @@ angular.module('ricardo.controllers', [])
 
       utils.downloadCSV($scope.tableData, headers, order);
     };
+
+        // tri des données puis ré introduction dans les pages 
   })
   .controller('continent', function($scope, $location, reportingEntities, utils, TABLE_HEADERS) {
 
