@@ -303,13 +303,15 @@ angular.module('ricardo.directives-addendum', [])
 
         scope.$watch('endDate', function(newValue, oldValue) {
           if ( newValue && scope.ngData) {
-            update(scope.ngData)
+            //update(scope.ngData)
+            draw(scope.ngData)
           }
         })
 
         scope.$watch('startDate', function(newValue, oldValue) {
           if ( newValue && scope.ngData) {
-            update(scope.ngData)
+            //update(scope.ngData)
+            draw(scope.ngData)
           }
         })
 
@@ -405,6 +407,7 @@ angular.module('ricardo.directives-addendum', [])
         }
 
         function draw(data){
+          //console.log("data : ", data);
           document.querySelector('#comparison-timeline-container' + (scope.reverse ? '-reverse' : '') ).innerHTML = null;
 
           var margin = {top: 10, right: 0, bottom: 30, left: 0},
@@ -427,6 +430,24 @@ angular.module('ricardo.directives-addendum', [])
               .ticks(4)
               .tickSize(0)
 
+          x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
+            y.domain([
+              d3.min( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
+                  if (diffImpDefined(d) && diffExpDefined(d)) {
+                    return Math.min( diffImp(d), diffExp(d) );            
+                  } else {
+                    return false
+                  }
+                }),
+              d3.max( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
+                  if (diffImpDefined(d) && diffExpDefined(d)) {
+                    return Math.max( diffImp(d), diffExp(d) );            
+                  } else {
+                    return false
+                  }
+                })
+            ]);
+
           diffImpLine = d3.svg.line()
               .defined(diffImpDefined)
               .x(function(d) { return x(d.date); })
@@ -447,14 +468,13 @@ angular.module('ricardo.directives-addendum', [])
             d.date = new Date(d.year, 0, 1)
           })
 
-          x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
-          y.domain([0, d3.max( data, function(d) {
-            if (diffImpDefined(d) && diffExpDefined(d)) {
-              return Math.max( diffImp(d), diffExp(d) );            
-            } else {
-              return false
-            }
-          })]);
+          svg.select(".x.axis")
+                //.duration(750)
+                .call(xAxis);
+
+            svg.select(".y.axis")
+                //.duration(750)
+                .call(yAxis);
 
           svg.append("path")
               .datum(data)
@@ -507,7 +527,93 @@ angular.module('ricardo.directives-addendum', [])
               .attr("font-size", "0.85em");
             }
 
+        /* select only imp & exp data from country selected */
+          var ImpExp = [];
+
+          data.forEach(function (data) {
+            if (data.year >= scope.startDate && data.year <= scope.endDate) {
+              if (data.year === null)
+                console.log("année nulle");
+              var imp = diffImp(data);
+              var exp = diffExp(data);
+              // console.log("data.year", data.year);
+              // console.log("imp", imp);
+              // console.log("exp", exp);
+              ImpExp.push({points: exp, year: data.year});
+              ImpExp.push({points: imp, year: data.year});
+            }
+          })
+          //console.log("ImpExp", ImpExp);
+          voronoi(ImpExp, "points", svg, margin, height, width);
+
         }
+
+                  /* voronoi fonction */
+          function voronoi(data, yValue, svg, margin, height, width) {
+            
+            var voronoi = d3.geom.voronoi()
+            .x(function(d) { return x(new Date(d.year, 0, 1)); })
+            .y(function(d) { return y(d[yValue]); })
+            .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]]);
+        
+            var voronoiGroup = svg.select(".voronoi")
+
+            if(voronoiGroup.empty()){
+                  voronoiGroup = svg.append("g")
+                              .attr("class", "voronoi")
+                              .attr("fill", "none")
+                              .attr("pointer-events", "all")
+                              //.attr("stroke", "black")
+                }
+
+            var voronoiGraph = voronoiGroup.selectAll("path")
+                .data(voronoi(data.filter(function(d){ 
+                  if(d.points != "-Infinity" && !isNaN(d.points) && d.points != 1) {
+                    return d[yValue] != null
+                  }
+                    
+                })))
+
+            voronoiGraph
+                  .enter().append("path")
+                  .attr("d", function(data) { 
+                    //console.log("data join", data);
+                    return "M" + data.join("L") + "Z"; })
+                  .datum(function(d) { return d.point; })
+                  .on("mouseover", mouseover)
+                  .on("mouseout", mouseout);
+
+            voronoiGraph.exit().remove()
+
+            var focus = svg.select(".focus")
+                      
+            if(focus.empty()){
+                focus = svg.append("g")
+                    .attr("transform", "translate(-100,-100)")
+                    .attr("class", "focus");
+                  }
+
+            focus.append("circle")
+                .attr("r", 3);
+
+            focus.append("text")
+                .attr("y", -10)
+                .attr("text-anchor", "middle")
+
+            var format = d3.format("0,000");
+
+            function mouseover(d) {
+                if(d[yValue]!=null)
+                {
+                  focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
+                  focus.select("text").text(format(Math.round(d[yValue] * 100) / 100 ));
+                }
+              }
+
+            function mouseout(d) {
+                focus.attr("transform", "translate(-100,-100)");
+              }
+          }
       }
     }
   }])
