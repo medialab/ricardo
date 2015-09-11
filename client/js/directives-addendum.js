@@ -303,14 +303,12 @@ angular.module('ricardo.directives-addendum', [])
 
         scope.$watch('endDate', function(newValue, oldValue) {
           if ( newValue && scope.ngData) {
-            //update(scope.ngData)
             draw(scope.ngData)
           }
         })
 
         scope.$watch('startDate', function(newValue, oldValue) {
           if ( newValue && scope.ngData) {
-            //update(scope.ngData)
             draw(scope.ngData)
           }
         })
@@ -326,92 +324,31 @@ angular.module('ricardo.directives-addendum', [])
           , diffExp
           , diffExpDefined
 
-        if (!scope.reverse){
-          
-          diffImp = function(d){
-            return ( d.imp - d.exp_mirror ) / d.imp ;
+        diffImp = function(d){
+          if (!isNaN(d.exp) && !isNaN(d.imp) && d.imp != null && d.exp != null && d.imp > 0 && d.exp > 0) {
+            return ( d.imp - d.exp ) / d.exp ;
           }
-
-          diffImpDefined = function(d){
-            return d.imp != null && d.exp_mirror != null && d.imp > 0 ;
-          }
-
-          diffExp = function(d){
-            return ( d.exp - d.imp_mirror ) / d.exp ;
-          }
-
-          diffExpDefined = function(d){
-            return d.exp != null && d.imp_mirror != null && d.exp > 0 ;
-          }
-
-        } else {
-
-          diffImp = function(d){
-            return ( d.imp_mirror - d.exp ) / d.imp_mirror ;
-          }
-
-          diffImpDefined = function(d){
-            return d.imp_mirror != null && d.exp != null && d.imp_mirror > 0 ;
-          }
-
-          diffExp = function(d){
-            return ( d.exp_mirror - d.imp ) / d.exp_mirror ;
-          }
-
-          diffExpDefined = function(d){
-            return d.exp_mirror != null && d.imp != null && d.exp_mirror > 0 ;
-          }
-
         }
 
-        function update(data){
-          
-          if(xAxis && yAxis){
+        diffImpDefined = function(d){
+          return d.imp != null && d.exp != null ;
+        }
 
-            x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
-            y.domain([
-              d3.min( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
-                  if (diffImpDefined(d) && diffExpDefined(d)) {
-                    return Math.min( diffImp(d), diffExp(d) );            
-                  } else {
-                    return false
-                  }
-                }),
-              d3.max( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
-                  if (diffImpDefined(d) && diffExpDefined(d)) {
-                    return Math.max( diffImp(d), diffExp(d) );            
-                  } else {
-                    return false
-                  }
-                })
-            ]);
-
-            var svg = d3.select("#comparison-timeline-container" + (scope.reverse ? '-reverse' : '')).transition()
-
-            svg.select(".line-compare")
-                .duration(750)
-                .attr("d", diffImpLine)
-
-            svg.select(".line-compare-alt")
-                .duration(750)
-                .attr("d", diffExpLine)
-
-            svg.select(".x.axis")
-                .duration(750)
-                .call(xAxis);
-
-            svg.select(".y.axis")
-                .duration(750)
-                .call(yAxis);
+        diffExp = function(d){
+          if (!isNaN(d.exp_mirror) && !isNaN(d.imp_mirror) && d.exp_mirror != null && d.imp_mirror != null && d.exp_mirror > 0 && d.imp_mirror > 0) {
+            return ( d.exp_mirror - d.imp_mirror ) / d.exp_mirror ;
           }
+        }
+
+        diffExpDefined = function(d){
+          return d.exp_mirror != null && d.imp_mirror != null ;
         }
 
         function draw(data){
-          //console.log("data : ", data);
-          document.querySelector('#comparison-timeline-container' + (scope.reverse ? '-reverse' : '') ).innerHTML = null;
+          document.querySelector('#comparison-timeline-container').innerHTML = null;
 
           var margin = {top: 10, right: 0, bottom: 30, left: 0},
-              width = document.querySelector('#comparison-timeline-container' + (scope.reverse ? '-reverse' : '') ).offsetWidth - margin.left - margin.right,
+              width = document.querySelector('#comparison-timeline-container').offsetWidth - margin.left - margin.right,
               height = 180 - margin.top - margin.bottom;
 
           x = d3.time.scale()
@@ -431,34 +368,36 @@ angular.module('ricardo.directives-addendum', [])
               .tickSize(0)
 
           x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
-            y.domain([
-              d3.min( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
-                  if (diffImpDefined(d) && diffExpDefined(d)) {
-                    return Math.min( diffImp(d), diffExp(d) );            
-                  } else {
-                    return false
-                  }
-                }),
-              d3.max( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
-                  if (diffImpDefined(d) && diffExpDefined(d)) {
-                    return Math.max( diffImp(d), diffExp(d) );            
-                  } else {
-                    return false
-                  }
-                })
-            ]);
+          y.domain([
+            d3.min( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
+                if (diffImpDefined(d) && diffExpDefined(d)) {
+                  return Math.min( diffImp(d), diffExp(d) );            
+                } 
+                else {
+                  return false;
+                }
+              }),
+            d3.max( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
+                if (diffImpDefined(d) && diffExpDefined(d)) {
+                  return Math.max( diffImp(d), diffExp(d) );            
+                } 
+                else {
+                  return false;
+                }
+              })
+          ]);
 
           diffImpLine = d3.svg.line()
               .defined(diffImpDefined)
               .x(function(d) { return x(d.date); })
               .y(function(d) { return y( diffImp(d) ); });
 
-          diffExpLine = d3.svg.area()
-              .defined(diffImpDefined)
+          diffExpLine = d3.svg.line()
+              .defined(diffExpDefined)
               .x(function(d) { return x(d.date); })
               .y(function(d) { return y( diffExp(d) ); });
 
-          var svg = d3.select("#comparison-timeline-container" + (scope.reverse ? '-reverse' : '')).append("svg")
+          var svg = d3.select("#comparison-timeline-container".append("svg")
               .attr("width", width + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -472,20 +411,20 @@ angular.module('ricardo.directives-addendum', [])
                 //.duration(750)
                 .call(xAxis);
 
-            svg.select(".y.axis")
-                //.duration(750)
-                .call(yAxis);
-
-          svg.append("path")
-              .datum(data)
-              .attr("class", "line-compare-alt")
-              .attr("d", diffExpLine)
+          svg.select(".y.axis")
+              //.duration(750)
+              .call(yAxis);
 
           svg.append("path")
               .datum(data)
               .attr("class", "line-compare")
               .attr("d", diffImpLine)
-          
+
+          svg.append("path")
+              .datum(data)
+              .attr("class", "line-compare-alt")
+              .attr("d", diffExpLine)
+        
           /* axis */
 
           var gy = svg.select("g.y.axis"),
@@ -532,18 +471,16 @@ angular.module('ricardo.directives-addendum', [])
 
           data.forEach(function (data) {
             if (data.year >= scope.startDate && data.year <= scope.endDate) {
-              if (data.year === null)
-                console.log("année nulle");
               var imp = diffImp(data);
               var exp = diffExp(data);
-              // console.log("data.year", data.year);
-              // console.log("imp", imp);
-              // console.log("exp", exp);
-              ImpExp.push({points: exp, year: data.year});
-              ImpExp.push({points: imp, year: data.year});
+              if ( imp !== undefined) {
+                ImpExp.push({points: imp, year: data.year}); 
+              }
+              if (exp !== undefined) {
+                ImpExp.push({points: exp, year: data.year});
+              }
             }
           })
-          //console.log("ImpExp", ImpExp);
           voronoi(ImpExp, "points", svg, margin, height, width);
 
         }
@@ -568,7 +505,7 @@ angular.module('ricardo.directives-addendum', [])
 
             var voronoiGraph = voronoiGroup.selectAll("path")
                 .data(voronoi(data.filter(function(d){ 
-                  if(d.points != "-Infinity" && !isNaN(d.points) && d.points != 1) {
+                  if(d.points != "-Infinity" && !isNaN(d.points) ) {
                     return d[yValue] != null
                   }
                     
@@ -577,7 +514,6 @@ angular.module('ricardo.directives-addendum', [])
             voronoiGraph
                   .enter().append("path")
                   .attr("d", function(data) { 
-                    //console.log("data join", data);
                     return "M" + data.join("L") + "Z"; })
                   .datum(function(d) { return d.point; })
                   .on("mouseover", mouseover)
