@@ -287,12 +287,11 @@ angular.module('ricardo.directives-addendum', [])
   .directive('comparisonTimeline', [function(){
     return {
       restrict: 'E'
-      ,template: '<div id="comparison-timeline-container{{reverse ? \'-reverse\' : \'\'}}"></div>'
+      ,template: '<div id="comparison-timeline-container"></div>'
       ,scope: {
         ngData: '='
         ,startDate: '='
         ,endDate: '='
-        ,reverse: '@'
       }
       ,link: function(scope, element, attrs){
         scope.$watch('ngData', function(newValue, oldValue) {
@@ -324,27 +323,28 @@ angular.module('ricardo.directives-addendum', [])
           , diffExp
           , diffExpDefined
 
-        diffImp = function(d){
-          if (!isNaN(d.exp) && !isNaN(d.imp) && d.imp != null && d.exp != null && d.imp > 0 && d.exp > 0) {
+        
+
+        function draw(data){
+          diffImp = function(d){
+          if (!isNaN(d.exp) && !isNaN(d.imp) && d.imp != null && d.exp != null ) {
             return ( d.imp - d.exp ) / d.exp ;
           }
         }
 
         diffImpDefined = function(d){
-          return d.imp != null && d.exp != null ;
+          return d.imp != null && d.exp != null && d.exp != 0;
         }
 
         diffExp = function(d){
-          if (!isNaN(d.exp_mirror) && !isNaN(d.imp_mirror) && d.exp_mirror != null && d.imp_mirror != null && d.exp_mirror > 0 && d.imp_mirror > 0) {
+          if (!isNaN(d.exp_mirror) && !isNaN(d.imp_mirror) && d.exp_mirror != null && d.imp_mirror != null) {
             return ( d.exp_mirror - d.imp_mirror ) / d.exp_mirror ;
           }
         }
 
         diffExpDefined = function(d){
-          return d.exp_mirror != null && d.imp_mirror != null ;
+          return d.exp_mirror != null && d.imp_mirror != null && d.exp_mirror != 0;
         }
-
-        function draw(data){
           document.querySelector('#comparison-timeline-container').innerHTML = null;
 
           var margin = {top: 10, right: 0, bottom: 30, left: 0},
@@ -372,7 +372,13 @@ angular.module('ricardo.directives-addendum', [])
             d3.min( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
                 if (diffImpDefined(d) && diffExpDefined(d)) {
                   return Math.min( diffImp(d), diffExp(d) );            
-                } 
+                }
+                else if (diffImpDefined(d) ) {
+                  return diffImp(d);
+                }
+                else if (diffExpDefined(d)) {
+                  return diffExp(d);
+                }  
                 else {
                   return false;
                 }
@@ -380,7 +386,12 @@ angular.module('ricardo.directives-addendum', [])
             d3.max( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
                 if (diffImpDefined(d) && diffExpDefined(d)) {
                   return Math.max( diffImp(d), diffExp(d) );            
-                } 
+                }
+                else if (diffImpDefined(d) ) {
+                  return diffImp(d);
+                }
+                else if (diffExpDefined(d)) {
+                }
                 else {
                   return false;
                 }
@@ -397,7 +408,7 @@ angular.module('ricardo.directives-addendum', [])
               .x(function(d) { return x(d.date); })
               .y(function(d) { return y( diffExp(d) ); });
 
-          var svg = d3.select("#comparison-timeline-container".append("svg")
+          var svg = d3.select("#comparison-timeline-container").append("svg")
               .attr("width", width + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -505,16 +516,11 @@ angular.module('ricardo.directives-addendum', [])
 
             var voronoiGraph = voronoiGroup.selectAll("path")
                 .data(voronoi(data.filter(function(d){ 
-                  if(d.points != "-Infinity" && !isNaN(d.points) ) {
-                    return d[yValue] != null
-                  }
-                    
-                })))
+                  if(d.points != "-Infinity" && !isNaN(d.points) ) { return d[yValue] != null } })))
 
             voronoiGraph
                   .enter().append("path")
-                  .attr("d", function(data) { 
-                    return "M" + data.join("L") + "Z"; })
+                  .attr("d", function(data) { return "M" + data.join("L") + "Z"; })
                   .datum(function(d) { return d.point; })
                   .on("mouseover", mouseover)
                   .on("mouseout", mouseout);
