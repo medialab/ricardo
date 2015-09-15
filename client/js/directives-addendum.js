@@ -87,16 +87,16 @@ angular.module('ricardo.directives-addendum', [])
               .tickSize(0)
               .tickFormat(function(d,i){
                 var prefix = d3.formatPrefix(d)
-                if(i == 0){
+                if(i === 0){
                   return
                 }
                 else{
                   var symbol;
-                  if(prefix.symbol == "G"){
+                  if(prefix.symbol === "G"){
                     symbol = "billion"
-                  }else if(prefix.symbol == "M"){
+                  }else if(prefix.symbol === "M"){
                     symbol = "million"
-                  }else if(prefix.symbol == "k"){
+                  }else if(prefix.symbol === "k"){
                     symbol = "thousand"
                   }else{
                     symbol = ""
@@ -110,24 +110,24 @@ angular.module('ricardo.directives-addendum', [])
 
           /* draw areas & lines */
           areaImp = d3.svg.area()
-              .defined(function(d) { return d.imp != null; })
+              .defined(function(d) { return d.imp !== null; })
               .x(function(d) { return x(d.date); })
               .y0(height)
               .y1(function(d) { return y(d.imp); });
 
           lineImp = d3.svg.line()
-              .defined(function(d) { return d.imp != null; })
+              .defined(function(d) { return d.imp !== null; })
               .x(function(d) { return x(d.date); })
               .y(function(d) { return y(d.imp); });
 
           areaExp = d3.svg.area()
-              .defined(function(d) { return d.exp != null; })
+              .defined(function(d) { return d.exp !== null; })
               .x(function(d) { return x(d.date); })
               .y0(height)
               .y1(function(d) { return y(d.exp); });
 
           lineExp = d3.svg.line()
-              .defined(function(d) { return d.exp != null; })
+              .defined(function(d) { return d.exp !== null; })
               .x(function(d) { return x(d.date); })
               .y(function(d) { return y(d.exp); });
 
@@ -239,7 +239,7 @@ angular.module('ricardo.directives-addendum', [])
                 }
 
             var voronoiGraph = voronoiGroup.selectAll("path")
-                .data(voronoi(data.filter(function(d){ return d[yValue] != null})))
+                .data(voronoi(data.filter(function(d){ return d[yValue] !== null})))
 
             voronoiGraph
                   .enter().append("path")
@@ -316,34 +316,34 @@ angular.module('ricardo.directives-addendum', [])
           , y
           , xAxis
           , yAxis
-          , diffImpLine
-          , diffExpLine
-          , diffImp
-          , diffImpDefined
-          , diffExp
-          , diffExpDefined
+          , diffSourceLine
+          , diffTargetLine
+          , diffSource
+          , diffSourceDefined
+          , diffTarget
+          , diffTargetDefined
 
         
 
         function draw(data){
-          diffImp = function(d){
-          if (!isNaN(d.exp) && !isNaN(d.imp) && d.imp != null && d.exp != null ) {
-            return ( d.imp - d.exp ) / d.exp ;
+          diffSource = function(d){
+          if (!isNaN(d.exp) && !isNaN(d.imp) && d.imp !== null && d.exp !== null ) {
+            return ( d.imp_mirror - d.exp ) / d.exp ;
           }
         }
 
-        diffImpDefined = function(d){
-          return d.imp != null && d.exp != null && d.exp != 0;
+        diffSourceDefined = function(d){
+          return d.imp_mirror !== null && d.exp !== null && d.exp !== 0;
         }
 
-        diffExp = function(d){
-          if (!isNaN(d.exp_mirror) && !isNaN(d.imp_mirror) && d.exp_mirror != null && d.imp_mirror != null) {
-            return ( d.exp_mirror - d.imp_mirror ) / d.exp_mirror ;
+        diffTarget = function(d){
+          if (!isNaN(d.exp_mirror) && !isNaN(d.imp_mirror) && d.exp_mirror !== null && d.imp_mirror !== null) {
+            return ( d.imp - d.exp_mirror ) / d.exp_mirror ;
           }
         }
 
-        diffExpDefined = function(d){
-          return d.exp_mirror != null && d.imp_mirror != null && d.exp_mirror != 0;
+        diffTargetDefined = function(d){
+          return d.exp_mirror !== null && d.imp !== null && d.exp_mirror !== 0;
         }
           document.querySelector('#comparison-timeline-container').innerHTML = null;
 
@@ -370,27 +370,27 @@ angular.module('ricardo.directives-addendum', [])
           x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
           y.domain([
             d3.min( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
-                if (diffImpDefined(d) && diffExpDefined(d)) {
-                  return Math.min( diffImp(d), diffExp(d) );            
+                if (diffSourceDefined(d) && diffTargetDefined(d)) {
+                  return Math.min( diffSource(d), diffTarget(d) );            
                 }
-                else if (diffImpDefined(d) ) {
-                  return diffImp(d);
+                else if (diffSourceDefined(d) ) {
+                  return diffSource(d);
                 }
-                else if (diffExpDefined(d)) {
-                  return diffExp(d);
+                else if (diffTargetDefined(d)) {
+                  return diffTarget(d);
                 }  
                 else {
                   return false;
                 }
               }),
             d3.max( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
-                if (diffImpDefined(d) && diffExpDefined(d)) {
-                  return Math.max( diffImp(d), diffExp(d) );            
+                if (diffSourceDefined(d) && diffTargetDefined(d)) {
+                  return Math.max( diffSource(d), diffTarget(d) );            
                 }
-                else if (diffImpDefined(d) ) {
-                  return diffImp(d);
+                else if (diffSourceDefined(d) ) {
+                  return diffSource(d);
                 }
-                else if (diffExpDefined(d)) {
+                else if (diffTargetDefined(d)) {
                 }
                 else {
                   return false;
@@ -398,15 +398,16 @@ angular.module('ricardo.directives-addendum', [])
               })
           ]);
 
-          diffImpLine = d3.svg.line()
-              .defined(diffImpDefined)
+          diffSourceLine = d3.svg.line()
+              .defined(diffSourceDefined)
               .x(function(d) { return x(d.date); })
-              .y(function(d) { return y( diffImp(d) ); });
+              .y(function(d) { return y( diffSource(d) ); });
 
-          diffExpLine = d3.svg.line()
-              .defined(diffExpDefined)
+          diffTargetLine = d3.svg.line()
+              .defined(diffTargetDefined)
               .x(function(d) { return x(d.date); })
-              .y(function(d) { return y( diffExp(d) ); });
+              .y(function(d) { return y( diffTarget(d) ); });
+
 
           var svg = d3.select("#comparison-timeline-container").append("svg")
               .attr("width", width + margin.left + margin.right)
@@ -429,12 +430,21 @@ angular.module('ricardo.directives-addendum', [])
           svg.append("path")
               .datum(data)
               .attr("class", "line-compare")
-              .attr("d", diffImpLine)
+              .attr("d", diffSourceLine)
 
           svg.append("path")
               .datum(data)
               .attr("class", "line-compare-alt")
-              .attr("d", diffExpLine)
+              .attr("d", diffTargetLine)
+
+          /* zero line */
+          svg.append("line")
+               .attr("x1", 0)
+               .attr("y1", y(0))
+               .attr("x2", width)
+               .attr("y2", y(0))
+               .attr("stroke-width", 1)
+               .attr("stroke", "grey");
         
           /* axis */
 
@@ -482,8 +492,8 @@ angular.module('ricardo.directives-addendum', [])
 
           data.forEach(function (data) {
             if (data.year >= scope.startDate && data.year <= scope.endDate) {
-              var imp = diffImp(data);
-              var exp = diffExp(data);
+              var imp = diffSource(data);
+              var exp = diffTarget(data);
               if ( imp !== undefined) {
                 ImpExp.push({points: imp, year: data.year}); 
               }
@@ -516,7 +526,7 @@ angular.module('ricardo.directives-addendum', [])
 
             var voronoiGraph = voronoiGroup.selectAll("path")
                 .data(voronoi(data.filter(function(d){ 
-                  if(d.points != "-Infinity" && !isNaN(d.points) ) { return d[yValue] != null } })))
+                  if(d.points !== "-Infinity" && !isNaN(d.points) ) { return d[yValue] !== null } })))
 
             voronoiGraph
                   .enter().append("path")
@@ -545,7 +555,7 @@ angular.module('ricardo.directives-addendum', [])
             var format = d3.format("0,000");
 
             function mouseover(d) {
-                if(d[yValue]!=null)
+                if(d[yValue]!==null)
                 {
                   focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
                   focus.select("text").text(format(Math.round(d[yValue] * 100) / 100 ));
@@ -624,45 +634,49 @@ angular.module('ricardo.directives-addendum', [])
               .scale(x)
               .orient("bottom");
 
-          var areaImp = d3.svg.area()
-              .defined(function(d) { return d.imp != null; })
-              .x(function(d) { return x(d.date); })
-              .y0( hOffset + height )
-              .y1(function(d) { return hOffset + y(d.imp); });
+          /* little dual time line */
 
-          var lineImp = d3.svg.line()
-              .defined(function(d) { return d.imp != null; })
-              .x(function(d) { return x(d.date); })
-              .y(function(d) { return hOffset + y(d.imp); });
+          // var areaImp = d3.svg.area()
+          //     .defined(function(d) { return d.imp !== null; })
+          //     .x(function(d) { return x(d.date); })
+          //     .y0( hOffset + height )
+          //     .y1(function(d) { return hOffset + y(d.imp); });
 
-          var areaExp = d3.svg.area()
-              .defined(function(d) { return d.exp != null; })
-              .x(function(d) { return x(d.date); })
-              .y0( hOffset + height )
-              .y1(function(d) { return hOffset + y(d.exp); });
+          // var lineImp = d3.svg.line()
+          //     .defined(function(d) { return d.imp !== null; })
+          //     .x(function(d) { return x(d.date); })
+          //     .y(function(d) { return hOffset + y(d.imp); });
 
-          var lineExp = d3.svg.area()
-              .defined(function(d) { return d.exp != null; })
-              .x(function(d) { return x(d.date); })
-              .y(function(d) { return hOffset + y(d.exp); });
+          // var areaExp = d3.svg.area()
+          //     .defined(function(d) { return d.exp !== null; })
+          //     .x(function(d) { return x(d.date); })
+          //     .y0( hOffset + height )
+          //     .y1(function(d) { return hOffset + y(d.exp); });
+
+          // var lineExp = d3.svg.area()
+          //     .defined(function(d) { return d.exp !== null; })
+          //     .x(function(d) { return x(d.date); })
+          //     .y(function(d) { return hOffset + y(d.exp); });
+
+          /* avaible data */
 
           var availImp = d3.svg.line()
-              .defined(function(d) { return d.imp != null; })
+              .defined(function(d) { return d.imp !== null; })
               .x(function(d) { return x(d.date); })
               .y(function(d) { return baselineHeight_1on2 - interline / 2; });
 
           var availExp = d3.svg.line()
-              .defined(function(d) { return d.exp != null; })
+              .defined(function(d) { return d.exp !== null; })
               .x(function(d) { return x(d.date); })
               .y(function(d) { return baselineHeight_1on2 + interline / 2; });
 
           var availImpMirror = d3.svg.line()
-              .defined(function(d) { return d.imp_mirror != null; })
+              .defined(function(d) { return d.imp_mirror !== null; })
               .x(function(d) { return x(d.date); })
               .y(function(d) { return baselineHeight_2on2 - interline / 2; });
 
           var availExpMirror = d3.svg.line()
-              .defined(function(d) { return d.exp_mirror != null; })
+              .defined(function(d) { return d.exp_mirror !== null; })
               .x(function(d) { return x(d.date); })
               .y(function(d) { return baselineHeight_2on2 + interline / 2; });
 
@@ -679,25 +693,26 @@ angular.module('ricardo.directives-addendum', [])
           x.domain(d3.extent( data, function(d) { return d.date; }));
           y.domain([0, d3.max( data, function(d) { return Math.max( d.imp, d.exp ); })]);
 
-          svg.append("path")
-              .datum(data)
-              .attr("class", "area-imp")
-              .attr("d", areaImp)
+          // little dual time line
+          // svg.append("path")
+          //     .datum(data)
+          //     .attr("class", "area-imp")
+          //     .attr("d", areaImp)
 
-          svg.append("path")
-              .datum(data)
-              .attr("class", "line-imp")
-              .attr("d", lineImp)
+          // svg.append("path")
+          //     .datum(data)
+          //     .attr("class", "line-imp")
+          //     .attr("d", lineImp)
           
-          svg.append("path")
-              .datum(data)
-              .attr("class", "area-exp")
-              .attr("d", areaExp)
+          // svg.append("path")
+          //     .datum(data)
+          //     .attr("class", "area-exp")
+          //     .attr("d", areaExp)
 
-          svg.append("path")
-              .datum(data)
-              .attr("class", "line-exp")
-              .attr("d", lineExp)
+          // svg.append("path")
+          //     .datum(data)
+          //     .attr("class", "line-exp")
+          //     .attr("d", lineExp)
 
           // baselines
           
@@ -743,6 +758,15 @@ angular.module('ricardo.directives-addendum', [])
                 .attr("x2", width)
                 .attr("y2", baselineHeight_2on2 + interline / 2)
 
+            svg.append("path")
+                .datum(data)
+                .attr("class", "line-imp")
+                .attr("d", availImpMirror)
+
+            svg.append("path")
+                .datum(data)
+                .attr("class", "line-exp")
+                .attr("d", availExpMirror)
           }
 
           svg.append("path")
@@ -755,15 +779,7 @@ angular.module('ricardo.directives-addendum', [])
               .attr("class", "line-exp")
               .attr("d", availExp)
 
-          svg.append("path")
-              .datum(data)
-              .attr("class", "line-imp")
-              .attr("d", availImpMirror)
 
-          svg.append("path")
-              .datum(data)
-              .attr("class", "line-exp")
-              .attr("d", availExpMirror)
 
           /* axis */
 
@@ -868,7 +884,7 @@ angular.module('ricardo.directives-addendum', [])
 
         function updateBrush(){
           brush.extent([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)])
-          if(scope.rawStartDate == scope.startDate && scope.rawEndDate == scope.endDate){
+          if(scope.rawStartDate === scope.startDate && scope.rawEndDate === scope.endDate){
             brush.clear()
           }
           d3.select("#brushing-timeline-container svg").select(".brush").call(brush)
@@ -934,11 +950,11 @@ angular.module('ricardo.directives-addendum', [])
       link: function(scope, element, attrs) {
 
         var histogram = ricardo.partnersHistogram()
-            .width(element.width())
+            //.width(element.width())
         var chart = d3.select(element[0])
 
         var refresh = function(newValue, oldValue){
-          if(newValue != oldValue){
+          if(newValue !== oldValue){
             chart.datum(scope.tableData).call(histogram.RICentities(scope.RICentities));
           }
         }
@@ -946,12 +962,12 @@ angular.module('ricardo.directives-addendum', [])
         scope.$watch("currency", refresh);
 
         scope.$watch("gbContinent", function(newValue, oldValue){
-          if(newValue != oldValue){
+          if(newValue !== oldValue){
             chart.call(histogram.continents(newValue));
           }
         });
         scope.$watch("order", function(newValue, oldValue){
-          if(newValue != oldValue){
+          if(newValue !== oldValue){
             chart.call(histogram.order(newValue))
           }
         }, true);
@@ -968,24 +984,24 @@ angular.module('ricardo.directives-addendum', [])
       link: function(scope, element, attrs) {
 
           var linechart = ricardo.linechart()
-            .width(element.width())
+            //.width(element.width())
             .height(400)
 
 
           var chart = d3.select(element[0])
 
         scope.$watch("linechartData", function(newValue, oldValue){
-          if(newValue != oldValue){
+          if(newValue !== oldValue){
           
             newValue.forEach(function(e){
-                e.color=scope.reporting.filter(function(r){return r.RICid==e.key})[0]["color"]})
+                e.color=scope.reporting.filter(function(r){return r.RICid===e.key})[0]["color"]})
 
             chart.datum(newValue).call(linechart)
           }
         })
 
         scope.$watch("yValue", function(newValue, oldValue){
-          if(newValue != oldValue){
+          if(newValue !== oldValue){
             chart.call(linechart.yValue(newValue))
           }
         })
