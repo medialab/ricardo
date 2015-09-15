@@ -1,3 +1,5 @@
+<div id="sticky-marker"></div>
+<div id="sticky-container">
 <div class="container">
   <div class="row">
   	<div class="timeline-cont col-sm-12">
@@ -23,8 +25,7 @@
     </div>
   </div>
 </div>
-<div id="sticky-marker"></div>
-<div id="sticky-container">
+</div>
   <div class="container">
     <div class="row">
       <div class="col-sm-12">
@@ -42,39 +43,29 @@
       </div>
     </div>
   </div>
-</div>
+
 <div class="container">
   <div class="row">
     <div class="col-sm-12">
       <br>
       <br>
+
+      <h3>Discranpencies in mirror flows</h3>
       <h4>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
       <div class="legend">
         <div class="legend-item">
           <div class="line diff-import"></div>
-          ( {{entities.sourceEntity.selected.RICname}} imports - {{entities.targetEntity.selected.RICname}} exports ) / {{entities.sourceEntity.selected.RICname}} imports
+          ( {{entities.sourceEntity.selected.RICname}} imports - {{entities.targetEntity.selected.RICname}} exports ) / {{entities.targetEntity.selected.RICname}} exports
         </div>
         <div class="legend-item">
           <div class="line diff-export"></div>
-          ( {{entities.sourceEntity.selected.RICname}} exports - {{entities.targetEntity.selected.RICname}} imports ) / {{entities.sourceEntity.selected.RICname}} exports
+          ( {{entities.targetEntity.selected.RICname}} imports - {{entities.sourceEntity.selected.RICname}} exports ) / {{entities.sourceEntity.selected.RICname}} exports
         </div>
       </div>
       <comparison-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></comparison-timeline>
       <br>
       <br>
-      <h4>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
-      <div class="legend">
-        <div class="legend-item">
-          <div class="line diff-import"></div>
-          ( {{entities.targetEntity.selected.RICname}} imports - {{entities.sourceEntity.selected.RICname}} exports ) / {{entities.targetEntity.selected.RICname}} imports
-        </div>
-        <div class="legend-item">
-          <div class="line diff-export"></div>
-          ( {{entities.targetEntity.selected.RICname}} exports - {{entities.sourceEntity.selected.RICname}} imports ) / {{entities.targetEntity.selected.RICname}} exports
-        </div>
-      </div>
-      <comparison-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate" reverse="true"></comparison-timeline>
-    </div>
+</div>
   </div>
   <div class="row">
     <div class="col-sm-12 text-center shdt">
@@ -88,7 +79,9 @@
   </div>
   <div ng-if="viewTable" class="row table-cont">
     <div class="col-sm-12 grid-cont">
-      <div class="gridStyle" ng-grid="gridOptions"></div>
+      <div class="gridStyle" ng-grid="gridOptions">
+        <!-- <div class="no-data" ng-hide="gridOptions.data.length && !loading"></div> -->
+      </div>
     </div>
   </div>
 </div>

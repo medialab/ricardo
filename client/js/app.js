@@ -79,7 +79,7 @@ $(window).scroll(function(){
   var offset = $('#sticky-marker').offset().top
     , scrollPos = $(window).scrollTop()
 
-  if(scrollPos >= offset - 50 - 50){
+  if(scrollPos >= offset + 180){
     
     $('#sticky-container').addClass('sticky-container-fixed')
     $('#sticky-marker').addClass('sticky-placeholder')
