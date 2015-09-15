@@ -5,17 +5,16 @@
   ricardo.linechart = function(){
 
     var height = 400,
-        width = 600,
+        width = document.querySelector('#linechart-world').offsetWidth,
         sort = [],
         yValue = 'total',
         duration = 500;
-
 
     function linechart(selection){
       selection.each(function(data){
         
         var chart;
-        var margin = {top: 20, right: 5, bottom: 30, left: 5},
+        var margin = {top: 20, right: 0, bottom: 30, left: 0},
             chartWidth = width - margin.left - margin.right,
             chartHeight = height - margin.top - margin.bottom;
 
@@ -43,7 +42,6 @@
 
         var colorDomain = sort;
 
-      
         var yMax = d3.max(data, function(elm) {return d3.max(elm.values, function(d) { return d[yValue]; }); });
         var xMax = d3.max(data, function(elm) {return d3.max(elm.values, function(d) { return new Date(d.year, 0, 1) }); });
         var xMin = d3.min(data, function(elm) {return d3.min(elm.values, function(d) { return new Date(d.year, 0, 1) }); });
@@ -70,11 +68,11 @@
               }
               else{
                 var symbol;
-                if(prefix.symbol == "G"){
+                if(prefix.symbol === "G"){
                   symbol = "billion"
-                }else if(prefix.symbol == "M"){
+                }else if(prefix.symbol === "M"){
                   symbol = "million"
-                }else if(prefix.symbol == "k"){
+                }else if(prefix.symbol === "k"){
                   symbol = "thousand"
                 }else{
                   symbol = ""
@@ -83,7 +81,6 @@
               }
               
               })
-
 
         var gy = chart.select("g.y.axis")
             gx = chart.select("g.x.axis");
@@ -141,16 +138,12 @@
                 .attr("stroke-width", "2px")
                // .attr("d", function(d) { return line(d.values); })
           
-        entities/*.transition()
-          .duration(duration)*/
-                .attr("d", function(d) { return line(d.values); })
-                .attr("stroke", function(d,i) { return d["color"]; })
-                .attr("fill", "none")
-
-        
+        entities
+            .attr("d", function(d) { return line(d.values); })
+            .attr("stroke", function(d,i) { return d["color"]; })
+            .attr("fill", "none")
 
         entities.exit().remove()
-
 
         var voronoi = d3.geom.voronoi()
             .x(function(d) { return x(new Date(d.year, 0, 1)); })
@@ -213,12 +206,9 @@
 
           function mouseout(d) {
               focus.attr("transform", "translate(-100,-100)");
-            }
-
-        
+            }     
       }); //end selection
     } // end linechart
-
 
   linechart.height = function(x){
     if (!arguments.length) return height;
@@ -257,7 +247,5 @@
   }
 
   return linechart;
-
   }
-
 })();
