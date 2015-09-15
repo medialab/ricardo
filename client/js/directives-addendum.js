@@ -955,9 +955,12 @@ angular.module('ricardo.directives-addendum', [])
 
         var refresh = function(newValue, oldValue){
           if(newValue !== oldValue){
+            chart.selectAll("text.legend").remove();
+            chart.selectAll("rect.bar").remove();
             chart.datum(scope.tableData).call(histogram.RICentities(scope.RICentities));
           }
         }
+
         scope.$watch("tableData", refresh, true);
         scope.$watch("currency", refresh);
 

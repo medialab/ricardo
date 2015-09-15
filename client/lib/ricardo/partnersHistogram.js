@@ -4,22 +4,23 @@
 
   ricardo.partnersHistogram = function(){
     var height = 600,
-        width = 600,
-        chartWidth = 370,
+        width = document.querySelector('#partners-histogram-container').offsetWidth,
+        //chartWidth = 370,
         marginTop = 15,
-        marginLeft = 200,
-        marginRight = 40,
+        marginLeft = 0,
+        marginRight = 0,
         duration = 1000,
         yearWidth = 5,
         barWidth = 4,
         barMinHeigth = 2,
         barMaxHeigth = 20,
-        barGap = 4,
+        barGap = 40,
         barColors = ["#663333", "#cc6666"],
         RICentities,
         order = "tot",
         continents = false,
-        currency = "sterling pound";
+        currency = "sterling pound"
+        sum = 0;
 
     function cleanids(str){
       return str.replace(/\W/g, '');
@@ -32,8 +33,8 @@
       return (res ? res : 0) + "&nbsp;" + currency.replace(/\s+/, '&nbsp;');
     }
     function formatPercent(val){
-      var res = parseInt(val);
-      if (!res) res = parseInt(val * 10) / 10;
+      var res = parseInt(val);     
+      if (!res) res = Math.round(parseFloat(val * 10)) / 10;
        return (res ? res : "0.0") + "%";
     }
 
@@ -80,14 +81,15 @@
           p.values.forEach(function(d){
             p.years.push({
               key: d.key,
-              balance: (d.values.exp - d.values.imp) / (d.values.exp + d.values.imp) || 0,
               exp: d.values.exp,
-              pct_exp: d.values.exp / indexYears[d.key].exp * 100,
               imp: d.values.imp,
+              balance: (d.values.exp - d.values.imp) / (d.values.exp + d.values.imp) || 0,
+              pct_exp: d.values.exp / indexYears[d.key].exp * 100,
               pct_imp: d.values.imp / indexYears[d.key].imp * 100,
               pct_tot: (d.values.exp + d.values.imp) / indexYears[d.key].tot * 100
             });
           });
+
           delete p.values;
           p.avg_tot = d3.mean(p.years, function(d){ return d.pct_tot });
           p.avg_imp = d3.mean(p.years, function(d){ return d.pct_imp });
@@ -110,7 +112,6 @@
           chart = selection.select('svg')
           .attr('width', width)
           .attr('height', height)
-          .html("")
         }
 
         var x0, y0,
@@ -119,7 +120,7 @@
             maxWidth = yearWidth * (limits[1]-limits[0]+1),
             x = d3.scale.linear()
               .domain(d3.extent(years))
-              .range([0, maxWidth]),
+              .range([0, width]), // witdh replace max width 
             y = d3.scale.linear()
               .range([0, barMaxHeigth/2]);
 
@@ -138,7 +139,7 @@
 
           histo.append("line")
             .attr("x0", 0)
-            .attr("x1", maxWidth)
+            .attr("x1", width)
             .attr("y0", 0)
             .attr("y1", 0)
             .attr("stroke", "#666")
@@ -150,7 +151,8 @@
             .data(p.years)
             .enter().append("rect")
             .attr("class", "bar")
-            .attr("x", function(d){ return x(d.key) + (yearWidth - barWidth)/2 })
+            //.attr("x", function(d){ return x(d.key) + (yearWidth - barWidth)/2 })
+            .attr("x", function(d){ return x(d.key) })
             .attr("y", function(d){
               return (d.balance >= 0 ? -y(Math.abs(d.balance)) : 0);
             })
@@ -190,10 +192,12 @@
                 .style("width", wid + "px");
             });
 
+          
+
           histo.append("text")
             .attr("class", "legend")
-            .attr("x", -42)
-            .attr("y", 0)
+            .attr("x", 170)
+            .attr("y", -22)
             .attr("text-anchor", "end")
             .attr("font-size", "0.8em")
             .text(function(d){ return shorten(name) })
@@ -201,12 +205,11 @@
           if (order !== "name")
             histo.append("text")
             .attr("class", "legend")
-            .attr("x", -8)
-            .attr("y", 0)
+            .attr("x", 200)
+            .attr("y", -22)
             .attr("text-anchor", "end")
             .attr("font-size", "0.8em")
             .text(function(d){ return formatPercent(p["avg_" + order]) })
-
         });
       });
 
@@ -222,15 +225,15 @@
     partnersHistogram.width = function(x){
       if (!arguments.length) return width;
       width = x;
-      chartWidth = width - marginLeft - marginRight;
-      yearWidth = chartWidth / 152;
+      //chartWidth = width - marginLeft - marginRight;
+      yearWidth = width / 152;
       barWidth = 4 / 5 * yearWidth;
       return partnersHistogram;
     }
 
     partnersHistogram.RICentities = function(x){
       if (!arguments.length) return RICentities;
-      RICentities = x;
+      RICentities = x;  
       return partnersHistogram;
     }
 
