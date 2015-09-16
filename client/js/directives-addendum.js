@@ -63,11 +63,14 @@ angular.module('ricardo.directives-addendum', [])
           , lineExp
           
         function draw(data){
+          //console.log("DTL data", data);
           document.querySelector('#dual-timeline-container').innerHTML = null;
 
           var margin = {top: 10, right: 0, bottom: 30, left: 0},
               width = document.querySelector('#dual-timeline-container').offsetWidth - margin.left - margin.right,
               height = 180 - margin.top - margin.bottom;
+
+          //console.log("width DTL", width);
 
           /* config axis */
           x = d3.time.scale()
@@ -270,6 +273,7 @@ angular.module('ricardo.directives-addendum', [])
             function mouseover(d) {
                 if(d[yValue]!=null)
                 {
+                  //console.log("year: ", d.year, " value : ", d[yValue]);
                   focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
                   focus.select("text").text(format(Math.round(d[yValue])));
                 }
@@ -949,8 +953,9 @@ angular.module('ricardo.directives-addendum', [])
       replace: false,
       link: function(scope, element, attrs) {
 
+       
         var histogram = ricardo.partnersHistogram()
-            //.width(element.width())
+              .width(element.width())
         var chart = d3.select(element[0])
 
         var refresh = function(newValue, oldValue){
@@ -958,6 +963,7 @@ angular.module('ricardo.directives-addendum', [])
             chart.selectAll("text.legend").remove();
             chart.selectAll("rect.bar").remove();
             chart.datum(scope.tableData).call(histogram.RICentities(scope.RICentities));
+            //console.log("scope.tabledata", scope.tableData);
           }
         }
 
