@@ -187,24 +187,22 @@ angular.module('ricardo.controllers', [])
 
     /* update Range from date on flows array */
     function updateDateRange(){
-      //console.log("updateDateRange mirror_flows", data.mirror_flows);
-
       $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
-
       $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
-
       $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
 
       cfSource.clear()
       cfSource.add(data.flows.filter(function(d){
         return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
       }));
+
       cfTarget.clear()
       cfTarget.add(data.mirror_flows.filter(function(d){
         return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
       }));
-      $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
 
+      $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
+      //console.log("$scope.tableData bilateral", $scope.tableData);
     }
 
     /* Merge mirror array in flows array */
@@ -255,9 +253,7 @@ angular.module('ricardo.controllers', [])
           if(a.RICname > b.RICname) return 1;
           return 0;
       })
-
     $scope.reporting = []
-
     $scope.reportingCountryEntities = [];
     $scope.reportingColonialEntities = [];
     $scope.reportingGeoEntities = [];
@@ -265,15 +261,11 @@ angular.module('ricardo.controllers', [])
     $scope.reportingWorldEntities = [];
     $scope.missingData = [];
     $scope.viewTable = 0;
-
     $scope.lineColors = ["#1A810F","#928DF1","#201C30","#B10B72","#67A891"]
-
     $scope.yValue = "total"; 
-
 
     // Calling the API
     function init(sourceID, currency) {
-
       apiService
         .getFlows({reporting_ids: sourceID, original_currency: currency, with_sources: 1})
         .then(function(result) {
@@ -283,7 +275,7 @@ angular.module('ricardo.controllers', [])
           $scope.selectedMinDate = 1600;                   // Min year as selected by selector or brushing
           $scope.selectedMaxDate = 2000;                   // Max year as selected by selector or brushing
 
-
+          
           if (cfSource.size() > 0) {
             cfSource.year().filterAll();
             cfSource.clear();
@@ -318,7 +310,7 @@ angular.module('ricardo.controllers', [])
             $scope.reportingContinentEntities.push(elm)
           })
 
-          /*  */
+          /* line chart world */
 
           d3.select("#linechart-world > svg").remove()
 
@@ -431,10 +423,15 @@ angular.module('ricardo.controllers', [])
     }
 
     function updateTableData(){
-      cfSource.year().filterFunction(
-        function(d){ return d>=new Date($scope.selectedMinDate,1,0)&&d<=new Date($scope.selectedMaxDate,1,0)}
+      // i change filterFunction to filter
+      cfSource.year().filter(
+        function(d){ 
+          //console.log("$scope.selectedMinDate",$scope.selectedMinDate); 
+          //console.log("$scope.selectedMaxDate",$scope.selectedMaxDate);
+        return new Date($scope.selectedMinDate-1,1,0) <= d && d< new Date($scope.selectedMaxDate + 1,1,0)}
       );
-      $scope.tableData = cfSource.year().top(Infinity);   
+      $scope.tableData = cfSource.year().top(Infinity); 
+      //console.log("updateTableData", $scope.tableData);
     }
 
     $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {
@@ -450,7 +447,7 @@ angular.module('ricardo.controllers', [])
     /* end initialize */
     $scope.$watch("entities.sourceEntity.selected", function(newValue, oldValue){
       if(newValue !== oldValue && newValue){
-        console.log("entities.sourceEntity.selected");
+        //console.log("entities.sourceEntity.selected");
         init(newValue.RICid, $scope.currency)
         updateDateRange()
       }
@@ -480,18 +477,17 @@ angular.module('ricardo.controllers', [])
       //assign a color
       elm["color"]=$scope.lineColors.pop()
       $scope.reporting.push(elm)
-
       $scope.resetDD(elm.type)
     }
 
     $scope.removeReporting = function(elm){
-      if($scope.reporting.length === 1) return;
+      //if($scope.reporting.length === 1) return;
       if($scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid) < 0) return;
+      
       var i = $scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid)
       // push the color back in linecolor
       $scope.lineColors.push(elm["color"])
       $scope.reporting.splice(i, 1);
-      
     }
 
     $scope.resetDD = function(t){
@@ -541,7 +537,7 @@ angular.module('ricardo.controllers', [])
     }, true)
 
     /* Display and sort table data */
-    $scope.tableData = [];
+    //$scope.tableData = [];
     $scope.totalServerItems = 0;
     $scope.pagingOptions = {
         pageSizes: [50],
@@ -607,9 +603,7 @@ angular.module('ricardo.controllers', [])
     /* watch filter on colomn and changed data */
     $scope.$watch('gridOptions.sortInfo', function (newVal, oldVal) {
         if ($scope.tableData) {
-          //console.log("$scope.loading 1 : ", $scope.loading);
           $scope.loading = true;
-          //console.log("$scope.loading 2 : ", $scope.loading);
           $timeout(function () {sortData($scope.tableData, newVal.fields[0], newVal.directions[0]);}, 0);
           $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage); 
           $scope.pagingOptions.currentPage = $scope.pagingOptions.currentPage;
@@ -778,13 +772,13 @@ angular.module('ricardo.controllers', [])
     var data
 
     $scope.reportingCountryEntities = reportingCountryEntities;
-    console.log("$scope.reportingCountryEntities : ", $scope.reportingCountryEntities);
+    //console.log("$scope.reportingCountryEntities : ", $scope.reportingCountryEntities);
     $scope.reportingColonialEntities = reportingColonialEntities;
-    console.log("$scope.reportingColonialEntities : ", $scope.reportingColonialEntities);
+    //console.log("$scope.reportingColonialEntities : ", $scope.reportingColonialEntities);
     $scope.reportingGeoEntities = reportingGeoEntities;
-    console.log("$scope.reportingGeoEntities : ", $scope.reportingGeoEntities);
+    //console.log("$scope.reportingGeoEntities : ", $scope.reportingGeoEntities);
     $scope.reportingContinentEntities = reportingContinentEntities;
-    console.log("$scope.reportingContinentEntities : ", $scope.reportingContinentEntities);
+   // console.log("$scope.reportingContinentEntities : ", $scope.reportingContinentEntities);
 
     //to be fixed: add fake ID to continent entity
     $scope.reportingContinentEntities.forEach(function(d){
@@ -792,7 +786,7 @@ angular.module('ricardo.controllers', [])
     })
 
     $scope.entities = {sourceCountryEntity : {}, sourceColonialEntity : {}, sourceGeoEntity : {}, sourceContinentEntity : {}, sourceWorldEntity : {}}
-    console.log("entities : ", $scope.entities);
+    //console.log("entities : ", $scope.entities);
     $scope.reporting = [];
     $scope.missingData = [];
     $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
@@ -807,7 +801,7 @@ angular.module('ricardo.controllers', [])
       apiService
         .getFlows({reporting_ids: sourceID, original_currency: currency, with_sources: 1})
         .then(function(result) {
-          console.log("data world", result);
+          //console.log("data world", result);
           data = result
 
           $scope.selectedMinDate = 1600;                   // Min year as selected by selector or brushing
@@ -906,7 +900,9 @@ angular.module('ricardo.controllers', [])
     $scope.removeReporting = function(elm){
       if($scope.reporting.length == 1) return;
       if($scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid) < 0) return;
+
       var i = $scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid)
+      console.lofg("i", i);
       $scope.reporting.splice(i, 1);
     }
 
