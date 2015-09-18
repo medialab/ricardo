@@ -28,8 +28,10 @@
     function shorten(str){
       return (str.length < 24 ? str : str.slice(0, 22).replace(/\s+$/, '') + "…");
     }
+    var format = d3.format("0,000");
     function formatAmount(line, field){
       var res = parseInt(line[field]);
+      res = format(Math.round(res));
       return (res ? res : 0) + "&nbsp;" + currency.replace(/\s+/, '&nbsp;');
     }
     function formatPercent(val){
@@ -160,6 +162,8 @@
             .attr("height", function(d) { return (d.balance ? Math.max(barMinHeigth, y(Math.abs(d.balance))) : 0); })
             .attr("fill", function(d){ return barColors[+(d.balance >=0)] })
             .attr("opacity", function(d){ return (d.imp !== null && d.exp !== null ? 1 : 0.3) });
+
+          
 
           histo.selectAll(".tooltipBar")
             .data(p.years)
