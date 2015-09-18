@@ -13,7 +13,7 @@
         yearWidth = 4,
         barWidth = 4,
         barMinHeigth = 2,
-        barMaxHeigth = 20,
+        barMaxHeigth = 30,
         barGap = 40,
         barColors = ["#663333", "#cc6666"],
         RICentities,
@@ -22,7 +22,6 @@
         currency = "sterling pound"
         sum = 0;
 
-        console.log("width PH", width);
     function cleanids(str){
       return str.replace(/\W/g, '');
     }
@@ -57,9 +56,7 @@
     }
 
     function partnersHistogram(selection){
-      //console.log("selection", selection);
       selection.each(function(data){
-        console.log("data", data);
         data = data.filter(function(d){
           return !/^World/.test(d.partner_id) && (!continents || d.continent);
         })
@@ -73,7 +70,6 @@
             indexYears[y.key] = y.values;
           })
 
-        //console.log("indexYears", indexYears);
         var partners = d3.nest()
           .key(function(d){ return d[continents ? "continent" : "partner_id"] })
           .key(function(d){ return d.year })
@@ -128,11 +124,6 @@
             y = d3.scale.linear()
               .range([0, barMaxHeigth/2]);
 
-        // console.log("years",years);
-        // console.log("limits", limits);
-        // console.log("maxWidth", maxWidth);
-        // console.log("width", width);
-
         partners.forEach(function(p, i){
 
           var entity = RICentities[""+p.key],
@@ -160,11 +151,8 @@
             .data(p.years)
             .enter().append("rect")
             .attr("class", "bar")
-            .attr("x", function(d){ 
-              // console.log("x(d.key)",  x(d.key));
-              // console.log("x(d.key) + (yearWidth - barWidth)/2", x(d.key) + (yearWidth - barWidth)/2);
+            .attr("x", function(d){              
               return x(d.key) + (yearWidth - barWidth)/2 })
-            //.attr("x", function(d){ return x(d.key) })
             .attr("y", function(d){
               return (d.balance >= 0 ? -y(Math.abs(d.balance)) : 0);
             })

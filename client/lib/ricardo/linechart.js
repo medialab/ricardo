@@ -201,10 +201,20 @@
               {
                 focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
                 focus.select("text").text(format(Math.round(d[yValue])));
+                chart.append("line")
+                       .attr("class", "lineDate")
+                       .attr("x1", x(new Date(d.year, 0, 1)))
+                       .attr("y1", y(d[yValue]))
+                       .attr("x2", x(new Date(d.year, 0, 1)))
+                       .attr("y2", 350)
+                       .attr("stroke-width", 1)
+                       .attr("stroke", "grey");
+
               }
             }
 
           function mouseout(d) {
+              chart.selectAll("line.lineDate").remove();
               focus.attr("transform", "translate(-100,-100)");
             }     
       }); //end selection
