@@ -56,10 +56,10 @@
   </div>
   <div id="select-doubleChart">
     <div class="row">
-      <div class="col-sm-12">
+      <div class="col-md-12">
         <label for="singleSelect"> Filtered by </label>
-        <select name="singleSelect" ng-model="filter">
-          <option value="">--Select a filter--</option>
+        <select class="selectFilters" name="singleSelect" ng-model="filter">
+          <option value="">Select a filter</option>
           <option value="all">All</option>
           <option value="city/part_of">City</option>
           <option value="colonial_area">Colonial Area</option>
@@ -68,7 +68,7 @@
           <option value="group">Group</option>         
         </select>
         <label for="singleSelect"> order by </label>
-        <select name="singleSelect" ng-model="order">
+        <select class="selectFilters" name="singleSelect" ng-model="order" theme="bootstrap">
           <option value="">--Select an order--</option>
           <option value="tot">total</option>
           <option value="imp">imports</option>
@@ -76,23 +76,14 @@
           <option value="name">name</option>       
         </select>
         <label for="singleSelect"> grouped by </label>
-        <select name="singleSelect" ng-model="gbContinent">
+        <select class="selectFilters" name="singleSelect" ng-model="gbContinent">
           <option value="">--Select a group--</option>
           <option value="0">None</option>
           <option value="1">Continent</option>       
         </select>
-      </div>
     </div>
-      <!--
-          <p class="filter">currency</p>
-          <div class="btn-group radio-country">
-            <label class="btn btn-sm btn-default" ng-model="currency" btn-radio="0" uncheckable>Pound</label>
-            <label class="btn btn-sm btn-default" ng-model="currency" btn-radio="1" uncheckable>National</label>
-          </div>
-      -->
-    <div class="row">
       <div id="partners-histogram-container" class="col-sm-12">
-        <div class="partners-histogram" partners-histogram></div>
+        <div id="partners-histogram-container" class="partners-histogram" partners-histogram></div>
       </div>
     </div>
   </div>
@@ -162,13 +153,13 @@
     </div>
     
   </div>
-  <div class="row">
+  <!-- <div class="row">
         <div class="col-sm-12">
           <p class="filter">selected partners:</p>
           <div list-world></div>
         </div>
       </div>
-  </div>
+  </div> -->
 </div>
 <!-- <div class="container"> -->
 <!--   <div class="row">
