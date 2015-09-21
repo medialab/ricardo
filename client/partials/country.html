@@ -20,8 +20,12 @@
         <div class="legend-item">
           Data expressed in <strong>{{actualCurrency}}</strong>
         </div>
+        <i class="fa fa-info-circle"></i>
+
       </div>
       <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate" ></dual-timeline>
+
+      
     </div>
   </div>
 </div>
@@ -47,41 +51,44 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-sm-3">
-      <h3 class="subtitle">choose a reporting country:</h3>
+    <div class="col-md-6">
+      <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} by partners, {{selectedMinDate}} – {{selectedMaxDate}}, in {{actualCurrency}} <i class="fa fa-info-circle"></i></h3> 
     </div>
-    <div class="col-sm-9">
-      <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} by partners, {{startDate}} – {{endDate}}, in <em>{{actualCurrency}}</em></h3>
+    <div class="col-md-6 inline-select" style="float:right;">
+        
+        <ui-select class="filterSelection" ng-model="filtered.selected" theme="bootstrap">
+        <match placeholder="Filter by...">{{$select.selected.name.value}}</match>
+        <choices repeat="item in filters | filter: $select.search">
+          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+        </choices>
+        </ui-select>
+
+        
+        <ui-select class="filterSelection" ng-model="ordered.selected" theme="bootstrap">
+        <match placeholder="Order by...">{{$select.selected.name.value}}</match>
+        <choices repeat="item in orders | filter: $select.search">
+          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+        </choices>
+        </ui-select>
+
+        
+        <ui-select class="filterSelection" ng-model="grouped.selected" theme="bootstrap">
+        <match placeholder="Group by...">{{$select.selected.name.value}}</match>
+        <choices repeat="item in groups | filter: $select.search">
+          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+        </choices>
+        </ui-select>
+
+        <!-- <button class="btn btn-default btn-xs" ng-click="clear()">Clear ng-model</button> -->
+          
     </div>
   </div>
+
   <div id="select-doubleChart">
     <div class="row">
-      <div class="col-md-12">
-        <label for="singleSelect"> Filtered by </label>
-        <select class="selectFilters" name="singleSelect" ng-model="filter">
-          <option value="">Select a filter</option>
-          <option value="all">All</option>
-          <option value="city/part_of">City</option>
-          <option value="colonial_area">Colonial Area</option>
-          <option value="country">Country</option>
-          <option value="geographical_area">Geographical Area</option>
-          <option value="group">Group</option>         
-        </select>
-        <label for="singleSelect"> order by </label>
-        <select class="selectFilters" name="singleSelect" ng-model="order" theme="bootstrap">
-          <option value="">--Select an order--</option>
-          <option value="tot">total</option>
-          <option value="imp">imports</option>
-          <option value="exp">exports</option>
-          <option value="name">name</option>       
-        </select>
-        <label for="singleSelect"> grouped by </label>
-        <select class="selectFilters" name="singleSelect" ng-model="gbContinent">
-          <option value="">--Select a group--</option>
-          <option value="0">None</option>
-          <option value="1">Continent</option>       
-        </select>
-    </div>
+<!--       <div class="col-md-3">
+        <h3 class="subtitle">choose a reporting country:</h3>
+      </div> -->
       <div id="partners-histogram-container" class="col-sm-12">
         <div id="partners-histogram-container" class="partners-histogram" partners-histogram></div>
       </div>
@@ -89,19 +96,29 @@
   </div>
 <!-- <div class="container"> -->
   <div class="row">
-    <div class="col-sm-3">
-      <h3 class="subtitle">select up to 5 partners:</h3>
-    </div>
     <div class="col-sm-9">
       <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} with 
       <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
       <span ng-if="!$last">, </span>
-      </span>, {{selectedMinDate}} – {{selectedMaxDate}}, in {{actualCurrency}}</h3>
+      </span>, {{selectedMinDate}} – {{selectedMaxDate}}, in {{actualCurrency}}
+      <i class="fa fa-info-circle"></i> </h3>
+    </div>
+    <div class="col-sm-2" style="float:right">
+      <div class="filter-group" ng-show="RICentitiesDD.length">
+          <div class="btn-group pull-right">
+            <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'total'" uncheckable>total</label>
+            <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'imp'" uncheckable>imports</label>
+            <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'exp'" uncheckable>exports</label>
+          </div>
+      </div>
     </div>
   </div>
   <div id="select-lineChart">
-    <div class="select-dropdown col-sm-10" ng-show="RICentitiesDD.length">
-
+    <div>
+      <h3 class="subtitle col-sm-2">select up to 5 partners:</h3>
+    </div>
+    <div class="select-dropdown col-sm-8" ng-show="RICentitiesDD.length">
+      
       <ui-select  class="selectPartners" ng-model="entities.sourceCountryEntity.selected" theme="bootstrap">
         <match placeholder="Country...">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingCountryEntities | filter: $select.search">
@@ -137,15 +154,7 @@
         </choices>
       </ui-select>
     </div>
-    <div class="col-sm-2">
-      <div class="filter-group" ng-show="RICentitiesDD.length">
-          <div class="btn-group pull-right">
-            <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'total'" uncheckable>total</label>
-            <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'imp'" uncheckable>imports</label>
-            <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'exp'" uncheckable>exports</label>
-          </div>
-      </div>
-    </div>
+    
   <div class="row">
     
     <div class="col-sm-12">
@@ -153,18 +162,15 @@
     </div>
     
   </div>
-  <!-- <div class="row">
-        <div class="col-sm-12">
-          <p class="filter">selected partners:</p>
-          <div list-world></div>
-        </div>
-      </div>
-  </div> -->
 </div>
-<!-- <div class="container"> -->
-<!--   <div class="row">
-  </div>  -->
-<!-- </div> -->
+
+  <div class="row">
+    <div class="col-md-12"> 
+    <scatter-plot ng-data="scatterData"> <scatter-plot/>
+
+    </div>
+  </div>
+
 
   <div class="row">
     <div class="col-sm-12 text-center shdt">

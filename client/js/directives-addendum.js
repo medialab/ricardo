@@ -294,6 +294,210 @@ angular.module('ricardo.directives-addendum', [])
     }
   }])
 
+   /* directive with watch, update and draw functions */
+  .directive('scatterPlot', [function(){
+    return {
+      restrict: 'E'
+      ,template: '<div id="scatter-plot-container"></div>'
+      ,scope: {
+        ngData: '='
+      }
+      ,link: function(scope, element, attrs){
+
+        scope.$watch('ngData', function(newValue, oldValue) {
+          if ( newValue && scope.ngData) {
+            scatterPlot(scope.ngData)
+          }
+        });
+
+        /* 
+          filter without world sum to have a good graph
+
+        */
+
+        function scatterPlot (data) {
+          document.querySelector('#scatter-plot-container').innerHTML = null;
+          var margin = {top: 20, right: 20, bottom: 30, left: 40},
+              width = document.querySelector('#scatter-plot-container').offsetWidth - margin.left - margin.right,
+              height = 500 - margin.top - margin.bottom;
+
+          var x = d3.scale.linear()
+              .domain([0,60000000])
+              .range([0, width]);
+
+          var y = d3.scale.linear()
+              .domain([0,60000000])
+              .range([height, 0]);
+
+          var color = d3.scale.category10();
+
+          var xAxis = d3.svg.axis()
+              .scale(x)
+              .orient("bottom");
+
+          var yAxis = d3.svg.axis()
+              .scale(y)
+              .orient("left");
+
+          var svg = d3.select("#scatter-plot-container").append("svg")
+              .attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            data.forEach(function(d) {
+              if (d.year === 1910 && d.partner_id !== "Worldsumpartners" && data.partner_id !== "Worldbestguess" & data.partner_id !== "Worldasreported") {
+                d.imp = +d.imp;
+                d.exp = +d.exp;     
+              }
+            });
+
+          //   // Various scales. These domains make assumptions of data, naturally.
+          // var xScale = d3.scale.log().domain([300, 1e5]).range([0, width]),
+          //     yScale = d3.scale.linear().domain([10, 85]).range([height, 0]),
+          //     radiusScale = d3.scale.sqrt().domain([0, 5e8]).range([0, 40]),
+          //     colorScale = d3.scale.category10();
+
+          // x.domain(d3.extent(data, function(d) { if (d.year === 1910 
+          //   && d.partner_id !== "Worldsumpartners" 
+          //   && data.partner_id !== "Worldbestguess" 
+          //   && data.partner_id !== "Worldasreported") {
+          //   console.log("d.exp", d.exp); 
+          //   return d.exp; }})).nice();
+
+          // y.domain(d3.extent(data, function(d) { if (d.year === 1910 
+          //   && d.partner_id !== "Worldsumpartners" 
+          //   && data.partner_id !== "Worldbestguess" 
+          //   && data.partner_id !== "Worldasreported") {
+          //   console.log("d.imp", d.imp); 
+          //   return d.imp; }})).nice();
+
+          svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + height + ")")
+              .call(xAxis)
+            .append("text")
+              .attr("class", "label")
+              .attr("x", width)
+              .attr("y", -6)
+              .style("text-anchor", "end")
+              .text("Exports (Sterlings)");
+
+          svg.append("g")
+              .attr("class", "y axis")
+              .call(yAxis)
+            .append("text")
+              .attr("class", "label")
+              .attr("transform", "rotate(-90)")
+              .attr("y", 6)
+              .attr("dy", ".71em")
+              .style("text-anchor", "end")
+              .text("Imports (Sterlings)")
+
+          var tooltip = d3.select("body")
+              .append("div")
+              .attr("class", "scatterPlot-tooltip");
+
+
+            // absolute balance
+            var tab = [];
+         
+            data.forEach(function (data) {
+                    if (data.year === 1910 && data.partner_id !== "Worldsumpartners" && data.partner_id !== "Worldbestguess" && data.partner_id !== "Worldasreported") {
+                      var number = (data.exp-data.imp);
+                      var r;
+                      if (number < 0)
+                        r = 2;
+                      else if (r > 0)
+                        r = 6;
+                      else
+                        r = 4;
+
+                      //number = Math.abs(number);
+                      tab.push({imp: data.imp, exp: data.exp, reporting_id: data.reporting_id, partner_id:data.partner_id, year:data.year, balance: r });
+                    }
+                  })
+
+          //console.log("tab", tab);
+
+          svg.selectAll(".dot")
+              .data(tab)
+            .enter().append("circle")
+              .attr("class", "dot")
+              //.attr("r", 3.5)
+              .attr("cx", function(d) { return x(d.exp); })
+              .attr("cy", function(d) { return y(d.imp); })
+              .attr("r", function(d) { return d.balance })
+              .style("fill", function(d) { return color(d.partner_id); });
+
+          svg.selectAll("scatterPlot-tooltip")
+              .data(tab)
+              .enter().append("rect")
+              .attr("class", "dot")
+              .attr("x", function(d) { return x(d.exp); })
+              .attr("y", function(d) { return y(d.imp); })
+              .attr("width", 18)
+              .attr("height", 18)
+              .attr("opacity", 0)
+              .on('mouseover', function(d) {
+                      console.log("d mouseover", d);
+                      return tooltip.html(
+                        // "<h3>"+ d.reporting_id + "</h3>" +
+                        // "<p>Continent"+ d.continent + "</p>" +
+                        "<p>Partner"+ d.partner_id + "</p>" +
+                        "<p>Relative balance: "+ d.balance  + "</p>" +
+                        // "<p>Year: "  +  d.year + "</p>" +
+                        "<p>Export: " + d.exp + "</p>" +
+                        "<p>Import: " + d.imp + "</p>"
+                        ).transition().style("opacity", .9);
+                    })
+              //.on('mouseenter', this.onmouseover)
+              .on('mouseout', function(d) {
+                return tooltip.transition().style("opacity", 0);
+              })
+              .on('mousemove', function(d) {
+              tooltip.style("opacity", .9);
+              var wid = tooltip.style("width").replace("px", "");
+              return tooltip
+                .style("left", Math.min(window.innerWidth - wid - 20,
+                  Math.max(0, (d3.event.pageX - wid/2))) + "px")
+                .style("top", (d3.event.pageY + 40) + "px")
+                .style("width", wid + "px");
+            });
+
+          /* balance line */
+          svg.append("line")
+               .attr("x1", 0)
+               .attr("y1", y(0))
+               .attr("x2", x(55000000))
+               .attr("y2", y(55000000))
+               .attr("stroke-width", 1)
+               .attr("stroke", "red");
+              
+
+          var legend = svg.selectAll(".legend")
+              .data(color.domain())
+            .enter().append("g")
+              .attr("class", "legend")
+              .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+          legend.append("rect")
+              .attr("x", width - 18)
+              .attr("width", 18)
+              .attr("height", 18)
+              .style("fill", color);
+
+          // legend.append("text")
+          // .attr("x", width - 24)
+          // .attr("y", 9)
+          // .attr("dy", ".35em")
+          // .style("text-anchor", "end")
+          // .text(function(d) { console.log("d text: ", d);return d; });
+        }
+      }
+    }
+         
+  }])
   /* directive with watch, update and draw functions */
   .directive('comparisonTimeline', [function(){
     return {
@@ -976,15 +1180,40 @@ angular.module('ricardo.directives-addendum', [])
         scope.$watch("tableData", refresh, true);
         scope.$watch("currency", refresh);
 
-        scope.$watch("gbContinent", function(newValue, oldValue){
-          if(newValue !== oldValue){
-            chart.call(histogram.continents(newValue));
+        scope.$watch("grouped.selected", function(newValue, oldValue){
+            //console.log("oldValue", oldValue);
+          if (newValue !== oldValue) {
+            //console.log("newValue group", newValue.type.value);
+            chart.selectAll("text.legend").remove();
+            chart.selectAll("rect.bar").remove();
+            chart.call(histogram.continents(newValue.type.value));
+            //console.log("change group");
           }
-        });
-        scope.$watch("order", function(newValue, oldValue){
-          if(newValue !== oldValue){
-            chart.call(histogram.order(newValue))
-          }
+          // if(newValue.type.value !== oldValue.type.value){
+          //   chart.selectAll("text.legend").remove();
+          //   chart.selectAll("rect.bar").remove();
+          //   chart.call(histogram.continents(newValue.type.value));
+          // }
+        }, true);
+
+
+        scope.$watch("ordered.selected", function(newValue, oldValue){
+            //console.log("oldValue", oldValue);
+            if (newValue !== oldValue) {
+              //console.log("newValue order", newValue);
+              chart.selectAll("text.legend").remove();
+              chart.selectAll("rect.bar").remove();
+              chart.call(histogram.order(newValue.type.value));
+              //console.log("change");
+            }
+
+          // if(newValue !== oldValue){
+          //   console.log("oldValue", oldValue);
+          //   console.log("newValue", newValue);
+          //   chart.selectAll("text.legend").remove();
+          //   chart.selectAll("rect.bar").remove();
+          //   chart.call(histogram.order(newValue))
+          // }
         }, true);
 
       }
