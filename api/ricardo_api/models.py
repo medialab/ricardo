@@ -156,7 +156,30 @@ def get_flows_sources(reporting_ids,partner_ids,from_year,to_year):
                       """%('","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause)
                 )
 
-    return json.dumps({"sources":[_[0] for _ in cursor]},encoding="UTF8",indent=4)
+    return json.dumps({"sources":[_[0] for _ in cursor]},encoding="UTF8")
+
+def get_world_flows(from_year,to_year):
+    cursor = get_db().cursor()
+    from_year_clause = """ AND Yr>%s"""%from_year if from_year!="" else ""
+    to_year_clause = """ AND Yr<%s"""%to_year if to_year!="" else ""
+    print from_year_clause, to_year_clause
+    cursor.execute("""SELECT SUM(flow*Unit/rate), Yr
+                      FROM flow_joined
+                      where `Exp / Imp`="exp" 
+                      and `Reporting Entity_Original Name` NOT LIKE "world"
+                      %s
+                      GROUP BY Yr 
+                      """%(from_year_clause+to_year_clause)
+                )
+
+    json_response=[]
+    for (flow,year) in cursor:
+      json_response.append({
+      "year":year,
+      "exp":flow
+      })
+
+    return json.dumps(json_response,encoding="UTF8")
 
 
 def get_flows(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources):
@@ -175,7 +198,9 @@ def get_flows(reporting_ids,partner_ids,original_currency,from_year,to_year,with
         to_year_in_flow=max(_["year"] for _ in json_response["flows"])
         json_response["mirror_flows"]=flows_data(partner_ids,reporting_ids,original_currency,from_year_in_flow,to_year_in_flow,with_sources)
 
-    return json.dumps(json_response,encoding="UTF8",indent=4)
+    return json.dumps(json_response,encoding="UTF8")
+
+
 
 def get_continent_flows(continents,partner_ids,from_year,to_year,with_sources):
 
@@ -186,7 +211,7 @@ def get_continent_flows(continents,partner_ids,from_year,to_year,with_sources):
     partners = ric_entities_data(partner_ids) if len(partner_ids)>0 else []
     json_response["RICentities"]={"reportings":continents,"partners":partners}
 
-    return json.dumps(json_response,encoding="UTF8",indent=4)
+    return json.dumps(json_response,encoding="UTF8")
 
 def get_continent_flows_for_reporting(continents, reporting_ids, from_year, to_year, with_sources):
 
@@ -226,7 +251,7 @@ def get_mirror_entities(reporting_id):
             "central_state":central,
             "continent":continent
             })
-    return json.dumps(json_response,encoding="UTF8",indent=4)
+    return json.dumps(json_response,encoding="UTF8")
 
 def get_reporting_entities(types=[],to_partner_ids=[]):
 
@@ -246,7 +271,7 @@ def get_reporting_entities(types=[],to_partner_ids=[]):
 
         if len(types)==0:
             # nothing to add so return
-            return json.dumps(json_response,encoding="UTF8",indent=4)
+            return json.dumps(json_response,encoding="UTF8")
     else:
         json_response=[]
 
@@ -272,9 +297,9 @@ def get_reporting_entities(types=[],to_partner_ids=[]):
             "central_state":central,
             "continent":continent
             })
-    return json.dumps(json_response,encoding="UTF8",indent=4)
+    return json.dumps(json_response,encoding="UTF8")
 
 
 def get_RICentities():
-    return json.dumps(ric_entities_data(),encoding="UTF8",indent=4)
+    return json.dumps(ric_entities_data(),encoding="UTF8")
 

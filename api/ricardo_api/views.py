@@ -56,6 +56,21 @@ def continent_flows():
         abort(500)
     return Response(json_data, status=200, mimetype='application/json')
 
+@app.route('/world_flows')
+def world_flows():
+    flow_field = request.args.get('flow_field', '')
+    with_sources = request.args.get('with_sources', '0') == '1'
+    from_year = request.args.get('from', '')
+    to_year = request.args.get('to', '')
+    app.logger.info("TEST %s %s" % (from_year, to_year))
+    try:
+        json_data = models.get_world_flows(from_year, to_year)
+    except Exception as e:
+        app.logger.exception("exception occurs in flows")
+        abort(500)
+    return Response(json_data, status=200, mimetype='application/json')
+
+
 @app.route('/reporting_entities')
 def reporting_entities():
     type_filter = request.args.get('type_filter',None) #["countries","city","colonial_area","geographic_area"])
