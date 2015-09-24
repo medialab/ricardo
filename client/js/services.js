@@ -71,6 +71,21 @@ angular.module('ricardo.services', [])
 
        return deferred.promise;
      },
+     getWorldFlows : function(params){
+       var deferred = $q.defer();
+       var serviceUrl = '/world_flows'
+       $http({
+          method: 'GET',
+          url : BASE_API_URL + serviceUrl,
+          params : params
+        }).success(function(data){
+         deferred.resolve(data);
+       }).error(function(){
+         deferred.reject("An error occured while fetching data");
+       });
+
+       return deferred.promise;
+     },
      getFlowsResources : function(url){
        var deferred = $q.defer();
        $http.get(url).success(function(data){
