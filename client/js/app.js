@@ -44,17 +44,23 @@ config(['$routeProvider', function($routeProvider) {
     templateUrl: 'partials/world.html',
     controller: 'world',
     resolve: {
-      reportingColonialEntities : function (apiService) {
-        return apiService.getReportingEntities({'type_filter': 'colonial_area','to_partner_ids': "Worldbestguess"})
+      // reportingColonialEntities : function (apiService) {
+      //   return apiService.getReportingEntities({'type_filter': 'colonial_area','to_partner_ids': "Worldbestguess"})
+      // },
+      // reportingCountryEntities : function (apiService) {
+      //   return apiService.getReportingEntities({'type_filter': 'country','to_partner_ids': "Worldbestguess"})
+      // },
+      // reportingGeoEntities : function (apiService) {
+      //   return apiService.getReportingEntities({'type_filter': 'geographical_area','to_partner_ids': "Worldbestguess"})
+      // },
+      // reportingContinentEntities : function (apiService) {
+      //   return apiService.getReportingEntities({'type_filter': 'continent','to_partner_ids': "Worldbestguess"})
+      // },
+      reportingEntities : function (apiService) {
+        return apiService.getReportingEntities({'type_filter': 'country'})
       },
-      reportingCountryEntities : function (apiService) {
-        return apiService.getReportingEntities({'type_filter': 'country','to_partner_ids': "Worldbestguess"})
-      },
-      reportingGeoEntities : function (apiService) {
-        return apiService.getReportingEntities({'type_filter': 'geographical_area','to_partner_ids': "Worldbestguess"})
-      },
-      reportingContinentEntities : function (apiService) {
-        return apiService.getReportingEntities({'type_filter': 'continent','to_partner_ids': "Worldbestguess"})
+      reportingWorldFlows : function (apiService) {
+        return apiService.getWorldFlows()
       }
     }
   });
@@ -72,6 +78,11 @@ config(['$routeProvider', function($routeProvider) {
   .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
     cfpLoadingBarProvider.includeBar = false;
   }])
+  .config(function (uiSelectConfig) {
+    uiSelectConfig.theme = 'bootstrap';
+    uiSelectConfig.resetSearchInput = true;
+    uiSelectConfig.appendToBody = true;
+  });
 
 
 // Scroll spy for sticky brushing timeline
