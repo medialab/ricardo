@@ -1,5 +1,6 @@
-<div id="sticky-marker"></div>
-<div id="sticky-container">
+<!-- <div missing></div> -->
+<!-- <div id="sticky-marker"></div>
+<div id="sticky-container"> -->
 <div class="container">
   <div class="row">
     <div class="timeline-cont col-sm-12">
@@ -29,7 +30,7 @@
     </div>
   </div>
 </div>
-</div>
+<!-- </div> -->
 
   <div class="container">
     <div class="row" >
@@ -52,7 +53,10 @@
 <div class="container">
   <div class="row">
     <div class="col-md-6">
-      <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} by partners, {{selectedMinDate}} – {{selectedMaxDate}}, in {{actualCurrency}} <i class="fa fa-info-circle"></i></h3> 
+      <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} by partners, {{selectedMinDate}} – {{selectedMaxDate}}, in {{actualCurrency}} <i class="fa fa-info-circle"></i></h3>
+      <div class="legend-item">
+          Data expressed in <strong>pourcentage</strong>
+      </div> 
     </div>
     <div class="col-md-6 inline-select" style="float:right;">
         
@@ -166,10 +170,24 @@
 
   <div class="row">
     <div class="col-md-12"> 
-    <scatter-plot ng-data="scatterData"> <scatter-plot/>
-
+    <scatter-plot ng-data="scatterData" start-date="selectedMinDate" end-date="selectedMaxDate"> <scatter-plot/>
+    
     </div>
   </div>
+
+  <!-- <div>
+    <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf"></inline-select-year>
+  </div> -->
+  <div>
+    <span id="min-time">1787</span> 
+    <input type="range" name="points" min="1787" max="1938" step="1" value="0" id="slider-time" >
+    <span id="max-time">1938</span>
+  </div>
+
+<!--   <div>
+    <i class="fa fa-play" ng-click="play()"></i>
+    <button ng-click="play()">RUN</button>
+  </div> -->
 
 
   <div class="row">
