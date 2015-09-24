@@ -206,15 +206,22 @@
                        .attr("x1", x(new Date(d.year, 0, 1)))
                        .attr("y1", y(d[yValue]))
                        .attr("x2", x(new Date(d.year, 0, 1)))
-                       .attr("y2", 350)
+                       .attr("y2", 330)
                        .attr("stroke-width", 1)
                        .attr("stroke", "grey");
+                chart.append("text")
+                       .attr("class", "lineDate")
+                       .attr("x", x(new Date(d.year, 0, 1)) - 15)
+                       .attr("y", 348)
+                       .attr("font-size", "0.85em")
+                       .text(d.year);
 
               }
             }
 
           function mouseout(d) {
               chart.selectAll("line.lineDate").remove();
+              chart.selectAll("text.lineDate").remove();
               focus.attr("transform", "translate(-100,-100)");
             }     
       }); //end selection
