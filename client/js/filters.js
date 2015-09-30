@@ -8,4 +8,5 @@ angular.module('ricardo.filters', [])
       return String(text).replace(/\%VERSION\%/mg, version);
     }
   }])
+	
 

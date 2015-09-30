@@ -12,7 +12,9 @@
 
     function linechart(selection){
       selection.each(function(data){
-        
+        console.log("data in linechart", data);
+        // console.log("yvalue in linechart", yValue);
+
         var chart;
         var margin = {top: 20, right: 0, bottom: 30, left: 0},
             chartWidth = width - margin.left - margin.right,
@@ -139,7 +141,7 @@
                // .attr("d", function(d) { return line(d.values); })
           
         entities
-            .attr("d", function(d) { return line(d.values); })
+            .attr("d", function(d) {  return line(d.values); })
             .attr("stroke", function(d,i) { return d["color"]; })
             .attr("fill", "none")
 

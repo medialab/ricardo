@@ -53,14 +53,14 @@
 <div class="container">
   <div class="row">
     <div class="col-md-6">
-      <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} by partners, {{selectedMinDate}} – {{selectedMaxDate}}, in {{actualCurrency}} <i class="fa fa-info-circle"></i></h3>
+      <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} by partners, {{selectedMinDate}} – {{selectedMaxDate}} <i class="fa fa-info-circle"></i></h3>
       <div class="legend-item">
-          Data expressed in <strong>pourcentage</strong>
+          Average share in <strong>pourcentage</strong> | Trade balance in <strong>sterling</strong>
       </div> 
     </div>
     <div class="col-md-6 inline-select" style="float:right;">
         
-        <ui-select class="filterSelection" ng-model="filtered.selected" theme="bootstrap">
+        <ui-select class="filterSelection" ng-model="filtered.selected" theme="bootstrap" style="float:right;">
         <match placeholder="Filter by...">{{$select.selected.name.value}}</match>
         <choices repeat="item in filters | filter: $select.search">
           <div ng-bind-html="item.name.value | highlight: $select.search"></div>
@@ -68,7 +68,7 @@
         </ui-select>
 
         
-        <ui-select class="filterSelection" ng-model="ordered.selected" theme="bootstrap">
+        <ui-select class="filterSelection" ng-model="ordered.selected" theme="bootstrap" style="float:right;">
         <match placeholder="Order by...">{{$select.selected.name.value}}</match>
         <choices repeat="item in orders | filter: $select.search">
           <div ng-bind-html="item.name.value | highlight: $select.search"></div>
@@ -76,7 +76,7 @@
         </ui-select>
 
         
-        <ui-select class="filterSelection" ng-model="grouped.selected" theme="bootstrap">
+        <ui-select class="filterSelection" ng-model="grouped.selected" theme="bootstrap" style="float:right;">
         <match placeholder="Group by...">{{$select.selected.name.value}}</match>
         <choices repeat="item in groups | filter: $select.search">
           <div ng-bind-html="item.name.value | highlight: $select.search"></div>
@@ -179,9 +179,9 @@
     <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf"></inline-select-year>
   </div> -->
   <div>
-    <span id="min-time">1787</span> 
+    <span id="min-time" style="float:left;">{{selectedMinDate}}</span>
+    <span id="max-time" style="float:right;">{{selectedMaxDate}}</span>
     <input type="range" name="points" min="1787" max="1938" step="1" value="0" id="slider-time" >
-    <span id="max-time">1938</span>
   </div>
 
 <!--   <div>

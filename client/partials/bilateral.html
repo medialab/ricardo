@@ -49,17 +49,26 @@
     <div class="col-sm-12">
       <br>
       <br>
-
-      <h3>Discranpencies in mirror flows</h3>
+      <h3>Discrepancies in mirror flows</h3>
       <h4>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
       <div class="legend">
         <div class="legend-item">
+           <!-- Imports & exports informations coming from sources with the country's point of view.
+           <br> -->
+           <strong>A</strong> : {{entities.sourceEntity.selected.RICname}} | <strong>B</strong> : {{entities.targetEntity.selected.RICname}}
+           <br>
+          <strong>ImpA</strong> = country A imports from country B as reported by country A | <strong>ImpB</strong> = country B imports from country A as reported by country B
+          <br>
+          <strong>ExpA</strong> = country A exports to country B as reported by country A   | <strong>ExpB</strong> = country B exports to country A as reported by country B
+      </div>
+      <div class="legend">
+        <div class="legend-item">
           <div class="line diff-import"></div>
-          ( {{entities.sourceEntity.selected.RICname}} imports - {{entities.targetEntity.selected.RICname}} exports ) / {{entities.targetEntity.selected.RICname}} exports
+          <strong>(ImpA - ExpB) / ExpB</strong>
         </div>
         <div class="legend-item">
           <div class="line diff-export"></div>
-          ( {{entities.targetEntity.selected.RICname}} imports - {{entities.sourceEntity.selected.RICname}} exports ) / {{entities.sourceEntity.selected.RICname}} exports
+          <strong>(ImpB - ExpA) / ExpA</strong>
         </div>
       </div>
       <comparison-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></comparison-timeline>

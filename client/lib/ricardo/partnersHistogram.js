@@ -198,7 +198,7 @@
 
           histo.append("text")
             .attr("class", "legend")
-            .attr("x", 140)
+            .attr("x", 142)
             .attr("y", -22)
             .attr("text-anchor", "end")
             .attr("font-size", "0.8em")
@@ -207,7 +207,7 @@
           //if (order !== "name")
           histo.append("text")
             .attr("class", "legend")
-            .attr("x", 170)
+            .attr("x", 172)
             .attr("y", -22)
             .attr("text-anchor", "end")
             .attr("font-size", "0.8em")

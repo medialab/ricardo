@@ -427,7 +427,7 @@ angular.module('ricardo.directives-addendum', [])
           , lineExp
           
         function draw(data){
-          document.querySelector('#world-timeline-container').innerHTML = null;
+                   document.querySelector('#world-timeline-container').innerHTML = null;
 
           var margin = {top: 10, right: 0, bottom: 30, left: 0},
               width = document.querySelector('#world-timeline-container').offsetWidth - margin.left - margin.right,
@@ -470,7 +470,19 @@ angular.module('ricardo.directives-addendum', [])
               })
 
            x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
-           y.domain([0, d3.max( data.filter(function(d){  return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) { return Math.max( d.exp ); })]);
+           y.domain([0, d3.max( data.filter(function(d){  return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) { return Math.max( d.imp, d.exp ); })]);
+
+          /* draw areas & lines */
+          areaImp = d3.svg.area()
+              .defined(function(d) { return d.imp !== null; })
+              .x(function(d) { return x(d.date); })
+              .y0(height)
+              .y1(function(d) { return y(d.imp); });
+
+          lineImp = d3.svg.line()
+              .defined(function(d) { return d.imp !== null; })
+              .x(function(d) { return x(d.date); })
+              .y(function(d) { return y(d.imp); });
 
           areaExp = d3.svg.area()
               .defined(function(d) { return d.exp !== null; })
@@ -500,6 +512,16 @@ angular.module('ricardo.directives-addendum', [])
           svg.select(".y.axis")
               //.duration(750)
               .call(yAxis);
+
+          svg.append("path")
+              .datum(data)
+              .attr("class", "area-imp")
+              .attr("d", areaImp);
+
+          svg.append("path")
+              .datum(data)
+              .attr("class", "line-imp")
+              .attr("d", lineImp)
           
           svg.append("path")
               .datum(data)
@@ -510,6 +532,7 @@ angular.module('ricardo.directives-addendum', [])
               .datum(data)
               .attr("class", "line-exp")
               .attr("d", lineExp)
+
 
           /* add axis to svg */
           var gy = svg.select("g.y.axis"),
@@ -554,7 +577,7 @@ angular.module('ricardo.directives-addendum', [])
           var ImpExp = [];
           data.forEach(function (data) {
             if (data.year >= scope.startDate && data.year <= scope.endDate) {
-              //ImpExp.push({points: data.imp, year: data.year});
+              ImpExp.push({points: data.imp, year: data.year});
               ImpExp.push({points: data.exp, year: data.year});
             }
           })
@@ -703,8 +726,6 @@ angular.module('ricardo.directives-addendum', [])
           svg.selectAll("axis.label").remove();
           svg.selectAll("axis.tick").remove();
           var current = parseInt(this.value);
-          console.log("data", scope.ngData);
-          console.log("current", current);
           scatterPlot(scope.ngData, current, svg, margin, width, height);
         });
 
@@ -717,16 +738,16 @@ angular.module('ricardo.directives-addendum', [])
             //console.log("d : ", d);
             if (d.year === date && d.partner_id !== "Worldsumpartners" && d.partner_id !== "Worldbestguess" && d.partner_id !== "Worldasreported" && d.partner_id !== "Worldasreported2") {
               tab.push(d.exp);
-              console.log("d pays", d.partner_id, "d exp : ", d.exp);
+              //console.log("d pays", d.partner_id, "d exp : ", d.exp);
               tab.push(d.imp);
-              console.log("d pays", d.partner_id, "d imp : ", d.imp);
+              //console.log("d pays", d.partner_id, "d imp : ", d.imp);
               // console.log("d.year : ", d.year);
               // console.log("date: ", date);  
             }
           });
-          console.log("tab : ", tab);
+          //console.log("tab : ", tab);
           var max = d3.max(tab);
-          console.log("max : ", max);
+          //console.log("max : ", max);
 
 
           var x = d3.scale.linear()
@@ -809,13 +830,7 @@ angular.module('ricardo.directives-addendum', [])
             data.forEach(function (data) {
                     if (data.year === date && data.partner_id !== "Worldsumpartners" && data.partner_id !== "Worldbestguess" && data.partner_id !== "Worldasreported") {
                       var number = (data.exp-data.imp);
-                      var r;
-                      if (number < 0)
-                        r = 2;
-                      else if (r > 0)
-                        r = 6;
-                      else
-                        r = 4;
+                      var r = 8;
 
                       //number = Math.abs(number);
                       tab.push({imp: data.imp, exp: data.exp, reporting_id: data.reporting_id, partner_id:data.partner_id, year:data.year, balance: r });
@@ -950,8 +965,8 @@ angular.module('ricardo.directives-addendum', [])
               .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            x.domain(data.map(function(d) { console.log("d key", d); return d.key; }));
-            y.domain([0, d3.max(data, function(d) { console.log("d values", d.values.length); return d.values.length; })]);
+            x.domain(data.map(function(d) { return d.key; }));
+            y.domain([0, d3.max(data, function(d) { return d.values.length; })]);
 
             svg.append("g")
                 .attr("class", "x axis")
@@ -1754,19 +1769,31 @@ angular.module('ricardo.directives-addendum', [])
 
         scope.$watch("linechartData", function(newValue, oldValue){
           if(newValue !== oldValue){
+            console.log("directive linechartWorld", newValue);
           
             newValue.forEach(function(e){
+              //console.log("e color", e);
                 e.color=scope.reporting.filter(function(r){return r.RICid===e.key})[0]["color"]})
 
-            chart.datum(newValue).call(linechart)
+           //console.log("newValue[0].values[0].value", newValue[0].values[0].value);
+
+           //var yValueSelect = newValue[0].values[0].exp ? "exp" : "value";
+           var yValueSelect = newValue[0].type;
+
+            console.log("yValueSelect", yValueSelect);
+            chart.datum(newValue).call(linechart.yValue(yValueSelect));
           }
+           if(newValue === oldValue) {
+            //console.log("noobby");
+           }
         })
 
-        scope.$watch("yValue", function(newValue, oldValue){
-          if(newValue !== oldValue){
-            chart.call(linechart.yValue(newValue))
-          }
-        })
+        // scope.$watch("yValue", function(newValue, oldValue){
+        //   console.log("yvalue in linechart", newValue);
+        //   if(newValue !== oldValue){
+        //     chart.call(linechart.yValue(newValue))
+        //   }
+        // })
 
       }
     }

@@ -52,6 +52,7 @@ angular.module('ricardo.directives', [])
 
         scope.$watch("missingData", function(newValue, oldValue){
           if(newValue != oldValue){
+            console.log("data missing");
             chart.datum(newValue).call(missing)
           }
         })
