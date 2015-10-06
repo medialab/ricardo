@@ -578,7 +578,6 @@ angular.module('ricardo.controllers', [])
       }
     })
 
-
     $scope.$watch("filtered.selected", function (newValue, oldValue){
       if(newValue !== oldValue){
         if(newValue.type.value === "all")
@@ -662,6 +661,7 @@ angular.module('ricardo.controllers', [])
 
     /* Display and sort table data */
     //$scope.tableData = [];
+    $scope.loading = false;
     $scope.totalServerItems = 0;
     $scope.pagingOptions = {
         pageSizes: [50],
@@ -678,8 +678,7 @@ angular.module('ricardo.controllers', [])
           } else {
             return a[field]> b[field]? -1 : 1;
           }
-        }) 
-        $scope.loading = false; 
+        })  
       }
     }
 
@@ -687,6 +686,7 @@ angular.module('ricardo.controllers', [])
         var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
         $scope.tablePagedData = pagedData;
         $scope.totalServerItems = data.length;
+        $scope.loading = false;
         if (!$scope.$$phase) {
             $scope.$apply();
         }
@@ -728,9 +728,10 @@ angular.module('ricardo.controllers', [])
     $scope.$watch('gridOptions.sortInfo', function (newVal, oldVal) {
         if ($scope.tableData) {
           $scope.loading = true;
-          $timeout(function () {sortData($scope.tableData, newVal.fields[0], newVal.directions[0]);}, 0);
+          sortData($scope.tableData, newVal.fields[0], newVal.directions[0]);
           $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage); 
           $scope.pagingOptions.currentPage = $scope.pagingOptions.currentPage;
+          
         }
     }, true);
 

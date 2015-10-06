@@ -36,7 +36,6 @@ config(['$routeProvider', function($routeProvider) {
     resolve: {
       reportingEntities : function (apiService) {
         return apiService.getReportingEntities({'type_filter': 'country'})
-        //return apiService.getReportingEntities()
       }
     }
   });
@@ -61,15 +60,6 @@ config(['$routeProvider', function($routeProvider) {
       },
       reportingWorldFlows : function (apiService) {
         return apiService.getWorldFlows()
-      }
-    }
-  });
-  $routeProvider.when('/continent', {
-    templateUrl: 'partials/continent.html',
-    controller: 'continent',
-    resolve: {
-      reportingEntities : function (apiService) {
-        return apiService.getReportingEntities({'type_filter': 'continent'})
       }
     }
   });

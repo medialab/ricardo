@@ -396,6 +396,8 @@ h4{
   background-color: #FAFAFA;
 }
 
+@media (min-height: 800px) {
+
 .sticky-container-fixed{
   padding-top: 50px;
   background-color: #FAFAFA;
@@ -412,6 +414,8 @@ h4{
 
 .sticky-placeholder{
   height: 150px;
+}
+
 }
 
 #alt-title{
@@ -506,8 +510,8 @@ h4{
   works properly.
 */
 .grid-overlay-msg .msg span {
-  display: table-cell;
   vertical-align: middle;
+  z-index: 10;
 }
 
 .table-cont{

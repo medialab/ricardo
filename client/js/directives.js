@@ -41,6 +41,7 @@ angular.module('ricardo.directives', [])
     return {
       restrict: 'A',
       replace: false,
+      templateUrl: 'partials/modal.html',
       link: function(scope, element, attrs) {
 
           var missing = ricardo.missing()

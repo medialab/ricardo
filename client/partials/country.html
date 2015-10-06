@@ -1,6 +1,6 @@
-<!-- <div missing></div> -->
-<!-- <div id="sticky-marker"></div>
-<div id="sticky-container"> -->
+
+<div id="sticky-marker"></div>
+<div id="sticky-container">
 <div class="container">
   <div class="row">
     <div class="timeline-cont col-sm-12">
@@ -24,18 +24,14 @@
         <i class="fa fa-info-circle"></i>
 
       </div>
-      <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate" ></dual-timeline>
-
-      
+      <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate" ></dual-timeline>   
     </div>
   </div>
 </div>
-<!-- </div> -->
-
+</div>
   <div class="container">
     <div class="row" >
       <div id="countryBrushing" class="col-sm-12">
-        <!-- <country-title id="alt-title" style="display:none;"></country-title> -->
         <brushing-timeline
           ng-data="timelineData"
           start-date="selectedMinDate"
@@ -82,23 +78,17 @@
           <div ng-bind-html="item.name.value | highlight: $select.search"></div>
         </choices>
         </ui-select>
-
-        <!-- <button class="btn btn-default btn-xs" ng-click="clear()">Clear ng-model</button> -->
           
     </div>
   </div>
 
   <div id="select-doubleChart">
     <div class="row">
-<!--       <div class="col-md-3">
-        <h3 class="subtitle">choose a reporting country:</h3>
-      </div> -->
       <div id="partners-histogram-container" class="col-sm-12">
         <div id="partners-histogram-container" class="partners-histogram" partners-histogram></div>
       </div>
     </div>
   </div>
-<!-- <div class="container"> -->
   <div class="row">
     <div class="col-sm-9">
       <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} with 
@@ -167,29 +157,6 @@
     
   </div>
 </div>
-
-  <div class="row">
-    <div class="col-md-12"> 
-    <scatter-plot ng-data="scatterData" start-date="selectedMinDate" end-date="selectedMaxDate"> <scatter-plot/>
-    
-    </div>
-  </div>
-
-  <!-- <div>
-    <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf"></inline-select-year>
-  </div> -->
-  <div>
-    <span id="min-time" style="float:left;">{{selectedMinDate}}</span>
-    <span id="max-time" style="float:right;">{{selectedMaxDate}}</span>
-    <input type="range" name="points" min="1787" max="1938" step="1" value="0" id="slider-time" >
-  </div>
-
-<!--   <div>
-    <i class="fa fa-play" ng-click="play()"></i>
-    <button ng-click="play()">RUN</button>
-  </div> -->
-
-
   <div class="row">
     <div class="col-sm-12 text-center shdt">
       <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
@@ -203,7 +170,7 @@
   <div ng-if="viewTable" class="row table-cont">
     <div class="col-sm-12 grid-cont">
       <div class="gridStyle" ng-grid="gridOptions" >
-        <div class="grid-overlay-msg" ng-hide="gridOptions.data.length && !loading">
+        <div class="grid-overlay-msg" ng-show="!gridOptions.data.length && !loading">
           <div class="msg">
             <span>Loading Data...
             <i class="fa fa-spinner fa-spin"></i></span>

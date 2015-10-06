@@ -35,8 +35,10 @@
       return (res ? res : 0) + "&nbsp;" + currency.replace(/\s+/, '&nbsp;');
     }
     function formatPercent(val){
+      console.log("val", val);
       var res = parseInt(val);     
       if (!res) res = Math.round(parseFloat(val * 10)) / 10;
+      console.log("res", res);
        return (res ? res : "0.0") + "%";
     }
 
@@ -99,10 +101,13 @@
         })
 
         partners.sort(function(a,b){
+          console.log("sort");
           if (order === 'name') 
             return d3.ascending(a.key, b.key);
-          else return d3.descending(a["avg_"+order], b["avg_"+order]);
+          else return d3.descending(a["avg_" + order], b["avg_" + order]);
         });
+
+
         height = (partners.length + 1) * (barMaxHeigth + barGap);
 
         var chart;
@@ -153,17 +158,12 @@
             .data(p.years)
             .enter().append("rect")
             .attr("class", "bar")
-            .attr("x", function(d){              
-              return x(d.key) + (yearWidth - barWidth)/2 })
-            .attr("y", function(d){
-              return (d.balance >= 0 ? -y(Math.abs(d.balance)) : 0);
-            })
+            .attr("x", function(d){ return x(d.key) + (yearWidth - barWidth)/2 })
+            .attr("y", function(d){ return (d.balance >= 0 ? -y(Math.abs(d.balance)) : 0);})
             .attr("width", barWidth)
             .attr("height", function(d) { return (d.balance ? Math.max(barMinHeigth, y(Math.abs(d.balance))) : 0); })
             .attr("fill", function(d){ return barColors[+(d.balance >=0)] })
             .attr("opacity", function(d){ return (d.imp !== null && d.exp !== null ? 1 : 0.3) });
-
-          
 
           histo.selectAll(".tooltipBar")
             .data(p.years)
@@ -212,6 +212,15 @@
             .attr("text-anchor", "end")
             .attr("font-size", "0.8em")
             .text(function(d){ return formatPercent(p["avg_" + order]) })
+
+          // if (order === "name")
+          // histo.append("text")
+          //   .attr("class", "legend")
+          //   .attr("x", 172)
+          //   .attr("y", -22)
+          //   .attr("text-anchor", "end")
+          //   .attr("font-size", "0.8em")
+          //   .text(function(d){ return formatPercent(p["avg_" + order]) })
         });
       });
 
