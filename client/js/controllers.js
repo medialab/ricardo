@@ -938,7 +938,7 @@ angular.module('ricardo.controllers', [])
                     
                     yearSelected.forEach( function (d) {
                       result.flows.forEach( function (e) {
-                        if (d.year === e.year) {
+                        if (d.year === e.year && d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate) {
                           d.exp = e.exp; 
                           d.imp = e.imp;
                         }
@@ -990,7 +990,7 @@ angular.module('ricardo.controllers', [])
                     
                     yearSelected.forEach( function (d) {
                       result.flows.forEach( function (e) {
-                        if (d.year === e.year) {
+                        if (d.year === e.year && d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate) {
                           d.exp = e.exp; 
                           d.imp = e.imp;
                         }
@@ -1084,6 +1084,7 @@ angular.module('ricardo.controllers', [])
 
     $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {
       if (newVal !== oldVal && newVal[0] != newVal[1]) {
+        initLinechart($scope.reporting, $scope.yValue, $scope.convertion);
         updateDateRange()
       }
     })
