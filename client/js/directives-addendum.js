@@ -328,8 +328,7 @@ angular.module('ricardo.directives-addendum', [])
                               .attr("class", "voronoi")
                               .attr("fill", "none")
                               .attr("pointer-events", "all")
-                              //.attr("stroke", "black")
-                }
+            }
 
             var voronoiGraph = voronoiGroup.selectAll("path")
                 .data(voronoi(data.filter(function(d){ return d[yValue] !== null})))
@@ -371,15 +370,21 @@ angular.module('ricardo.directives-addendum', [])
                        .attr("x1", x(new Date(d.year, 0, 1)))
                        .attr("y1", y(d[yValue]))
                        .attr("x2", x(new Date(d.year, 0, 1)))
-                       .attr("y2", 140)
+                       .attr("y2", 120)
                        .attr("stroke-width", 1)
                        .attr("stroke", "grey");
-
-                        }
+                  svg.append("text")
+                       .attr("class", "lineDate")
+                       .attr("x", x(new Date(d.year, 0, 1)) - 15)
+                       .attr("y", 138)
+                       .attr("font-size", "0.85em")
+                       .text(d.year);
+                }
               }
 
             function mouseout(d) {
                 svg.selectAll("line.lineDate").remove();
+                svg.selectAll("text.lineDate").remove();
                 focus.attr("transform", "translate(-100,-100)");
               }
           }
@@ -642,15 +647,22 @@ angular.module('ricardo.directives-addendum', [])
                        .attr("x1", x(new Date(d.year, 0, 1)))
                        .attr("y1", y(d[yValue]))
                        .attr("x2", x(new Date(d.year, 0, 1)))
-                       .attr("y2", 140)
+                       .attr("y2", 120)
                        .attr("stroke-width", 1)
                        .attr("stroke", "grey");
+                  svg.append("text")
+                       .attr("class", "lineDate")
+                       .attr("x", x(new Date(d.year, 0, 1)) - 15)
+                       .attr("y", 138)
+                       .attr("font-size", "0.85em")
+                       .text(d.year);
 
-                        }
+                }
               }
 
             function mouseout(d) {
                 svg.selectAll("line.lineDate").remove();
+                svg.selectAll("text.lineDate").remove();
                 focus.attr("transform", "translate(-100,-100)");
               }
           }
@@ -988,7 +1000,7 @@ angular.module('ricardo.directives-addendum', [])
 
           var margin = {top: 6, right: 0, bottom: 6, left: 0},
               width = document.querySelector('#brushing-timeline-container').offsetWidth - margin.left - margin.right,
-              svgHeight = scope.mirrorLines ? 140 : 90,
+              svgHeight = scope.mirrorLines ? 140 : 70,
               height = 20,
               hOffset = svgHeight - height - margin.bottom - margin.top,
               interline = 8,
@@ -1006,30 +1018,6 @@ angular.module('ricardo.directives-addendum', [])
           var xAxis = d3.svg.axis()
               .scale(x)
               .orient("bottom");
-
-          /* little dual time line */
-
-          // var areaImp = d3.svg.area()
-          //     .defined(function(d) { return d.imp !== null; })
-          //     .x(function(d) { return x(d.date); })
-          //     .y0( hOffset + height )
-          //     .y1(function(d) { return hOffset + y(d.imp); });
-
-          // var lineImp = d3.svg.line()
-          //     .defined(function(d) { return d.imp !== null; })
-          //     .x(function(d) { return x(d.date); })
-          //     .y(function(d) { return hOffset + y(d.imp); });
-
-          // var areaExp = d3.svg.area()
-          //     .defined(function(d) { return d.exp !== null; })
-          //     .x(function(d) { return x(d.date); })
-          //     .y0( hOffset + height )
-          //     .y1(function(d) { return hOffset + y(d.exp); });
-
-          // var lineExp = d3.svg.area()
-          //     .defined(function(d) { return d.exp !== null; })
-          //     .x(function(d) { return x(d.date); })
-          //     .y(function(d) { return hOffset + y(d.exp); });
 
           /* avaible data */
 
@@ -1066,32 +1054,13 @@ angular.module('ricardo.directives-addendum', [])
           x.domain(d3.extent( data, function(d) { return d.date; }));
           y.domain([0, d3.max( data, function(d) { return Math.max( d.imp, d.exp ); })]);
 
-          // little dual time line
-          // svg.append("path")
-          //     .datum(data)
-          //     .attr("class", "area-imp")
-          //     .attr("d", areaImp)
-
-          // svg.append("path")
-          //     .datum(data)
-          //     .attr("class", "line-imp")
-          //     .attr("d", lineImp)
-          
-          // svg.append("path")
-          //     .datum(data)
-          //     .attr("class", "area-exp")
-          //     .attr("d", areaExp)
-
-          // svg.append("path")
-          //     .datum(data)
-          //     .attr("class", "line-exp")
-          //     .attr("d", lineExp)
-
           // baselines
+
+          var entityDataAvaible = scope.sourceCountry ? scope.sourceCountry : "World";
           
           svg.append("text")
               .attr("class", "baselineLabel")
-              .text("Available data reported by " + scope.sourceCountry)
+              .text("Available data reported by " + entityDataAvaible)
               .attr("x", 0)
               .attr("y", baselineHeight_1on2 - interline / 2 - 8)
 
@@ -1183,8 +1152,6 @@ angular.module('ricardo.directives-addendum', [])
 
           // Brush
 
-          // var dispatch = d3.dispatch("brushed", "brushing")
-
           brush = d3.svg.brush()
             .x(x)
             .extent([new Date(scope.startDate), new Date(scope.endDate)])
@@ -1239,13 +1206,6 @@ angular.module('ricardo.directives-addendum', [])
               .call(brush.event);
           }
 
-          // dispatch.on("brushing", function(d){
-          //   // Currently wo do nothing here (no live update)
-          // })
-          // .on("brushed", function(d){
-          //   // Currently wo do nothing here either
-          // })
-
           function applyBrush(){
             scope.startDate = (brush.extent()[0]).getFullYear()
             scope.endDate = (brush.extent()[1]).getFullYear()
@@ -1280,6 +1240,7 @@ angular.module('ricardo.directives-addendum', [])
 
         var refresh = function(newValue, oldValue){
           if(newValue !== oldValue){
+            console.log("newValue refresh", newValue);
             chart.selectAll("text.legend").remove();
             chart.selectAll("rect.bar").remove();
             chart.datum(scope.tableData).call(histogram.RICentities(scope.RICentities));
@@ -1287,43 +1248,37 @@ angular.module('ricardo.directives-addendum', [])
         }
 
         scope.$watch("tableData", refresh, true);
-        scope.$watch("currency", refresh);
+
+        //scope.$watch("currency", refresh);
 
         scope.$watch("grouped.selected", function(newValue, oldValue){
-            //console.log("oldValue", oldValue);
           if (newValue !== oldValue) {
-            //console.log("newValue group", newValue.type.value);
+            console.log("ici group");
             chart.selectAll("text.legend").remove();
             chart.selectAll("rect.bar").remove();
             chart.call(histogram.continents(newValue.type.value));
-            //console.log("change group");
           }
-          // if(newValue.type.value !== oldValue.type.value){
-          //   chart.selectAll("text.legend").remove();
-          //   chart.selectAll("rect.bar").remove();
-          //   chart.call(histogram.continents(newValue.type.value));
-          // }
         }, true);
 
-
         scope.$watch("ordered.selected", function(newValue, oldValue){
-            //console.log("oldValue", oldValue);
             if (newValue !== oldValue) {
-              //console.log("newValue order", newValue);
+              console.log("newValue order", newValue);
               chart.selectAll("text.legend").remove();
               chart.selectAll("rect.bar").remove();
               chart.call(histogram.order(newValue.type.value));
-              //console.log("change");
             }
-
-          // if(newValue !== oldValue){
-          //   console.log("oldValue", oldValue);
-          //   console.log("newValue", newValue);
-          //   chart.selectAll("text.legend").remove();
-          //   chart.selectAll("rect.bar").remove();
-          //   chart.call(histogram.order(newValue))
-          // }
         }, true);
+
+        // scope.$watch("filtered.selected", function(newValue, oldValue){
+        //     if (newValue !== oldValue) {
+        //       console.log("newValue filter", newValue);
+        //       chart.selectAll("text.legend").remove();
+        //       chart.selectAll("rect.bar").remove();
+        //       //chart.call(histogram.filter(newValue.type.value));
+        //     }
+        // }, true);
+
+
 
       }
     }
@@ -1340,39 +1295,35 @@ angular.module('ricardo.directives-addendum', [])
             //.width(element.width())
             .height(400)
 
-
           var chart = d3.select(element[0])
 
-        scope.$watch("linechartData", function(newValue, oldValue){
-          if(newValue !== oldValue){
-            console.log("directive linechartWorld", newValue);
-          
-            newValue.forEach(function(e){
-              //console.log("e color", e);
-                e.color=scope.reporting.filter(function(r){return r.RICid===e.key})[0]["color"]})
+          scope.$watch("linechartData", function(newValue, oldValue){
+            if(newValue !== oldValue && newValue.length > 0){         
+               newValue.forEach(function (e) {
+              if (e.color !== undefined)
+                ;
+              else
+                e.color=scope.reporting.filter(function(r){return r.RICid===e.key})[0]["color"]
+            })
+              
+              var yValueSterling;
+              console.log("newValue", newValue);
 
-           //console.log("newValue[0].values[0].value", newValue[0].values[0].value);
-           if (newValue[0].values[0]) {
-              var yValueSterling = newValue[0].values[0].exp ? "exp" : "imp";
-           }
+              if (newValue.length > 0) {
+                if (newValue[0].values[0]) {
+                  yValueSterling = newValue[0].values[0].exp ? "exp" : "imp";
+                }
+              }           
+              var yValueSelect = newValue[0].type ? newValue[0].type : yValueSterling;
+              chart.datum(newValue).call(linechart.yValue(yValueSelect));
+            }
+          })
 
-
-           var yValueSelect = newValue[0].type ? newValue[0].type : yValueSterling;
-
-            console.log("yValueSelect", yValueSelect);
-            chart.datum(newValue).call(linechart.yValue(yValueSelect));
-          }
-           if(newValue === oldValue) {
-            //console.log("noobby");
-           }
-        })
-
-        scope.$watch("yValue", function(newValue, oldValue){
-          console.log("yvalue in linechart", newValue);
-          if(newValue !== oldValue){
-            chart.call(linechart.yValue(newValue))
-          }
-        })
+          scope.$watch("yValue", function(newValue, oldValue){
+            if(newValue !== oldValue){
+              chart.call(linechart.yValue(newValue))
+            }
+          })
 
       }
     }

@@ -95,13 +95,6 @@
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
       </ui-select>
-
-      <ui-select class="selectPartners" ng-model="entities.sourceWorldEntity.selected" theme="bootstrap">
-        <match placeholder="World aggregate...">{{$select.selected.RICname}}</match>
-        <choices repeat="item in reportingWorldEntities | filter: $select.search">
-          <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-        </choices>
-      </ui-select>
     </div>
 
   <div class="row">

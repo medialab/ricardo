@@ -18,6 +18,7 @@
         barColors = ["#663333", "#cc6666"],
         RICentities,
         order = "tot",
+        filter = "all",
         continents = false,
         currency = "sterling pound"
         sum = 0;
@@ -35,10 +36,8 @@
       return (res ? res : 0) + "&nbsp;" + currency.replace(/\s+/, '&nbsp;');
     }
     function formatPercent(val){
-      console.log("val", val);
       var res = parseInt(val);     
       if (!res) res = Math.round(parseFloat(val * 10)) / 10;
-      console.log("res", res);
        return (res ? res : "0.0") + "%";
     }
 
@@ -61,6 +60,7 @@
 
     function partnersHistogram(selection){
       selection.each(function(data){
+      console.log("data", data);
         data = data.filter(function(d){
           return !/^World/.test(d.partner_id) && (!continents || d.continent);
         })
@@ -101,7 +101,6 @@
         })
 
         partners.sort(function(a,b){
-          console.log("sort");
           if (order === 'name') 
             return d3.ascending(a.key, b.key);
           else return d3.descending(a["avg_" + order], b["avg_" + order]);
@@ -124,11 +123,12 @@
         var x0, y0,
             years = Object.keys(indexYears),
             limits = d3.extent(years),
-            maxWidth = yearWidth * (limits[1]-limits[0]+1), //
-            x = d3.scale.linear()
+            maxWidth = yearWidth * (limits[1]-limits[0]+1);
+            years.pop();
+          var x = d3.scale.linear()
               .domain(d3.extent(years))
               .range([0, width]), // witdh replace max width 
-            y = d3.scale.linear()
+              y = d3.scale.linear()
               .range([0, barMaxHeigth/2]);
 
         partners.forEach(function(p, i){
@@ -165,19 +165,27 @@
             .attr("fill", function(d){ return barColors[+(d.balance >=0)] })
             .attr("opacity", function(d){ return (d.imp !== null && d.exp !== null ? 1 : 0.3) });
 
+          var orderName;
+          if (order === "tot")
+            orderName = "total";
+          else if (order === "imp")
+            orderName = "imports";
+          else
+            orderName = "exports";
+
           histo.selectAll(".tooltipBar")
             .data(p.years)
             .enter().append("rect")
             .attr("class", "bar")
             .attr("x", function(d){ return x(d.key) })
-            .attr("y", -barMaxHeigth/2)
+            .attr("y", -barMaxHeigth/2 )
             .attr("width", yearWidth)
             .attr("height", barMaxHeigth)
             .attr("opacity", 0)
             .on('mouseover', function(d) {
               return tooltip.html(
                 "<h3>"+ name + " in " + d.key + "</h3>" +
-                "<p>Relative balance: " + formatPercent(d.balance*100) + "</p>" +
+                "<p>Average : " + formatPercent(d.balance*100) + " on " + orderName + "</p>" +
                 "<p>Export: " + formatAmount(d, "exp") + "</p>" +
                 "<p>Import: " + formatAmount(d, "imp") + "</p>"
                 ).transition().style("opacity", .9);
@@ -196,31 +204,36 @@
                 .style("width", wid + "px");
             });
 
-          histo.append("text")
-            .attr("class", "legend")
-            .attr("x", 142)
-            .attr("y", -22)
-            .attr("text-anchor", "end")
-            .attr("font-size", "0.8em")
-            .text(function(d){ return shorten(name) })
+          
 
-          //if (order !== "name")
-          histo.append("text")
-            .attr("class", "legend")
-            .attr("x", 172)
-            .attr("y", -22)
-            .attr("text-anchor", "end")
-            .attr("font-size", "0.8em")
-            .text(function(d){ return formatPercent(p["avg_" + order]) })
 
-          // if (order === "name")
-          // histo.append("text")
-          //   .attr("class", "legend")
-          //   .attr("x", 172)
-          //   .attr("y", -22)
-          //   .attr("text-anchor", "end")
-          //   .attr("font-size", "0.8em")
-          //   .text(function(d){ return formatPercent(p["avg_" + order]) })
+          if (order !== "name") {
+            histo.append("text")
+              .attr("class", "legend")
+              .attr("x", 30)
+              .attr("y", -22)
+              .attr("text-anchor", "end")
+              .attr("font-size", "0.8em")
+              .text(function(d){ return formatPercent(p["avg_" + order]) })
+              
+
+            if (order !== "name")
+            histo.append("text")
+              .attr("class", "legend")
+              .attr("x", 40)
+              .attr("y", -22)
+              .attr("font-size", "0.8em")
+              .text(function(d){ return  name })  
+          }
+
+          if (order === "name") {
+            histo.append("text")
+              .attr("class", "legend")
+              .attr("x", 40)
+              .attr("y", -22)
+              .attr("font-size", "0.8em")
+              .text(function(d){ return name })
+          }
         });
       });
 
@@ -259,6 +272,12 @@
       order = x;
       return partnersHistogram;
     }
+
+    // partnersHistogram.filter = function(x){
+    //   if (!arguments.length) return filter;
+    //   filter = x;
+    //   return partnersHistogram;
+    // }
   
     partnersHistogram.continents = function(x){
       if (!arguments.length) return continents;

@@ -9,7 +9,7 @@ import ricardo_api.models as models
 
 @app.route('/')
 def index():
-    return 'Hello World!'
+    return 'Welcome to RICardo API. You could find more information in the Github repository.'
 
 @app.route('/flows')
 def flows():

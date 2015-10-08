@@ -13,7 +13,7 @@
     function linechart(selection){
       selection.each(function(data){
         console.log("data in linechart", data);
-        // console.log("yvalue in linechart", yValue);
+        console.log("yvalue in linechart", yValue);
 
         var chart;
         var margin = {top: 20, right: 0, bottom: 30, left: 0},
@@ -138,7 +138,6 @@
                 .attr("stroke", function(d,i) { return d["color"]; })
                 .attr("fill", "none")
                 .attr("stroke-width", "2px")
-               // .attr("d", function(d) { return line(d.values); })
           
         entities
             .attr("d", function(d) {  return line(d.values); })
@@ -152,8 +151,6 @@
             .y(function(d) { return y(d[yValue]); })
             .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]]);
         
-
-
           var voronoiGroup = chart.select(".voronoi")
 
           if(voronoiGroup.empty()){
@@ -202,7 +199,10 @@
               if(d[yValue]!=null)
               {
                 focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
-                focus.select("text").text(format(Math.round(d[yValue])));
+                if (d.value)
+                  focus.select("text").text(format(Math.round(d[yValue])) + '%');
+                else
+                  focus.select("text").text(format(Math.round(d[yValue])) + '£');
                 chart.append("line")
                        .attr("class", "lineDate")
                        .attr("x1", x(new Date(d.year, 0, 1)))
