@@ -385,6 +385,7 @@ angular.module('ricardo.controllers', [])
           if(a.RICname > b.RICname) return 1;
           return 0;
       })
+    console.log("RICentitiesDD", $scope.RICentitiesDD);
     $scope.reporting = []
     $scope.reportingCountryEntities = [];
     $scope.reportingColonialEntities = [];
@@ -428,8 +429,11 @@ angular.module('ricardo.controllers', [])
 
           $scope.reportingCountryEntities = $scope.RICentitiesDD.filter(function(d){return d.type === "country"||d.type === "group"})
           $scope.reportingColonialEntities = $scope.RICentitiesDD.filter(function(d){return d.type === "colonial_area"})
-          $scope.reportingGeoEntities = $scope.RICentitiesDD.filter(function(d){return d.type === "geographical_area"})
+          $scope.reportingGeoEntities = $scope.RICentitiesDD.filter(function(d){ return d.type === "geographical_area" && d.RICname.indexOf("World ") !== 0})
+          console.log("$scope.reportingGeoEntities", $scope.reportingGeoEntities);
           $scope.reportingWorldEntities = $scope.RICentitiesDD.filter(function(d){return d.type === "geographical_area" && d.RICname.indexOf("World ") === 0})
+          console.log("$scope.reportingWorldEntities", $scope.reportingWorldEntities);
+
           var continents = d3.nest()
             .key(function(d){return d.continent})
             .entries($scope.RICentitiesDD.filter(function(d){return d.continent}))
@@ -463,9 +467,14 @@ angular.module('ricardo.controllers', [])
             d.continent = $scope.RICentities[d.partner_id+""].continent
           })
           cfSource.add(data.flows)
-          
-          var flowsPerYear = cfSource.years().top(Infinity)
 
+          cfSource.partner().filter(function(p){return !/^World/.test(p)});
+          var flowsPerYear = cfSource.years().top(Infinity)
+          // arrrrrg CFSource m'a tuer ! we need to do a hard copy. 
+          flowsPerYear = JSON.parse(JSON.stringify(flowsPerYear))
+          
+          cfSource.partner().filterAll();
+          
           var timelineData = [];
 
           flowsPerYear.sort(function (a, b){ return d3.ascending(a.key, b.key); })
@@ -478,15 +487,13 @@ angular.module('ricardo.controllers', [])
                 td.imp = null;
               if (!td.tot)
                 td.tot = null;
-
               timelineData.push(td);
            });
+          
 
           $scope.timelineData=timelineData;
-          $scope.missingData = timelineData;
-
-        initLinechart($scope.reporting);
-
+         
+       
       });
     }
 
@@ -494,6 +501,7 @@ angular.module('ricardo.controllers', [])
         var linechart_flows=[]
         if(partners.length>0)
         {
+          //console.log("partners", partners);
           var reportingID = $scope.entities.sourceEntity.selected.RICid;
           var partner_ids = partners.filter(function (d){return d.type!=="continent"}).map(function (d){return d.RICid});
 
@@ -559,9 +567,17 @@ angular.module('ricardo.controllers', [])
         function(d){ 
         return new Date($scope.selectedMinDate-1,1,0) <= d && d< new Date($scope.selectedMaxDate + 1,1,0)}
       );
-      $scope.tableData = cfSource.year().top(Infinity); 
-      console.log("$scope.tableData", $scope.tableData);
+
+      // cfSource.partner().filter(function(p){return !/^World/.test(p)});
+      // var partners_data = cfSource.year().top(Infinity);
+      // arrrrrg CFSource m'a tuer ! we need to do a hard copy. 
+      // $scope.tableData = JSON.parse(JSON.stringify(partners_data))
+      $scope.tableData = cfSource.year().top(Infinity);
+      //cfSource.partner().filterAll()
+      
     }
+
+
 
     $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {
       if (newVal !== oldVal && newVal[0] != newVal[1]) {
@@ -576,7 +592,7 @@ angular.module('ricardo.controllers', [])
     /* end initialize */
     $scope.$watch("entities.sourceEntity.selected", function (newValue, oldValue){
       if(newValue !== oldValue && newValue){
-        console.log("entities.sourceEntity.selected");
+        console.log("entities.sourceEntity.selected", newValue);
         init(newValue.RICid, $scope.currency)
         updateDateRange()
       }
@@ -593,12 +609,12 @@ angular.module('ricardo.controllers', [])
       }
     })
 
-    $scope.$watch("currency", function (newValue, oldValue){
-      if(newValue !== oldValue){
-        init($scope.entities.sourceEntity.selected.RICid, newValue)
-        updateDateRange();
-      }
-    })
+    // $scope.$watch("currency", function (newValue, oldValue){
+    //   if(newValue !== oldValue){
+    //     init($scope.entities.sourceEntity.selected.RICid, newValue)
+    //     updateDateRange();
+    //   }
+    // })
 
     /* end directive salvage */
 
@@ -643,6 +659,7 @@ angular.module('ricardo.controllers', [])
 
     $scope.$watch('entities.sourceGeoEntity', function (newVal, oldVal) {
         if (newVal !== oldVal && newVal.selected) {
+          console.log("newVal", newVal);
           $scope.pushReporting(newVal.selected)
         }
     }, true);

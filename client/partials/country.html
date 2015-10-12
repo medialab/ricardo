@@ -49,10 +49,13 @@
 <div class="container">
   <div class="row">
     <div class="col-md-6">
-      <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} by partners, {{selectedMinDate}} – {{selectedMaxDate}} <i class="fa fa-info-circle"></i></h3>
+      <h3 class="subtitle">Balance of trade of {{entities.sourceEntity.selected.RICname}} with partners, {{selectedMinDate}} – {{selectedMaxDate}} <i class="fa fa-info-circle"></i></h3>
       <div class="legend-item">
           Average share in <strong>pourcentage</strong> on {{ordered.selected.name.value}}| Trade balance in <strong>sterling</strong>
-      </div> 
+      </div>
+      <div class="legend-item">
+          <strong>Balance : </strong> (Exports - Imports) / (Exports + Imports)
+        </div> 
     </div>
     <div class="col-md-6 inline-select" style="float:right;">
         

@@ -2,9 +2,6 @@
 
 /* Directives */
 
-// Note: these directives wre added during a sprint the 06 / 07 / 2015
-// They do not use the same coding pattern
-
 angular.module('ricardo.directives-addendum', [])
 
   /* directive with only template */
@@ -1121,8 +1118,6 @@ angular.module('ricardo.directives-addendum', [])
               .attr("class", "line-exp")
               .attr("d", availExp)
 
-
-
           /* axis */
 
           var gy = svg.select("g.y.axis"),
@@ -1186,8 +1181,7 @@ angular.module('ricardo.directives-addendum', [])
               // dispatch.brushing(brush.extent())
             }
 
-            applyBrush()
-            
+            applyBrush()       
           }
           //selection.selectAll("g.brush").remove();
           var gBrush = svg.select(".brush");
@@ -1233,14 +1227,17 @@ angular.module('ricardo.directives-addendum', [])
       replace: false,
       link: function(scope, element, attrs) {
 
-       
+       // function partnerHisto(data, continent, order)
+
+
         var histogram = ricardo.partnersHistogram()
               .width(element.width())
         var chart = d3.select(element[0])
 
         var refresh = function(newValue, oldValue){
           if(newValue !== oldValue){
-            console.log("newValue refresh", newValue);
+            //console.log("newValue refresh", newValue);
+            //console.log("scope.tableData", scope.tableData);
             chart.selectAll("text.legend").remove();
             chart.selectAll("rect.bar").remove();
             chart.datum(scope.tableData).call(histogram.RICentities(scope.RICentities));
@@ -1248,6 +1245,8 @@ angular.module('ricardo.directives-addendum', [])
         }
 
         scope.$watch("tableData", refresh, true);
+
+
 
         //scope.$watch("currency", refresh);
 
@@ -1268,17 +1267,6 @@ angular.module('ricardo.directives-addendum', [])
               chart.call(histogram.order(newValue.type.value));
             }
         }, true);
-
-        // scope.$watch("filtered.selected", function(newValue, oldValue){
-        //     if (newValue !== oldValue) {
-        //       console.log("newValue filter", newValue);
-        //       chart.selectAll("text.legend").remove();
-        //       chart.selectAll("rect.bar").remove();
-        //       //chart.call(histogram.filter(newValue.type.value));
-        //     }
-        // }, true);
-
-
 
       }
     }

@@ -48,10 +48,17 @@
     function rollupYears(leaves){
       var res = {
         exp: d3.sum(leaves, function(d){
-          return d.exp
+          //console.log("rollupYears", d);
+          if(!/^World/.test(d.partner_id))
+            return d.exp
+          else
+            return 0
         }),
         imp: d3.sum(leaves, function(d){
-          return d.imp
+          if(!/^World/.test(d.partner_id))
+            return d.imp
+          else
+            return 0
         }),
       };
       res.tot = res.exp + res.imp;
@@ -60,25 +67,28 @@
 
     function partnersHistogram(selection){
       selection.each(function(data){
-      console.log("data", data);
-        data = data.filter(function(d){
-          return !/^World/.test(d.partner_id) && (!continents || d.continent);
-        })
+
 
         var indexYears = {};
         d3.nest()
-          .key(function(d){ return d.year })
+          .key(function(d){  return d.year }) // problem on datas, start year != start year of data
           .rollup(rollupYears)
           .entries(data)
           .forEach(function(y){
+            //console.log("y", y);
             indexYears[y.key] = y.values;
           })
 
-        var partners = d3.nest()
+        // We get rid of World partners
+        data=data.filter(function(p){return !/^World/.test(p.partner_id)})
+
+        var partners = d3.nest()  
           .key(function(d){ return d[continents ? "continent" : "partner_id"] })
           .key(function(d){ return d.year })
           .rollup(rollupYears)
           .entries(data)
+
+
 
         partners.forEach(function(p){
           p.years = []
@@ -106,7 +116,6 @@
           else return d3.descending(a["avg_" + order], b["avg_" + order]);
         });
 
-
         height = (partners.length + 1) * (barMaxHeigth + barGap);
 
         var chart;
@@ -125,6 +134,8 @@
             limits = d3.extent(years),
             maxWidth = yearWidth * (limits[1]-limits[0]+1);
             years.pop();
+
+
           var x = d3.scale.linear()
               .domain(d3.extent(years))
               .range([0, width]), // witdh replace max width 
@@ -185,7 +196,7 @@
             .on('mouseover', function(d) {
               return tooltip.html(
                 "<h3>"+ name + " in " + d.key + "</h3>" +
-                "<p>Average : " + formatPercent(d.balance*100) + " on " + orderName + "</p>" +
+                "<p>Balance : " + formatPercent(d.balance*100) + "</p>" +
                 "<p>Export: " + formatAmount(d, "exp") + "</p>" +
                 "<p>Import: " + formatAmount(d, "imp") + "</p>"
                 ).transition().style("opacity", .9);
@@ -203,9 +214,6 @@
                 .style("top", (d3.event.pageY + 40) + "px")
                 .style("width", wid + "px");
             });
-
-          
-
 
           if (order !== "name") {
             histo.append("text")
@@ -273,12 +281,6 @@
       return partnersHistogram;
     }
 
-    // partnersHistogram.filter = function(x){
-    //   if (!arguments.length) return filter;
-    //   filter = x;
-    //   return partnersHistogram;
-    // }
-  
     partnersHistogram.continents = function(x){
       if (!arguments.length) return continents;
       continents = x;
