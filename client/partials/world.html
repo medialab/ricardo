@@ -52,12 +52,12 @@
         <i class="fa fa-info-circle"></i> </h3>
       </div>
       <div class="col-sm-4" style="float:right">
-        <div class="filter-group" ng-show="RICentitiesDD.length">
+        <div class="filter-group" >
             <div class="btn-group pull-right">
               <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'imp'" uncheckable>imports</label>
               <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'exp'" uncheckable>exports</label>
-              <label class="btn btn-sm btn-default" ng-model="convertion" btn-radio="'sterling'" uncheckable>Sterling</label>
-              <label class="btn btn-sm btn-default" ng-model="convertion" btn-radio="'value'" uncheckable>Pourcent</label>
+              <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'sterling'" uncheckable>Sterling</label>
+              <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'value'" uncheckable>Pourcent</label>
             </div>
       </div>
       </div>
@@ -66,7 +66,7 @@
     <div>
       <h3 class="subtitle col-sm-2">select up to 5 reporting :</h3>
     </div>
-    <div class="select-dropdown col-sm-8" ng-show="RICentitiesDD.length">
+    <div class="select-dropdown col-sm-8" >
       
       <ui-select  class="selectPartners" ng-model="entities.sourceCountryEntity.selected" theme="bootstrap">
         <match placeholder="Country...">{{$select.selected.RICname}}</match>
@@ -103,7 +103,6 @@
     </div>
   </div>
   </div>
-</div>
   <div class="row">
     <div class="col-sm-12 text-center shdt">
       <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
@@ -119,4 +118,5 @@
       <div class="gridStyle" ng-grid="gridOptions"></div>
     </div>
   </div>
+</div>
 </div>

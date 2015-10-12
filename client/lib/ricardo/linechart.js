@@ -12,8 +12,8 @@
 
     function linechart(selection){
       selection.each(function(data){
-        console.log("data in linechart", data);
-        console.log("yvalue in linechart", yValue);
+        // console.log("data in linechart", data);
+        // console.log("yvalue in linechart", yValue);
 
         var chart;
         var margin = {top: 20, right: 0, bottom: 30, left: 0},
