@@ -47,6 +47,7 @@
       <div class="col-sm-8">
        <h3 class="subtitle">World trade comparaison with 
         <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
+        <span class="close-btn">X</span>
         <span ng-if="!$last">, </span>
         </span>, {{selectedMinDate}} – {{selectedMaxDate}}, in {{actualCurrency}}
         <i class="fa fa-info-circle"></i> </h3>
@@ -56,6 +57,7 @@
             <div class="btn-group pull-right">
               <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'imp'" uncheckable>imports</label>
               <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'exp'" uncheckable>exports</label>
+              <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'total'" uncheckable>total</label>
               <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'sterling'" uncheckable>Sterling</label>
               <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'value'" uncheckable>Pourcent</label>
             </div>
@@ -64,7 +66,7 @@
   </div>
   <div id="select-lineChart">
     <div>
-      <h3 class="subtitle col-sm-2">select up to 5 reporting :</h3>
+      <h3 class="subtitle col-sm-2">Select up to 5 reportings :</h3>
     </div>
     <div class="select-dropdown col-sm-8" >
       
@@ -82,12 +84,13 @@
         </choices>
       </ui-select>
 
-      <ui-select class="selectPartners" ng-model="entities.sourceGeoEntity.selected" theme="bootstrap">
+      <!-- no need geoEntities beacause there is no data for this entity with worldbestguess -->
+     <!--  <ui-select class="selectPartners" ng-model="entities.sourceGeoEntity.selected" theme="bootstrap">
         <match placeholder="Geographical area...">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingGeoEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
-      </ui-select>
+      </ui-select> -->
 
       <ui-select class="selectPartners" ng-model="entities.sourceContinentEntity.selected" theme="bootstrap">
         <match placeholder="Continent...">{{$select.selected.RICname}}</match>
