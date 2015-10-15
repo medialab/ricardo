@@ -81,7 +81,7 @@
 
         var indexYears = {};
         d3.nest()
-          .key(function(d){  return d.year }) // problem on datas, start year != start year of data
+          .key(function(d){  return d.year })
           .rollup(rollupYears)
           .entries(data)
           .forEach(function(y){
@@ -157,13 +157,19 @@
           var entity = RICentities[""+p.key],
             name = (entity ? entity.RICname : p.key);
 
-          y0 = marginTop + i * (barMaxHeigth + barGap);
+          console.log("i", i);
+
+          y0 = marginTop + 30 + i * (barMaxHeigth + barGap);
+
+
+          console.log("y0", y0)
 
           y.domain([0, d3.max(d3.extent(p.years, function(d) { return Math.abs(d.balance) }))])
 
           var histo = chart.append("g")
             .attr("class", "hist " + cleanids(p.key))
-            .attr("transform", function(d) { return "translate(" + marginLeft + "," + y0 + ")"; });
+            .attr("transform", function(d) { return "translate(" + marginLeft + "," + y0 + ")"; })
+            .attr("class", "svgElement")
 
           histo.append("line")
             .attr("x0", 0)
@@ -225,40 +231,42 @@
                 .style("width", wid + "px");
             });
 
-            var rBigCircle = 12;
-            histo.append("circle")
-              .attr("cx", 25)
-              .attr("cy", -30)
-              .attr("r", rBigCircle)
-              .style("stroke", "#777")    // set the line colour
-              .style("fill", "none")    // set the fill colour 
-              //.style("shape-rendering", "crispEdges")
+            if (order !== "name") {
+              var rBigCircle = 12;
+              histo.append("circle")
+                .attr("cx", 25)
+                .attr("cy", -30)
+                .attr("r", rBigCircle)
+                .style("stroke", "#777")    // set the line colour
+                .style("fill", "none")    // set the fill colour 
+                //.style("shape-rendering", "crispEdges")
 
-            var rLittleCircle = formatPercent2(p["avg_" + order]) / 100 * rBigCircle;
-            histo.append("circle")
-              .attr("cx", 25)
-              .attr("cy", -30)
-              .attr("r", rLittleCircle)
-              .style("stroke", "#333")    // set the line colour
-              .style("fill", "#333")    // set the fill colour 
-              .on('mouseover', function(d) {
-              return tooltipCircle.html(
-                "<p>Total : " + formatPercent(p["avg_" + order]) + "</p>"
-                ).transition().style("opacity", .9);
-              })
-              .on('mouseenter', this.onmouseover)
-              .on('mouseout', function(d) {
-                return tooltipCircle.transition().style("opacity", 0);
-              })
-              .on('mousemove', function(d) {
-                tooltipCircle.style("opacity", .9);
-                var wid = tooltipCircle.style("width").replace("px", "");
-                return tooltipCircle
-                  .style("left", Math.min(window.innerWidth - wid - 20,
-                    Math.max(0, (d3.event.pageX - wid/2))) + "px")
-                  .style("top", (d3.event.pageY + 40) + "px")
-                  .style("width", wid + "px");
-              });
+              var rLittleCircle = formatPercent2(p["avg_" + order]) / 100 * rBigCircle;
+              histo.append("circle")
+                .attr("cx", 25)
+                .attr("cy", -30)
+                .attr("r", rLittleCircle)
+                .style("stroke", "#333")    // set the line colour
+                .style("fill", "#333")    // set the fill colour 
+                .on('mouseover', function(d) {
+                return tooltipCircle.html(
+                  "<p>Total : " + formatPercent(p["avg_" + order]) + "</p>"
+                  ).transition().style("opacity", .9);
+                })
+                .on('mouseenter', this.onmouseover)
+                .on('mouseout', function(d) {
+                  return tooltipCircle.transition().style("opacity", 0);
+                })
+                .on('mousemove', function(d) {
+                  tooltipCircle.style("opacity", .9);
+                  var wid = tooltipCircle.style("width").replace("px", "");
+                  return tooltipCircle
+                    .style("left", Math.min(window.innerWidth - wid - 20,
+                      Math.max(0, (d3.event.pageX - wid/2))) + "px")
+                    .style("top", (d3.event.pageY + 40) + "px")
+                    .style("width", wid + "px");
+                });
+            }
 
           if (order !== "name") {
             // histo.append("text")

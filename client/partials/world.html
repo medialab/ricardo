@@ -55,9 +55,11 @@
       <div class="col-sm-4" style="float:right">
         <div class="filter-group" >
             <div class="btn-group pull-right">
+              <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'total'" uncheckable>total</label>
               <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'imp'" uncheckable>imports</label>
               <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'exp'" uncheckable>exports</label>
-              <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'total'" uncheckable>total</label>
+            </div>
+            <div class="btn-group pull-right" style="margin-right:30px;">
               <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'sterling'" uncheckable>Sterling</label>
               <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'value'" uncheckable>Pourcent</label>
             </div>

@@ -318,26 +318,26 @@ angular.module('ricardo.controllers', [])
         writable: true
       }
     },
-    {
-      type: {
-        value :"imp",
-        writable: true
-      },
-      name: {
-        value:"Imports",
-        writable: true
-      }
-    },
-    {
-      type: {
-        value :"exp",
-        writable: true
-      },
-      name: {
-        value:"Exports",
-        writable: true
-      }
-    },
+    // {
+    //   type: {
+    //     value :"imp",
+    //     writable: true
+    //   },
+    //   name: {
+    //     value:"Imports",
+    //     writable: true
+    //   }
+    // },
+    // {
+    //   type: {
+    //     value :"exp",
+    //     writable: true
+    //   },
+    //   name: {
+    //     value:"Exports",
+    //     writable: true
+    //   }
+    // },
     {
       type: {
         value :"name",
@@ -499,22 +499,24 @@ angular.module('ricardo.controllers', [])
         var linechart_flows=[]
         if(partners.length>0)
         {
+
+          console.log("partners", partners);
           var reportingID = $scope.entities.sourceEntity.selected.RICid;
+
+          // array of partner id
           var partner_ids = partners.filter(function (d){return d.type!=="continent"}).map(function (d){return d.RICid});
 
-           cfSource.year().filterFunction(
-            function (d){ return d>=new Date($scope.selectedMinDate,1,0)&&d<=new Date($scope.selectedMaxDate,1,0)}
-          );
+          console.log("partner_ids", partner_ids);
 
           cfSource.partner().filterFunction(
             function (d){ return partner_ids.indexOf(d)!==-1} );
           
-
           linechart_flows=cfSource.year().top(Infinity)
-          cfSource.partner().filterAll()
-         
-          var continents = partners.filter(function (d){return d.type==="continent"});
+          console.log("linechart_flows", linechart_flows);
+          
+          cfSource.partner().filterAll()  
 
+          var continents = partners.filter(function (d){return d.type==="continent"});
 
           continents.forEach(function (continent)
           { 
@@ -545,9 +547,12 @@ angular.module('ricardo.controllers', [])
           
         }
 
+        // array of partners (obj)
         $scope.linechartData = d3.nest()
           .key(function (d){return d.partner_id})
           .entries(linechart_flows)
+
+        console.log("$scope.linechartData", $scope.linechartData);
 
         $scope.linechartData.flowType = yValue;
 
@@ -571,14 +576,8 @@ angular.module('ricardo.controllers', [])
         function(d){ 
         return new Date($scope.selectedMinDate-1,1,0) <= d && d< new Date($scope.selectedMaxDate + 1,1,0)}
       );
-
-      // cfSource.partner().filter(function(p){return !/^World/.test(p)});
-      // var partners_data = cfSource.year().top(Infinity);
-      // arrrrrg CFSource m'a tuer ! we need to do a hard copy. 
-      // $scope.tableData = JSON.parse(JSON.stringify(partners_data))
       $scope.tableData = cfSource.year().top(Infinity);
-      //cfSource.partner().filterAll()
-      //console.log("$scope.tableData", $scope.tableData);
+      console.log("$scope.tableData", $scope.tableData);
     }
 
 
@@ -604,11 +603,11 @@ angular.module('ricardo.controllers', [])
 
     $scope.$watch("filtered.selected", function (newValue, oldValue){
       if(newValue !== oldValue){
-        console.log("newValue", newValue);
         if(newValue.type.value === "all")
           cfSource.type().filterAll()
-        else 
+        else {
           cfSource.type().filterExact(newValue.type.value)
+        }
         updateTableData();
       }
     })
@@ -902,7 +901,7 @@ angular.module('ricardo.controllers', [])
           year: i, 
           imp: null,
           exp: null, 
-          tot: null, 
+          total: null, 
           currency:null,
           sources:null
           });                      
@@ -915,9 +914,9 @@ angular.module('ricardo.controllers', [])
             d.imp = e.imp;
             d.currency = e.currency,
             d.sources = e.sources
-            d.tot = e.exp + e.imp;
-            if (d.tot === 0)
-              d.tot = null;
+            d.total = e.exp + e.imp;
+            if (d.total === 0)
+              d.total = null;
           }
         })
       })
@@ -1035,7 +1034,7 @@ angular.module('ricardo.controllers', [])
             year: d.key, 
             imp:d.values[1].flows,
             exp:d.values[0].flows, 
-            tot:d.values[1].flows + d.values[0].flows, 
+            total:d.values[1].flows + d.values[0].flows, 
             currency: "sterling",
             sources: d.values[0].sources
           });
