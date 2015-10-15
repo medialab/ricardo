@@ -580,12 +580,21 @@ font-size: 1.1em;
   max-height: 500px;
   overflow-y: scroll;
   overflow-x: hidden;
+  overflow:auto;
   margin-top: 10px;
   margin-bottom: 10px;
 }
 
+#partners-histogram-container {
+  /*overflow: scroll;*/
+  max-height: 500px;
+}
+
 #partners-histogram-container>svg {
-  padding-top: 30px;
+  padding-top: 40px;
+  /*max-height: 500px;*/
+  /*position: relative;*/
+  /*overflow: auto;*/
 }
 
 .partners-tooltip {
@@ -609,7 +618,21 @@ font-size: 1.1em;
   font-size: 11px;
 }
 
-#select-lineChart, #select-doubleChart{
+.circle-tooltip {
+  position: absolute;
+  background: #333;
+  color: #ddd;
+  padding: 2px;
+  border: 0px;
+  border-radius: 5px;
+  opacity: 0;
+  text-align: center;
+  margin-top: -20px;
+  pointer-events: none;
+  font-size: 11px;
+}
+
+#select-lineChart{
   background-color: white;
   border: 1px solid #e7e7e7;
   margin-top: 5px;
@@ -757,19 +780,23 @@ path.lineTrajectory {
   stroke-width: 4;
 }
 
-#scatter-plot-container > svg {
-  padding-left: 50px;
+.close-btn { 
+    border: 1px solid #c2c2c2;
+    position: relative;
+    padding: 1px 5px;
+    top: -10px;
+    border-radius: 90px;
+    font-size: 10px;
 }
 
-.scatterPlot-tooltip {
-  position: absolute;
-  background: #333;
-  color: #ddd;
-  padding: 2px;
-  border: 0px;
-  border-radius: 5px;
-  opacity: 0;
-  text-align: center;
-  font-size: 12px;
-  pointer-events: none;
+#partners-histograms-container {
+    height: 600px;
+    width: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#partners-histograms-container >svg{
+    padding-top: 30px;
+
 }

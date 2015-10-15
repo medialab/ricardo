@@ -53,8 +53,11 @@
       <div class="legend-item">
           Average share in <strong>pourcentage</strong> on {{ordered.selected.name.value}}| Trade balance in <strong>sterling</strong>
       </div>
-      <div class="legend-item">
+        <div class="legend-item">
           <strong>Balance : </strong> (Exports - Imports) / (Exports + Imports)
+        </div> 
+        <div class="legend-item">
+          <strong>| Total | : </strong> Sum of the shares for the years available
         </div> 
     </div>
     <div class="col-md-6 inline-select" style="float:right;">
@@ -85,17 +88,20 @@
     </div>
   </div>
 
-  <div id="select-doubleChart">
+<div id="select-doubleChart">
     <div class="row">
       <div id="partners-histogram-container" class="col-sm-12">
         <div id="partners-histogram-container" class="partners-histogram" partners-histogram></div>
       </div>
     </div>
   </div>
+       <!--  <partners-histograms ng-data="tableData" country="entities.sourceEntity.selected"></partners-histograms> -->
+
   <div class="row">
     <div class="col-sm-9">
       <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} with 
       <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
+      <span class="close-btn">X</span>
       <span ng-if="!$last">, </span>
       </span>, {{selectedMinDate}} – {{selectedMaxDate}}, in {{actualCurrency}}
       <i class="fa fa-info-circle"></i> </h3>

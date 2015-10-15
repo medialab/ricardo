@@ -41,9 +41,19 @@
        return (res ? res : "0.0") + "%";
     }
 
+    function formatPercent2(val){
+      var res = parseInt(val);     
+      if (!res) res = Math.round(parseFloat(val * 10)) / 10;
+       return (res ? res : "0.0");
+    }
+
     var tooltip = d3.select("body")
       .append("div")
       .attr("class", "partners-tooltip");
+
+    var tooltipCircle = d3.select("body")
+      .append("div")
+      .attr("class", "circle-tooltip");
 
     function rollupYears(leaves){
       var res = {
@@ -133,7 +143,7 @@
             years = Object.keys(indexYears),
             limits = d3.extent(years),
             maxWidth = yearWidth * (limits[1]-limits[0]+1);
-            years.pop();
+            //years.pop();
 
 
           var x = d3.scale.linear()
@@ -215,30 +225,64 @@
                 .style("width", wid + "px");
             });
 
-          if (order !== "name") {
-            histo.append("text")
-              .attr("class", "legend")
-              .attr("x", 30)
-              .attr("y", -22)
-              .attr("text-anchor", "end")
-              .attr("font-size", "0.8em")
-              .text(function(d){ return formatPercent(p["avg_" + order]) })
-              
+            var rBigCircle = 12;
+            histo.append("circle")
+              .attr("cx", 25)
+              .attr("cy", -30)
+              .attr("r", rBigCircle)
+              .style("stroke", "#777")    // set the line colour
+              .style("fill", "none")    // set the fill colour 
+              //.style("shape-rendering", "crispEdges")
 
-            if (order !== "name")
-            histo.append("text")
-              .attr("class", "legend")
-              .attr("x", 40)
-              .attr("y", -22)
-              .attr("font-size", "0.8em")
-              .text(function(d){ return  name })  
+            var rLittleCircle = formatPercent2(p["avg_" + order]) / 100 * rBigCircle;
+            histo.append("circle")
+              .attr("cx", 25)
+              .attr("cy", -30)
+              .attr("r", rLittleCircle)
+              .style("stroke", "#333")    // set the line colour
+              .style("fill", "#333")    // set the fill colour 
+              .on('mouseover', function(d) {
+              return tooltipCircle.html(
+                "<p>Total : " + formatPercent(p["avg_" + order]) + "</p>"
+                ).transition().style("opacity", .9);
+              })
+              .on('mouseenter', this.onmouseover)
+              .on('mouseout', function(d) {
+                return tooltipCircle.transition().style("opacity", 0);
+              })
+              .on('mousemove', function(d) {
+                tooltipCircle.style("opacity", .9);
+                var wid = tooltipCircle.style("width").replace("px", "");
+                return tooltipCircle
+                  .style("left", Math.min(window.innerWidth - wid - 20,
+                    Math.max(0, (d3.event.pageX - wid/2))) + "px")
+                  .style("top", (d3.event.pageY + 40) + "px")
+                  .style("width", wid + "px");
+              });
+
+          if (order !== "name") {
+            // histo.append("text")
+            //   .attr("class", "legend")
+            //   .attr("x", 70)
+            //   .attr("y", -25)
+            //   .attr("text-anchor", "end")
+            //   .attr("font-size", "0.8em")
+            //   .text(function(d){ return formatPercent(p["avg_" + order]) })
+              
+          if (order !== "name")
+          histo.append("text")
+            .attr("class", "legend")
+            .attr("x", 60)
+            .attr("y", -25)
+            .attr("font-size", "0.8em")
+            .text(function(d){ return  name })  
           }
 
           if (order === "name") {
             histo.append("text")
               .attr("class", "legend")
-              .attr("x", 40)
-              .attr("y", -22)
+              .attr("x", 60)
+              .attr("y", -25)
               .attr("font-size", "0.8em")
               .text(function(d){ return name })
           }
