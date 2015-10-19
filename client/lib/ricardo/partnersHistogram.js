@@ -56,53 +56,60 @@
       .attr("class", "circle-tooltip");
 
     function rollupYears(leaves){
+      //console.log("leaves", leaves);
       var res = {
         exp: d3.sum(leaves, function(d){
           //console.log("rollupYears", d);
-          if(!/^World/.test(d.partner_id))
+          if (!/^World/.test(d.partner_id) )
             return d.exp
           else
             return 0
         }),
         imp: d3.sum(leaves, function(d){
-          if(!/^World/.test(d.partner_id))
+          if (!/^World/.test(d.partner_id) )
             return d.imp
           else
             return 0
         }),
       };
       res.tot = res.exp + res.imp;
+      //console.log("res", res);
       return res;
     }
 
     function partnersHistogram(selection){
+      //console.log('selection', selection)
       selection.each(function(data){
-
+        //console.log('data', data)
+        //console.log('filter', filter)
 
         var indexYears = {};
         d3.nest()
-          .key(function(d){  return d.year })
+          .key(function(d){ return d.year })
           .rollup(rollupYears)
           .entries(data)
           .forEach(function(y){
-            //console.log("y", y);
             indexYears[y.key] = y.values;
           })
 
         // We get rid of World partners
         data=data.filter(function(p){return !/^World/.test(p.partner_id)})
+        // uncomment these two lines to use a filter and calcul on all data
+        if (filter !== "all")
+          data=data.filter(function(p){return p.type === filter})
 
+
+        //console.log("data selected", data);
         var partners = d3.nest()  
           .key(function(d){ return d[continents ? "continent" : "partner_id"] })
           .key(function(d){ return d.year })
           .rollup(rollupYears)
           .entries(data)
 
-
-
         partners.forEach(function(p){
           p.years = []
           p.values.forEach(function(d){
+            //console.log("d.key", d.key);
             p.years.push({
               key: d.key,
               exp: d.values.exp,
@@ -116,6 +123,7 @@
 
           delete p.values;
           p.avg_tot = d3.mean(p.years, function(d){ return d.pct_tot });
+          //console.log("p.avg_tot", p.avg_tot);
           p.avg_imp = d3.mean(p.years, function(d){ return d.pct_imp });
           p.avg_exp = d3.mean(p.years, function(d){ return d.pct_exp });
         })
@@ -157,12 +165,7 @@
           var entity = RICentities[""+p.key],
             name = (entity ? entity.RICname : p.key);
 
-          console.log("i", i);
-
           y0 = marginTop + 30 + i * (barMaxHeigth + barGap);
-
-
-          console.log("y0", y0)
 
           y.domain([0, d3.max(d3.extent(p.years, function(d) { return Math.abs(d.balance) }))])
 
@@ -191,14 +194,6 @@
             .attr("height", function(d) { return (d.balance ? Math.max(barMinHeigth, y(Math.abs(d.balance))) : 0); })
             .attr("fill", function(d){ return barColors[+(d.balance >=0)] })
             .attr("opacity", function(d){ return (d.imp !== null && d.exp !== null ? 1 : 0.3) });
-
-          var orderName;
-          if (order === "tot")
-            orderName = "total";
-          else if (order === "imp")
-            orderName = "imports";
-          else
-            orderName = "exports";
 
           histo.selectAll(".tooltipBar")
             .data(p.years)
@@ -231,23 +226,22 @@
                 .style("width", wid + "px");
             });
 
+          histo.append("text")
+            .attr("class", "legend")
+            .attr("x", 60)
+            .attr("y", -25)
+            .attr("font-size", "0.8em")
+            .text(function(d){ return name })
+
             if (order !== "name") {
+             
               var rBigCircle = 12;
               histo.append("circle")
                 .attr("cx", 25)
                 .attr("cy", -30)
                 .attr("r", rBigCircle)
-                .style("stroke", "#777")    // set the line colour
-                .style("fill", "none")    // set the fill colour 
-                //.style("shape-rendering", "crispEdges")
-
-              var rLittleCircle = formatPercent2(p["avg_" + order]) / 100 * rBigCircle;
-              histo.append("circle")
-                .attr("cx", 25)
-                .attr("cy", -30)
-                .attr("r", rLittleCircle)
-                .style("stroke", "#333")    // set the line colour
-                .style("fill", "#333")    // set the fill colour 
+                .style("stroke", "#777") 
+                .style("fill", "transparent")
                 .on('mouseover', function(d) {
                 return tooltipCircle.html(
                   "<p>Total : " + formatPercent(p["avg_" + order]) + "</p>"
@@ -265,35 +259,17 @@
                       Math.max(0, (d3.event.pageX - wid/2))) + "px")
                     .style("top", (d3.event.pageY + 40) + "px")
                     .style("width", wid + "px");
-                });
+                });    
+ 
+              var rLittleCircle = formatPercent2(p["avg_" + order]) / 100 * rBigCircle;
+              histo.append("circle")
+                .attr("cx", 25)
+                .attr("cy", -30)
+                .attr("r", rLittleCircle)
+                .style("stroke", "#333")  
+                .style("fill", "#333")   
+                
             }
-
-          if (order !== "name") {
-            // histo.append("text")
-            //   .attr("class", "legend")
-            //   .attr("x", 70)
-            //   .attr("y", -25)
-            //   .attr("text-anchor", "end")
-            //   .attr("font-size", "0.8em")
-            //   .text(function(d){ return formatPercent(p["avg_" + order]) })
-              
-          if (order !== "name")
-          histo.append("text")
-            .attr("class", "legend")
-            .attr("x", 60)
-            .attr("y", -25)
-            .attr("font-size", "0.8em")
-            .text(function(d){ return  name })  
-          }
-
-          if (order === "name") {
-            histo.append("text")
-              .attr("class", "legend")
-              .attr("x", 60)
-              .attr("y", -25)
-              .attr("font-size", "0.8em")
-              .text(function(d){ return name })
-          }
         });
       });
 
@@ -330,6 +306,12 @@
     partnersHistogram.order = function(x){
       if (!arguments.length) return order;
       order = x;
+      return partnersHistogram;
+    }
+
+    partnersHistogram.filter = function(x){
+      if (!arguments.length) return filter;
+      filter = x;
       return partnersHistogram;
     }
 
