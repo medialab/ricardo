@@ -56,10 +56,8 @@
       .attr("class", "circle-tooltip");
 
     function rollupYears(leaves){
-      //console.log("leaves", leaves);
       var res = {
         exp: d3.sum(leaves, function(d){
-          //console.log("rollupYears", d);
           if (!/^World/.test(d.partner_id) )
             return d.exp
           else
@@ -73,16 +71,11 @@
         }),
       };
       res.tot = res.exp + res.imp;
-      //console.log("res", res);
       return res;
     }
 
     function partnersHistogram(selection){
-      //console.log('selection', selection)
       selection.each(function(data){
-        console.log('data', data)
-        console.log('filter', filter)
-
         var indexYears = {};
         d3.nest()
           .key(function(d){ return d.year })
@@ -98,8 +91,6 @@
         if (filter !== "all")
           data=data.filter(function(p){return p.type === filter})
 
-
-        //console.log("data selected", data);
         var partners = d3.nest()  
           .key(function(d){ return d[continents ? "continent" : "partner_id"] })
           .key(function(d){ return d.year })
@@ -109,7 +100,6 @@
         partners.forEach(function(p){
           p.years = []
           p.values.forEach(function(d){
-            //console.log("d.key", d.key);
             p.years.push({
               key: d.key,
               exp: d.values.exp,
@@ -123,7 +113,6 @@
 
           delete p.values;
           p.avg_tot = d3.mean(p.years, function(d){ return d.pct_tot });
-          //console.log("p.avg_tot", p.avg_tot);
           p.avg_imp = d3.mean(p.years, function(d){ return d.pct_imp });
           p.avg_exp = d3.mean(p.years, function(d){ return d.pct_exp });
         })

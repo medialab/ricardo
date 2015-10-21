@@ -128,7 +128,7 @@
            /* lines */
 
             var line = d3.svg.line()
-                .defined(function(d) {return d[yValue] !== null; })
+                .defined(function(d) {return d[yValue]; })
                 .x(function(d) { return x(new Date(d.year, 0, 1)); })
                 .y(function(d) { return y(d[yValue]); });
 
@@ -164,10 +164,10 @@
                   }
 
               var voronoiGraph = voronoiGroup.selectAll("path")
-                .data(voronoi(d3.merge(data.map(function(d) { return d.values.filter(function(d){return d[yValue]!==null}); }))))
+                .data(voronoi(d3.merge(data.map(function(d) { return d.values.filter(function(d){return d[yValue]}); }))))
                   
-              voronoiGraph.attr("d", function(d) { if (d !== null) return "M" + d.join("L") + "Z"; })
-                .datum(function(d) { return d.point!==null; })
+              voronoiGraph.attr("d", function(d) { return "M" + d.join("L") + "Z"; })
+                .datum(function(d) { return d.point; })
                 .on("mouseover", mouseover)
                 .on("mouseout", mouseout);
 
@@ -176,7 +176,7 @@
                 .enter().append("path")
                 .attr("d", function(d) { 
                   if (d !== null) return "M" + d.join("L") + "Z"; })
-                .datum(function(d) {return d.point !==null; })
+                .datum(function(d) {return d.point ; })
                 .on("mouseover", mouseover)
                 .on("mouseout", mouseout);
 

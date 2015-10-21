@@ -14,13 +14,28 @@ angular.module('ricardo.controllers', [])
       {slug:"world", label:"World view"}
     ]
   })
+  // Manage display if no data available
+  .controller('ModalInstance', function ($scope, $modalInstance) {
+    $scope.ok = function () {
+      $scope.missing = "0";
+      console.log("close")
+      $modalInstance.close();
+    };
+
+  })
   .controller('bilateral', function ($scope, $location, reportingEntities, cfSource, cfTarget, apiService, utils, DEFAULT_REPORTING, DEFAULT_PARTNER, TABLE_HEADERS) {
+
+     $scope.ok = function () {
+      $scope.missing = "0";
+      console.log("close")
+      //$modalInstance.close();
+    };
 
     var data
     $scope.reportingEntities = reportingEntities;
     $scope.actualCurrency = "sterling pound"
     $scope.tableData = [];
-    $scope.missingData = [];
+    // $scope.missingData = [];
     $scope.totalServerItems = 0;
 
     $scope.alerts = []
@@ -64,7 +79,10 @@ angular.module('ricardo.controllers', [])
           $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
 
           $scope.timelineData = data.flows
-
+          ;
+          console.log("$scope.timelineData", $scope.timelineData);
+          
+         
           updateDateRange()
         })
     }
@@ -111,6 +129,18 @@ angular.module('ricardo.controllers', [])
       }));
 
       $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
+      console.log("$scope.tableData", $scope.tableData);
+      $scope.tableData.forEach( function (d) {
+              if (d.exp || d.imp !== null) {
+                $scope.missing = "0";
+                console.log("data missing yes : ", $scope.missing);
+              }
+              else {
+                $scope.missing = "1";
+                console.log("data missing no", $scope.missing);
+              }
+          })
+      
     }
 
     /* Merge mirror array in flows array */
@@ -214,75 +244,77 @@ angular.module('ricardo.controllers', [])
     };   
   })
   .controller('country', function ($scope, $location, $timeout, cfSource, cfTarget, cfSourceLine, apiService, lineChartService, reportingEntities, utils, DEFAULT_REPORTING, TABLE_HEADERS) {
+    $scope.ok = function () {
+      $scope.missing = "0";
+      console.log("close")
+      //$modalInstance.close();
+    };
+
     /* all var declarations */
     var data
-
-    $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
-    $scope.reportingEntities = reportingEntities;
-    
+    $scope.reportingEntities = reportingEntities;  
     $scope.filtered = {};
     $scope.filters = [
-    { 
-      type: {
-        value : "all",
-        writable: true
+      { 
+        type: {
+          value : "all",
+          writable: true
+        },
+        name: {
+          value: "All",
+          writable: true
+        }
       },
-      name: {
-        value: "All",
-        writable: true
-      }
-    },
-    {
-      type: {
-        value : "city/part_of",
-        writable: true
+      {
+        type: {
+          value : "city/part_of",
+          writable: true
+        },
+        name: {
+          value: "City",
+          writable: true
+        }
       },
-      name: {
-        value: "City",
-        writable: true
-      }
-    },
-    {
-      type: {
-        value : "colonial_area",
-        writable: true
+      {
+        type: {
+          value : "colonial_area",
+          writable: true
+        },
+        name: {
+          value: "Colonial",
+          writable: true
+        }
       },
-      name: {
-        value: "Colonial",
-        writable: true
-      }
-    },
-    {
-      type: {
-        value : "country",
-        writable: true
+      {
+        type: {
+          value : "country",
+          writable: true
+        },
+        name: {
+          value: "Country",
+          writable: true
+        }
       },
-      name: {
-        value: "Country",
-        writable: true
-      }
-    },
-    {
-      type: {
-        value : "geographical_area",
-        writable: true
+      {
+        type: {
+          value : "geographical_area",
+          writable: true
+        },
+        name: {
+          value: "Geo",
+          writable: true
+        }
       },
-      name: {
-        value: "Geo",
-        writable: true
-      }
-    },
-    {
-      type: {
-        value : "group",
-        writable: true
-      },
-      name: {
-        value: "Group",
-        writable: true
-      }
+      {
+        type: {
+          value : "group",
+          writable: true
+        },
+        name: {
+          value: "Group",
+          writable: true
+        }
     }];
-
     $scope.ordered = { 
       type: {
         value :"tot",
@@ -294,68 +326,67 @@ angular.module('ricardo.controllers', [])
       }
     };
     $scope.orders = [
-    { 
-      type: {
-        value :"tot",
-        writable: true
+      { 
+        type: {
+          value :"tot",
+          writable: true
+        },
+        name: {
+          value:"Average share on Total",
+          writable: true
+        }
       },
-      name: {
-        value:"Average share on Total",
-        writable: true
-      }
-    },
-    {
-      type: {
-        value :"imp",
-        writable: true
+      {
+        type: {
+          value :"imp",
+          writable: true
+        },
+        name: {
+          value:"Average share on Imports",
+          writable: true
+        }
       },
-      name: {
-        value:"Average share on Imports",
-        writable: true
-      }
-    },
-    {
-      type: {
-        value :"exp",
-        writable: true
+      {
+        type: {
+          value :"exp",
+          writable: true
+        },
+        name: {
+          value:"Average share on Exports",
+          writable: true
+        }
       },
-      name: {
-        value:"Average share on Exports",
-        writable: true
-      }
-    },
-    {
-      type: {
-        value :"name",
-        writable: true
-      },
-      name: {
-        value:"Name",
-        writable: true
-      }
+      {
+        type: {
+          value :"name",
+          writable: true
+        },
+        name: {
+          value:"Name",
+          writable: true
+        }
     }];
-
     $scope.grouped = {};
     $scope.groups = [
-    {
-      type: {
-        value :0,
-        writable: true
+      {
+        type: {
+          value :0,
+          writable: true
+        },
+        name: {
+          value:"None",
+          writable: true
+        }
       },
-      name: {
-        value:"None",
-        writable: true
-      }
-    },
-    {
-      type: {
-        value :1,
-        writable: true
-      },
-      name: {
-        value: "Continent",
-        writable: true
-      }
+      {
+        type: {
+          value :1,
+          writable: true
+        },
+        name: {
+          value: "Continent",
+          writable: true
+        }
     }];
 
     $scope.entities = {sourceEntity : {}, sourceCountryEntity : {}, sourceColonialEntity : {}, sourceGeoEntity : {}, sourceContinentEntity : {}, sourceWorldEntity : {}}
@@ -483,9 +514,9 @@ angular.module('ricardo.controllers', [])
               writable: true
             }
           };
-          console.log("timelineData", timelineData)
-
-          $scope.timelineData=timelineData;   
+          
+          $scope.timelineData=timelineData; 
+          
       });
     }
 
@@ -506,8 +537,7 @@ angular.module('ricardo.controllers', [])
           // save all partners for years available
           linechart_flows=cfSource.year().top(Infinity)
           linechart_flows.sort(function(a, b){ return d3.ascending(a.year, b.year); })
-          // linechart_flows = adjustArrayTime(linechart_flows, $scope.selectedMinDate, $scope.selectedMaxDate)
-
+          
           console.log("linechart_flows £", linechart_flows);
           linechart_flows = lineChartService.adjustArrayTime(linechart_flows, $scope.selectedMinDate, $scope.selectedMaxDate)
 
@@ -526,7 +556,6 @@ angular.module('ricardo.controllers', [])
                     var year = (new Date(d.key)).getFullYear()
                     if( year>=$scope.selectedMinDate && year<=$scope.selectedMaxDate)
                     {
-                      //console.log("d.value continent", d.value);
                       var td = $.extend({},d.value, {year: year,partner_id:continent.RICid});
                       if (!td.exp)
                         td.exp = null;
@@ -587,8 +616,6 @@ angular.module('ricardo.controllers', [])
               
               linechart_flows = cfSource.year().top(Infinity)
               console.log("continent linechart_flows", linechart_flows);
-
-              
 
               changeInPercent($scope.entities.sourceEntity.selected.RICid, linechart_flows, yValue, d.color, function(tab) {
                 tab.key = d.RICid;
@@ -667,7 +694,7 @@ angular.module('ricardo.controllers', [])
       $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
 
       updateTableData();
-      initLinechart($scope.reporting);
+      initLinechart($scope.reporting, $scope.yValue, $scope.conversion);
     }
 
     function updateTableData(){
@@ -676,6 +703,21 @@ angular.module('ricardo.controllers', [])
         return new Date($scope.selectedMinDate-1,1,0) <= d && d< new Date($scope.selectedMaxDate + 1,1,0)}
       );
       $scope.tableData = cfSource.year().top(Infinity);
+      console.log("$scope.tableData", $scope.tableData)
+      var missing;
+      $scope.tableData.forEach( function (d) {
+        //console.log("d", d);
+            if (d.imp || d. exp === null && d.continent === "World") {
+              missing = "0";
+              console.log("data missing yes : ", missing);
+            }
+            else {
+              missing = "1";
+              console.log("data missing no", missing);
+            }
+        }) 
+        $scope.missing = missing;
+        console.log("$scope.missing", $scope.missing);
     }
 
     $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {
@@ -1330,9 +1372,4 @@ angular.module('ricardo.controllers', [])
       utils.downloadCSV($scope.tableData, headers, order);
     };
   })
-  .controller('ModalInstance', function ($scope, $modalInstance) {
-    $scope.ok = function () {
-      $modalInstance.close();
-    };
-
-  });
+  

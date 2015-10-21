@@ -4,6 +4,16 @@
 
 angular.module('ricardo.directives-addendum', [])
 
+  .directive('navbar',[ 'fileService', '$timeout', function (fileService, $timeout){
+    return {
+      restrict: 'A',
+      replace: false,
+      templateUrl: 'partials/navbar.html',
+      link: function(scope, element, attrs) {
+
+      }
+    }
+  }])
   /* directive with only template */
   .directive('bilateralTitle', [function(){
     return {
