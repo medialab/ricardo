@@ -16,3 +16,14 @@ angular.module('ricardo')
     {'field': 'currency', 'displayName': 'currency'},
     {'field': 'sources', 'displayName': 'source'},
   ])
+  .constant('WORLD_TABLE_HEADERS', [
+    {'field': 'reporting_id', 'displayName': 'reporting'},
+    {'field': 'type', 'displayName': 'reporting type'},
+    {'field': 'partner_id', 'displayName': 'partner'},
+    {'field': 'year', 'displayName': 'year'},
+    {'field': 'imp', 'displayName': 'import'},
+    {'field': 'exp', 'displayName': 'export'},
+    {'field': 'total', 'displayName': 'total'},
+    {'field': 'currency', 'displayName': 'currency'},
+    {'field': 'sources', 'displayName': 'source'},
+  ])
