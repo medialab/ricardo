@@ -1307,7 +1307,7 @@ angular.module('ricardo.directives-addendum', [])
 
           scope.$watch("linechartData", function(newValue, oldValue){
             if(newValue && newValue !== oldValue && newValue.length > 0){    
-              console.log("newValue line", newValue);     
+              //console.log("newValue line", newValue);     
               newValue.forEach(function (e) {
 
               if (e.color !== undefined)
