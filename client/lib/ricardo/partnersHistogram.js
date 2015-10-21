@@ -80,8 +80,8 @@
     function partnersHistogram(selection){
       //console.log('selection', selection)
       selection.each(function(data){
-        //console.log('data', data)
-        //console.log('filter', filter)
+        console.log('data', data)
+        console.log('filter', filter)
 
         var indexYears = {};
         d3.nest()

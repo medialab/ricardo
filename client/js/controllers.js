@@ -17,20 +17,16 @@ angular.module('ricardo.controllers', [])
   .controller('bilateral', function ($scope, $location, reportingEntities, cfSource, cfTarget, apiService, utils, DEFAULT_REPORTING, DEFAULT_PARTNER, TABLE_HEADERS) {
 
     var data
-
-    $scope.palette = ["#f1783c", "#b2e5e3", "#3598c0", "#174858"]
     $scope.reportingEntities = reportingEntities;
-
+    $scope.actualCurrency = "sterling pound"
+    $scope.tableData = [];
+    $scope.missingData = [];
+    $scope.totalServerItems = 0;
 
     $scope.alerts = []
     $scope.closeAlert = function(index) {
       $scope.alerts.splice(index, 1);
       };
-
-    $scope.actualCurrency = "sterling pound"
-    $scope.tableData = [];
-    $scope.missingData = [];
-    $scope.totalServerItems = 0;
 
     $scope.pagingOptions = {
         pageSizes: [50],
@@ -51,6 +47,97 @@ angular.module('ricardo.controllers', [])
     $scope.rawYearsRange_forInf                     // Range of years in data adapted to inferior bound (useful for selectors)
     $scope.rawYearsRange_forSup                     // Range of years in data adapted to superior bound (useful for selectors)
 
+    function init(sourceID, targetID) {
+      console.log("sourceID",sourceID)
+      console.log("targetID",targetID)
+      apiService
+        .getFlows({reporting_ids: sourceID, partner_ids: targetID, with_sources: 1})
+        .then(function (result){
+          data = result                  
+
+          // Consolidate data, add mirror's data to flows array
+          mergeMirrorInFlows(data)
+
+          $scope.rawMinDate = d3.min( data.flows, function(d) { return d.year; })
+          $scope.rawMaxDate = d3.max( data.flows, function(d) { return d.year; })
+          $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
+          $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
+
+          $scope.timelineData = data.flows
+
+          updateDateRange()
+        })
+    }
+
+    // Initialization
+    $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid===DEFAULT_REPORTING})[0]
+    $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid===DEFAULT_PARTNER})[0]
+    init(DEFAULT_REPORTING, DEFAULT_PARTNER);
+
+    $scope.$watch("entities.sourceEntity.selected", function(newValue, oldValue){
+      if(newValue !== oldValue && newValue){
+        console.log("newValue source", newValue);
+        init(newValue.RICid, $scope.entities.targetEntity.selected.RICid);
+      }
+    })
+
+    $scope.$watch("entities.targetEntity.selected", function(newValue, oldValue){
+      if(newValue !== oldValue && newValue){
+        console.log("newValue target", newValue);
+        init($scope.entities.sourceEntity.selected.RICid, newValue.RICid);
+      }
+    })
+
+    $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {
+      if (newVal !== oldVal && newVal[0] != newVal[1]) {
+        updateDateRange()
+      }
+    })
+
+    /* update Range from date on flows array */
+    function updateDateRange(){
+      $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
+      $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
+      $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
+
+      cfSource.clear()
+      cfSource.add(data.flows.filter(function(d){
+        return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
+      }));
+
+      cfTarget.clear()
+      cfTarget.add(data.mirror_flows.filter(function(d){
+        return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
+      }));
+
+      $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
+    }
+
+    /* Merge mirror array in flows array */
+    function mergeMirrorInFlows(data){
+      var mirrorFlows_byYear = {} // exchange between countries by year 
+
+      // first step : clean mirror_flows and push data into mirrorFlos_byYear
+      data.mirror_flows.forEach(function(d){
+        var obj = mirrorFlows_byYear[d.year] || {}
+        obj.imp = d.imp || null
+        obj.exp = d.exp || null
+        mirrorFlows_byYear[d.year] = obj // useless ?
+      })
+
+      // second step : add mirror_flow to flow
+      data.flows.forEach(function(d){
+        var mirror = mirrorFlows_byYear[d.year]
+        if (mirror) {
+          d.imp_mirror = mirror.imp || null
+          d.exp_mirror = mirror.exp || null
+        } else {
+          d.imp_mirror = null
+          d.exp_mirror = null
+        }
+      })
+    }
+
     $scope.setPagingData = function(data, pageSize, page){
         var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
         $scope.tablePagedData = pagedData;
@@ -62,9 +149,9 @@ angular.module('ricardo.controllers', [])
     };
 
     function sortData(data, field, direction) {
-      var dataS = data
-      if (dataS) {
-        dataS.sort(function (a, b) {
+      var dataCopy = data
+      if (dataCopy) {
+        dataCopy.sort(function (a, b) {
               if (direction === "asc") {
             return a[field]> b[field]? 1 : -1;
           } else {
@@ -75,7 +162,6 @@ angular.module('ricardo.controllers', [])
     }
 
     $scope.tablePagedData = []
-
     $scope.gridOptions = {
       data: 'tablePagedData',
       enablePaging: true,
@@ -125,109 +211,9 @@ angular.module('ricardo.controllers', [])
       });
 
       utils.downloadCSV($scope.tableData, headers, order);
-    };
-
-    // ADDENDUM from sprint 06 / 07 / 2015
-    $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid===DEFAULT_REPORTING})[0]
-    $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid===DEFAULT_PARTNER})[0]
-
-    function init(sourceID, targetID) {
-
-      apiService
-        .getFlows({reporting_ids: sourceID, partner_ids: targetID, with_sources: 1})
-        .then(function(result){
-
-          data = result
-
-          $scope.selectedMinDate = 1600                   // Min year as selected by selector or brushing
-          $scope.selectedMaxDate = 2000                   // Max year as selected by selector or brushing
-
-          // Consolidate data, add mirror's data to flows array
-          mergeMirrorInFlows(data)
-
-          $scope.timelineData = data.flows
-
-          $scope.rawMinDate = d3.min( data.flows, function(d) { return d.year; })
-          $scope.rawMaxDate = d3.max( data.flows, function(d) { return d.year; })
-          $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
-          $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
-
-          updateDateRange()
-        })
-    }
-
-    // Initialization
-    init(DEFAULT_REPORTING, DEFAULT_PARTNER);
-
-    $scope.$watch("entities.sourceEntity.selected", function(newValue, oldValue){
-      if(newValue !== oldValue && newValue){
-        init(newValue.RICid, $scope.entities.targetEntity.selected.RICid);
-      }
-    })
-
-    $scope.$watch("entities.targetEntity.selected", function(newValue, oldValue){
-      if(newValue !== oldValue && newValue){
-        init($scope.entities.sourceEntity.selected.RICid, newValue.RICid);
-      }
-    })
-
-    $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {
-      if (newVal !== oldVal && newVal[0] != newVal[1]) {
-        updateDateRange()
-      }
-    })
-
-    $scope.$watch('selectedMaxDate', function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        updateDateRange()
-      }
-    })
-
-    /* update Range from date on flows array */
-    function updateDateRange(){
-      $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
-      $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
-      $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
-
-      cfSource.clear()
-      cfSource.add(data.flows.filter(function(d){
-        return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
-      }));
-
-      cfTarget.clear()
-      cfTarget.add(data.mirror_flows.filter(function(d){
-        return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
-      }));
-
-      $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
-    }
-
-    /* Merge mirror array in flows array */
-    function mergeMirrorInFlows(data){
-      var mirrorFlows_byYear = {} // exchange between countries by year 
-
-      // first step : clean mirror_flows and push data into mirrorFlos_byYear
-      data.mirror_flows.forEach(function(d){
-        var obj = mirrorFlows_byYear[d.year] || {}
-        obj.imp = d.imp || null
-        obj.exp = d.exp || null
-        mirrorFlows_byYear[d.year] = obj // useless ?
-      })
-
-      // second step : add mirror_flow to flow
-      data.flows.forEach(function(d){
-        var mirror = mirrorFlows_byYear[d.year]
-        if (mirror) {
-          d.imp_mirror = mirror.imp || null
-          d.exp_mirror = mirror.exp || null
-        } else {
-          d.imp_mirror = null
-          d.exp_mirror = null
-        }
-      })
-    }
+    };   
   })
-  .controller('country', function ($scope, $location, $timeout, cfSource, cfTarget, cfSourceLine, apiService, reportingEntities, utils, DEFAULT_REPORTING, TABLE_HEADERS) {
+  .controller('country', function ($scope, $location, $timeout, cfSource, cfTarget, cfSourceLine, apiService, lineChartService, reportingEntities, utils, DEFAULT_REPORTING, TABLE_HEADERS) {
     /* all var declarations */
     var data
 
@@ -446,7 +432,7 @@ angular.module('ricardo.controllers', [])
 
           /* line chart world */
 
-          d3.select("#linechart-world > svg").remove()
+          //d3.select("#linechart-world > svg").remove()
 
           $scope.reporting = []
           //$scope.entities.multiEntity = {}
@@ -497,57 +483,16 @@ angular.module('ricardo.controllers', [])
               writable: true
             }
           };
+          console.log("timelineData", timelineData)
 
           $scope.timelineData=timelineData;   
       });
     }
 
-    function adjustArrayTime(linechart_flows, min, max) {
-      var years = d3.nest()
-        .key(function (d) {return d.year})
-        .entries(linechart_flows)
 
-      var minDate = d3.min(years, function (years) {return years.key})
-      var maxDate = d3.max(years, function (years) {return years.key})
-
-      if (minDate > min) {
-        for (var i = min; i < minDate; i++) 
-        {
-          linechart_flows.push({
-            reporting_id: linechart_flows[0].reporting_id,
-            type: linechart_flows[0].reporting_id,
-            partner_id: linechart_flows[0].partner_id, 
-            year: i, 
-            imp:null,
-            exp:null, 
-            tot: null , 
-            currency: null,
-            sources: null
-          })
-        }   
-      }
-
-      if ( maxDate < max ) {
-        for (var i = maxDate; i < max; i++) 
-        {
-          linechart_flows.push({
-            reporting_id: linechart_flows[0].reporting_id,
-            type: linechart_flows[0].reporting_id,
-            partner_id: linechart_flows[0].partner_id, 
-            year: i, 
-            imp:null,
-            exp:null, 
-            tot: null , 
-            currency: null,
-            sources: null
-          })
-        }  
-      }
-      return linechart_flows;
-    }
 
     var initLinechart = function(partners, yValue, conversion){   
-      console.log("partners", partners);   
+        console.log("partners", partners);   
         var linechart_flows=[]
         if(partners.length>0 && conversion === "sterling" )
         {
@@ -561,47 +506,12 @@ angular.module('ricardo.controllers', [])
           // save all partners for years available
           linechart_flows=cfSource.year().top(Infinity)
           linechart_flows.sort(function(a, b){ return d3.ascending(a.year, b.year); })
-          linechart_flows = adjustArrayTime(linechart_flows, $scope.selectedMinDate, $scope.selectedMaxDate)
-          // var years = d3.nest()
-          //   .key(function (d) {return d.year})
-          //   .entries(linechart_flows)
+          // linechart_flows = adjustArrayTime(linechart_flows, $scope.selectedMinDate, $scope.selectedMaxDate)
 
-          // var minDate = d3.min(years, function (years) {return years.key})
-          // var maxDate = d3.max(years, function (years) {return years.key})
+          console.log("linechart_flows £", linechart_flows);
+          linechart_flows = lineChartService.adjustArrayTime(linechart_flows, $scope.selectedMinDate, $scope.selectedMaxDate)
 
-          // if (minDate > $scope.selectedMinDate) {
-          //   for (var i = $scope.selectedMinDate; i < minDate; i++) 
-          //   {
-          //     linechart_flows.push({
-          //       reporting_id: linechart_flows[0].reporting_id,
-          //       type: linechart_flows[0].reporting_id,
-          //       partner_id: linechart_flows[0].partner_id, 
-          //       year: i, 
-          //       imp:null,
-          //       exp:null, 
-          //       tot: null , 
-          //       currency: null,
-          //       sources: null
-          //     })
-          //   }   
-          // }
-
-          // if ( maxDate < $scope.selectedMinDate ) {
-          //   for (var i = maxDate; i < $scope.selectedMinDate; i++) 
-          //   {
-          //     linechart_flows.push({
-          //       reporting_id: linechart_flows[0].reporting_id,
-          //       type: linechart_flows[0].reporting_id,
-          //       partner_id: linechart_flows[0].partner_id, 
-          //       year: i, 
-          //       imp:null,
-          //       exp:null, 
-          //       tot: null , 
-          //       currency: null,
-          //       sources: null
-          //     })
-          //   }  
-          // }
+          console.log("linechart_flows £", linechart_flows);
 
           cfSource.partner().filterAll()  
 
@@ -649,10 +559,14 @@ angular.module('ricardo.controllers', [])
               
               linechart_flows = cfSource.year().top(Infinity)
 
-              linechart_flows = adjustArrayTime(linechart_flows, $scope.selectedMinDate, $scope.selectedMaxDate)
-              console.log("linechart_flows", linechart_flows);
+              cfSource.partner().filterAll();
+
+              console.log("linechart_flows before adjust %", linechart_flows);
+              linechart_flows = lineChartService.adjustArrayTime(linechart_flows, $scope.selectedMinDate, $scope.selectedMaxDate)
+              console.log("linechart_flows %", linechart_flows);
 
               changeInPercent($scope.entities.sourceEntity.selected.RICid, linechart_flows, yValue, d.color, function(tab) {
+
                 tab.key = d.RICid;
                 partnersPct.push(tab);
                 $scope.linechartData = [];
@@ -673,6 +587,8 @@ angular.module('ricardo.controllers', [])
               
               linechart_flows = cfSource.year().top(Infinity)
               console.log("continent linechart_flows", linechart_flows);
+
+              
 
               changeInPercent($scope.entities.sourceEntity.selected.RICid, linechart_flows, yValue, d.color, function(tab) {
                 tab.key = d.RICid;
@@ -715,6 +631,8 @@ angular.module('ricardo.controllers', [])
           })
 
           console.log("worldFlowsYearsFormat changeInPercent", worldFlowsYearsFormat);
+          worldFlowsYearsFormat = lineChartService.adjustArrayTime(worldFlowsYearsFormat, $scope.selectedMinDate, $scope.selectedMaxDate)
+              console.log("worldFlowsYearsFormat continent %", worldFlowsYearsFormat);
           var pctArray = [];
           data.forEach( function (data) {
             worldFlowsYearsFormat.forEach(function (d) {
@@ -723,7 +641,6 @@ angular.module('ricardo.controllers', [])
                 var ratio ;
                 if (data[yValue] === null || data[yValue] === 0 || d[yValue] === null || d[yValue] === 0)
                 {
-                  
                   ratio = null;
                 }
                 else {
@@ -763,7 +680,8 @@ angular.module('ricardo.controllers', [])
 
     $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {
       if (newVal !== oldVal && newVal[0] != newVal[1]) {
-        updateDateRange()
+        updateDateRange();
+        initLinechart($scope.reporting, $scope.yValue, $scope.conversion);
       }
     })
 
@@ -858,10 +776,9 @@ angular.module('ricardo.controllers', [])
     $scope.$watchCollection('[reporting, yValue, conversion]', function (newValue, oldValue){
       if(newValue !== oldValue && newValue){
         console.log("newValue", newValue);
-          initLinechart($scope.reporting, $scope.yValue, $scope.conversion);
+        initLinechart($scope.reporting, $scope.yValue, $scope.conversion);
       }
     }, true)
-
 
     /* Display and sort table data */
     $scope.loading = false;

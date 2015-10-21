@@ -22,6 +22,55 @@ angular.module('ricardo.services', [])
      }
    }
   })
+  .factory('lineChartService', function(){
+    return {
+
+      adjustArrayTime : function (linechart_flows, min, max) {
+      var years = d3.nest()
+        .key(function (d) {return d.year})
+        .entries(linechart_flows)
+
+      var minDate = d3.min(years, function (years) {return years.key})
+      var maxDate = d3.max(years, function (years) {return years.key})
+
+      if (minDate > min) {
+        for (var i = min; i < minDate; i++) 
+        {
+          linechart_flows.push({
+            reporting_id: linechart_flows[0].reporting_id,
+            type: linechart_flows[0].reporting_id,
+            partner_id: linechart_flows[0].partner_id, 
+            year: i, 
+            imp:null,
+            exp:null, 
+            tot: null , 
+            currency: null,
+            sources: null
+          })
+        }   
+      }
+
+      if ( maxDate < max ) {
+        for (var i = maxDate; i < max; i++) 
+        {
+          linechart_flows.push({
+            reporting_id: linechart_flows[0].reporting_id,
+            type: linechart_flows[0].reporting_id,
+            partner_id: linechart_flows[0].partner_id, 
+            year: i, 
+            imp:null,
+            exp:null, 
+            tot: null , 
+            currency: null,
+            sources: null
+          })
+        }  
+      }
+      return linechart_flows;
+    }
+
+    }
+  })
   .factory('apiService', function($http, $q, $rootScope, BASE_API_URL) {
 
    return {

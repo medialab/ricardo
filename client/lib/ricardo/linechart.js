@@ -143,7 +143,7 @@
                     .attr("stroke-width", "2px")
               
             entities
-              .attr("d", function(d) {  return line(d.values); })
+              .attr("d", function(d) { return line(d.values); })
               .attr("stroke", function(d,i) { return d["color"]; })
               .attr("fill", "none")
 
@@ -166,16 +166,17 @@
               var voronoiGraph = voronoiGroup.selectAll("path")
                 .data(voronoi(d3.merge(data.map(function(d) { return d.values.filter(function(d){return d[yValue]!==null}); }))))
                   
-              voronoiGraph.attr("d", function(d) { return "M" + d.join("L") + "Z"; })
-                .datum(function(d) { return d.point; })
+              voronoiGraph.attr("d", function(d) { if (d !== null) return "M" + d.join("L") + "Z"; })
+                .datum(function(d) { return d.point!==null; })
                 .on("mouseover", mouseover)
                 .on("mouseout", mouseout);
 
 
               voronoiGraph
                 .enter().append("path")
-                .attr("d", function(d) { return "M" + d.join("L") + "Z"; })
-                .datum(function(d) {return d.point; })
+                .attr("d", function(d) { 
+                  if (d !== null) return "M" + d.join("L") + "Z"; })
+                .datum(function(d) {return d.point !==null; })
                 .on("mouseover", mouseover)
                 .on("mouseout", mouseout);
 
