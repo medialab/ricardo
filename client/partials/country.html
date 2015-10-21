@@ -1,7 +1,25 @@
-
+<div class="container">
+  <div ng-show="missing" class="alert"> 
+    <div class="modal-body" >
+     <p>
+        There is <strong>no data available</strong> in the database for {{entities.sourceEntity.selected.RICname}}
+     </p>
+     <p>
+     between {{selectedMinDate}} and {{selectedMaxDate}}  
+     </p>
+      <p>
+        Choose another one or change date selection, thank you !
+     </p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="ok()">OK</button>
+    </div>
+  </div>
+</div>
 <div id="sticky-marker"></div>
 <div id="sticky-container">
 <div class="container">
+
   <div class="row">
     <div class="timeline-cont col-sm-12">
       <country-title></country-title>
@@ -29,21 +47,22 @@
   </div>
 </div>
 </div>
-  <div class="container">
-    <div class="row" >
-      <div id="countryBrushing" class="col-sm-12">
-        <brushing-timeline
-          ng-data="timelineData"
-          start-date="selectedMinDate"
-          end-date="selectedMaxDate"
-          raw-start-date="rawMinDate"
-          raw-end-date="rawMaxDate"
-          source-country="entities.sourceEntity.selected.RICname"
-          target-country="entities.targetEntity.selected.RICname"
-        ></brushing-timeline>
-      </div>
+<div class="container">
+  
+  <div class="row" >
+    <div id="countryBrushing" class="col-sm-12">
+      <brushing-timeline
+        ng-data="timelineData"
+        start-date="selectedMinDate"
+        end-date="selectedMaxDate"
+        raw-start-date="rawMinDate"
+        raw-end-date="rawMaxDate"
+        source-country="entities.sourceEntity.selected.RICname"
+        target-country="entities.targetEntity.selected.RICname"
+      ></brushing-timeline>
     </div>
   </div>
+</div>
 
 
 <div class="container">
