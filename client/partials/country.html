@@ -37,7 +37,7 @@
           <div class="line unavailable"></div> Unavailable data
         </div>
         <div class="legend-item">
-          Data expressed in <strong>{{actualCurrency}}</strong>
+          Data expressed in <strong>Sterling</strong>
         </div>
         <i class="fa fa-info-circle"></i>
 
@@ -47,6 +47,7 @@
   </div>
 </div>
 </div>
+
 <div class="container">
   
   <div class="row" >
@@ -76,7 +77,7 @@
           <strong>Balance : </strong> (Exports - Imports) / (Exports + Imports)
         </div> 
         <div class="legend-item">
-          <strong>| Total | : </strong> Trade share average for  available years
+          <strong>| Total | : </strong> Trade share average for available years
         </div> 
     </div>
     <div class="col-md-6 inline-select" style="float:right;">
@@ -110,23 +111,50 @@
 <div id="select-doubleChart">
     <div class="row">
       <div  class="col-sm-12">
-        <div id="partners-histogram-container"  partners-histogram></div>
+<!--       <div ng-show="missingPartner" class="alert"> 
+        <div class="modal-body" >
+         <p>
+            There is <strong>no data available</strong> in the database for {{entities.sourceEntity.selected.RICname}}
+         </p>
+         <p>
+         between {{selectedMinDate}} and {{selectedMaxDate}}  
+         </p>
+          <p>
+            Choose another one or change date selection, thank you !
+         </p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-default" ng-click="okPartner()">OK</button>
+        </div>
+      </div> -->
+        <partners-histogram 
+        ng-data="tableData" 
+        country-data="entities.sourceEntity.selected"
+        group-data="grouped.selected.type.value"
+        order-data="ordered.selected.type.value"
+        filter-data="filtered.selected.type.value"
+        ></partners-histogram>
+       <!--  <div id="partners-histogram-container"></div> -->
       </div>
     </div>
   </div>
-       <!--  <partners-histograms ng-data="tableData" country="entities.sourceEntity.selected"></partners-histograms> -->
 
   <div class="row">
-    <div class="col-sm-9">
+    <div class="col-sm-8">
       <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} with 
       <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
       <span class="close-btn">X</span>
       <span ng-if="!$last">, </span>
       </span>, {{selectedMinDate}} – {{selectedMaxDate}}, in {{actualCurrency}}
       <i class="fa fa-info-circle"></i> </h3>
+        <div ng-show="messagePercent"> 
+         <p>
+            The percentages are based on the total amount of partners flows of {{entities.sourceEntity.selected.RICname}}
+         </p>
+        </div>
     </div>
-    <div class="col-sm-2" style="float:right">
-      <div class="filter-group" ng-show="RICentitiesDD.length">
+    <div class="col-sm-4" style="float:right">
+      <div class="filter-group">
           <div class="btn-group pull-right">
             <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'total'" uncheckable>total</label>
             <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'imp'" uncheckable>imports</label>
@@ -134,7 +162,7 @@
           </div>
           <div class="btn-group pull-right" style="margin-right:30px;">
             <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'sterling'" uncheckable>Sterling</label>
-            <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'value'" uncheckable>Pourcent</label>
+            <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'value'" uncheckable>Percent</label>
           </div>
       </div>
     </div>
@@ -182,6 +210,7 @@
     </div>
     
   <div class="row">
+
     
     <div class="col-sm-12">
       <div  id="linechart-world"  linechart-world></div>

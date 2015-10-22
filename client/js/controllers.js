@@ -235,9 +235,14 @@ angular.module('ricardo.controllers', [])
       $scope.missing = "0";
       //$modalInstance.close();
     };
+    $scope.okPartner = function () {
+      console.log('là');
+      //$modalInstance.close();
+    };
 
     /* all var declarations */
     var data
+    $scope.messagePercent = 0;
     $scope.reportingEntities = reportingEntities;  
     $scope.filtered = {};
     $scope.filters = [
@@ -473,6 +478,7 @@ angular.module('ricardo.controllers', [])
           var flowsPerYear = cfSource.years().top(Infinity)
           // arrrrrg CFSource m'a tuer ! we need to do a hard copy. 
           flowsPerYear = JSON.parse(JSON.stringify(flowsPerYear))
+          //console.log("flowsPerYear", flowsPerYear);
           
           cfSource.partner().filterAll();
           
@@ -497,6 +503,28 @@ angular.module('ricardo.controllers', [])
             },
             name: {
               value:"Average share on Total",
+              writable: true
+            }
+          };
+
+          $scope.grouped.selected = { 
+            type: {
+              value :0,
+              writable: true
+            },
+            name: {
+              value:"None",
+              writable: true
+            }
+          };
+
+          $scope.filtered.selected = { 
+            type: {
+              value :"all",
+              writable: true
+            },
+            name: {
+              value:"All",
               writable: true
             }
           };
@@ -570,6 +598,7 @@ angular.module('ricardo.controllers', [])
                 $scope.yValue = yValue;
                 $scope.conversion = "sterling";
                 $scope.actualCurrency = "sterling pound";
+                $scope.messagePercent = 0;
               }
               if (d.type === "continent") {
                  apiService
@@ -585,6 +614,7 @@ angular.module('ricardo.controllers', [])
                 $scope.yValue = yValue;
                 $scope.conversion = "sterling";
                 $scope.actualCurrency = "sterling pound"; 
+                $scope.messagePercent = 0;
               }
             })
 
@@ -674,6 +704,7 @@ angular.module('ricardo.controllers', [])
                       $scope.yValue = yValue;
                       $scope.conversion = "value";
                       $scope.actualCurrency = "pourcent";
+                      $scope.messagePercent = 1;
                     });
                   })
             }
@@ -702,6 +733,7 @@ angular.module('ricardo.controllers', [])
                   $scope.yValue = yValue;
                   $scope.conversion = "value";
                   $scope.actualCurrency = "pourcent";
+                  $scope.messagePercent = 1;
                 });
               })
             }
@@ -778,7 +810,7 @@ angular.module('ricardo.controllers', [])
         return new Date($scope.selectedMinDate-1,1,0) <= d && d< new Date($scope.selectedMaxDate + 1,1,0)}
       );
       $scope.tableData = cfSource.year().top(Infinity);
-      // console.log("$scope.tableData", $scope.tableData)
+      
       var missing;
       $scope.tableData.forEach( function (d) {
         //console.log("d", d);

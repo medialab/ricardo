@@ -29,8 +29,8 @@
 
 <div class="container">
     <div class="row" >
-      <div class="col-sm-12">
-        <world-title id="alt-title" style="display:none;"></world-title>
+      <div id="countryBrushing" class="col-sm-12">
+        <!-- <world-title id="alt-title" style="display:none;"></world-title> -->
         <brushing-timeline
           ng-data="timelineData"
           start-date="selectedMinDate"
@@ -40,6 +40,7 @@
         ></brushing-timeline>
       </div>
     </div>
+
 </div>
 
 <div class="container">
@@ -61,9 +62,9 @@
             </div>
             <div class="btn-group pull-right" style="margin-right:30px;">
               <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'sterling'" uncheckable>Sterling</label>
-              <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'value'" uncheckable>Pourcent</label>
+              <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'value'" uncheckable>Perrcent</label>
             </div>
-      </div>
+        </div>
       </div>
   </div>
   <div id="select-lineChart">
