@@ -87,42 +87,6 @@ angular.module('ricardo.directives-addendum', [])
     }
   }])
 
-  /* directive with only watch */
-  .directive('inlineSelectFilter', [function(){
-    return {
-      restrict: 'E'
-      ,templateUrl: 'partials/inlineSelectFilter.html'
-      ,scope: {
-          model: '=ngModel'
-        , list: '=list'
-      }
-      // ,link: function(scope, element, attrs){
-      //   if(scope.rawModel && scope.rawList){
-      //     scope.model = { name: '' + scope.rawModel, value: Number(scope.rawModel) }
-      //     scope.list = scope.rawList.map(function(d){ return { name: '' + d, value: Number(d) } })
-      //   }
-
-      //   scope.$watch('rawList', function(newValue, oldValue) {
-      //     if ( newValue ) {
-      //       scope.list = scope.rawList.map(function(d){ return { name: '' + d, value: Number(d) } })
-      //     }
-      //   })
-
-      //   scope.$watch('rawModel', function(newValue, oldValue) {
-      //     if ( newValue ) {
-      //       scope.model = { name: '' + scope.rawModel, value: Number(scope.rawModel) }
-      //     }
-      //   })
-
-      //   scope.$watch('model', function(newValue, oldValue) {
-      //     if ( newValue ) {
-      //       scope.rawModel = newValue.value
-      //     }
-      //   })
-
-      // }
-    }
-  }])
   /* directive with watch, update and draw functions */
   .directive('dualTimeline', [function(){
     return {
@@ -1315,20 +1279,21 @@ angular.module('ricardo.directives-addendum', [])
               removeSvgElements(chart)
               
               var data=scope.ngData.filter(function(p){return p.type === newValue})
-              // if (data.length === 0){
-              //   d3.select("#partners-histogram-container").append("div")
-              //     .attr("class", "alert")
-              //     .html(function(d,i) {
-              //        return '<div class="modal-body" ><p> There is <strong>no data available</strong> in the database for this filter</p><p>Choose another one or change date selection, thank you !</p> </div> <div class="modal-footer"><button class="btn btn-default" ng-click="okPartner()">OK</button></div>';})
-              // }
+              if (data.length === 0){
+                d3.select("#partners-histogram-container").append("div")
+                  .attr("class", "alert")
+                  .attr("id", "missingDataHisto")
+                  .html(function() {
+                     return '<div class="modal-body" ><p> There is <strong>no data available</strong> in the database for this filter</p><p>Choose another one or change date selection, thank you !</p> </div> <div class="modal-footer"><button class="btn btn-default" ng-click="okPartner()">OK</button></div>';})
+                  .on("click", function(){
+                    console.log("click")
+                    chart.selectAll("div#missingDataHisto").remove();
+                  }) 
+              }
               partnersHistogram(data, continents, order, newValue);
-            }
-            
+            } 
           }
         })
-
-
-       
 
         // Partner Histo tools functions 
 
