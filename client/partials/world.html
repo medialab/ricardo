@@ -62,7 +62,7 @@
             </div>
             <div class="btn-group pull-right" style="margin-right:30px;">
               <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'sterling'" uncheckable>Sterling</label>
-              <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'value'" uncheckable>Perrcent</label>
+              <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'value'" uncheckable>Percent</label>
             </div>
         </div>
       </div>
@@ -105,7 +105,9 @@
 
   <div class="row">
     <div class="col-sm-12">
-      <div id="linechart-world"  linechart-world></div>
+      <!-- <div id="linechart-world"  linechart-world></div> -->
+      <linechart-world ng-data="linechartData">
+      </linechart-world>
     </div>
   </div>
   </div>
