@@ -9,9 +9,9 @@ angular.module('ricardo.controllers', [])
     };
 
     $scope.views = [
-      {slug:"bilateral", label:"Bilateral view"},
+      {slug:"world", label:"World view"},
       {slug:"country", label:"Country view"},
-      {slug:"world", label:"World view"}
+      {slug:"bilateral", label:"Bilateral view"}
     ]
   })
   // Manage display if no data available
@@ -23,7 +23,6 @@ angular.module('ricardo.controllers', [])
 
   })
   .controller('bilateral', function ($scope, $location, reportingEntities, cfSource, cfTarget, apiService, utils, DEFAULT_REPORTING, DEFAULT_PARTNER, TABLE_HEADERS) {
-
      $scope.ok = function () {
       $scope.missing = "0";
       //$modalInstance.close();
@@ -232,12 +231,9 @@ angular.module('ricardo.controllers', [])
   })
   .controller('country', function ($scope, $location, $timeout, cfSource, cfTarget, cfSourceLine, apiService, lineChartService, reportingEntities, utils, DEFAULT_REPORTING, TABLE_HEADERS) {
     $scope.ok = function () {
+      console.log("là")
       $scope.missing = "0";
-      //$modalInstance.close();
-    };
-    $scope.okPartner = function () {
-      console.log('là');
-      //$modalInstance.close();
+
     };
 
     /* all var declarations */
@@ -813,18 +809,19 @@ angular.module('ricardo.controllers', [])
       
       var missing;
       $scope.tableData.forEach( function (d) {
-        //console.log("d", d);
             if (d.imp || d. exp === null && d.continent === "World") {
-              missing = "0";
-              //console.log("data missing yes : ", missing);
+              missing = "0"; 
             }
             else {
-              missing = "1";
-              //console.log("data missing no", missing);
+              missing = "1";  
             }
         }) 
-        $scope.missing = missing;
-        //console.log("$scope.missing", $scope.missing);
+        var onlyWorld = $scope.tableData.every(function (d) {
+          return d.continent === "World";
+        })
+        if (onlyWorld)
+          missing = "1";
+        $scope.missing = missing;    
     }
 
     $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {

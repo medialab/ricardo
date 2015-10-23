@@ -1252,6 +1252,17 @@ angular.module('ricardo.directives-addendum', [])
           }
         }, true);
 
+        function noData () {
+          d3.select("#partners-histogram-container").append("div")
+            .attr("class", "alert")
+            .attr("id", "missingDataHisto")
+            .html(function() {
+               return '<div class="modal-body" ><p> There is <strong>no data available</strong> in the database for this filter</p><p>Choose another one or change date selection, thank you !</p> </div> <div class="modal-footer"><button class="btn btn-default" ng-click="okPartner()">OK</button></div>';})
+            .on("click", function(){
+              chart.selectAll("div#missingDataHisto").remove();
+            })
+        } 
+
         scope.$watch("groupData", function(newValue, oldValue){
           if (newValue !== oldValue) {
             removeSvgElements(chart)
@@ -1268,6 +1279,7 @@ angular.module('ricardo.directives-addendum', [])
         }, true);
 
 
+
         // uncomments these lines to use filter selection with calcul on all data
         scope.$watch("filterData", function (newValue, oldValue){
           if(newValue !== oldValue){
@@ -1276,19 +1288,10 @@ angular.module('ricardo.directives-addendum', [])
               partnersHistogram(scope.ngData, continents, order, newValue);
             }
             else {
-              removeSvgElements(chart)
-              
+              removeSvgElements(chart) 
               var data=scope.ngData.filter(function(p){return p.type === newValue})
               if (data.length === 0){
-                d3.select("#partners-histogram-container").append("div")
-                  .attr("class", "alert")
-                  .attr("id", "missingDataHisto")
-                  .html(function() {
-                     return '<div class="modal-body" ><p> There is <strong>no data available</strong> in the database for this filter</p><p>Choose another one or change date selection, thank you !</p> </div> <div class="modal-footer"><button class="btn btn-default" ng-click="okPartner()">OK</button></div>';})
-                  .on("click", function(){
-                    console.log("click")
-                    chart.selectAll("div#missingDataHisto").remove();
-                  }) 
+                noData ();
               }
               partnersHistogram(data, continents, order, newValue);
             } 
