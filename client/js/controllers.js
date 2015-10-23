@@ -115,15 +115,27 @@ angular.module('ricardo.controllers', [])
       }));
 
       $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
-      $scope.tableData.forEach( function (d) {
-              if (d.exp || d.imp !== null) {
-                $scope.missing = "0";
-              }
-              else {
-                $scope.missing = "1";
-              }
-          })
-      
+  
+      var dataFilterBySource = d3.nest()
+        .key(function (d) {return d.reporting_id})
+        .entries($scope.tableData);
+
+      var missing;
+      var allExpNull = dataFilterBySource[0].values.every(function (d) {
+          return d.exp === null ;
+        })
+
+      var allImpNull = dataFilterBySource[0].values.every(function (d) {
+          return d.imp === null ;
+        })
+
+      if (allExpNull && allImpNull) {
+        missing = "1"; 
+      }
+      else {
+        missing = "0";  
+      }
+      $scope.missing = missing;
     }
 
     /* Merge mirror array in flows array */
@@ -654,20 +666,27 @@ angular.module('ricardo.controllers', [])
       $scope.tableData = cfSource.year().top(Infinity);
       
       var missing;
-      $scope.tableData.forEach( function (d) {
-            if (d.imp || d. exp === null && d.continent === "World") {
-              missing = "0"; 
-            }
-            else {
-              missing = "1";  
-            }
-        }) 
-        var onlyWorld = $scope.tableData.every(function (d) {
-          return d.continent === "World";
+      var allExpNull = $scope.tableData.every(function (d) {
+          return d.exp === null;
         })
-        if (onlyWorld)
-          missing = "1";
-        $scope.missing = missing;    
+
+      var allImpNull = $scope.tableData.every(function (d) {
+          return d.imp === null;
+        })
+
+      if (allExpNull && allImpNull) {
+        missing = "1"; 
+      }
+      else {
+        missing = "0";  
+      }
+
+      var onlyWorld = $scope.tableData.every(function (d) {
+        return d.continent === "World";
+      })
+      if (onlyWorld)
+        missing = "1";
+      $scope.missing = missing;    
     }
 
     $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {
@@ -862,9 +881,13 @@ angular.module('ricardo.controllers', [])
 
     $scope.reportingEntities = reportingEntities;
 
+    console.log("reportingWorldFlows", reportingWorldFlows)
+
     var worldFlowsYears = d3.nest()
       .key(function (d) { return d.year})
       .entries(reportingWorldFlows);
+
+    console.log("worldFlowsYears", worldFlowsYears)
 
     var worldFlowsYearsFormat = [];
     worldFlowsYears.forEach( function (d) {
@@ -881,6 +904,8 @@ angular.module('ricardo.controllers', [])
           sources: d.values[0].sources
         });
     })
+
+    // $scope.nbreporting = 
 
     $scope.moded = {};
     $scope.modes = [
