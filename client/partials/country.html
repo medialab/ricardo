@@ -111,22 +111,6 @@
 <div id="select-doubleChart">
     <div class="row">
       <div  class="col-sm-12">
-<!--       <div ng-show="missingPartner" class="alert"> 
-        <div class="modal-body" >
-         <p>
-            There is <strong>no data available</strong> in the database for {{entities.sourceEntity.selected.RICname}}
-         </p>
-         <p>
-         between {{selectedMinDate}} and {{selectedMaxDate}}  
-         </p>
-          <p>
-            Choose another one or change date selection, thank you !
-         </p>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-default" ng-click="okPartner()">OK</button>
-        </div>
-      </div> -->
         <partners-histogram 
         ng-data="tableData" 
         country-data="entities.sourceEntity.selected"
@@ -173,35 +157,35 @@
     </div>
     <div class="select-dropdown col-sm-8" ng-show="RICentitiesDD.length">
       
-      <ui-select  class="selectPartners" ng-model="entities.sourceCountryEntity.selected" theme="bootstrap">
+      <ui-select  class="selectPartners" ng-model="entities.sourceCountryEntity.selected" theme="bootstrap" ng-show="reportingCountryEntities.length">
         <match placeholder="Country...">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingCountryEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
       </ui-select>
 
-      <ui-select class="selectPartners" ng-model="entities.sourceColonialEntity.selected" theme="bootstrap">
+      <ui-select class="selectPartners" ng-model="entities.sourceColonialEntity.selected" theme="bootstrap" ng-show="reportingColonialEntities.length">
         <match placeholder="Colonial area...">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingColonialEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
       </ui-select>
 
-      <ui-select class="selectPartners" ng-model="entities.sourceGeoEntity.selected" theme="bootstrap">
+      <ui-select class="selectPartners" ng-model="entities.sourceGeoEntity.selected" theme="bootstrap" ng-show="reportingGeoEntities.length">
         <match placeholder="Geographical area...">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingGeoEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
       </ui-select>
 
-      <ui-select class="selectPartners" ng-model="entities.sourceContinentEntity.selected" theme="bootstrap">
+      <ui-select class="selectPartners" ng-model="entities.sourceContinentEntity.selected" theme="bootstrap" ng-show="reportingContinentEntities.length">
         <match placeholder="Continent...">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingContinentEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
       </ui-select>
 
-      <ui-select class="selectPartners" ng-model="entities.sourceWorldEntity.selected" theme="bootstrap">
+      <ui-select class="selectPartners" ng-model="entities.sourceWorldEntity.selected" theme="bootstrap" ng-show="reportingWorldEntities.length">
         <match placeholder="World aggregate...">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingWorldEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>

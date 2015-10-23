@@ -1549,52 +1549,30 @@ angular.module('ricardo.directives-addendum', [])
       replace: false,
       link: function(scope, element, attrs) {
 
-          var linechart = ricardo.linechart()
-            //.width(element.width())
-            .height(400)
+        var linechart = ricardo.linechart()
+          //.width(element.width())
+          .height(400)
 
-          var chart = d3.select(element[0])
+        var chart = d3.select(element[0])
 
-          scope.$watch("linechartData", function(newValue, oldValue){
-            if(newValue && newValue !== oldValue && newValue.length > 0){    
-              //console.log("newValue line", newValue);     
-              newValue.forEach(function (e) {
-
-              if (e.color !== undefined)
-                ;
-              else
+        scope.$watch("linechartData", function(newValue, oldValue){
+          if(newValue && newValue !== oldValue && newValue.length > 0){    
+            //console.log("newValue line", newValue);     
+            newValue.forEach(function (e) {
+              if (e.color === undefined)
                 e.color=scope.reporting.filter(function(r){return r.RICid===e.key})[0]["color"]
-              })
-              
-              
-              var yValueSterling;
-              var yValueSelect;
-
-              // if (newValue.length > 0) {
-              //   if (newValue[0].values[0]) {
-
-              //     yValueSterling = newValue[0].values[0].exp ? "exp" : "imp";
-              //   }
-              // } 
-
-              if (newValue.flowType)
-                yValueSelect = newValue.flowType
-              else
-                yValueSelect = newValue[0].type ? newValue[0].type : newValue[0].flowType;
-
-              //var yValueSelect = newValue[0].flowType;
+            })
              
-              chart.datum(newValue).call(linechart.yValue(yValueSelect));
-            }
-          })
+            var yValueSterling;
+            var yValueSelect;
 
-          // scope.$watch("yValue", function(newValue, oldValue){
-          //   if(newValue !== oldValue){
-          //     console.log("newValue 2", newValue);
-          //     chart.call(linechart.yValue(newValue))
-          //   }
-          // })
-
+            if (newValue.flowType)
+              yValueSelect = newValue.flowType
+            else
+              yValueSelect = newValue[0].type ? newValue[0].type : newValue[0].flowType;           
+            chart.datum(newValue).call(linechart.yValue(yValueSelect));
+          }
+        })
       }
     }
   }])
