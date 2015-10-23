@@ -7,7 +7,6 @@ angular.module('ricardo.controllers', [])
   	$scope.isActive = function (viewLocation) {
         return viewLocation === $location.path();
     };
-
     $scope.views = [
       {slug:"world", label:"World view"},
       {slug:"country", label:"Country view"},
@@ -25,14 +24,12 @@ angular.module('ricardo.controllers', [])
   .controller('bilateral', function ($scope, $location, reportingEntities, cfSource, cfTarget, apiService, utils, DEFAULT_REPORTING, DEFAULT_PARTNER, TABLE_HEADERS) {
      $scope.ok = function () {
       $scope.missing = "0";
-      //$modalInstance.close();
     };
 
     var data
     $scope.reportingEntities = reportingEntities;
     $scope.actualCurrency = "sterling pound"
     $scope.tableData = [];
-    // $scope.missingData = [];
     $scope.totalServerItems = 0;
 
     $scope.alerts = []
@@ -231,7 +228,6 @@ angular.module('ricardo.controllers', [])
   })
   .controller('country', function ($scope, $location, $timeout, cfSource, cfTarget, cfSourceLine, apiService, lineChartService, reportingEntities, utils, DEFAULT_REPORTING, TABLE_HEADERS) {
     $scope.ok = function () {
-      console.log("là")
       $scope.missing = "0";
 
     };
@@ -242,138 +238,27 @@ angular.module('ricardo.controllers', [])
     $scope.reportingEntities = reportingEntities;  
     $scope.filtered = {};
     $scope.filters = [
-      { 
-        type: {
-          value : "all",
-          writable: true
-        },
-        name: {
-          value: "All",
-          writable: true
-        }
-      },
-      {
-        type: {
-          value : "city/part_of",
-          writable: true
-        },
-        name: {
-          value: "City",
-          writable: true
-        }
-      },
-      {
-        type: {
-          value : "colonial_area",
-          writable: true
-        },
-        name: {
-          value: "Colonial",
-          writable: true
-        }
-      },
-      {
-        type: {
-          value : "country",
-          writable: true
-        },
-        name: {
-          value: "Country",
-          writable: true
-        }
-      },
-      {
-        type: {
-          value : "geographical_area",
-          writable: true
-        },
-        name: {
-          value: "Geo",
-          writable: true
-        }
-      },
-      {
-        type: {
-          value : "group",
-          writable: true
-        },
-        name: {
-          value: "Group",
-          writable: true
-        }
+      { type: { value : "all", writable: true },name: {value: "All",writable: true}},
+      {type: {value : "city/part_of",writable: true},name: {value: "City",writable: true}},
+      {type: {value : "colonial_area",writable: true},name: {value: "Colonial",writable: true}},
+      {type: {value : "country",writable: true},name: {value: "Country",writable: true}},
+      {type: {value : "geographical_area",writable: true},name: {value: "Geo",writable: true}},
+      {type: {value : "group",writable: true},name: {value: "Group",writable: true}
     }];
     $scope.ordered = { 
-      type: {
-        value :"tot",
-        writable: true
-      },
-      name: {
-        value:"Average share on Total",
-        writable: true
-      }
+      type: {value :"tot",writable: true},
+      name: {value:"Average share on Total",writable: true}
     };
     $scope.orders = [
-      { 
-        type: {
-          value :"tot",
-          writable: true
-        },
-        name: {
-          value:"Average share on Total",
-          writable: true
-        }
-      },
-      {
-        type: {
-          value :"imp",
-          writable: true
-        },
-        name: {
-          value:"Average share on Imports",
-          writable: true
-        }
-      },
-      {
-        type: {
-          value :"exp",
-          writable: true
-        },
-        name: {
-          value:"Average share on Exports",
-          writable: true
-        }
-      },
-      {
-        type: {
-          value :"name",
-          writable: true
-        },
-        name: {
-          value:"Name",
-          writable: true
-        }
+      { type: {value :"tot",writable: true},name: {value:"Average share on Total",writable: true}},
+      {type: {value :"imp",writable: true},name: {value:"Average share on Imports",writable: true}},
+      {type: {value :"exp",writable: true},name: {value:"Average share on Exports",writable: true}},
+      {type: {value :"name",writable: true},name: {value:"Name",writable: true}
     }];
     $scope.grouped = {};
     $scope.groups = [
-      {
-        type: {
-          value :0,
-          writable: true
-        },
-        name: {
-          value:"None",
-          writable: true
-        }
-      },
-      {
-        type: {
-          value :1,
-          writable: true
-        },
-        name: {
-          value: "Continent",
-          writable: true
-        }
+      {type: {value :0,writable: true},name: {value:"None",writable: true}},
+      {type: {value :1,writable: true},name: {value: "Continent",writable: true}
     }];
 
     $scope.entities = {sourceEntity : {}, sourceCountryEntity : {}, sourceColonialEntity : {}, sourceGeoEntity : {}, sourceContinentEntity : {}, sourceWorldEntity : {}}
@@ -406,13 +291,10 @@ angular.module('ricardo.controllers', [])
       apiService
         .getFlows({reporting_ids: sourceID, original_currency: currency, with_sources: 1})
         .then(function (result) {
-
           data = result
-
           $scope.selectedMinDate = 1600;                   // Min year as selected by selector or brushing
           $scope.selectedMaxDate = 2000;                   // Max year as selected by selector or brushing
 
-          
           if (cfSource.size() > 0) {
             cfSource.year().filterAll();
             cfSource.clear();
@@ -450,10 +332,7 @@ angular.module('ricardo.controllers', [])
 
           /* line chart world */
 
-          //d3.select("#linechart-world > svg").remove()
-
           $scope.reporting = []
-          //$scope.entities.multiEntity = {}
           $scope.entities.sourceCountryEntity = {}
           $scope.entities.sourceColonialEntity = {}
           $scope.entities.sourceGeoEntity = {}
@@ -472,10 +351,8 @@ angular.module('ricardo.controllers', [])
 
           cfSource.partner().filter(function(p){return !/^World/.test(p)});
           var flowsPerYear = cfSource.years().top(Infinity)
-          // arrrrrg CFSource m'a tuer ! we need to do a hard copy. 
-          flowsPerYear = JSON.parse(JSON.stringify(flowsPerYear))
-          //console.log("flowsPerYear", flowsPerYear);
-          
+          // arrrrrg CFSource kill me ! we need to do a hard copy. 
+          flowsPerYear = JSON.parse(JSON.stringify(flowsPerYear))          
           cfSource.partner().filterAll();
           
           var timelineData = [];
@@ -492,41 +369,11 @@ angular.module('ricardo.controllers', [])
               timelineData.push(td);
            });
 
-          $scope.ordered.selected = { 
-            type: {
-              value :"tot",
-              writable: true
-            },
-            name: {
-              value:"Average share on Total",
-              writable: true
-            }
-          };
-
-          $scope.grouped.selected = { 
-            type: {
-              value :0,
-              writable: true
-            },
-            name: {
-              value:"None",
-              writable: true
-            }
-          };
-
-          $scope.filtered.selected = { 
-            type: {
-              value :"all",
-              writable: true
-            },
-            name: {
-              value:"All",
-              writable: true
-            }
-          };
+          $scope.ordered.selected = { type: {value :"tot",writable: true},name: {value:"Average share on Total",writable: true}};
+          $scope.grouped.selected = { type: {value :0,writable: true},name: {value:"None",writable: true}};
+          $scope.filtered.selected = { type: {value :"all",writable: true},name: {value:"All",writable: true}};
           
-          $scope.timelineData=timelineData; 
-          
+          $scope.timelineData=timelineData;         
       });
     }
 
@@ -578,41 +425,40 @@ angular.module('ricardo.controllers', [])
         var linechart_flows=[]
         if(partners.length>0 && conversion === "sterling" )
         {
+          partners.forEach( function (d) {
+           if (d.type === "country" || d.type === "colonial_area" || d.type==="geographical_area") {
+            apiService
+              .getFlows({reporting_ids: $scope.entities.sourceEntity.selected.RICid, partner_ids:d.RICid, with_sources:1})
+              .then(function (result) {
+                var yearSelected = [];
+                yearSelected = initTabLineChart(result, yearSelected, d.type, d.RICid, $scope.selectedMinDate, $scope.selectedMaxDate)
 
-           partners.forEach( function (d) {
-               if (d.type === "country" || d.type === "colonial_area" || d.type==="geographical_area") {
-                apiService
-                  .getFlows({reporting_ids: $scope.entities.sourceEntity.selected.RICid, partner_ids:d.RICid, with_sources:1})
-                  .then(function (result) {
-                    var yearSelected = [];
-                    yearSelected = initTabLineChart(result, yearSelected, d.type, d.RICid, $scope.selectedMinDate, $scope.selectedMaxDate)
+                $scope.linechartData = [];
+                initLineChart2(linechart_flows, yearSelected, $scope.linechartData, d.RICid, yValue, d.color)
 
-                    $scope.linechartData = [];
-                    initLineChart2(linechart_flows, yearSelected, $scope.linechartData, d.RICid, yValue, d.color)
+             }); 
+            $scope.yValue = yValue;
+            $scope.conversion = "sterling";
+            $scope.actualCurrency = "sterling pound";
+            $scope.messagePercent = 0;
+          }
+          if (d.type === "continent") {
+             apiService
+              .getContinentFlows({continents:d.RICid , reporting_ids:$scope.entities.sourceEntity.selected.RICid, with_sources:1})
+              .then(function (result) {
+               var yearSelected = [];
+              yearSelected = initTabLineChart(result, yearSelected, d.type, d.RICname, $scope.selectedMinDate, $scope.selectedMaxDate)
 
-                 }); 
-                $scope.yValue = yValue;
-                $scope.conversion = "sterling";
-                $scope.actualCurrency = "sterling pound";
-                $scope.messagePercent = 0;
-              }
-              if (d.type === "continent") {
-                 apiService
-                  .getContinentFlows({continents:d.RICid , reporting_ids:$scope.entities.sourceEntity.selected.RICid, with_sources:1})
-                  .then(function (result) {
-                   var yearSelected = [];
-                  yearSelected = initTabLineChart(result, yearSelected, d.type, d.RICname, $scope.selectedMinDate, $scope.selectedMaxDate)
-
-                    $scope.linechartData = [];
-                    initLineChart2(linechart_flows, yearSelected, $scope.linechartData, d.RICid, yValue, d.color)
-                    
-                 }); 
-                $scope.yValue = yValue;
-                $scope.conversion = "sterling";
-                $scope.actualCurrency = "sterling pound"; 
-                $scope.messagePercent = 0;
-              }
-            })
+                $scope.linechartData = [];
+                initLineChart2(linechart_flows, yearSelected, $scope.linechartData, d.RICid, yValue, d.color)
+                
+             }); 
+            $scope.yValue = yValue;
+            $scope.conversion = "sterling";
+            $scope.actualCurrency = "sterling pound"; 
+            $scope.messagePercent = 0;
+          }
+        })
 
 
         //   var reportingID = $scope.entities.sourceEntity.selected.RICid;
@@ -949,7 +795,6 @@ angular.module('ricardo.controllers', [])
         var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
         $scope.tablePagedData = pagedData;
         $scope.totalServerItems = data.length;
-        $scope.loading = false;
         if (!$scope.$$phase) {
             $scope.$apply();
         }
@@ -992,6 +837,7 @@ angular.module('ricardo.controllers', [])
         if ($scope.tableData) {
           $scope.loading = true;
           sortData($scope.tableData, newVal.fields[0], newVal.directions[0]);
+          $scope.loading = false;
           $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage); 
           $scope.pagingOptions.currentPage = $scope.pagingOptions.currentPage;
           
@@ -1039,24 +885,12 @@ angular.module('ricardo.controllers', [])
     $scope.moded = {};
     $scope.modes = [
     {
-      type: {
-        value :0,
-        writable: true
-      },
-      name: {
-        value:"exp",
-        writable: true
-      }
+      type: {value :0,writable: true},
+      name: {value:"exp",writable: true}
     },
     {
-      type: {
-        value :1,
-        writable: true
-      },
-      name: {
-        value: "value",
-        writable: true
-      }
+      type: {value :1,writable: true},
+      name: {value: "value",writable: true}
     }];
 
     $scope.entities = {sourceEntity : {}, sourceCountryEntity : {}, sourceColonialEntity : {}, sourceGeoEntity : {}, sourceContinentEntity : {}, sourceWorldEntity : {}}

@@ -489,13 +489,14 @@ h4{
 
 .grid-overlay-msg {
   position: absolute;
-  top: 0;
-  bottom: 0;
+/*  top: 0;
+  bottom: 0;*/
   width: 100%;
+  z-index:10000;
   background: rgba(0, 0, 0, 0.4);
 }
 
-.grid-overlay-msg .msg {
+/*.msg {
   opacity: 1;
   position: absolute;
   top: 20%;
@@ -507,18 +508,19 @@ h4{
   border: 1px solid #555;
   text-align: center;
   font-size: 24px;
-  display: table;
-}
+  z-index:10000;
+  /*display: table;*/
+}*/
  
 /*
   Lastly this is the actual message text. It uses
   display: table-cell so the vertical alignment
   works properly.
 */
-.grid-overlay-msg .msg span {
+/*.grid-overlay-msg .msg span {
   vertical-align: middle;
   z-index: 10;
-}
+}*/
 
 .table-cont{
   margin-bottom: 20px;

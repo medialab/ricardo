@@ -163,19 +163,21 @@ def get_world_flows(from_year,to_year):
     from_year_clause = """ AND Yr>%s"""%from_year if from_year!="" else ""
     to_year_clause = """ AND Yr<%s"""%to_year if to_year!="" else ""
     print from_year_clause, to_year_clause
-    cursor.execute("""SELECT SUM(flow*Unit/rate), Yr, expimp, Source
+    cursor.execute("""SELECT SUM(flow*Unit/rate), Yr, COUNT(*), expimp, Source
                       FROM flow_joined
-                      where `Reporting Entity_Original Name` NOT LIKE "world"
+                      WHERE partner_id = "Worldbestguess"
                       %s
                       GROUP BY Yr, expimp
+                      ORDER BY Yr ASC
                       """%(from_year_clause+to_year_clause)
                 )
 
     json_response=[]
-    for (flow,year, type, sources) in cursor:
+    for (flow, year, nb_reporting, type, sources) in cursor:
       json_response.append({
       "year":year,
       "flows":flow,
+      "nb_reporting": nb_reporting,
       "type":type, 
       "sources": sources
       })
