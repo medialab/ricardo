@@ -29,15 +29,23 @@
 
 <div class="container">
     <div class="row" >
-      <div id="countryBrushing" class="col-sm-12">
+      <div class="col-sm-12">
         <!-- <world-title id="alt-title" style="display:none;"></world-title> -->
-        <brushing-timeline
+        <!-- <brushing-timeline
           ng-data="timelineData"
           start-date="selectedMinDate"
           end-date="selectedMaxDate"
           raw-start-date="rawMinDate"
           raw-end-date="rawMaxDate"
-        ></brushing-timeline>
+        ></brushing-timeline> -->
+
+        <bar-chart 
+          ng-data="nbReportings"
+          start-date="selectedMinDate"
+          end-date="selectedMaxDate"
+          raw-start-date="rawMinDate"
+          raw-end-date="rawMaxDate"
+          ></bar-chart>
       </div>
     </div>
 

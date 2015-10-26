@@ -12,7 +12,7 @@ angular.module('ricardo', [
   'angular-loading-bar',
   'ricardo.filters',
   'ricardo.services',
-  'ricardo.directives',
+  // 'ricardo.directives',
   'ricardo.directives-addendum',
   'ricardo.controllers'
   ]).

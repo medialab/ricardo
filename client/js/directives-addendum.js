@@ -403,7 +403,7 @@ angular.module('ricardo.directives-addendum', [])
           , lineExp
           
         function draw(data){
-                   document.querySelector('#world-timeline-container').innerHTML = null;
+          document.querySelector('#world-timeline-container').innerHTML = null;
 
           var margin = {top: 10, right: 0, bottom: 30, left: 0},
               width = document.querySelector('#world-timeline-container').offsetWidth - margin.left - margin.right,
@@ -863,7 +863,7 @@ angular.module('ricardo.directives-addendum', [])
 
         }
 
-                  /* voronoi fonction */
+          /* voronoi fonction */
           function voronoi(data, yValue, svg, margin, height, width) {
             
             var voronoi = d3.geom.voronoi()
@@ -878,8 +878,7 @@ angular.module('ricardo.directives-addendum', [])
                               .attr("class", "voronoi")
                               .attr("fill", "none")
                               .attr("pointer-events", "all")
-                              //.attr("stroke", "black")
-                }
+            }
 
             var voronoiGraph = voronoiGroup.selectAll("path")
                 .data(voronoi(data.filter(function(d){ 
@@ -1541,7 +1540,133 @@ angular.module('ricardo.directives-addendum', [])
       } //end of link
     }
   }])
+       /* directive with watch, update and draw functions */
+  .directive('barChart', [function(){
+    return {
+      restrict: 'E'
+      ,template: '<div id="bar-chart-container"></div>'
+      ,scope: {
+        ngData: '='
+        ,startDate: '='
+        ,endDate: '='
+      }
+      ,link: function(scope, element, attrs){
+        scope.$watch('ngData', function(newValue, oldValue) {
+          if ( newValue && scope.ngData) {
+              barChart(scope.ngData, scope.startDate, scope.endDate);
+          }
+        });
 
+        var tooltipBar = d3.select("body")
+          .append("div")
+          .attr("class", "circle-tooltip");
+
+        function barChart(data, start, end) {
+            
+            var margin = {top: 20, right: 0, bottom: 40, left: 0},
+                width = document.querySelector('#world-timeline-container').offsetWidth,
+                height = 70;
+
+                console.log("width", width);
+
+            // var x = d3.scale.ordinal()
+            //     .rangeBands([0, width], .1);
+            var x = d3.time.scale()
+                .range([0, width]);
+
+            var y = d3.scale.linear()
+                .range([height, 0]);
+
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom");
+
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("right")
+                .ticks(4)
+                .tickSize(0);
+
+            var svg = d3.select("#bar-chart-container").append("svg")
+                .attr("width", width )
+                .attr("height", height + margin.top + margin.bottom)
+              .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            //x.domain(data.map(function(d) { return d.year; }));
+            x.domain([new Date(start, 0, 1), new Date(end, 0, 1)]);
+            y.domain([0, d3.max(data, function(d) { return d.nb_reporting; })]);
+
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .call(customAxis);
+
+              function customAxis(g) {
+                g.selectAll("text")
+                  .attr("x", 4)
+                  .attr("dy", -4)
+                  .attr("font-size", "0.85em");
+                }
+
+              var expNbReportings = data.filter(function (d) { return d.type === "Exp"});
+              var impNbReportings = data.filter(function (d) { return d.type === "Imp"});
+              
+              // svg.selectAll(".bar")
+              //     .data(expNbReportings)
+              //   .enter().append("rect")
+              //     .attr("class", "bar")
+              //     .attr("x", function(d) { return x(d.year); })
+              //     .attr("width", x.rangeBand())
+              //     .attr("y", function(d) { return y(d.nb_reporting); })
+              //     .attr("height", function(d) { return height - y(d.nb_reporting); })
+              //     .style({fill: "#663333"});
+
+              var barWidth = width / (end-start);
+              svg.selectAll(".bar")
+                  .data(impNbReportings)
+                .enter().append("rect")
+                  .attr("class", "bar")
+                  .attr("x", function(d) { return x(new Date(d.year, 0, 1)) })
+                  .attr("width", 4)
+                  .attr("y", function(d) { return y(d.nb_reporting); })
+                  .attr("height", function(d) { return height - y(d.nb_reporting); })
+                  .style({fill: "#cc6666"})
+                  .on('mouseover', function(d) {
+                  return tooltipBar.html(
+                    "<p>Nb reportings : " + d.nb_reporting + "</p>"
+                    ).transition().style("opacity", .9);
+                  })
+                  .on('mouseout', function(d) {
+                    return tooltipBar.transition().style("opacity", 0);
+                  })
+                  .on('mousemove', function(d) {
+                    tooltipBar.style("opacity", .9);
+                    var wid = tooltipBar.style("width").replace("px", "");
+                    return tooltipBar
+                      .style("left", Math.min(window.innerWidth - wid - 20,
+                        Math.max(0, (d3.event.pageX - wid/2))) + "px")
+                      .style("top", (d3.event.pageY + 40) + "px")
+                      .style("width", wid + "px");
+                  });
+
+            function type(d) {
+
+              d.nb_reporting = +d.nb_reporting;
+              console.log("type", d);
+              return d;
+            }
+
+        }
+      }
+    }
+         
+  }])
   // /* directive with only watch */
   .directive('linechartWorld',[ 'cfSource', 'cfTarget','fileService', 'apiService', '$timeout',function (cfSource, cfTarget, fileService, apiService, $timeout){
     return {
@@ -1556,7 +1681,7 @@ angular.module('ricardo.directives-addendum', [])
 
         scope.$watch("ngData", function(newValue, oldValue){
           if(newValue && newValue !== oldValue && newValue.length > 0){    
-            console.log("newValue line", newValue);     
+            //console.log("newValue line", newValue);     
             newValue.forEach(function (e) {
               if (e.color === undefined)
                 e.color=scope.reporting.filter(function(r){return r.RICid===e.key})[0]["color"]
@@ -1584,8 +1709,8 @@ angular.module('ricardo.directives-addendum', [])
 
         function linechart(data, yValue){
 
-          console.log("data in linechart", data);
-          console.log("yvalue in linechart", yValue);
+          // console.log("data in linechart", data);
+          // console.log("yvalue in linechart", yValue);
 
           var chart;
           var margin = {top: 20, right: 0, bottom: 30, left: 0},

@@ -888,6 +888,9 @@ angular.module('ricardo.controllers', [])
 
     var data
 
+    //console.log("reportingWorldFlows", reportingWorldFlows);
+    // var nbReporting = reportingWorldFlows.filter(function (d) { d.nb_reporting > })
+    $scope.nbReportings = reportingWorldFlows;
     $scope.reportingEntities = reportingEntities;
 
     var worldFlowsYears = d3.nest()
