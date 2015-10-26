@@ -239,6 +239,7 @@ angular.module('ricardo.controllers', [])
     };   
   })
   .controller('country', function ($scope, $location, $timeout, cfSource, cfTarget, cfSourceLine, apiService, lineChartService, reportingEntities, utils, DEFAULT_REPORTING, TABLE_HEADERS) {
+    // message error if no data
     $scope.ok = function () {
       $scope.missing = "0";
 
@@ -298,7 +299,7 @@ angular.module('ricardo.controllers', [])
     $scope.yValue = "total"; 
     $scope.conversion = "sterling";
 
-    // Calling the API
+    // Calling the API to init country selection
     function init(sourceID, currency) {
       apiService
         .getFlows({reporting_ids: sourceID, original_currency: currency, with_sources: 1})
@@ -325,11 +326,13 @@ angular.module('ricardo.controllers', [])
               return 0;
           })
 
+          // init all entities by types' filters 
           $scope.reportingCountryEntities = $scope.RICentitiesDD.filter(function(d){return d.type === "country"||d.type === "group"})
           $scope.reportingColonialEntities = $scope.RICentitiesDD.filter(function(d){return d.type === "colonial_area"})
           $scope.reportingGeoEntities = $scope.RICentitiesDD.filter(function(d){ return d.type === "geographical_area" && d.RICname.indexOf("World ") !== 0})
           $scope.reportingWorldEntities = $scope.RICentitiesDD.filter(function(d){return d.type === "geographical_area" && d.RICname.indexOf("World ") === 0})
           
+          // special methods for continent
           var continents = d3.nest()
             .key(function(d){return d.continent})
             .entries($scope.RICentitiesDD.filter(function(d){return d.continent}))
@@ -361,6 +364,7 @@ angular.module('ricardo.controllers', [])
           })
           cfSource.add(data.flows)
 
+          // delete world flows, maybe api action ?
           cfSource.partner().filter(function(p){return !/^World/.test(p)});
           var flowsPerYear = cfSource.years().top(Infinity)
           // arrrrrg CFSource kill me ! we need to do a hard copy. 
@@ -381,6 +385,7 @@ angular.module('ricardo.controllers', [])
               timelineData.push(td);
            });
 
+          // display filters selection
           $scope.ordered.selected = { type: {value :"tot",writable: true},name: {value:"Average share on Total",writable: true}};
           $scope.grouped.selected = { type: {value :0,writable: true},name: {value:"None",writable: true}};
           $scope.filtered.selected = { type: {value :"all",writable: true},name: {value:"All",writable: true}};
@@ -389,6 +394,7 @@ angular.module('ricardo.controllers', [])
       });
     }
 
+    // chnage this function to make only two array, one before and one after date limits
     function initTabLineChart(result, yearSelected, type, ric, dateMin, dateMax ) {
       for (var i = dateMin; i <= dateMax; i++) {
         yearSelected.push({
@@ -433,12 +439,13 @@ angular.module('ricardo.controllers', [])
     }
 
 
+    // change comparaison to have !continent
     var initLinechart = function(partners, yValue, conversion){    
         var linechart_flows=[]
         if(partners.length>0 && conversion === "sterling" )
         {
           partners.forEach( function (d) {
-           if (d.type === "country" || d.type === "colonial_area" || d.type==="geographical_area") {
+          if (d.type !== "continent") {
             apiService
               .getFlows({reporting_ids: $scope.entities.sourceEntity.selected.RICid, partner_ids:d.RICid, with_sources:1})
               .then(function (result) {
@@ -449,12 +456,13 @@ angular.module('ricardo.controllers', [])
                 initLineChart2(linechart_flows, yearSelected, $scope.linechartData, d.RICid, yValue, d.color)
 
              }); 
+            // factorise these lines
             $scope.yValue = yValue;
             $scope.conversion = "sterling";
             $scope.actualCurrency = "sterling pound";
             $scope.messagePercent = 0;
           }
-          if (d.type === "continent") {
+          else {
              apiService
               .getContinentFlows({continents:d.RICid , reporting_ids:$scope.entities.sourceEntity.selected.RICid, with_sources:1})
               .then(function (result) {
@@ -529,7 +537,7 @@ angular.module('ricardo.controllers', [])
         if (partners.length>0  && conversion === "value")
         {
           partners.forEach( function (d) {
-            if (d.type === "country" || d.type === "colonial_area" || d.type === "geographical_area") {
+            if (d.type !== "continent") {
               // var partner = cfSource.partner().filterFunction( function (partner){ return partner===d.RICid});
               
               // linechart_flows = cfSource.year().top(Infinity)
@@ -562,8 +570,7 @@ angular.module('ricardo.controllers', [])
                     });
                   })
             }
-            if (d.type === "continent") 
-            {
+            else {
               // console.log("d", d);
               // var continent = cfSource.continent().filterFunction( function (continent){ return continent===d.RICid});
               
@@ -602,6 +609,7 @@ angular.module('ricardo.controllers', [])
         .getFlows({reporting_ids: partner_ids, partner_ids:"Worldsumpartners", with_sources:1})
         .then(function (result) {
 
+          // we could don't need this array if api data have good format
           var worldFlowsYears = result.flows;
 
           var worldFlowsYearsFormat = [];
@@ -622,6 +630,7 @@ angular.module('ricardo.controllers', [])
           
           worldFlowsYearsFormat = lineChartService.adjustArrayTime(worldFlowsYearsFormat, $scope.selectedMinDate, $scope.selectedMaxDate)
 
+          // need a new algo to delete two forEach 
           var pctArray = [];
           data.forEach( function (data) {
             worldFlowsYearsFormat.forEach(function (d) {
@@ -881,13 +890,9 @@ angular.module('ricardo.controllers', [])
 
     $scope.reportingEntities = reportingEntities;
 
-    console.log("reportingWorldFlows", reportingWorldFlows)
-
     var worldFlowsYears = d3.nest()
       .key(function (d) { return d.year})
       .entries(reportingWorldFlows);
-
-    console.log("worldFlowsYears", worldFlowsYears)
 
     var worldFlowsYearsFormat = [];
     worldFlowsYears.forEach( function (d) {
@@ -904,8 +909,6 @@ angular.module('ricardo.controllers', [])
           sources: d.values[0].sources
         });
     })
-
-    // $scope.nbreporting = 
 
     $scope.moded = {};
     $scope.modes = [
@@ -1028,7 +1031,7 @@ angular.module('ricardo.controllers', [])
         var linechart_flows=[]
         if (partners.length>0  && conversion === "sterling") {
           partners.forEach( function (d) {
-               if (d.type === "country" || d.type === "colonial_area" ) {
+               if (d.type !== "continent" ) {
                 apiService
                   .getFlows({reporting_ids: d.RICid, partner_ids:"Worldbestguess", with_sources:1})
                   .then(function (result) {
@@ -1043,7 +1046,7 @@ angular.module('ricardo.controllers', [])
                 $scope.conversion = "sterling";
                 $scope.actualCurrency = "sterling pound";
               }
-              if (d.type === "continent") {
+              else {
                  apiService
                   .getContinentFlows({continents: d.RICname, partner_ids:"Worldbestguess", with_sources:1})
                   .then(function (result) {
@@ -1065,7 +1068,7 @@ angular.module('ricardo.controllers', [])
         if (partners.length>0  && conversion === "value")
         {
           partners.forEach( function (d) {
-            if (d.type === "country" || d.type === "colonial_area" ) {
+            if (d.type !== "continent" ) {
               apiService
                 .getFlows({reporting_ids: d.RICid, partner_ids:"Worldbestguess"})
                 .then(function (result) {
@@ -1084,7 +1087,7 @@ angular.module('ricardo.controllers', [])
                   $scope.actualCurrency = "pourcent";
                }); 
             }
-            if (d.type === "continent") {
+            else {
                apiService
                 .getContinentFlows({continents: d.RICname, partner_ids:"Worldbestguess"})
                 .then(function (result) {
