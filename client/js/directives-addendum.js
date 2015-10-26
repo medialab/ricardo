@@ -1561,16 +1561,14 @@ angular.module('ricardo.directives-addendum', [])
           .append("div")
           .attr("class", "circle-tooltip");
 
+        var brush
+
         function barChart(data, start, end) {
             
             var margin = {top: 20, right: 0, bottom: 40, left: 0},
                 width = document.querySelector('#world-timeline-container').offsetWidth,
                 height = 70;
-
-                console.log("width", width);
-
-            // var x = d3.scale.ordinal()
-            //     .rangeBands([0, width], .1);
+            
             var x = d3.time.scale()
                 .range([0, width]);
 
@@ -1617,23 +1615,43 @@ angular.module('ricardo.directives-addendum', [])
               var expNbReportings = data.filter(function (d) { return d.type === "Exp"});
               var impNbReportings = data.filter(function (d) { return d.type === "Imp"});
               
+              
+
+              var endStart = (end-start);
+              var barWidth = Math.floor(width / endStart);
               // svg.selectAll(".bar")
               //     .data(expNbReportings)
               //   .enter().append("rect")
               //     .attr("class", "bar")
-              //     .attr("x", function(d) { return x(d.year); })
-              //     .attr("width", x.rangeBand())
+              //     .attr("x", function(d) { return x(new Date(d.year, 0, 1)) })
+              //     .attr("width", barWidth)
               //     .attr("y", function(d) { return y(d.nb_reporting); })
               //     .attr("height", function(d) { return height - y(d.nb_reporting); })
-              //     .style({fill: "#663333"});
+              //     .style({fill: "#663333"})
+              //     .on('mouseover', function(d) {
+              //     return tooltipBar.html(
+              //       "<p>Nb reportings : " + d.nb_reporting + "</p>"
+              //       ).transition().style("opacity", .9);
+              //     })
+              //     .on('mouseout', function(d) {
+              //       return tooltipBar.transition().style("opacity", 0);
+              //     })
+              //     .on('mousemove', function(d) {
+              //       tooltipBar.style("opacity", .9);
+              //       var wid = tooltipBar.style("width").replace("px", "");
+              //       return tooltipBar
+              //         .style("left", Math.min(window.innerWidth - wid - 20,
+              //           Math.max(0, (d3.event.pageX - wid/2))) + "px")
+              //         .style("top", (d3.event.pageY + 40) + "px")
+              //         .style("width", wid + "px");
+              //     });
 
-              var barWidth = width / (end-start);
               svg.selectAll(".bar")
                   .data(impNbReportings)
                 .enter().append("rect")
                   .attr("class", "bar")
                   .attr("x", function(d) { return x(new Date(d.year, 0, 1)) })
-                  .attr("width", 4)
+                  .attr("width", barWidth)
                   .attr("y", function(d) { return y(d.nb_reporting); })
                   .attr("height", function(d) { return height - y(d.nb_reporting); })
                   .style({fill: "#cc6666"})
@@ -1662,6 +1680,78 @@ angular.module('ricardo.directives-addendum', [])
               return d;
             }
 
+                      // Brush
+
+          brush = d3.svg.brush()
+            .x(x)
+            .extent([new Date(scope.startDate), new Date(scope.endDate)])
+            .on("brush", function(){
+              if(brush.empty()){
+                brush.clear()
+                // dispatch.brushing(x.domain())
+              }
+              else{
+                // dispatch.brushing(brush.extent())
+              }
+            })
+            .on("brushend", brushended);
+
+          function brushended() {
+            if (!d3.event.sourceEvent) return; // only transition after input
+            
+            var extent0 = brush.extent(),
+                extent1 = extent0.map(function(d){return d3.time.year(new Date(d))});
+
+            d3.select(this).transition()
+                .call(brush.extent(extent1))
+                .call(brush.event);
+            
+            if(brush.empty()){
+              brush.extent(x.domain())
+              // dispatch.brushed(x.domain())
+              // dispatch.brushing(x.domain())
+            }
+            else{
+              // dispatch.brushed(brush.extent())
+              // dispatch.brushing(brush.extent())
+            }
+
+            applyBrush()       
+          }
+          //selection.selectAll("g.brush").remove();
+          var gBrush = svg.select(".brush");
+
+          if(gBrush.empty()){
+            gBrush = svg.append("g")
+                .attr("class", "brush")
+                .call(brush)
+                .call(brush.event);
+
+            gBrush.selectAll("rect")
+                .attr("height", height);
+          }else{
+            gBrush
+              .call(brush)
+              .call(brush.event);
+          }
+
+          function applyBrush(){
+            scope.startDate = (brush.extent()[0]).getFullYear()
+            scope.endDate = (brush.extent()[1]).getFullYear()
+            if(!scope.$$phase) {
+              scope.$apply()
+            }
+          }
+
+
+        }
+
+        function updateBrush(){
+          brush.extent([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)])
+          if(scope.rawStartDate === scope.startDate && scope.rawEndDate === scope.endDate){
+            brush.clear()
+          }
+          d3.select("#bar-chart-container svg").select(".brush").call(brush)
         }
       }
     }
