@@ -10,7 +10,8 @@ angular.module('ricardo.controllers', [])
     $scope.views = [
       {slug:"world", label:"World view"},
       {slug:"country", label:"Country view"},
-      {slug:"bilateral", label:"Bilateral view"}
+      {slug:"bilateral", label:"Bilateral view"},
+      //{slug:"RICentities", label:"RICentities view"}
     ]
   })
   // Manage display if no data available
@@ -960,11 +961,24 @@ angular.module('ricardo.controllers', [])
                         currency:null,
                         sources:null
                         }]; // to show table under linechart World
-        // Calling the API
-    function init() {
-      $scope.selectedMinDate = 1600;                   // Min year as selected by selector or brushing
-      $scope.selectedMaxDate = 2000;                   // Max year as selected by selector or brushing
+     
+    $scope.rawMinDate = 1787                             // Min year in data for the selected pair of countries
+    $scope.rawMaxDate = 1938                             // Max year in data for the selected pair of countries
+    $scope.selectedMinDate = 1787                   // Min year as selected by selector or brushing
+    $scope.selectedMaxDate = 1938                   // Max year as selected by selector or brushing
+    $scope.rawYearsRange                            // Range of years in data (useful for selectors)
+    $scope.rawYearsRange_forInf                     // Range of years in data adapted to inferior bound (useful for selectors)
+    $scope.rawYearsRange_forSup                     // Range of years in data adapted to superior bound (useful for selectors)
 
+    // Calling the API
+    function init() {
+      // $scope.selectedMinDate = 1600;                   // Min year as selected by selector or brushing
+      // $scope.selectedMaxDate = 2000;                   // Max year as selected by selector or brushing
+
+      $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
+      $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
+      $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
+      
       $scope.RICentities = {};
 
       $scope.reportingCountryEntities = reportingCountryEntities;
@@ -984,6 +998,7 @@ angular.module('ricardo.controllers', [])
 
       $scope.timelineData=worldFlowsYearsFormat;
       $scope.tableData = worldFlowsYearsFormat;
+      
     }
     init();
 
@@ -1162,6 +1177,7 @@ angular.module('ricardo.controllers', [])
       $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
       $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
       $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
+
       updateTableData();
       initLinechart($scope.reporting, $scope.yValue, $scope.conversion);
     }
@@ -1333,4 +1349,138 @@ angular.module('ricardo.controllers', [])
       utils.downloadCSV($scope.tableData, headers, order);
     };
   })
+  // .controller('RICentities', function ($scope, $location, $timeout, apiService, RICentities) {
+    //console.log("RICentities", RICentities);
+
+    // long version
+
+    // var groups = RICentities.filter(function (d) { return d.type === "group" });    
+    // var cities = RICentities.filter(function (d) { return d.type === "city/part_of"});    
+    // var countries = RICentities.filter(function (d) { return d.type === "country" });    
+    // var geoArea = RICentities.filter(function (d) { return d.type ==="geographical_area"})    
+    // var colonialArea = RICentities.filter(function (d) { return d.type === "colonial_area"})    
+    // var entities = {};
+
+    // entities.name = "entities";
+    // entities.children = [];
+    // for (var i = 0; i < 5; i++)
+    //   entities.children.push({name : "", children : []});
+
+    // entities.children[0].name = "groups";
+    // groups.forEach( function (d) {
+    //   entities.children[0].children.push({name: d.RICname, size: 1000})
+    // })
+    // entities.children[1].name = "cities";
+    // cities.forEach( function (d) {
+    //   entities.children[1].children.push({name: d.RICname, size: 1000})
+    // })
+    // entities.children[2].name = "countries";
+    // countries.forEach( function (d) {
+    //   entities.children[2].children.push({name: d.RICname, size: 1000})
+    // })
+    // entities.children[3].name = "geoArea";
+    // geoArea.forEach( function (d) {
+    //   entities.children[3].children.push({name: d.RICname, size: 1000})
+    // })
+    // entities.children[4].name = "colonialArea";
+    // colonialArea.forEach( function (d) {
+    //   entities.children[4].children.push({name: d.RICname, size: 1000})
+    // })
+
+    // smart version
+
+    // var types = []
+    // RICentities.forEach( function (d) {
+    //   if (types.indexOf(d.type) === -1)
+    //     types.push(d.type) 
+    // })
+
+    // var entities = {};
+    // entities.name = "types";
+    // entities.children = [];
+    // for (var i = 0, len = types.length; i<=len; i++)
+    //    entities.children.push({name : "", children : []});
+    // for (var i = 0, len = types.length; i<=len; i++) {
+    //   if (types[i] !== null) {
+    //     entities.children[i].name = types[i];
+    //     var type = RICentities.filter(function (d) { return d.type === types[i] })
+    //     type.forEach( function (d) {
+    //       entities.children[i].children.push({name: d.RICname, size: 1000})
+    //     })
+    //     type = []; 
+    //   }
+    // }
+    
+    // var continents = []
+    // RICentities.forEach( function (d) {
+    //   if (continents.indexOf(d.continent) === -1)
+    //     continents.push(d.continent) 
+    // })
+
+    // var entities = {};
+    // entities.name = "continents";
+    // entities.children = [];
+    // for (var i = 0, len = continents.length; i<=len; i++)
+    //    entities.children.push({name : "", children : []});
+    // for (var i = 0, len = continents.length; i<=len; i++) {
+    //   if (continents[i] !== null) {
+    //     entities.children[i].name = continents[i];
+    //     var continent = RICentities.filter(function (d) { return d.continent === continents[i] })
+    //     continent.forEach( function (d) {
+    //       entities.children[i].children.push({name: d.RICname, size: 1000})
+    //     })
+    //     continent = []; 
+    //   }
+    // }
+
+    // var states = []
+    // RICentities.forEach( function (d) {
+    //   if (states.indexOf(d.central_state) === -1)
+    //     states.push(d.central_state) 
+    // })
+
+    // var entities = {};
+    // entities.name = "states";
+    // entities.children = [];
+    // for (var i = 0, len = states.length; i<=len; i++)
+    //    entities.children.push({name : "", children : []});
+    // for (var i = 0, len = states.length; i<=len; i++) {
+    //   if (states[i] !== null) {
+    //     entities.children[i].name = states[i];
+    //     var central_state = RICentities.filter(function (d) { return d.central_state === states[i] })
+    //     central_state.forEach( function (d) {
+    //       entities.children[i].children.push({name: d.RICname, size: 1000})
+    //     })
+    //     central_state = []; 
+    //   }
+    // }
+
+
+    // console.log("entities", entities);
+
+    // $scope.entities = entities;
+
+
+  // })
   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

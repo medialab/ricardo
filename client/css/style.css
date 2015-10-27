@@ -91,6 +91,15 @@
 
 }
 
+/*Firefox config*/
+
+/*@-moz-document url-prefix()
+{
+    #some-text {
+        display: block;
+    }
+}*/
+
 /* alert */
 
 .alert{
@@ -128,6 +137,9 @@ h1,h2,h3,h4{
     font-weight: bold;
 }
 
+
+.Exp {
+}
 
 /* Sticky footer styles
 -------------------------------------------------- */
@@ -776,4 +788,13 @@ path.lineTrajectory {
 #partners-histograms-container >svg{
     padding-top: 30px;
 
+}
+
+.node {
+  border: solid 1px white;
+  font: 10px sans-serif;
+  line-height: 12px;
+  overflow: hidden;
+  position: absolute;
+  text-indent: 2px;
 }

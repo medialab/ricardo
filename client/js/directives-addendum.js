@@ -1193,7 +1193,7 @@ angular.module('ricardo.directives-addendum', [])
     }
   }])
   /* directive with only watch */
-  .directive('partnersHistogram', ['cfSource', 'cfTarget', 'fileService', 'apiService', '$timeout', function (cfSource, cfTarget, fileService, apiService, $timeout){
+  .directive('partnersHistogram', ['cfSource', '$timeout', function (cfSource, $timeout){
     return {
       restrict: 'E',
       template: '<div id="partners-histogram-container"></div>',
@@ -1202,9 +1202,45 @@ angular.module('ricardo.directives-addendum', [])
         countryData: '=',
         groupData: '=',
         orderData: '=',
-        filterData: '='
+        filterData: '=',
+        startDate: '=',
+        endDate: '='
       },
       link: function(scope, element, attrs) {
+        scope.$watch("groupData", function(newValue, oldValue){
+          if (newValue !== oldValue) {
+            removeSvgElements(chart)
+            continents = newValue;
+            partnersHistogram(scope.ngData, continents, order, filter);
+          }
+        }, true);
+
+        scope.$watch("orderData", function(newValue, oldValue){
+            if (newValue !== oldValue) {
+              removeSvgElements(chart)
+              partnersHistogram(scope.ngData, continents, newValue, filter);
+            }
+        }, true);
+
+        // uncomments these lines to use filter selection with calcul on all data
+        scope.$watch("filterData", function (newValue, oldValue){
+          if(newValue !== oldValue){
+            if(newValue === "all") {
+              removeSvgElements(chart)
+              partnersHistogram(scope.ngData, continents, order, newValue);
+            }
+            else {
+              removeSvgElements(chart) 
+              var data=scope.ngData.filter(function(p){return p.type === newValue})
+              if (data.length === 0){
+                noData ();
+              }
+              partnersHistogram(data, continents, order, newValue);
+            } 
+          }
+        })
+
+
         // var transmit by scope affectation
         var RICentities = scope.countryData, 
             continents = scope.groupData ? scope.groupData : 1, 
@@ -1214,7 +1250,6 @@ angular.module('ricardo.directives-addendum', [])
          // Partner Histo var initialization
         var height = 600,
         width = document.querySelector('#partners-histogram-container').offsetWidth,
-        //chartWidth = 370,
         marginTop = 15,
         marginLeft = 0,
         marginRight = 0,
@@ -1228,6 +1263,12 @@ angular.module('ricardo.directives-addendum', [])
         //continents = false,
         currency = "sterling pound",
         sum = 0;
+
+        // console.log("endDate", scope.endDate);
+        // console.log("startDate", scope.startDate);
+        // var endStart = (scope.endDate-scope.startDate);
+        // var barWidth = Math.floor(width / endStart);
+        // console.log("barWidth", barWidth);
 
        function removeSvgElements(chart) {
           chart.selectAll("text.legend").remove();
@@ -1262,40 +1303,6 @@ angular.module('ricardo.directives-addendum', [])
             })
         } 
 
-        scope.$watch("groupData", function(newValue, oldValue){
-          if (newValue !== oldValue) {
-            removeSvgElements(chart)
-            continents = newValue;
-            partnersHistogram(scope.ngData, continents, order, filter);
-          }
-        }, true);
-
-        scope.$watch("orderData", function(newValue, oldValue){
-            if (newValue !== oldValue) {
-              removeSvgElements(chart)
-              partnersHistogram(scope.ngData, continents, newValue, filter);
-            }
-        }, true);
-
-
-
-        // uncomments these lines to use filter selection with calcul on all data
-        scope.$watch("filterData", function (newValue, oldValue){
-          if(newValue !== oldValue){
-            if(newValue === "all") {
-              removeSvgElements(chart)
-              partnersHistogram(scope.ngData, continents, order, newValue);
-            }
-            else {
-              removeSvgElements(chart) 
-              var data=scope.ngData.filter(function(p){return p.type === newValue})
-              if (data.length === 0){
-                noData ();
-              }
-              partnersHistogram(data, continents, order, newValue);
-            } 
-          }
-        })
 
         // Partner Histo tools functions 
 
@@ -1567,7 +1574,7 @@ angular.module('ricardo.directives-addendum', [])
             
             var margin = {top: 20, right: 0, bottom: 40, left: 0},
                 width = document.querySelector('#world-timeline-container').offsetWidth,
-                height = 70;
+                height = 60;
             
             var x = d3.time.scale()
                 .range([0, width]);
@@ -1645,6 +1652,24 @@ angular.module('ricardo.directives-addendum', [])
               //         .style("top", (d3.event.pageY + 40) + "px")
               //         .style("width", wid + "px");
               //     });
+
+                  /* 50 line */
+              svg.append("line")
+                   .attr("x1", 0)
+                   .attr("y1", y(50))
+                   .attr("x2", width)
+                   .attr("y2", y(50))
+                   .attr("stroke-width", 1)
+                   .attr("stroke", "grey");
+
+                  /* 100 line */
+              svg.append("line")
+                   .attr("x1", 0)
+                   .attr("y1", y(100))
+                   .attr("x2", width)
+                   .attr("y2", y(100))
+                   .attr("stroke-width", 1)
+                   .attr("stroke", "grey");
 
               svg.selectAll(".bar")
                   .data(impNbReportings)
@@ -2014,6 +2039,87 @@ angular.module('ricardo.directives-addendum', [])
               focus.attr("transform", "translate(-100,-100)");
             }     
         } // end linechart
+      }
+    }
+  }])
+  // /* directive with only watch */
+  .directive('treeMap',['apiService', '$timeout',function (apiService, $timeout){
+    return {
+      restrict: 'E',
+      template: '<div id="tree-map-container"></div>',
+      scope: {
+        ngData: '='
+      },
+      link: function(scope, element, attrs) {
+        console.log("data", scope.ngData);
+
+        // need input to change and pass to continent and central state.
+
+        var tooltipTreemap = d3.select("body")
+          .append("div")
+          .attr("class", "circle-tooltip");
+
+        var margin = {top: 40, right: 10, bottom: 10, left: 10},
+        width = 1140,
+        height = 800;
+
+        var color = d3.scale.category20c();
+
+        var treemap = d3.layout.treemap()
+            .size([width, height])
+            .sticky(true)
+            .value(function(d) { return d.size; });
+
+        var div = d3.select("#tree-map-container").append("div")
+            .style("position", "relative")
+            .style("width", (width + margin.left + margin.right) + "px")
+            .style("height", (height + margin.top + margin.bottom) + "px")
+            .style("left", margin.left + "px")
+            .style("top", margin.top + "px");
+
+        var node = div.datum(scope.ngData).selectAll(".node")
+            .data(treemap.nodes)
+          .enter().append("div")
+            .attr("class", "node")
+            .call(position)
+            .style("background", function(d) { return d.children ? color(d.name) : null; })
+            .text(function(d) { return d.children ? null : d.name; })
+            .on('mouseover', function(d) {
+                return tooltipTreemap.html(
+                  "<h3>"+ d.name + "</h3>"
+                  ).transition().style("opacity", .9);
+              })
+              //.on('mouseenter', this.onmouseover)
+              .on('mouseout', function(d) {
+                return tooltipTreemap.transition().style("opacity", 0);
+              })
+              .on('mousemove', function(d) {
+                tooltipTreemap.style("opacity", .9);
+                var wid = tooltipTreemap.style("width").replace("px", "");
+                return tooltipTreemap
+                  .style("left", Math.min(window.innerWidth - wid - 20,
+                    Math.max(0, (d3.event.pageX - wid/2))) + "px")
+                  .style("top", (d3.event.pageY + 40) + "px")
+                  .style("width", wid + "px");
+              });
+
+        d3.selectAll("input").on("change", function change() {
+          var value = this.value === "count"
+            ? function() { return 1; }
+            : function(d) { return d.size; };
+          node
+              .data(treemap.value(value).nodes)
+            .transition()
+              .duration(1500)
+              .call(position);
+          });
+
+        function position() {
+          this.style("left", function(d) { return d.x + "px"; })
+              .style("top", function(d) { return d.y + "px"; })
+              .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
+              .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
+        }
       }
     }
   }])

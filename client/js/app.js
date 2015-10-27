@@ -63,6 +63,15 @@ config(['$routeProvider', function($routeProvider) {
       }
     }
   });
+  $routeProvider.when('/RICentities', {
+    templateUrl: 'partials/RICentities.html',
+    controller: 'RICentities',
+    resolve: {
+      RICentities : function (apiService) {
+        return apiService.getRICEntities()
+      }
+    }
+  });
   $routeProvider.otherwise({redirectTo: '/'});
 }])
   .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
