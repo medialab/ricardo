@@ -113,12 +113,13 @@
       <div  class="col-sm-12">
         <partners-histogram 
         ng-data="tableData" 
+        start-date="selectedMinDate"
+        end-date="selectedMaxDate"
         country-data="entities.sourceEntity.selected"
         group-data="grouped.selected.type.value"
         order-data="ordered.selected.type.value"
         filter-data="filtered.selected.type.value"
         ></partners-histogram>
-       <!--  <div id="partners-histogram-container"></div> -->
       </div>
     </div>
   </div>
