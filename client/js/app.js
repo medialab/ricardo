@@ -69,7 +69,10 @@ config(['$routeProvider', function($routeProvider) {
     resolve: {
       RICentities : function (apiService) {
         return apiService.getRICEntities()
-      }
+      },
+      reportingEntities : function (apiService) {
+        return apiService.getReportingEntities()
+      },
     }
   });
   $routeProvider.otherwise({redirectTo: '/'});

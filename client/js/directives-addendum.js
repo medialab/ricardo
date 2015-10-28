@@ -1207,6 +1207,7 @@ angular.module('ricardo.directives-addendum', [])
         endDate: '='
       },
       link: function(scope, element, attrs) {
+
         scope.$watch("groupData", function(newValue, oldValue){
           if (newValue !== oldValue) {
             removeSvgElements(chart)
@@ -1536,7 +1537,25 @@ angular.module('ricardo.directives-addendum', [])
                   .attr("cy", -30)
                   .attr("r", rLittleCircle)
                   .style("stroke", "#333")  
-                  .style("fill", "#333")   
+                  .style("fill", "#333")
+                  .on('mouseover', function(d) {
+                  return tooltipCircle.html(
+                    "<p>Total : " + formatPercent(p["avg_" + order]) + "</p>"
+                    ).transition().style("opacity", .9);
+                  })
+                  //.on('mouseenter', this.onmouseover)
+                  .on('mouseout', function(d) {
+                    return tooltipCircle.transition().style("opacity", 0);
+                  })
+                  .on('mousemove', function(d) {
+                    tooltipCircle.style("opacity", .9);
+                    var wid = tooltipCircle.style("width").replace("px", "");
+                    return tooltipCircle
+                      .style("left", Math.min(window.innerWidth - wid - 20,
+                        Math.max(0, (d3.event.pageX - wid/2))) + "px")
+                      .style("top", (d3.event.pageY + 40) + "px")
+                      .style("width", wid + "px");
+                  });   
                   
               }
           });
@@ -1598,7 +1617,6 @@ angular.module('ricardo.directives-addendum', [])
               .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            //x.domain(data.map(function(d) { return d.year; }));
             x.domain([new Date(start, 0, 1), new Date(end, 0, 1)]);
             y.domain([0, d3.max(data, function(d) { return d.nb_reporting; })]);
 

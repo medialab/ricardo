@@ -18,6 +18,22 @@
       <button class="btn btn-default" ng-click="ok()">OK</button>
   </div>
 </div>
+<div ng-show="missingTarget" class="alert"> 
+  <div class="modal-body" >
+   <p>
+      There is <strong>no data available</strong> in the database for {{entities.sourceEntity.selected.RICname}} with {{entities.targetEntity.selected.RICname}}
+   </p>
+   <p>
+   between {{selectedMinDate}} and {{selectedMaxDate}}  
+   </p>
+    <p>
+      Choose another one or change date selection, thank you !
+   </p>
+  </div>
+  <div class="modal-footer">
+      <button class="btn btn-default" ng-click="okTarget()">OK</button>
+  </div>
+</div>
   <div class="row">
   	<div class="timeline-cont col-sm-12">
       <bilateral-title></bilateral-title>
