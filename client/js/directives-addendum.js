@@ -276,8 +276,8 @@ angular.module('ricardo.directives-addendum', [])
           var ImpExp = [];
           data.forEach(function (data) {
             if (data.year >= scope.startDate && data.year <= scope.endDate) {
-              ImpExp.push({points: data.imp, year: data.year});
-              ImpExp.push({points: data.exp, year: data.year});
+              ImpExp.push({type:"imp", points: data.imp, year: data.year});
+              ImpExp.push({type:"exp", points: data.exp, year: data.year});
             }
           })
 
@@ -286,6 +286,7 @@ angular.module('ricardo.directives-addendum', [])
         }
           /* voronoi fonction */
           function voronoi(data, yValue, svg, margin, height, width) {
+            
             
             var voronoi = d3.geom.voronoi()
             .x(function(d) { return x(new Date(d.year, 0, 1)); })
@@ -318,11 +319,12 @@ angular.module('ricardo.directives-addendum', [])
             if(focus.empty()){
                 focus = svg.append("g")
                     .attr("transform", "translate(-100,-100)")
-                    .attr("class", "focus");
+                    .attr("class", "focus")
+
                   }
 
             focus.append("circle")
-                .attr("r", 3);
+                .attr("r", 3)
 
             focus.append("text")
                 .attr("y", -10)
@@ -333,21 +335,36 @@ angular.module('ricardo.directives-addendum', [])
             function mouseover(d) {
                 if(d[yValue]!=null)
                 {
+                  var colorPoint = d.type === "imp" ? "#CC6666" : "#663333"
+
                   focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
-                  focus.select("text").text(format(Math.round(d[yValue])));
+                  focus.select("text")
+                    .attr("fill", colorPoint)
+                    .text(format(Math.round(d[yValue])) + ' £');
+                    
                   /* zero line */
                   svg.append("line")
                        .attr("class", "lineDate")
                        .attr("x1", x(new Date(d.year, 0, 1)))
                        .attr("y1", y(d[yValue]))
                        .attr("x2", x(new Date(d.year, 0, 1)))
-                       .attr("y2", 120)
+                       .attr("y2", 142)
                        .attr("stroke-width", 1)
                        .attr("stroke", "grey");
+
+                  // add a rect as backgroud color of text
+                  svg.append("rect")
+                       //.attr("class", "lineDate")
+                       .attr("x", x(new Date(d.year, 0, 1)))
+                       .attr("y", 100)
+                       .attr("width", 20)
+                       .attr("heigth", 10)
+                       .attr("fill", "red");
+
                   svg.append("text")
-                       .attr("class", "lineDate")
+                       .attr("class", "lineDateText")
                        .attr("x", x(new Date(d.year, 0, 1)) - 15)
-                       .attr("y", 138)
+                       .attr("y", 157)
                        .attr("font-size", "0.85em")
                        .text(d.year);
                 }
@@ -355,7 +372,7 @@ angular.module('ricardo.directives-addendum', [])
 
             function mouseout(d) {
                 svg.selectAll("line.lineDate").remove();
-                svg.selectAll("text.lineDate").remove();
+                svg.selectAll("text.lineDateText").remove();
                 focus.attr("transform", "translate(-100,-100)");
               }
           }

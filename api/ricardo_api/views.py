@@ -9,7 +9,7 @@ import ricardo_api.models as models
 
 @app.route('/')
 def index():
-    return 'Welcome to RICardo API. You could find more information in the Github repository.'
+    return 'Welcome to RICardo API. </br>You could find more informations in the Github repository of <a href="https://github.com/medialab/ricardo">RICardo Medialab project</a>' 
 
 @app.route('/flows')
 def flows():

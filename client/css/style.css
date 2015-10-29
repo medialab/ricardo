@@ -802,3 +802,7 @@ path.lineTrajectory {
   position: absolute;
   text-indent: 2px;
 }
+
+.lineDateText {
+  background-color: red;
+}
