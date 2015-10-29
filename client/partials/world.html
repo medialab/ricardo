@@ -57,7 +57,7 @@
 
 <div class="container">
   <div class="row">
-      <div class="col-sm-8">
+      <div class="col-sm-12">
        <h3 class="subtitle">World trade comparaison with 
         <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
         <span class="close-btn">X</span>
@@ -65,59 +65,66 @@
         </span>, {{selectedMinDate}} – {{selectedMaxDate}}, in {{actualCurrency}}
         <i class="fa fa-info-circle"></i> </h3>
       </div>
-      <div class="col-sm-4" style="float:right">
+  </div>
+  <div class="row">  
+      <div class="col-sm-12" style="float:right">
         <div class="filter-group" >
             <div class="btn-group pull-right">
-              <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'total'" uncheckable>total</label>
-              <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'imp'" uncheckable>imports</label>
-              <label class="btn btn-sm btn-default" ng-model="yValue" btn-radio="'exp'" uncheckable>exports</label>
+              <label class="btn btnLineChart" ng-model="yValue" btn-radio="'total'" uncheckable>Total</label>
+              <label class="btn btnLineChart" ng-model="yValue" btn-radio="'imp'" uncheckable>Imports</label>
+              <label class="btn btnLineChart" ng-model="yValue" btn-radio="'exp'" uncheckable>Exports</label>
             </div>
             <div class="btn-group pull-right" style="margin-right:30px;">
-              <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'sterling'" uncheckable>Sterling</label>
-              <label class="btn btn-sm btn-default" ng-model="conversion" btn-radio="'value'" uncheckable>Percent</label>
+              <label class="btn btnLineChart" ng-model="conversion" btn-radio="'sterling'" uncheckable>Sterling</label>
+              <label class="btn btnLineChart" ng-model="conversion" btn-radio="'value'" uncheckable>Percent</label>
             </div>
         </div>
       </div>
   </div>
   <div id="select-lineChart">
     <div>
-      <h3 class="subtitle col-sm-2">Select up to 5 reportings :</h3>
+      <h3 class="subtitle col-md-2" style="width:190px;">Select up to 5 reportings :</h3>
     </div>
-    <div class="select-dropdown col-sm-8" >
-      
-      <ui-select  class="selectPartners" ng-model="entities.sourceCountryEntity.selected" theme="bootstrap">
-        <match placeholder="Country...">{{$select.selected.RICname}}</match>
-        <choices repeat="item in reportingCountryEntities | filter: $select.search">
-          <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-        </choices>
-      </ui-select>
+    <div class="select-dropdown col-md-9" style="padding-top:10px;">
 
-      <ui-select class="selectPartners" ng-model="entities.sourceColonialEntity.selected" theme="bootstrap">
-        <match placeholder="Colonial area...">{{$select.selected.RICname}}</match>
+      <div class="inline-select" >
+        <ui-select   ng-model="entities.sourceCountryEntity.selected" theme="bootstrap">
+          <match placeholder="Country">{{$select.selected.RICname}}</match>
+          <choices repeat="item in reportingCountryEntities | filter: $select.search">
+            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
+      </div>
+
+    <div class="inline-select" >
+      <ui-select  ng-model="entities.sourceColonialEntity.selected" theme="bootstrap">
+        <match placeholder="Colonial area">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingColonialEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
       </ui-select>
-
+    </div>
       <!-- no need geoEntities beacause there is no data for this entity with worldbestguess -->
-     <!--  <ui-select class="selectPartners" ng-model="entities.sourceGeoEntity.selected" theme="bootstrap">
-        <match placeholder="Geographical area...">{{$select.selected.RICname}}</match>
+     <!--  <ui-select  ng-model="entities.sourceGeoEntity.selected" theme="bootstrap">
+        <match placeholder="Geographical area">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingGeoEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
       </ui-select> -->
 
-      <ui-select class="selectPartners" ng-model="entities.sourceContinentEntity.selected" theme="bootstrap">
-        <match placeholder="Continent...">{{$select.selected.RICname}}</match>
+    <div class="inline-select" >
+      <ui-select  ng-model="entities.sourceContinentEntity.selected" theme="bootstrap">
+        <match placeholder="Continent">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingContinentEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
       </ui-select>
     </div>
 
+  </div>
+
   <div class="row">
     <div class="col-sm-12">
-      <!-- <div id="linechart-world"  linechart-world></div> -->
       <linechart-world ng-data="linechartData">
       </linechart-world>
     </div>

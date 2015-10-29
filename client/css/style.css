@@ -357,6 +357,19 @@ body > .container {
   color: #633;
 }
 
+.btnLineChart {
+  font-size: 16px;
+  font-weight: 600;
+  color:#999;
+  margin: 20px 0;
+  border-bottom: 1px solid black;
+}
+
+.btnLineChart:hover {
+  background-color: #FFF;
+  color:#999;
+}
+
 /* timeline */
 
 #dual-timeline-container>svg, #comparison-timeline-container>svg{
