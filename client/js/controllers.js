@@ -845,8 +845,10 @@ angular.module('ricardo.controllers', [])
       var i = $scope.reporting.map(function (d){return d.RICid}).indexOf(elm.RICid)
       $scope.lineColors.push(elm["color"])
       $scope.reporting.splice(i, 1);
-      if ($scope.reporting.length === 0)
-        d3.select("#linechart-world > svg").remove();
+      console.log("$scope.reporting", $scope.reporting);
+      if ($scope.reporting.length == 0) {
+        d3.select("#linechart-world-container > svg").remove();
+      }
       initLinechart($scope.reporting, $scope.yValue, $scope.conversion);
     }
 
@@ -1323,7 +1325,7 @@ angular.module('ricardo.controllers', [])
       $scope.lineColors.push(elm["color"])
       $scope.reporting.splice(i, 1);
       if ($scope.reporting.length === 0)
-        d3.select("#linechart-world > svg").remove();
+        d3.select("#linechart-world-container > svg").remove();
       initLinechart($scope.reporting, $scope.yValue, $scope.conversion);
     }
 

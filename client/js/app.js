@@ -88,21 +88,23 @@ config(['$routeProvider', function($routeProvider) {
 
 
 // Scroll spy for sticky brushing timeline
-$(window).scroll(function(){
-  var offset = $('#sticky-marker').offset().top
-    , scrollPos = $(window).scrollTop()
+// $(window).scroll(function(){
+//   var offset = $('#sticky-marker').offset().top
+//     , scrollPos = $(window).scrollTop()
 
-  if(scrollPos >= offset + 180){
+//   if(scrollPos >= offset + 180){
     
-    $('#sticky-container').addClass('sticky-container-fixed')
-    $('#sticky-marker').addClass('sticky-placeholder')
-    $('#alt-title').show()
+//     $('#sticky-container').addClass('sticky-container-fixed')
+//     $('#sticky-marker').addClass('sticky-placeholder')
+//     $('#alt-title').show()
 
-  } else {
+//   } else {
     
-    $('#sticky-container').removeClass('sticky-container-fixed')
-    $('#sticky-marker').removeClass('sticky-placeholder')
-    $('#alt-title').hide()
+//     $('#sticky-container').removeClass('sticky-container-fixed')
+//     $('#sticky-marker').removeClass('sticky-placeholder')
+//     $('#alt-title').hide()
 
-  }
-})
+//   }
+// })
+
+
