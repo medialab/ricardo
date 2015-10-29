@@ -1199,12 +1199,12 @@ angular.module('ricardo.directives-addendum', [])
       template: '<div id="partners-histogram-container"></div>',
       scope: {
         ngData: '=',
+        startDate: '=',
+        endDate: '=',
         countryData: '=',
         groupData: '=',
         orderData: '=',
-        filterData: '=',
-        startDate: '=',
-        endDate: '='
+        filterData: '='
       },
       link: function(scope, element, attrs) {
 
@@ -1212,14 +1212,14 @@ angular.module('ricardo.directives-addendum', [])
           if (newValue !== oldValue) {
             removeSvgElements(chart)
             continents = newValue;
-            partnersHistogram(scope.ngData, continents, order, filter);
+            partnersHistogram(scope.ngData, continents, order, filter, scope.startDate, scope.endDate);
           }
         }, true);
 
         scope.$watch("orderData", function(newValue, oldValue){
             if (newValue !== oldValue) {
               removeSvgElements(chart)
-              partnersHistogram(scope.ngData, continents, newValue, filter);
+              partnersHistogram(scope.ngData, continents, newValue, filter, scope.startDate, scope.endDate);
             }
         }, true);
 
@@ -1228,7 +1228,7 @@ angular.module('ricardo.directives-addendum', [])
           if(newValue !== oldValue){
             if(newValue === "all") {
               removeSvgElements(chart)
-              partnersHistogram(scope.ngData, continents, order, newValue);
+              partnersHistogram(scope.ngData, continents, order, newValue, scope.startDate, scope.endDate);
             }
             else {
               removeSvgElements(chart) 
@@ -1255,8 +1255,8 @@ angular.module('ricardo.directives-addendum', [])
         marginLeft = 0,
         marginRight = 0,
         duration = 1000,
-        yearWidth = 4,
-        barWidth = 4,
+        //yearWidth = 4,
+        //barWidth = 4,
         barMinHeigth = 2,
         barMaxHeigth = 30,
         barGap = 40,
@@ -1264,12 +1264,6 @@ angular.module('ricardo.directives-addendum', [])
         //continents = false,
         currency = "sterling pound",
         sum = 0;
-
-        // console.log("endDate", scope.endDate);
-        // console.log("startDate", scope.startDate);
-        // var endStart = (scope.endDate-scope.startDate);
-        // var barWidth = Math.floor(width / endStart);
-        // console.log("barWidth", barWidth);
 
        function removeSvgElements(chart) {
           chart.selectAll("text.legend").remove();
@@ -1282,14 +1276,14 @@ angular.module('ricardo.directives-addendum', [])
         var refresh = function(newValue, oldValue){
           if(newValue !== oldValue){
             removeSvgElements(chart)
-            partnersHistogram(scope.ngData, continents, order, filter);
+            partnersHistogram(scope.ngData, continents, order, filter, scope.startDate, scope.endDate);
           }
         }
 
         scope.$watch("ngData", function(newValue, oldValue){
           if(newValue !== oldValue){
             removeSvgElements(chart)            
-            partnersHistogram(newValue, continents, order, filter);
+            partnersHistogram(newValue, continents, order, filter, scope.startDate, scope.endDate);
           }
         }, true);
 
@@ -1358,7 +1352,10 @@ angular.module('ricardo.directives-addendum', [])
           return res;
         }
 
-        function partnersHistogram(data, continents, order, filter){
+        function partnersHistogram(data, continents, order, filter, minDate, maxDate){
+          var endStart = (maxDate-minDate);
+          var barWidth = Math.floor(width / endStart);
+
           var indexYears = {};
           d3.nest()
             .key(function(d){ return d.year })
@@ -1420,8 +1417,8 @@ angular.module('ricardo.directives-addendum', [])
 
           var x0, y0,
               years = Object.keys(indexYears),
-              limits = d3.extent(years),
-              maxWidth = yearWidth * (limits[1]-limits[0]+1);
+              limits = d3.extent(years);
+              //maxWidth = yearWidth * (limits[1]-limits[0]+1);
               //years.pop();
 
 
@@ -1458,7 +1455,7 @@ angular.module('ricardo.directives-addendum', [])
               .data(p.years)
               .enter().append("rect")
               .attr("class", "bar")
-              .attr("x", function(d){ return x(d.key) + (yearWidth - barWidth)/2 })
+              .attr("x", function(d){ return x(d.key) })
               .attr("y", function(d){ return (d.balance >= 0 ? -y(Math.abs(d.balance)) : 0);})
               .attr("width", barWidth)
               .attr("height", function(d) { return (d.balance ? Math.max(barMinHeigth, y(Math.abs(d.balance))) : 0); })
@@ -1471,7 +1468,7 @@ angular.module('ricardo.directives-addendum', [])
               .attr("class", "bar")
               .attr("x", function(d){ return x(d.key) })
               .attr("y", -barMaxHeigth/2 )
-              .attr("width", yearWidth)
+              .attr("width", barWidth)
               .attr("height", barMaxHeigth)
               .attr("opacity", 0)
               .on('mouseover', function(d) {
@@ -1719,7 +1716,6 @@ angular.module('ricardo.directives-addendum', [])
             function type(d) {
 
               d.nb_reporting = +d.nb_reporting;
-              console.log("type", d);
               return d;
             }
 
@@ -1813,8 +1809,7 @@ angular.module('ricardo.directives-addendum', [])
         var chart = d3.select(element[0])
 
         scope.$watch("ngData", function(newValue, oldValue){
-          if(newValue && newValue !== oldValue && newValue.length > 0){    
-            //console.log("newValue line", newValue);     
+          if(newValue && newValue !== oldValue && newValue.length > 0){      
             newValue.forEach(function (e) {
               if (e.color === undefined)
                 e.color=scope.reporting.filter(function(r){return r.RICid===e.key})[0]["color"]
@@ -1841,10 +1836,6 @@ angular.module('ricardo.directives-addendum', [])
         var selection = d3.select("#linechart-world-container");
 
         function linechart(data, yValue){
-
-          // console.log("data in linechart", data);
-          // console.log("yvalue in linechart", yValue);
-
           var chart;
           var margin = {top: 20, right: 0, bottom: 30, left: 0},
               chartWidth = width - margin.left - margin.right,
@@ -2069,8 +2060,6 @@ angular.module('ricardo.directives-addendum', [])
         ngData: '='
       },
       link: function(scope, element, attrs) {
-        console.log("data", scope.ngData);
-
         // need input to change and pass to continent and central state.
 
         var tooltipTreemap = d3.select("body")
@@ -2138,6 +2127,66 @@ angular.module('ricardo.directives-addendum', [])
               .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
               .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
         }
+      }
+    }
+  }])
+    // /* directive with only watch */
+  .directive('donutChart',['apiService', '$timeout',function (apiService, $timeout){
+    return {
+      restrict: 'E',
+      template: '<div id="donut-chart-container"></div>',
+      scope: {
+        ngData: '='
+      },
+      link: function(scope, element, attrs) {
+
+        // population = count entities
+        var data = scope.ngData;
+
+        var width = 300,
+            height = 300,
+            radius = Math.min(width, height) / 2;
+
+        // var color = d3.scale.category20c();
+            
+        var color = d3.scale.ordinal()
+          .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+        var arc = d3.svg.arc()
+            .outerRadius(radius - 10)
+            .innerRadius(radius - 70);
+
+        var pie = d3.layout.pie()
+            .sort(null)
+            .value(function(d) { return d.values.length; });
+
+        var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+          .append("g")
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+
+          data.forEach(function(d) {
+            d.values.length = +d.values.length;
+          });
+
+          var g = svg.selectAll(".arc")
+              .data(pie(data))
+            .enter().append("g")
+              .attr("class", "arc");
+
+          g.append("path")
+              .attr("d", arc)
+              .style("fill", function(d) { return color(d.data.name); });
+
+          g.append("text")
+              .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+              .attr("dy", ".35em")
+              .style("text-anchor", "middle")
+              .text(function(d) { return d.data.name; });
+
+
       }
     }
   }])

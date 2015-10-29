@@ -793,6 +793,9 @@ angular.module('ricardo.controllers', [])
 
     $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newValue, oldValue) {
       if (newValue !== oldValue && newValue[0] != newValue[1]) {
+        $scope.selectedMinDate = newValue[0];
+        $scope.selectedMaxDate = newValue[1];
+
         localStorage.removeItem('selectedMinDate');
         localStorage.removeItem('selectedMaxDate');
         localStorage.selectedMinDate = newValue[0];
@@ -1483,27 +1486,44 @@ angular.module('ricardo.controllers', [])
 
     //smart version
 
-    // var types = []
-    // reportingEntities.forEach( function (d) {
-    //   if (types.indexOf(d.type) === -1)
-    //     types.push(d.type) 
-    // })
+    var types = []
+    reportingEntities.forEach( function (d) {
+      if (types.indexOf(d.type) === -1)
+        types.push(d.type) 
+    })
 
-    // var entities = {};
-    // entities.name = "types";
-    // entities.children = [];
-    // for (var i = 0, len = types.length; i<=len; i++)
-    //    entities.children.push({name : "", children : []});
-    // for (var i = 0, len = types.length; i<=len; i++) {
-    //   if (types[i] !== null) {
-    //     entities.children[i].name = types[i];
-    //     var type = reportingEntities.filter(function (d) { return d.type === types[i] })
-    //     type.forEach( function (d) {
-    //       entities.children[i].children.push({name: d.RICname, size: 1000})
-    //     })
-    //     type = []; 
-    //   }
-    // }
+    // var entities = [];
+    // var typesEntities = {};
+    // typesEntities.name = "";
+    // typesEntities.list = [];
+
+    // var groups = RICentities.filter(function (d) { return d.type === "group" });    
+    // var cities = RICentities.filter(function (d) { return d.type === "city/part_of"});    
+    // var countries = RICentities.filter(function (d) { return d.type === "country" });    
+    // var geoArea = RICentities.filter(function (d) { return d.type ==="geographical_area"})    
+    // var colonialArea = RICentities.filter(function (d) { return d.type === "colonial_area"})   
+
+    // entities.push({name : "group", values:groups})
+    // entities.push({name : "city/part_of", values:cities})
+    // entities.push({name : "country", values:countries})
+    // entities.push({name : "geographical_area", values:geoArea})
+    // entities.push({name : "colonial_area", values:colonialArea})
+
+    var entities = {};
+    entities.name = "types";
+    entities.children = [];
+    for (var i = 0, len = types.length; i<=len; i++)
+       entities.children.push({name : "", children : []});
+    for (var i = 0, len = types.length; i<=len; i++) {
+      if (types[i] !== null) {
+        entities.children[i].name = types[i];
+        var type = reportingEntities.filter(function (d) { return d.type === types[i] })
+        type.forEach( function (d) {
+          entities.children[i].children.push({name: d.RICname, size: 1000})
+        })
+        type = []; 
+      }
+    }
     
     // var continents = []
     // RICentities.forEach( function (d) {
@@ -1549,7 +1569,9 @@ angular.module('ricardo.controllers', [])
     //   }
     // }
 
-    //$scope.entities = entities;
+    console.log("entities", entities);
+
+    $scope.entities = entities;
 
 
   })
