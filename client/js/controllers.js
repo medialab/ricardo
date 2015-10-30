@@ -1488,11 +1488,7 @@ angular.module('ricardo.controllers', [])
 
     //smart version
 
-    var types = []
-    reportingEntities.forEach( function (d) {
-      if (types.indexOf(d.type) === -1)
-        types.push(d.type) 
-    })
+    
 
     // var entities = [];
     // var typesEntities = {};
@@ -1511,49 +1507,105 @@ angular.module('ricardo.controllers', [])
     // entities.push({name : "geographical_area", values:geoArea})
     // entities.push({name : "colonial_area", values:colonialArea})
 
-    var entities = {};
-    entities.name = "types";
-    entities.children = [];
-    for (var i = 0, len = types.length; i<=len; i++)
-       entities.children.push({name : "", children : []});
-    for (var i = 0, len = types.length; i<=len; i++) {
-      if (types[i] !== null) {
-        entities.children[i].name = types[i];
-        var type = reportingEntities.filter(function (d) { return d.type === types[i] })
-        type.forEach( function (d) {
-          entities.children[i].children.push({name: d.RICname, size: 1000})
-        })
-        type = []; 
-      }
-    }
-    
-    // var continents = []
-    // RICentities.forEach( function (d) {
-    //   if (continents.indexOf(d.continent) === -1)
-    //     continents.push(d.continent) 
-    // })
-
     // var entities = {};
-    // entities.name = "continents";
+    // entities.name = "types";
     // entities.children = [];
-    // for (var i = 0, len = continents.length; i<=len; i++)
+    // for (var i = 0, len = types.length; i<=len; i++)
     //    entities.children.push({name : "", children : []});
-    // for (var i = 0, len = continents.length; i<=len; i++) {
-    //   if (continents[i] !== null) {
-    //     entities.children[i].name = continents[i];
-    //     var continent = RICentities.filter(function (d) { return d.continent === continents[i] })
-    //     continent.forEach( function (d) {
+    // for (var i = 0, len = types.length; i<=len; i++) {
+    //   if (types[i] !== null) {
+    //     entities.children[i].name = types[i];
+    //     var type = reportingEntities.filter(function (d) { return d.type === types[i] })
+    //     type.forEach( function (d) {
     //       entities.children[i].children.push({name: d.RICname, size: 1000})
     //     })
-    //     continent = []; 
+    //     type = []; 
     //   }
     // }
+    
+    /* 
+      list all three mains classifications
+    */
 
-    // var states = []
-    // RICentities.forEach( function (d) {
-    //   if (states.indexOf(d.central_state) === -1)
-    //     states.push(d.central_state) 
-    // })
+    var continents = []
+    RICentities.forEach( function (d) {
+      if (continents.indexOf(d.continent) === -1)
+        continents.push(d.continent) 
+    })
+
+    var types = []
+    reportingEntities.forEach( function (d) {
+      if (types.indexOf(d.type) === -1)
+        types.push(d.type) 
+    })
+
+    var states = []
+    RICentities.forEach( function (d) {
+      if (states.indexOf(d.central_state) === -1)
+        states.push(d.central_state) 
+    })
+
+    // create first node : continent
+
+    var entities = {};
+    entities.name = "continents";
+    entities.children = [];
+    for (var i = 0, len = continents.length; i<=len; i++)
+       entities.children.push({name : continents[i], children : []});
+
+    for (var i = 0, len = continents.length; i<=len; i++) {
+      // add second nodes (types) in continents
+      for (var j = 0, lenTypes = types.length; j<=lenTypes; j++)
+        entities.children[i].children.push({name : types[j], children : []});
+      
+      // add entities to each types
+      for (var k = 0, len = entities.children[i].children.length; k<=len; k++) {
+        var elementInTypes = RICentities.filter(function (d) { 
+
+          if (entities.children[i].children[k] !== undefined) return d.continent === entities.children[i].name  && d.type === entities.children[i].children[k].name})
+        
+        console.log("elementInTypes", elementInTypes);
+
+        if (entities.children[i].children[k] !== undefined) {
+          elementInTypes.forEach(function (d) {
+            entities.children[i].children[k].children.name = "";
+            entities.children[i].children[k].children.push({name:d.RICid, children:[]});              
+          })
+          console.log("entities.children[i]", entities.children[i]);
+          console.log("entities.children[i].children[k]", entities.children[i].children[k]);
+        }
+        elementInTypes =[];
+      }         
+    }
+
+    // var entitiesEurope = {};
+    // entitiesEurope.name = "Europe";
+    // entitiesEurope.children = [];
+
+    // for (var i = 0, len = entities.length; i<=len; i++) 
+    //     entities[i].children.push({name : "", children : []});
+
+    // for (var i = 0, len = entities.length; i<=len; i++) {
+    //   for (var j = 0, lenTypes = types.length; j<=lenTypes; j++)
+    //      entities[i].children.push({name : types[j], children : []});
+    // }
+
+    // for (var i = 0, len = types.length; i<=len; i++) {
+    //   var europeTypes = entities.children[1].filter(function (d) { return d.type === types[i] })
+    //   entitiesEurope.children[types[i]].push(arrayEntities)
+    //   arrayEntities = [];
+    // }
+
+
+    // var countries = entitiesEurope.filter(function (d) { return d.type === "country"})
+    // entitiesEurope.children["country"].push(countries)
+
+
+     
+
+    //console.log("entitiesEurope", entitiesEurope);
+
+    
 
     // var entities = {};
     // entities.name = "states";

@@ -21,7 +21,16 @@
             Data expressed in <strong>sterling pound</strong>
           </div>
         </div>
-        <world-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></world-timeline>
+        <!-- <world-timeline 
+        ng-data="timelineData" 
+        start-date="selectedMinDate" 
+        end-date="selectedMaxDate">
+        </world-timeline> -->
+        <dual-timeline 
+        ng-data="timelineData" 
+        start-date="selectedMinDate" 
+        end-date="selectedMaxDate" 
+        ></dual-timeline>
       </div>
     </div>
   </div>
