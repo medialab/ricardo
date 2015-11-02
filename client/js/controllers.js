@@ -1153,6 +1153,7 @@ angular.module('ricardo.controllers', [])
                 apiService
                   .getFlows({reporting_ids: d.RICid, partner_ids:"Worldbestguess", with_sources:1})
                   .then(function (result) {
+                    console.log("result", result);
                     var yearSelected = [];
                     yearSelected = initTabLineChart(result, yearSelected, d.type, d.RICid, $scope.selectedMinDate, $scope.selectedMaxDate)
 
@@ -1168,11 +1169,12 @@ angular.module('ricardo.controllers', [])
                  apiService
                   .getContinentFlows({continents: d.RICname, partner_ids:"Worldbestguess", with_sources:1})
                   .then(function (result) {
+                    //console.log("d.RICid", d.RICid);
                    var yearSelected = [];
-                  yearSelected = initTabLineChart(result, yearSelected, d.type, d.RICname, $scope.selectedMinDate, $scope.selectedMaxDate)
+                    yearSelected = initTabLineChart(result, yearSelected, d.type, d.RICname, $scope.selectedMinDate, $scope.selectedMaxDate)
 
                     $scope.linechartData = [];
-                    initLineChart2(linechart_flows, yearSelected, $scope.linechartData, d.RICid, yValue, d.color)
+                    initLineChart2(linechart_flows, yearSelected, $scope.linechartData, d.RICname, yValue, d.color)
                     
                  }); 
                 $scope.yValue = yValue;
@@ -1202,7 +1204,7 @@ angular.module('ricardo.controllers', [])
                   });
                   $scope.yValue = yValue;
                   $scope.conversion = "value";
-                  $scope.actualCurrency = "pourcent";
+                  $scope.actualCurrency = "percent";
                }); 
             }
             else {
@@ -1214,6 +1216,7 @@ angular.module('ricardo.controllers', [])
 
                   var tab = pct(reportingWorldFlows, yearSelected, yValue, d.color);
                   tab.key = d.RICname;
+                  console.log("d", d);
                   partnersPct.push(tab);
                   $scope.linechartData = [];
                   partnersPct.forEach ( function (d) {
@@ -1221,7 +1224,7 @@ angular.module('ricardo.controllers', [])
                   });
                   $scope.yValue = yValue;
                   $scope.conversion = "value";
-                  $scope.actualCurrency = "pourcent";
+                  $scope.actualCurrency = "percent";
                 }); 
 
             }

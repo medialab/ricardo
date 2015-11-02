@@ -1035,20 +1035,20 @@ angular.module('ricardo.directives-addendum', [])
 
          // Partner Histo var initialization
         var height = 600,
-        width = document.querySelector('#partners-histogram-container').offsetWidth,
-        marginTop = 15,
-        marginLeft = 0,
-        marginRight = 0,
-        duration = 1000,
-        //yearWidth = 4,
-        //barWidth = 4,
-        barMinHeigth = 2,
-        barMaxHeigth = 30,
-        barGap = 40,
-        barColors = ["#663333", "#cc6666"],
-        //continents = false,
-        currency = "sterling pound",
-        sum = 0;
+            width = document.querySelector('#partners-histogram-container').offsetWidth,
+            marginTop = 15,
+            marginLeft = 0,
+            marginRight = 0,
+            duration = 1000,
+            //yearWidth = 4,
+            //barWidth = 4,
+            barMinHeigth = 2,
+            barMaxHeigth = 30,
+            barGap = 40,
+            barColors = ["#663333", "#cc6666"],
+            //continents = false,
+            currency = "sterling pound",
+            sum = 0;
 
        function removeSvgElements(chart) {
           chart.selectAll("text.legend").remove();
@@ -1206,7 +1206,6 @@ angular.module('ricardo.directives-addendum', [])
               //maxWidth = yearWidth * (limits[1]-limits[0]+1);
               //years.pop();
 
-
             var x = d3.scale.linear()
                 .domain(d3.extent(years))
                 .range([0, width]), // witdh replace max width 
@@ -1245,13 +1244,14 @@ angular.module('ricardo.directives-addendum', [])
               .attr("width", barWidth)
               .attr("height", function(d) { return (d.balance ? Math.max(barMinHeigth, y(Math.abs(d.balance))) : 0); })
               .attr("fill", function(d){ return barColors[+(d.balance >=0)] })
-              .attr("opacity", function(d){ return (d.imp !== null && d.exp !== null ? 1 : 0.3) });
+              .attr("opacity", function(d){ return (d.imp !== null && d.exp !== null ? 1 : 0.3) })
+              .style("border-left", "solid 1px white");
 
             histo.selectAll(".tooltipBar")
               .data(p.years)
               .enter().append("rect")
               .attr("class", "bar")
-              .attr("x", function(d){ return x(d.key) })
+              .attr("x", function(d){ return x(d.key)})
               .attr("y", -barMaxHeigth/2 )
               .attr("width", barWidth)
               .attr("height", barMaxHeigth)
@@ -1341,10 +1341,7 @@ angular.module('ricardo.directives-addendum', [])
                   
               }
           });
-      
-
         }
-
       } //end of link
     }
   }])
@@ -1608,6 +1605,23 @@ angular.module('ricardo.directives-addendum', [])
             else
               yValueSelect = newValue[0].type ? newValue[0].type : newValue[0].flowType;           
 
+
+
+            // var missing;
+            // var allExpNull = newValue[0].values.every(function (d) {return d.exp === null ;})
+            // var allImpNull = newValue[0].values.every(function (d) {return d.imp === null ;})
+            // console.log("allExpNull", allExpNull);
+            // console.log("allImpNull", allImpNull);
+
+            // if (allExpNull && allImpNull) {
+            //   missing = "1"; 
+            // }
+            // else {
+            //   missing = "0";  
+            // }
+            // scope.lineChartMissing = missing;
+            // scope.entitiesMissing = newValue[0].values[0].reporting_id;
+
             linechart(newValue, yValueSelect);
           }
         })
@@ -1803,14 +1817,25 @@ angular.module('ricardo.directives-addendum', [])
 
           var format = d3.format("0,000");
 
+          function colorLine(country) {
+            var color;
+            data.forEach(function (d) {
+              if (d.key === country)
+                color = d.color;
+            })
+            return color;
+          }
+
           function mouseover(d) {
             if(d[yValue]!==null)
             {
+              var colorPoint = colorLine(d.reporting_id);
               focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
               if (d.value)
-                focus.select("text").text(format(Math.round(d[yValue])) + '%');
+                focus.select("text").attr("fill", colorPoint).text(format(Math.round(d[yValue])) + '%');
               else
-                focus.select("text").text(format(Math.round(d[yValue])) + '£');
+                focus.select("text").attr("fill", colorPoint).text(format(Math.round(d[yValue])) + '£');
+
               chart.append("line")
                      .attr("class", "lineDate")
                      .attr("x1", x(new Date(d.year, 0, 1)))

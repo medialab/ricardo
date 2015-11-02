@@ -141,25 +141,23 @@
       <i class="fa fa-info-circle"></i> </h3>
         <div ng-show="messagePercent"> 
          <p>
-            The percentages are based on the total amount of partners flows of {{entities.sourceEntity.selected.RICname}}
+            The percentages are based on the total amount of world sumpartners of{{entities.sourceEntity.selected.RICname}}
          </p>
         </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-12" style="float:right">
-      <div class="filter-group">
-          <div class="btn-group pull-right">
-            <label class="btn btnLineChart" ng-model="yValue" btn-radio="'total'" uncheckable>Total</label>
-            <label class="btn btnLineChart" ng-model="yValue" btn-radio="'imp'" uncheckable>Imports</label>
-            <label class="btn btnLineChart" ng-model="yValue" btn-radio="'exp'" uncheckable>Exports</label>
-          </div>
-          <div class="btn-group pull-right" style="margin-right:30px;">
-            <label class="btn btnLineChart" ng-model="conversion" btn-radio="'sterling'" uncheckable>Sterling</label>
-            <label class="btn btnLineChart" ng-model="conversion" btn-radio="'value'" uncheckable>Percent</label>
-          </div>
+  <div class="row">    
+    <div class="col-md-12 filter-group">
+      <div class="btn-group pull-right">
+        <label class="btn btnLineChart" ng-model="yValue" btn-radio="'total'" uncheckable>Total</label>
+        <label class="btn btnLineChart" ng-model="yValue" btn-radio="'imp'" uncheckable>Imports</label>
+        <label class="btn btnLineChart" ng-model="yValue" btn-radio="'exp'" uncheckable>Exports</label>
       </div>
-    </div>
+      <div class="btn-group pull-right" style="margin-right:30px;">
+        <label class="btn btnLineChart" ng-model="conversion" btn-radio="'sterling'" uncheckable>Sterling</label>
+        <label class="btn btnLineChart" ng-model="conversion" btn-radio="'value'" uncheckable>Percent</label>
+      </div>
+  </div>
   </div>
   <div id="select-lineChart">
     <div>
@@ -217,7 +215,6 @@
 
     
     <div class="col-sm-12">
-<!--       <div  id="linechart-world"  linechart-world></div> -->
       <linechart-world ng-data="linechartData">
       </linechart-world>
     </div>

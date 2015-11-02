@@ -1,5 +1,5 @@
-<div id="sticky-marker"></div>
-<div id="sticky-container">
+<!-- <div id="sticky-marker"></div>
+<div id="sticky-container"> -->
   <div class="container">
     <div class="row">
       <div class="timeline-cont col-sm-12">
@@ -21,11 +21,6 @@
             Data expressed in <strong>sterling pound</strong>
           </div>
         </div>
-        <!-- <world-timeline 
-        ng-data="timelineData" 
-        start-date="selectedMinDate" 
-        end-date="selectedMaxDate">
-        </world-timeline> -->
         <dual-timeline 
         ng-data="timelineData" 
         start-date="selectedMinDate" 
@@ -34,19 +29,11 @@
       </div>
     </div>
   </div>
-</div>
+<!-- </div> -->
 
 <div class="container">
     <div class="row" >
       <div class="col-sm-12">
-        <!-- <world-title id="alt-title" style="display:none;"></world-title> -->
-        <!-- <brushing-timeline
-          ng-data="timelineData"
-          start-date="selectedMinDate"
-          end-date="selectedMaxDate"
-          raw-start-date="rawMinDate"
-          raw-end-date="rawMaxDate"
-        ></brushing-timeline> -->
       <div class="legend">
         <div class="legend-item">
           <div class="square import"></div> Reportings available to build the curve
@@ -76,23 +63,21 @@
       </div>
   </div>
   <div class="row">  
-      <div class="col-sm-12" style="float:right">
-        <div class="filter-group" >
-            <div class="btn-group pull-right">
-              <label class="btn btnLineChart" ng-model="yValue" btn-radio="'total'" uncheckable>Total</label>
-              <label class="btn btnLineChart" ng-model="yValue" btn-radio="'imp'" uncheckable>Imports</label>
-              <label class="btn btnLineChart" ng-model="yValue" btn-radio="'exp'" uncheckable>Exports</label>
-            </div>
-            <div class="btn-group pull-right" style="margin-right:30px;">
-              <label class="btn btnLineChart" ng-model="conversion" btn-radio="'sterling'" uncheckable>Sterling</label>
-              <label class="btn btnLineChart" ng-model="conversion" btn-radio="'value'" uncheckable>Percent</label>
-            </div>
+    <div class="col-sm-12 filter-group" >
+        <div class="btn-group pull-right">
+          <label class="btn btnLineChart" ng-model="yValue" btn-radio="'total'" uncheckable>Total</label>
+          <label class="btn btnLineChart" ng-model="yValue" btn-radio="'imp'" uncheckable>Imports</label>
+          <label class="btn btnLineChart" ng-model="yValue" btn-radio="'exp'" uncheckable>Exports</label>
         </div>
-      </div>
+        <div class="btn-group pull-right" style="margin-right:30px;">
+          <label class="btn btnLineChart" ng-model="conversion" btn-radio="'sterling'" uncheckable>Sterling</label>
+          <label class="btn btnLineChart" ng-model="conversion" btn-radio="'value'" uncheckable>Percent</label>
+        </div>
+    </div>
   </div>
   <div id="select-lineChart">
     <div>
-      <h3 class="subtitle col-md-2" style="width:190px;">Select up to 5 reportings :</h3>
+      <h3 class="subtitle col-md-3">Select up to 5 reportings :</h3>
     </div>
     <div class="select-dropdown col-md-9" style="padding-top:10px;">
 
@@ -114,6 +99,7 @@
       </ui-select>
     </div>
       <!-- no need geoEntities beacause there is no data for this entity with worldbestguess -->
+      
      <!--  <ui-select  ng-model="entities.sourceGeoEntity.selected" theme="bootstrap">
         <match placeholder="Geographical area">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingGeoEntities | filter: $select.search">
@@ -134,6 +120,22 @@
 
   <div class="row">
     <div class="col-sm-12">
+      <div ng-show="c" class="alert"> 
+        <div class="modal-body" >
+         <p>
+            There is <strong>no data available</strong> in the database for {{entitiesMissing}}
+         </p>
+         <p>
+         between {{selectedMinDate}} and {{selectedMaxDate}}  
+         </p>
+          <p>
+            Choose another one or change date selection, thank you !
+         </p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-default" ng-click="ok()">OK</button>
+        </div>
+    </div>
       <linechart-world ng-data="linechartData">
       </linechart-world>
     </div>
