@@ -1419,36 +1419,8 @@ angular.module('ricardo.directives-addendum', [])
               var expNbReportings = data.filter(function (d) { return d.type === "Exp"});
               var impNbReportings = data.filter(function (d) { return d.type === "Imp"});
               
-              
-
               var endStart = (end-start);
               var barWidth = Math.floor(width / endStart);
-              // svg.selectAll(".bar")
-              //     .data(expNbReportings)
-              //   .enter().append("rect")
-              //     .attr("class", "bar")
-              //     .attr("x", function(d) { return x(new Date(d.year, 0, 1)) })
-              //     .attr("width", barWidth)
-              //     .attr("y", function(d) { return y(d.nb_reporting); })
-              //     .attr("height", function(d) { return height - y(d.nb_reporting); })
-              //     .style({fill: "#663333"})
-              //     .on('mouseover', function(d) {
-              //     return tooltipBar.html(
-              //       "<p>Nb reportings : " + d.nb_reporting + "</p>"
-              //       ).transition().style("opacity", .9);
-              //     })
-              //     .on('mouseout', function(d) {
-              //       return tooltipBar.transition().style("opacity", 0);
-              //     })
-              //     .on('mousemove', function(d) {
-              //       tooltipBar.style("opacity", .9);
-              //       var wid = tooltipBar.style("width").replace("px", "");
-              //       return tooltipBar
-              //         .style("left", Math.min(window.innerWidth - wid - 20,
-              //           Math.max(0, (d3.event.pageX - wid/2))) + "px")
-              //         .style("top", (d3.event.pageY + 40) + "px")
-              //         .style("width", wid + "px");
-              //     });
 
                   /* 50 line */
               svg.append("line")
@@ -1588,6 +1560,17 @@ angular.module('ricardo.directives-addendum', [])
       },
       link: function(scope, element, attrs) {
 
+        function noData(entity) {
+          d3.select("#linechart-world-container").append("div")
+            .attr("class", "alert")
+            .attr("id", "missingDataLineChart")
+            .html(function() {
+               return '<div class="modal-body" ><p> There is <strong>no data available</strong> in the database for '+ entity + '</p><p>Choose another one or change date selection, thank you !</p> </div> <div class="modal-footer"><button class="btn btn-default" ng-click="okPartner()">OK</button></div>';})
+            .on("click", function(){
+              chart.selectAll("div#missingDataLineChart").remove();
+            })
+        }
+
         var chart = d3.select(element[0])
 
         scope.$watch("ngData", function(newValue, oldValue){
@@ -1605,13 +1588,17 @@ angular.module('ricardo.directives-addendum', [])
             else
               yValueSelect = newValue[0].type ? newValue[0].type : newValue[0].flowType;           
 
+            var missing;
+            var allExpNull = newValue[0].values.every(function (d) {return d.exp === null ;})
+            var allImpNull = newValue[0].values.every(function (d) {return d.imp === null ;})
 
-
-            // var missing;
-            // var allExpNull = newValue[0].values.every(function (d) {return d.exp === null ;})
-            // var allImpNull = newValue[0].values.every(function (d) {return d.imp === null ;})
-            // console.log("allExpNull", allExpNull);
-            // console.log("allImpNull", allImpNull);
+            for (var i = 0, len = newValue.length; i < len ; i++)
+            {
+              var allExpNull = newValue[0].values.every(function (d) {return d.exp === null ;})
+              var allImpNull = newValue[0].values.every(function (d) {return d.imp === null ;})
+              if (allExpNull && allImpNull)
+                noData(newValue[i].values[0].reporting_id)
+            }
 
             // if (allExpNull && allImpNull) {
             //   missing = "1"; 
@@ -1768,18 +1755,18 @@ angular.module('ricardo.directives-addendum', [])
           entities.exit().remove()
 
           var voronoi = d3.geom.voronoi()
-              .x(function(d) { return x(new Date(d.year, 0, 1)); })
-              .y(function(d) { return y(d[yValue]); })
-              .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]]);
+            .x(function(d) { return x(new Date(d.year, 0, 1)); })
+            .y(function(d) { return y(d[yValue]); })
+            .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]]);
           
           var voronoiGroup = chart.select(".voronoi")
 
           if(voronoiGroup.empty()){
-                voronoiGroup = chart.append("g")
-                            .attr("class", "voronoi")
-                            .attr("fill", "none")
-                            .attr("pointer-events", "all")
-              }
+            voronoiGroup = chart.append("g")
+                        .attr("class", "voronoi")
+                        .attr("fill", "none")
+                        .attr("pointer-events", "all")
+          }
 
           var voronoiGraph = voronoiGroup.selectAll("path")
             .data(voronoi(d3.merge(data.map(function(d) { return d.values.filter(function(d){return d[yValue]}); }))))
@@ -1847,7 +1834,7 @@ angular.module('ricardo.directives-addendum', [])
              var text = chart.append("text")
                      .attr("class", "lineDate")
                      .attr("x", x(new Date(d.year, 0, 1)) - 15)
-                     .attr("y", 365)
+                     .attr("y", 368)
                      .attr("font-size", "0.85em")
                      .text(d.year);
 
@@ -1892,7 +1879,7 @@ angular.module('ricardo.directives-addendum', [])
                 var textDate = chart.append("text")
                      .attr("class", "lineDateText")
                      .attr("x", x(new Date(d.year, 0, 1)) - 15)
-                     .attr("y", 365)
+                     .attr("y", 368)
                      .attr("font-size", "0.85em")
                      .text(d.year);
             }
