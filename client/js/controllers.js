@@ -11,7 +11,7 @@ angular.module('ricardo.controllers', [])
       {slug:"world", label:"World view"},
       {slug:"country", label:"Country view"},
       {slug:"bilateral", label:"Bilateral view"},
-      //{slug:"RICentities", label:"RICentities view"}
+      {slug:"RICentities", label:"RICentities view"}
     ]
   })
   // Manage display if no data available
@@ -55,8 +55,8 @@ angular.module('ricardo.controllers', [])
     $scope.entities = {sourceEntity : {}, targetEntity : {}}
     $scope.rawMinDate                               // Min year in data for the selected pair of countries
     $scope.rawMaxDate                               // Max year in data for the selected pair of countries
-    $scope.selectedMinDate = 1600                   // Min year as selected by selector or brushing
-    $scope.selectedMaxDate = 2000                   // Max year as selected by selector or brushing
+    $scope.selectedMinDate = 1787                   // Min year as selected by selector or brushing
+    $scope.selectedMaxDate = 1938                   // Max year as selected by selector or brushing
     $scope.rawYearsRange                            // Range of years in data (useful for selectors)
     $scope.rawYearsRange_forInf                     // Range of years in data adapted to inferior bound (useful for selectors)
     $scope.rawYearsRange_forSup                     // Range of years in data adapted to superior bound (useful for selectors)
@@ -88,57 +88,68 @@ angular.module('ricardo.controllers', [])
             {
               $scope.missingTarget = "1";
             }
-          })
+          }
+        )
       }
     }
 
-    // Initialization
-      try {
-        var sourceEntityLocalStorage = localStorage.getItem('sourceEntitySelected');
-        $scope.entities.sourceEntity.selected = JSON.parse(sourceEntityLocalStorage);
-        init($scope.entities.sourceEntity.selected.RICid, $scope.currency);
-        }
-      catch (e) {
-        $scope.entities.sourceEntity.selected=$scope.reportingEntities.filter(function (e){return e.RICid===DEFAULT_REPORTING})[0]
-        init(DEFAULT_REPORTING, $scope.currency);
-      }
+    // Initialization try with local storage data or default
+      // try {
+      //   var sourceEntityLocalStorage = localStorage.getItem('sourceEntitySelected');
+      //   $scope.entities.sourceEntity.selected = JSON.parse(sourceEntityLocalStorage);
+      //   var targetEntityLocalStorage = localStorage.getItem('targetEntitySelected');
+      //   $scope.entities.targetEntity.selected = JSON.parse(targetEntityLocalStorage);
+      //   init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected);
+      //   }
+      // catch (e) {
+      //   $scope.entities.sourceEntity.selected=$scope.reportingEntities.filter(function (e){return e.RICid===DEFAULT_REPORTING})[0]
+      //   init(DEFAULT_REPORTING, DEFAULT_PARTNER);
+      // }
     
     // First init - check if data are in local storage
-     if (localStorage.sourceEntitySelected) {
+     // if (localStorage.sourceEntitySelected) {
       try {
           var sourceEntityLocalStorage = localStorage.getItem('sourceEntitySelected');
           $scope.entities.sourceEntity.selected = JSON.parse(sourceEntityLocalStorage);
-          
-          // more complex with target when you pass from country view to bilateral view
-          apiService
-            .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
-            .then(function (result) {
-              for (var i=0, len = result.flows.length; i < len; i++) {
-                if (!/^World/.test(result.flows[i].partner_id)) {
-                  var target = {RICid:"", name:""};
-                  target.RICid = result.flows[i].partner_id;
-                  target.RICname = result.flows[i].partner_id;
-                  $scope.entities.targetEntity.selected = target;
-                  break;
+
+          if (localStorage.sourceEntitySelected) {
+            var targetEntityLocalStorage = localStorage.getItem('targetEntitySelected');
+            $scope.entities.targetEntity.selected = JSON.parse(targetEntityLocalStorage);
+            console.log("try")
+            init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected.RICid);
+          }
+          else {
+            apiService
+              .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
+              .then(function (result) {
+                for (var i=0, len = result.flows.length; i < len; i++) {
+                  if (!/^World/.test(result.flows[i].partner_id)) {
+                    var target = {RICid:"", name:""};
+                    target.RICid = result.flows[i].partner_id;
+                    target.RICname = result.flows[i].partner_id;
+                    $scope.entities.targetEntity.selected = target;
+                    break;
+                  }
+                  i++;
                 }
-                i++;
-              }
-            })
-          //$scope.entities.targetEntity.selected = JSON.parse(targetEntityLocalStorage);
-          localStorage.targetEntitySelected = $scope.entities.targetEntity.selected
-          init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.RICid);
+              })
+            localStorage.targetEntitySelected = $scope.entities.targetEntity.selected
+            init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected.RICid);
+          }
         }
         catch (e) {
+          console.log("catch");
           $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid===DEFAULT_REPORTING})[0]
           $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid===DEFAULT_PARTNER})[0]
           init(DEFAULT_REPORTING, DEFAULT_PARTNER);
         }
-     }
-     else {
-      $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid===DEFAULT_REPORTING})[0]
-      $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid===DEFAULT_PARTNER})[0]
-      init(DEFAULT_REPORTING, DEFAULT_PARTNER);
-     }
+     // }
+     // else {
+     //  console.log("else 1");
+     //  $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid===DEFAULT_REPORTING})[0]
+     //  $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid===DEFAULT_PARTNER})[0]
+     //  init(DEFAULT_REPORTING, DEFAULT_PARTNER);
+     // }
 
     $scope.$watch("entities.sourceEntity.selected", function (newValue, oldValue){
       if(newValue !== oldValue && newValue){
@@ -1153,7 +1164,6 @@ angular.module('ricardo.controllers', [])
                 apiService
                   .getFlows({reporting_ids: d.RICid, partner_ids:"Worldbestguess", with_sources:1})
                   .then(function (result) {
-                    console.log("result", result);
                     var yearSelected = [];
                     yearSelected = initTabLineChart(result, yearSelected, d.type, d.RICid, $scope.selectedMinDate, $scope.selectedMaxDate)
 
@@ -1216,7 +1226,6 @@ angular.module('ricardo.controllers', [])
 
                   var tab = pct(reportingWorldFlows, yearSelected, yValue, d.color);
                   tab.key = d.RICname;
-                  console.log("d", d);
                   partnersPct.push(tab);
                   $scope.linechartData = [];
                   partnersPct.forEach ( function (d) {
@@ -1567,15 +1576,14 @@ angular.module('ricardo.controllers', [])
 
           if (entities.children[i].children[k] !== undefined) return d.continent === entities.children[i].name  && d.type === entities.children[i].children[k].name})
         
-        console.log("elementInTypes", elementInTypes);
+        
 
         if (entities.children[i].children[k] !== undefined) {
           elementInTypes.forEach(function (d) {
             entities.children[i].children[k].children.name = "";
             entities.children[i].children[k].children.push({name:d.RICid, children:[]});              
           })
-          console.log("entities.children[i]", entities.children[i]);
-          console.log("entities.children[i].children[k]", entities.children[i].children[k]);
+         
         }
         elementInTypes =[];
       }         

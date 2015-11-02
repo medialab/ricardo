@@ -438,18 +438,21 @@ angular.module('ricardo.directives-addendum', [])
       ,link: function(scope, element, attrs){
         scope.$watch('ngData', function(newValue, oldValue) {
           if ( newValue ) {
+            console.log("scope.ngData 1", scope.ngData);
             draw(scope.ngData)
           }
         })
 
         scope.$watch('endDate', function(newValue, oldValue) {
           if ( newValue && scope.ngData) {
+            console.log("scope.ngData 2", scope.ngData);
             draw(scope.ngData)
           }
         })
 
         scope.$watch('startDate', function(newValue, oldValue) {
           if ( newValue && scope.ngData) {
+            console.log("scope.ngData 3", scope.ngData);
             draw(scope.ngData)
           }
         })
@@ -630,21 +633,21 @@ angular.module('ricardo.directives-addendum', [])
             }
 
         /* select only imp & exp data from country selected */
-          var ImpExp = [];
+          var ComparisonTabData = [];
 
           data.forEach(function (data) {
             if (data.year >= scope.startDate && data.year <= scope.endDate) {
-              var imp = diffSource(data);
-              var exp = diffTarget(data);
-              if ( imp !== undefined) {
-                ImpExp.push({points: imp, year: data.year}); 
+              var source = diffSource(data);
+              var target = diffTarget(data);
+              if ( source !== undefined) {
+                ComparisonTabData.push({type: "source", points: source, year: data.year}); 
               }
-              if (exp !== undefined) {
-                ImpExp.push({points: exp, year: data.year});
+              if (target !== undefined) {
+                ComparisonTabData.push({type: "target", points: target, year: data.year});
               }
             }
           })
-          voronoi(ImpExp, "points", svg, margin, height, width);
+          voronoi(ComparisonTabData, "points", svg, margin, height, width);
 
         }
 
@@ -698,8 +701,9 @@ angular.module('ricardo.directives-addendum', [])
             function mouseover(d) {
                 if(d[yValue]!==null)
                 {
+                  var colorPoint = d.type === "source" ? "#CC6666" : "#dbb994"
                   focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
-                  focus.select("text").text(format(Math.round(d[yValue] * 100) / 100 ));
+                  focus.select("text").attr("fill", colorPoint).text(format(Math.round(d[yValue] * 100) / 100 ));
                 }
               }
 
