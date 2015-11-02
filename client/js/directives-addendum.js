@@ -1841,13 +1841,58 @@ angular.module('ricardo.directives-addendum', [])
                      .attr("x1", x(new Date(d.year, 0, 1)))
                      .attr("y1", y(d[yValue]))
                      .attr("x2", x(new Date(d.year, 0, 1)))
-                     .attr("y2", 330)
+                     .attr("y2", 350)
                      .attr("stroke-width", 1)
                      .attr("stroke", "grey");
-              chart.append("text")
+             var text = chart.append("text")
                      .attr("class", "lineDate")
                      .attr("x", x(new Date(d.year, 0, 1)) - 15)
-                     .attr("y", 348)
+                     .attr("y", 365)
+                     .attr("font-size", "0.85em")
+                     .text(d.year);
+
+              // Define the gradient
+                var gradient = chart.append("chart:defs")
+                    .append("chart:linearGradient")
+                    .attr("id", "gradient")
+                    .attr("x1", "0%")
+                    .attr("y1", "100%")
+                    .attr("x2", "100%")
+                    .attr("y2", "100%")
+                    .attr("spreadMethod", "pad");
+
+                // Define the gradient colors
+                gradient.append("chart:stop")
+                    .attr("offset", "0%")
+                    .attr("stop-color", "white")
+                    .attr("stop-opacity", 0.1);
+
+                gradient.append("chart:stop")
+                    .attr("offset", "50%")
+                    .attr("stop-color", "white")
+                    .attr("stop-opacity", 1);
+
+                gradient.append("chart:stop")
+                    .attr("offset", "100%")
+                    .attr("stop-color", "white")
+                    .attr("stop-opacity", 0.1);
+
+                // add rect as background to hide date display in 
+                var bbox = text.node().getBBox();
+                var rect = chart.append("chart:rect")
+                    .attr("class", "lineDateText")
+                    .attr("x", bbox.x - 50)
+                    .attr("y", bbox.y)
+                    .attr("width", bbox.width + 100)
+                    .attr("height", bbox.height)
+                    .style("fill", 'url(#gradient)')
+
+
+                // add date
+                var textDate = chart.append("text")
+                     .attr("class", "lineDateText")
+                     .attr("x", x(new Date(d.year, 0, 1)) - 15)
+                     .attr("y", 365)
                      .attr("font-size", "0.85em")
                      .text(d.year);
             }
@@ -1856,6 +1901,8 @@ angular.module('ricardo.directives-addendum', [])
           function mouseout(d) {
             chart.selectAll("line.lineDate").remove();
             chart.selectAll("text.lineDate").remove();
+            chart.selectAll("text.lineDateText").remove();
+            chart.selectAll("rect.lineDateText").remove();
             focus.attr("transform", "translate(-100,-100)");
           }     
         } // end linechart
