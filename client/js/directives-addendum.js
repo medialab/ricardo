@@ -206,11 +206,11 @@ angular.module('ricardo.directives-addendum', [])
           })
 
           svg.select(".x.axis")
-              //.duration(750)
+              .transition().duration(750)
               .call(xAxis);
 
           svg.select(".y.axis")
-              //.duration(750)
+              .transition().duration(750)
               .call(yAxis);
 
           svg.append("path")
@@ -1025,7 +1025,7 @@ angular.module('ricardo.directives-addendum', [])
               if (data.length === 0){
                 noData ();
               }
-              partnersHistogram(data, continents, order, newValue);
+              partnersHistogram(data, continents, order, newValue, scope.startDate, scope.endDate);
             } 
           }
         })
@@ -1142,8 +1142,7 @@ angular.module('ricardo.directives-addendum', [])
         }
 
         function partnersHistogram(data, continents, order, filter, minDate, maxDate){
-          var endStart = (maxDate-minDate);
-          var barWidth = Math.floor(width / endStart);
+          
 
           var indexYears = {};
           d3.nest()
@@ -1162,6 +1161,8 @@ angular.module('ricardo.directives-addendum', [])
             .key(function(d){ return d.year })
             .rollup(rollupYears)
             .entries(data)
+
+          console.log("partners", partners);
 
           partners.forEach(function(p){
             p.years = []
@@ -1216,9 +1217,12 @@ angular.module('ricardo.directives-addendum', [])
                 y = d3.scale.linear()
                 .range([0, barMaxHeigth/2]);
 
+
           partners.forEach(function(p, i){
+
             var entity = RICentities[""+p.key],
               name = (entity ? entity.RICname : p.key);
+
 
             y0 = marginTop + 30 + i * (barMaxHeigth + barGap);
 
@@ -1238,6 +1242,9 @@ angular.module('ricardo.directives-addendum', [])
               .attr("stroke-opacity", 0.1)
               .attr("shape-rendering", "crispEdges")
               .attr("stroke-width", 1)
+
+            var endStart = (maxDate-minDate);
+            var barWidth = Math.floor(width / endStart);
 
             histo.selectAll(".bar")
               .data(p.years)

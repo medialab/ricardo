@@ -11,7 +11,7 @@ angular.module('ricardo.controllers', [])
       {slug:"world", label:"World view"},
       {slug:"country", label:"Country view"},
       {slug:"bilateral", label:"Bilateral view"},
-      {slug:"RICentities", label:"RICentities view"}
+      //{slug:"RICentities", label:"RICentities view"}
     ]
   })
   // Manage display if no data available
@@ -56,7 +56,7 @@ angular.module('ricardo.controllers', [])
     $scope.rawMinDate                               // Min year in data for the selected pair of countries
     $scope.rawMaxDate                               // Max year in data for the selected pair of countries
     $scope.selectedMinDate = 1787                   // Min year as selected by selector or brushing
-    $scope.selectedMaxDate = 1938                   // Max year as selected by selector or brushing
+    $scope.selectedMaxDate = 1938                    // Max year as selected by selector or brushing
     $scope.rawYearsRange                            // Range of years in data (useful for selectors)
     $scope.rawYearsRange_forInf                     // Range of years in data adapted to inferior bound (useful for selectors)
     $scope.rawYearsRange_forSup                     // Range of years in data adapted to superior bound (useful for selectors)
