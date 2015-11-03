@@ -99,7 +99,7 @@
       </ui-select>
     </div>
       <!-- no need geoEntities beacause there is no data for this entity with worldbestguess -->
-      
+
      <!--  <ui-select  ng-model="entities.sourceGeoEntity.selected" theme="bootstrap">
         <match placeholder="Geographical area">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingGeoEntities | filter: $select.search">
@@ -120,7 +120,8 @@
 
   <div class="row">
     <div class="col-sm-12">
-      <div ng-show="c" class="alert"> 
+    
+<!--       <div ng-show="c" class="alert"> 
         <div class="modal-body" >
          <p>
             There is <strong>no data available</strong> in the database for {{entitiesMissing}}
@@ -135,7 +136,7 @@
         <div class="modal-footer">
             <button class="btn btn-default" ng-click="ok()">OK</button>
         </div>
-    </div>
+    </div> -->
       <linechart-world ng-data="linechartData">
       </linechart-world>
     </div>

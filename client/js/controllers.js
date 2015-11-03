@@ -11,7 +11,7 @@ angular.module('ricardo.controllers', [])
       {slug:"world", label:"World view"},
       {slug:"country", label:"Country view"},
       {slug:"bilateral", label:"Bilateral view"},
-      //{slug:"RICentities", label:"RICentities view"}
+      {slug:"RICentities", label:"RICentities view"}
     ]
   })
   // Manage display if no data available
@@ -1540,7 +1540,7 @@ angular.module('ricardo.controllers', [])
     */
 
     var continents = []
-    RICentities.forEach( function (d) {
+    reportingEntities.forEach( function (d) {
       if (continents.indexOf(d.continent) === -1)
         continents.push(d.continent) 
     })
@@ -1552,7 +1552,7 @@ angular.module('ricardo.controllers', [])
     })
 
     var states = []
-    RICentities.forEach( function (d) {
+    reportingEntities.forEach( function (d) {
       if (states.indexOf(d.central_state) === -1)
         states.push(d.central_state) 
     })
@@ -1572,7 +1572,7 @@ angular.module('ricardo.controllers', [])
       
       // add entities to each types
       for (var k = 0, len = entities.children[i].children.length; k<=len; k++) {
-        var elementInTypes = RICentities.filter(function (d) { 
+        var elementInTypes = reportingEntities.filter(function (d) { 
 
           if (entities.children[i].children[k] !== undefined) return d.continent === entities.children[i].name  && d.type === entities.children[i].children[k].name})
         
@@ -1581,7 +1581,7 @@ angular.module('ricardo.controllers', [])
         if (entities.children[i].children[k] !== undefined) {
           elementInTypes.forEach(function (d) {
             entities.children[i].children[k].children.name = "";
-            entities.children[i].children[k].children.push({name:d.RICid, children:[]});              
+            entities.children[i].children[k].children.push({name:d.RICid, size:10, children:[]});              
           })
          
         }
@@ -1634,7 +1634,7 @@ angular.module('ricardo.controllers', [])
     //   }
     // }
 
-    console.log("entities", entities);
+    console.log("entities", reportingEntities);
 
     $scope.entities = entities;
 

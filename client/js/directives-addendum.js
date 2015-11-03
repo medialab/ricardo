@@ -1162,8 +1162,6 @@ angular.module('ricardo.directives-addendum', [])
             .rollup(rollupYears)
             .entries(data)
 
-          console.log("partners", partners);
-
           partners.forEach(function(p){
             p.years = []
             p.values.forEach(function(d){
@@ -1585,6 +1583,7 @@ angular.module('ricardo.directives-addendum', [])
         var chart = d3.select(element[0])
 
         scope.$watch("ngData", function(newValue, oldValue){
+          console.log("newValue", newValue);
           if(newValue && newValue !== oldValue && newValue.length > 0){      
             newValue.forEach(function (e) {
               if (e.color === undefined)
@@ -1610,16 +1609,6 @@ angular.module('ricardo.directives-addendum', [])
               if (allExpNull && allImpNull)
                 noData(newValue[i].values[0].reporting_id)
             }
-
-            // if (allExpNull && allImpNull) {
-            //   missing = "1"; 
-            // }
-            // else {
-            //   missing = "0";  
-            // }
-            // scope.lineChartMissing = missing;
-            // scope.entitiesMissing = newValue[0].values[0].reporting_id;
-
             linechart(newValue, yValueSelect);
           }
         })
@@ -1660,7 +1649,7 @@ angular.module('ricardo.directives-addendum', [])
           var y = d3.scale.linear()
               .range([chartHeight, 0]);
 
-          var colorDomain = sort;
+          // var colorDomain = sort;
 
           var yMax = d3.max(data, function(elm) {return d3.max(elm.values, function(d) { return d[yValue]; }); });
           var xMax = d3.max(data, function(elm) {return d3.max(elm.values, function(d) { return new Date(d.year, 0, 1) }); });
@@ -1782,8 +1771,8 @@ angular.module('ricardo.directives-addendum', [])
           var voronoiGraph = voronoiGroup.selectAll("path")
             .data(voronoi(d3.merge(data.map(function(d) { return d.values.filter(function(d){return d[yValue]}); }))))
               
-          voronoiGraph.attr("d", function(d) { return "M" + d.join("L") + "Z"; })
-            .datum(function(d) { return d.point; })
+          voronoiGraph.attr("d", function(d) { if(d!==undefined) return "M" + d.join("L") + "Z"; })
+            .datum(function(d) { if(d!==undefined) return d.point; })
             .on("mouseover", mouseover)
             .on("mouseout", mouseout);
 
@@ -1816,6 +1805,7 @@ angular.module('ricardo.directives-addendum', [])
           var format = d3.format("0,000");
 
           function colorLine(country) {
+            console.log("country", country);
             var color;
             data.forEach(function (d) {
               if (d.key === country)
@@ -1825,74 +1815,78 @@ angular.module('ricardo.directives-addendum', [])
           }
 
           function mouseover(d) {
-            if(d[yValue]!==null)
-            {
-              var colorPoint = colorLine(d.reporting_id);
-              focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
-              if (d.value)
-                focus.select("text").attr("fill", colorPoint).text(format(Math.round(d[yValue])) + '%');
-              else
-                focus.select("text").attr("fill", colorPoint).text(format(Math.round(d[yValue])) + '£');
+            if (d !== undefined) {
+              if(d[yValue]!==null && d[yValue]!==undefined)
+              {
+                console.log("d", d);
+                var colorPoint = colorLine(d.reporting_id);
+                focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
+                if (d.value)
+                  focus.select("text").attr("fill", colorPoint).text(format(Math.round(d[yValue])) + ' %');
+                else
+                  focus.select("text").attr("fill", colorPoint).text(format(Math.round(d[yValue])) + ' £');
 
-              chart.append("line")
-                     .attr("class", "lineDate")
-                     .attr("x1", x(new Date(d.year, 0, 1)))
-                     .attr("y1", y(d[yValue]))
-                     .attr("x2", x(new Date(d.year, 0, 1)))
-                     .attr("y2", 350)
-                     .attr("stroke-width", 1)
-                     .attr("stroke", "grey");
-             var text = chart.append("text")
-                     .attr("class", "lineDate")
-                     .attr("x", x(new Date(d.year, 0, 1)) - 15)
-                     .attr("y", 368)
-                     .attr("font-size", "0.85em")
-                     .text(d.year);
+                chart.append("line")
+                       .attr("class", "lineDate")
+                       .attr("x1", x(new Date(d.year, 0, 1)))
+                       .attr("y1", y(d[yValue]))
+                       .attr("x2", x(new Date(d.year, 0, 1)))
+                       .attr("y2", 350)
+                       .attr("stroke-width", 1)
+                       .attr("stroke", "grey");
+               var text = chart.append("text")
+                       .attr("class", "lineDate")
+                       .attr("x", x(new Date(d.year, 0, 1)) - 15)
+                       .attr("y", 368)
+                       .attr("font-size", "0.85em")
+                       .text(d.year);
 
-              // Define the gradient
-                var gradient = chart.append("chart:defs")
-                    .append("chart:linearGradient")
-                    .attr("id", "gradient")
-                    .attr("x1", "0%")
-                    .attr("y1", "100%")
-                    .attr("x2", "100%")
-                    .attr("y2", "100%")
-                    .attr("spreadMethod", "pad");
+                // Define the gradient
+                  var gradient = chart.append("chart:defs")
+                      .append("chart:linearGradient")
+                      .attr("id", "gradient")
+                      .attr("x1", "0%")
+                      .attr("y1", "100%")
+                      .attr("x2", "100%")
+                      .attr("y2", "100%")
+                      .attr("spreadMethod", "pad");
 
-                // Define the gradient colors
-                gradient.append("chart:stop")
-                    .attr("offset", "0%")
-                    .attr("stop-color", "white")
-                    .attr("stop-opacity", 0.1);
+                  // Define the gradient colors
+                  gradient.append("chart:stop")
+                      .attr("offset", "0%")
+                      .attr("stop-color", "white")
+                      .attr("stop-opacity", 0.1);
 
-                gradient.append("chart:stop")
-                    .attr("offset", "50%")
-                    .attr("stop-color", "white")
-                    .attr("stop-opacity", 1);
+                  gradient.append("chart:stop")
+                      .attr("offset", "50%")
+                      .attr("stop-color", "white")
+                      .attr("stop-opacity", 1);
 
-                gradient.append("chart:stop")
-                    .attr("offset", "100%")
-                    .attr("stop-color", "white")
-                    .attr("stop-opacity", 0.1);
+                  gradient.append("chart:stop")
+                      .attr("offset", "100%")
+                      .attr("stop-color", "white")
+                      .attr("stop-opacity", 0.1);
 
-                // add rect as background to hide date display in 
-                var bbox = text.node().getBBox();
-                var rect = chart.append("chart:rect")
-                    .attr("class", "lineDateText")
-                    .attr("x", bbox.x - 50)
-                    .attr("y", bbox.y)
-                    .attr("width", bbox.width + 100)
-                    .attr("height", bbox.height)
-                    .style("fill", 'url(#gradient)')
+                  // add rect as background to hide date display in 
+                  var bbox = text.node().getBBox();
+                  var rect = chart.append("chart:rect")
+                      .attr("class", "lineDateText")
+                      .attr("x", bbox.x - 50)
+                      .attr("y", bbox.y)
+                      .attr("width", bbox.width + 100)
+                      .attr("height", bbox.height)
+                      .style("fill", 'url(#gradient)')
 
 
-                // add date
-                var textDate = chart.append("text")
-                     .attr("class", "lineDateText")
-                     .attr("x", x(new Date(d.year, 0, 1)) - 15)
-                     .attr("y", 368)
-                     .attr("font-size", "0.85em")
-                     .text(d.year);
+                  // add date
+                  var textDate = chart.append("text")
+                       .attr("class", "lineDateText")
+                       .attr("x", x(new Date(d.year, 0, 1)) - 15)
+                       .attr("y", 368)
+                       .attr("font-size", "0.85em")
+                       .text(d.year);
+              }
+              
             }
           }
 
@@ -2195,5 +2189,96 @@ angular.module('ricardo.directives-addendum', [])
 
 
       }
+    }
+  }])
+     // /* directive with only watch */
+  .directive('clusterChart',['apiService', '$timeout',function (apiService, $timeout){
+    return {
+      restrict: 'E',
+      template: '<div id="cluster-chart-container"></div>',
+      scope: {
+        ngData: '='
+      },
+      link: function(scope, element, attrs) {
+        var data = scope.ngData;
+        console.log("data", data);
+
+        var margin = 10,
+            diameter = 800;
+
+        var color = d3.scale.linear()
+            .domain([-1, 5])
+            .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+            .interpolate(d3.interpolateHcl);
+
+        var pack = d3.layout.pack()
+            .padding(2)
+            .size([diameter - margin, diameter - margin])
+            .value(function(d) { return d.size; })
+
+        var svg = d3.select("body").append("svg")
+            .attr("width", diameter)
+            .attr("height", diameter)
+          .append("g")
+            .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+
+        
+          var root = data;
+          var focus = root,
+              nodes = pack.nodes(root),
+              view;
+
+          var circle = svg.selectAll("circle")
+              .data(nodes)
+            .enter().append("circle")
+              .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
+              .style("fill", function(d) { return d.children ? color(d.depth) : null; })
+              .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
+
+          var text = svg.selectAll("text")
+              .data(nodes)
+            .enter().append("text")
+              .attr("class", "label")
+              .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
+              .style("display", function(d) { return d.parent === root ? null : "none"; })
+              .text(function(d) { return d.name; });
+
+          var node = svg.selectAll("circle,text");
+
+          d3.select("body")
+              .style("background", color(-1))
+              .on("click", function() { zoom(root); });
+
+          zoomTo([root.x, root.y, root.r * 2 + margin]);
+
+          function zoom(d) {
+            var focus0 = focus; focus = d;
+
+            var transition = d3.transition()
+                .duration(d3.event.altKey ? 7500 : 750)
+                .tween("zoom", function(d) {
+                  var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
+                  return function(t) { zoomTo(i(t)); };
+                });
+
+            transition.selectAll("text")
+              .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
+                .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
+                .each("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
+                .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+          }
+
+          function zoomTo(v) {
+            var k = diameter / v[2]; view = v;
+            node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+            circle.attr("r", function(d) { return d.r * k; });
+          }
+        
+
+        d3.select(self.frameElement).style("height", diameter + "px");
+
+
+
+      } //end
     }
   }])

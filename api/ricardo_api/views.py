@@ -62,7 +62,6 @@ def world_flows():
     with_sources = request.args.get('with_sources', '0') == '1'
     from_year = request.args.get('from', '')
     to_year = request.args.get('to', '')
-    app.logger.info("TEST %s %s" % (from_year, to_year))
     try:
         json_data = models.get_world_flows(from_year, to_year)
     except Exception as e:
