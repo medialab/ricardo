@@ -98,10 +98,12 @@ angular.module('ricardo.controllers', [])
             mergeMirrorInFlows(data)
 
             // send data to timeline directive
+            console.log("data.flows", data.flows);
             $scope.timelineData = data.flows;   
 
             // call function to send data to tableData
-            updateDateRange()
+            if (data !== undefined)
+              updateDateRange()
 
           },function (res){
             if (res[1] === 500)
@@ -223,17 +225,19 @@ angular.module('ricardo.controllers', [])
           .key(function (d) {return d.reporting_id})
           .entries($scope.tableData);
 
-        var missing;
-        var allExpNull = dataFilterBySource[0].values.every(function (d) {return d.exp === null ;})
-        var allImpNull = dataFilterBySource[0].values.every(function (d) {return d.imp === null ;})
+        if (dataFilterBySource[0] !== undefined) {
+          var missing;
+          var allExpNull = dataFilterBySource[0].values.every(function (d) {return d.exp === null ;})
+          var allImpNull = dataFilterBySource[0].values.every(function (d) {return d.imp === null ;})
 
-        if (allExpNull && allImpNull) {
-          missing = "1"; 
+          if (allExpNull && allImpNull) {
+            missing = "1"; 
+          }
+          else {
+            missing = "0";  
+          }
+          $scope.missing = missing;  
         }
-        else {
-          missing = "0";  
-        }
-        $scope.missing = missing;
       }
     }
 
@@ -761,7 +765,7 @@ angular.module('ricardo.controllers', [])
                 else {
                   ratio = data[yValue] / d[yValue] * 100;
                 }
-                pctArray.push({year: data.year, value:ratio});
+                pctArray.push({reporting_id: data.reporting_id, year: data.year, value:ratio});
               }
             })
           })       

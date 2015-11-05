@@ -445,14 +445,14 @@ angular.module('ricardo.directives-addendum', [])
 
         scope.$watch('endDate', function(newValue, oldValue) {
           if ( newValue && scope.ngData) {
-            console.log("scope.ngData 2", scope.ngData);
+            //console.log("scope.ngData 2", scope.ngData);
             draw(scope.ngData)
           }
         })
 
         scope.$watch('startDate', function(newValue, oldValue) {
           if ( newValue && scope.ngData) {
-            console.log("scope.ngData 3", scope.ngData);
+            //console.log("scope.ngData 3", scope.ngData);
             draw(scope.ngData)
           }
         })
@@ -670,7 +670,10 @@ angular.module('ricardo.directives-addendum', [])
 
             var voronoiGraph = voronoiGroup.selectAll("path")
                 .data(voronoi(data.filter(function(d){ 
-                  if(d.points !== "-Infinity" && !isNaN(d.points) ) { return d[yValue] !== null } })))
+                  // if(d.points !== "-Infinity" && !isNaN(d.points) ) { 
+                    return d[yValue] !== null 
+                  // } 
+                })))
 
             voronoiGraph
                   .enter().append("path")
@@ -1805,7 +1808,6 @@ angular.module('ricardo.directives-addendum', [])
           var format = d3.format("0,000");
 
           function colorLine(country) {
-            console.log("country", country);
             var color;
             data.forEach(function (d) {
               if (d.key === country)
@@ -1818,7 +1820,6 @@ angular.module('ricardo.directives-addendum', [])
             if (d !== undefined) {
               if(d[yValue]!==null && d[yValue]!==undefined)
               {
-                console.log("d", d);
                 var colorPoint = colorLine(d.reporting_id);
                 focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
                 if (d.value)
