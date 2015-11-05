@@ -70,7 +70,7 @@ angular.module('ricardo.controllers', [])
     $scope.rawYearsRange_forInf                     // Range of years in data adapted to inferior bound (useful for selectors)
     $scope.rawYearsRange_forSup                     // Range of years in data adapted to superior bound (useful for selectors)
 
-    function init(sourceID, targetID) {
+    function init(sourceID, targetID, minDate, maxDate) {
       if (targetID !==undefined) {
         apiService
           .getFlows({reporting_ids: sourceID, partner_ids: targetID, with_sources: 1})
@@ -82,8 +82,17 @@ angular.module('ricardo.controllers', [])
             console.log("rawMinDate", $scope.rawMinDate);
             $scope.rawMaxDate = d3.max( data.flows, function(d) { return d.year; })
             console.log("rawMaxDate", $scope.rawMaxDate);
-            $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
-            $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
+
+            if (minDate && maxDate)
+            {
+              $scope.selectedMinDate = minDate;
+              $scope.selectedMaxDate = maxDate;
+            }
+            else
+            {
+              $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
+              $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
+            }
 
             // Consolidate data, add mirror's data to flows array
             mergeMirrorInFlows(data)
@@ -112,10 +121,8 @@ angular.module('ricardo.controllers', [])
     
     // First init - check if data are in local storage
       try {
-        console.log("try source", localStorage.sourceEntitySelected);
           if (localStorage.sourceEntitySelected && localStorage.targetEntityLocalStorage) 
           {
-            console.log("we have source and target in storage")
             var sourceEntityLocalStorage = localStorage.getItem('sourceEntitySelected');
             $scope.entities.sourceEntity.selected = JSON.parse(sourceEntityLocalStorage);
             var targetEntityLocalStorage = localStorage.getItem('targetEntitySelected');
@@ -124,10 +131,8 @@ angular.module('ricardo.controllers', [])
           }
           if (localStorage.sourceEntitySelected) 
           {
-            console.log("try else");
             var sourceEntityLocalStorage = localStorage.getItem('sourceEntitySelected');
             $scope.entities.sourceEntity.selected = JSON.parse(sourceEntityLocalStorage);
-            console.log("$scope.entities.sourceEntity.selected", $scope.entities.sourceEntity.selected )
             apiService
               .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
               .then(function (result) {
@@ -137,20 +142,19 @@ angular.module('ricardo.controllers', [])
                     var target = {RICid:"", name:""};
                     target.RICid = result.flows[i].partner_id;
                     target.RICname = result.flows[i].partner_id;
-                    console.log("target", target);
                     $scope.entities.targetEntity.selected = target;
                     break;
                   }
                   i++;
                 }
                 localStorage.targetEntitySelected = $scope.entities.targetEntity.selected
-                console.log('localStorage.targetEntitySelected', localStorage.targetEntitySelected);
-                init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected.RICid);
+                $scope.selectedMinDate = JSON.parse(localStorage.getItem('selectedMinDate'))
+                $scope.selectedMaxDate = JSON.parse(localStorage.getItem('selectedMaxDate'))
+                init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected.RICid, $scope.selectedMinDate, $scope.selectedMaxDate);
               })
           }
         }
         catch (e) {
-          console.log("catch");
           $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid===DEFAULT_REPORTING})[0]
           $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){return e.RICid===DEFAULT_PARTNER})[0]
           init(DEFAULT_REPORTING, DEFAULT_PARTNER);
@@ -186,8 +190,6 @@ angular.module('ricardo.controllers', [])
       if (newValue !== oldValue && newValue[0] !== newValue[1]) {
         // set data in local storage
         console.log("newValue date", newValue);
-
-
         localStorage.removeItem('selectedMinDate');
         localStorage.removeItem('selectedMaxDate');
         localStorage.selectedMinDate = newValue[0];
@@ -199,38 +201,40 @@ angular.module('ricardo.controllers', [])
 
     /* update Range from date on flows array */
     function updateDateRange(){
-      $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
-      $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
-      $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
+      if (data !== undefined) {
+        $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
+        $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
+        $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
 
-      cfSource.clear()
-      cfSource.add(data.flows.filter(function(d){
-        return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
-      }));
+        cfSource.clear()
+        cfSource.add(data.flows.filter(function(d){
+          return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
+        }));
 
-      cfTarget.clear()
-      cfTarget.add(data.mirror_flows.filter(function(d){
-        return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
-      }));
+        cfTarget.clear()
+        cfTarget.add(data.mirror_flows.filter(function(d){
+          return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
+        }));
 
-      $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
-  
-      // select data to check if there are and if not, display message no data
-      var dataFilterBySource = d3.nest()
-        .key(function (d) {return d.reporting_id})
-        .entries($scope.tableData);
+        $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
+    
+        // select data to check if there are and if not, display message no data
+        var dataFilterBySource = d3.nest()
+          .key(function (d) {return d.reporting_id})
+          .entries($scope.tableData);
 
-      var missing;
-      var allExpNull = dataFilterBySource[0].values.every(function (d) {return d.exp === null ;})
-      var allImpNull = dataFilterBySource[0].values.every(function (d) {return d.imp === null ;})
+        var missing;
+        var allExpNull = dataFilterBySource[0].values.every(function (d) {return d.exp === null ;})
+        var allImpNull = dataFilterBySource[0].values.every(function (d) {return d.imp === null ;})
 
-      if (allExpNull && allImpNull) {
-        missing = "1"; 
+        if (allExpNull && allImpNull) {
+          missing = "1"; 
+        }
+        else {
+          missing = "0";  
+        }
+        $scope.missing = missing;
       }
-      else {
-        missing = "0";  
-      }
-      $scope.missing = missing;
     }
 
     /* Merge mirror array in flows array */
