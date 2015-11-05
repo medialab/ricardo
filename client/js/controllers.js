@@ -40,16 +40,17 @@ angular.module('ricardo.controllers', [])
       window.location.reload();
     }
 
+    $scope.closeAlert = function(index) {
+      $scope.alerts.splice(index, 1);
+      };
+
     var data
     $scope.reportingEntities = reportingEntities;
     $scope.actualCurrency = "sterling pound"
     $scope.tableData = [];
     $scope.totalServerItems = 0;
-
     $scope.alerts = []
-    $scope.closeAlert = function(index) {
-      $scope.alerts.splice(index, 1);
-      };
+    $scope.viewTable = 0;
 
     $scope.pagingOptions = {
         pageSizes: [50],
@@ -57,21 +58,45 @@ angular.module('ricardo.controllers', [])
         currentPage: 1
     };
 
-    $scope.viewTable = 0;
-
     // States
     $scope.timelineData
     $scope.entities = {sourceEntity : {}, targetEntity : {}}
     $scope.rawMinDate                               // Min year in data for the selected pair of countries
     $scope.rawMaxDate                               // Max year in data for the selected pair of countries
-    $scope.selectedMinDate = 1787                   // Min year as selected by selector or brushing
-    $scope.selectedMaxDate = 1938                    // Max year as selected by selector or brushing
+    // $scope.selectedMinDate = 1787;                   // Min year as selected by selector or brushing
+    // $scope.selectedMaxDate = 1938;                   // Max year as selected by selector or brushing
     $scope.rawYearsRange                            // Range of years in data (useful for selectors)
     $scope.rawYearsRange_forInf                     // Range of years in data adapted to inferior bound (useful for selectors)
     $scope.rawYearsRange_forSup                     // Range of years in data adapted to superior bound (useful for selectors)
 
+
+    var bilateralLocalStorage = [],
+        bilateralLocalStorageObject = {source : {}, target: {}, dateMin: "", dateMax: ""}
+
+    //check if bilateralLocalStorage is empty
+    if (localStorage.bilateralLocalStorage) 
+      bilateralLocalStorage = JSON.parse(localStorage.bilateralLocalStorage);
+
+    function checkbilateralLocalStorage(bilateralLocalStorage, object) {
+      var isAlreadyIn = 0;
+      for (var i = 0, len = bilateralLocalStorage.length; i < len; i++) {
+        if (bilateralLocalStorage[i].source.RICid == object.source.RICid 
+            && bilateralLocalStorage[i].target.RICid == object.target.RICid 
+            && bilateralLocalStorage[i].dateMin == object.dateMin 
+            && bilateralLocalStorage[i].dateMax == object.dateMax
+          ) 
+        {
+          isAlreadyIn = 1;
+          break;
+        }
+        else 
+          isAlreadyIn =  0
+      }
+      return isAlreadyIn
+    }
+
     function init(sourceID, targetID, minDate, maxDate) {
-      if (targetID !==undefined) {
+      if (targetID !== undefined) {
         apiService
           .getFlows({reporting_ids: sourceID, partner_ids: targetID, with_sources: 1})
           .then(function (result){
@@ -87,20 +112,38 @@ angular.module('ricardo.controllers', [])
             {
               $scope.selectedMinDate = minDate;
               $scope.selectedMaxDate = maxDate;
+              console.log("$scope.selectedMaxDate", $scope.selectedMaxDate);
             }
             else
             {
-              $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
-              $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
+              // $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
+              $scope.selectedMinDate = $scope.rawMinDate;
+              console.log("$scope.rawMaxDate", $scope.rawMaxDate)
+              // $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
+              $scope.selectedMaxDate = $scope.rawMaxDate;
+              console.log("$scope.selectedMaxDate 2", $scope.selectedMaxDate);
             }
 
             // Consolidate data, add mirror's data to flows array
             mergeMirrorInFlows(data)
 
             // send data to timeline directive
-            console.log("data.flows", data.flows);
             $scope.timelineData = data.flows;   
 
+            // save all object in localStorage
+            bilateralLocalStorageObject.source = $scope.entities.sourceEntity.selected;
+            bilateralLocalStorageObject.target = $scope.entities.targetEntity.selected;
+            //bilateralLocalStorageObject.data = data.flows;
+            bilateralLocalStorageObject.dateMin = $scope.selectedMinDate
+            bilateralLocalStorageObject.dateMax = $scope.selectedMaxDate
+
+            // function to check if the new object is already in bilateralLocalStorage
+            var isIn = checkbilateralLocalStorage(bilateralLocalStorage, bilateralLocalStorageObject) 
+            if (isIn === 0 ) {
+                bilateralLocalStorage.push(bilateralLocalStorageObject);
+                localStorage.bilateralLocalStorage = JSON.stringify(bilateralLocalStorage);
+            }
+          
             // call function to send data to tableData
             if (data !== undefined)
               updateDateRange()
@@ -123,16 +166,21 @@ angular.module('ricardo.controllers', [])
     
     // First init - check if data are in local storage
       try {
-          if (localStorage.sourceEntitySelected && localStorage.targetEntityLocalStorage) 
+          if (localStorage.sourceEntitySelected && localStorage.targetEntitySelected) 
           {
+            console.log("localStorage.sourceEntitySelected 1 ", localStorage.sourceEntitySelected);
+            console.log("localStorage.targetEntityLocalStorage 1 ", localStorage.targetEntitySelected);
             var sourceEntityLocalStorage = localStorage.getItem('sourceEntitySelected');
             $scope.entities.sourceEntity.selected = JSON.parse(sourceEntityLocalStorage);
+
             var targetEntityLocalStorage = localStorage.getItem('targetEntitySelected');
             $scope.entities.targetEntity.selected = JSON.parse(targetEntityLocalStorage);
+
             init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected.RICid);
           }
-          if (localStorage.sourceEntitySelected) 
+          if (localStorage.sourceEntitySelected && !localStorage.targetEntitySelected) 
           {
+            console.log("localStorage.sourceEntitySelected 2 ", localStorage.sourceEntitySelected);
             var sourceEntityLocalStorage = localStorage.getItem('sourceEntitySelected');
             $scope.entities.sourceEntity.selected = JSON.parse(sourceEntityLocalStorage);
             apiService
@@ -152,7 +200,8 @@ angular.module('ricardo.controllers', [])
                 localStorage.targetEntitySelected = $scope.entities.targetEntity.selected
                 $scope.selectedMinDate = JSON.parse(localStorage.getItem('selectedMinDate'))
                 $scope.selectedMaxDate = JSON.parse(localStorage.getItem('selectedMaxDate'))
-                init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected.RICid, $scope.selectedMinDate, $scope.selectedMaxDate);
+                if ($scope.entities.targetEntity.selected !== undefined)
+                  init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected.RICid, $scope.selectedMinDate, $scope.selectedMaxDate);
               })
           }
         }
@@ -175,7 +224,7 @@ angular.module('ricardo.controllers', [])
         // set data in local storage
         localStorage.removeItem('sourceEntitySelected');
         localStorage.sourceEntitySelected = JSON.stringify(newValue);
-        init(newValue.RICid, $scope.entities.targetEntity.selected.RICid);
+        init(newValue.RICid, $scope.entities.targetEntity.selected.RICid, $scope.selectedMinDate, $scope.selectedMaxDate);
       }
     })
 
@@ -184,14 +233,14 @@ angular.module('ricardo.controllers', [])
         // set data in local storage
         localStorage.removeItem('targetEntitySelected');
         localStorage.targetEntitySelected = JSON.stringify(newValue);
-        init($scope.entities.sourceEntity.selected.RICid, newValue.RICid);
+        init($scope.entities.sourceEntity.selected.RICid, newValue.RICid, $scope.selectedMinDate, $scope.selectedMaxDate);
       }
     })
 
     $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newValue, oldValue) {
       if (newValue !== oldValue && newValue[0] !== newValue[1]) {
         // set data in local storage
-        console.log("newValue date", newValue);
+        console.log("newValue date", newValue[1]);
         localStorage.removeItem('selectedMinDate');
         localStorage.removeItem('selectedMaxDate');
         localStorage.selectedMinDate = newValue[0];
@@ -420,6 +469,12 @@ angular.module('ricardo.controllers', [])
       init(DEFAULT_REPORTING, $scope.currency);
      }
 
+     var countryLocalStorage = [],
+        countryLocalStorageObject = {source : "", data: [], dateMin: "", dateMax: "", partnerHistoGroup:{}, partnerHistoOrder: {}, partnerHistoFilter: {}, partners: []}
+
+    if (localStorage.countryLocalStorage) 
+      countryLocalStorage = JSON.parse(localStorage.countryLocalStorage);
+
     // Calling the API to init country selection
     function init(sourceID, currency) {
      
@@ -519,7 +574,20 @@ angular.module('ricardo.controllers', [])
           $scope.grouped.selected = { type: {value :0,writable: true},name: {value:"None",writable: true}};
           $scope.filtered.selected = { type: {value :"all",writable: true},name: {value:"All",writable: true}};
           
-          $scope.timelineData=timelineData;         
+          $scope.timelineData=timelineData;  
+
+          // save all object in localStorage
+            countryLocalStorageObject.source = sourceID;
+            countryLocalStorageObject.data = timelineData;
+            countryLocalStorageObject.dateMin = $scope.selectedMinDate
+            countryLocalStorageObject.dateMax = $scope.selectedMaxDate
+            countryLocalStorageObject.partnerHistoGroup = $scope.grouped.selected
+            countryLocalStorageObject.partnerHistoOrder = $scope.grouped.selected
+            countryLocalStorageObject.partnerHistoFilter = $scope.filtered.selected
+            countryLocalStorage.push(countryLocalStorageObject);
+
+            localStorage.countryLocalStorage = JSON.stringify(countryLocalStorage);
+            console.log("$scope.countryLocalStorageMenu", $scope.countryLocalStorageMenu)       
       });
     }
 
@@ -859,12 +927,23 @@ angular.module('ricardo.controllers', [])
 
     /* end directive salvage */
 
+    function addReportingToLocalStorage (partners) {
+      partners.forEach( function (d) {
+        countryLocalStorageObject.partners.push(d)
+      })
+      countryLocalStorage.push(countryLocalStorageObject);
+      localStorage.countryLocalStorage = JSON.stringify(countryLocalStorage);   
+    }
+
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
       if($scope.reporting.map(function (d){return d.RICid}).indexOf(elm.RICid) > -1) return;
       elm["color"]=$scope.lineColors.pop()
       $scope.reporting.push(elm)
       $scope.resetDD(elm.type)
+
+
+      addReportingToLocalStorage($scope.reporting);
       initLinechart($scope.reporting, $scope.yValue, $scope.conversion);
     }
 
@@ -1090,19 +1169,16 @@ angular.module('ricardo.controllers', [])
                         sources:null
                         }]; // to show table under linechart World
      
-    $scope.rawMinDate = 1787                             // Min year in data for the selected pair of countries
-    $scope.rawMaxDate = 1938                             // Max year in data for the selected pair of countries
-    $scope.selectedMinDate = 1787                   // Min year as selected by selector or brushing
-    $scope.selectedMaxDate = 1938                   // Max year as selected by selector or brushing
-    $scope.rawYearsRange                            // Range of years in data (useful for selectors)
-    $scope.rawYearsRange_forInf                     // Range of years in data adapted to inferior bound (useful for selectors)
-    $scope.rawYearsRange_forSup                     // Range of years in data adapted to superior bound (useful for selectors)
+    $scope.rawMinDate = 1787                              // Min year in data for the selected pair of countries
+    $scope.rawMaxDate = 1938                              // Max year in data for the selected pair of countries
+    $scope.selectedMinDate = 1787                         // Min year as selected by selector or brushing
+    $scope.selectedMaxDate = 1938                         // Max year as selected by selector or brushing
+    $scope.rawYearsRange                                  // Range of years in data (useful for selectors)
+    $scope.rawYearsRange_forInf                           // Range of years in data adapted to inferior bound (useful for selectors)
+    $scope.rawYearsRange_forSup                           // Range of years in data adapted to superior bound (useful for selectors)
 
     // Calling the API
     function init() {
-      // $scope.selectedMinDate = 1600;                   // Min year as selected by selector or brushing
-      // $scope.selectedMaxDate = 2000;                   // Max year as selected by selector or brushing
-
       $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
       $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
       $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
@@ -1124,10 +1200,14 @@ angular.module('ricardo.controllers', [])
       $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
       $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
 
-      $scope.timelineData=worldFlowsYearsFormat;
+      $scope.timelineData= worldFlowsYearsFormat;
       $scope.tableData = worldFlowsYearsFormat;
-      
+
+      // save World Data in local storage
+      localStorage.worldData = JSON.stringify(worldFlowsYearsFormat);    
     }
+
+
     init();
 
     function initTabLineChart(result, yearSelected, type, ric, dateMin, dateMax ) {
@@ -1290,7 +1370,7 @@ angular.module('ricardo.controllers', [])
             else {
               ratio = data[yValue] / d[yValue] * 100;
             }
-            pctArray.push({year: data.year, value:ratio});
+            pctArray.push({reporting_id: data.reporting_id, year: data.year, value:ratio});
           }
         })
       })
@@ -1654,7 +1734,25 @@ angular.module('ricardo.controllers', [])
     console.log("entities", reportingEntities);
 
     $scope.entities = entities;
+  })
+  .controller('about', function ($scope, $location, $timeout) {
+    // get Bilateral Storage
+    $scope.bilateralLocalStorageList = JSON.parse(localStorage.bilateralLocalStorage)
+    $scope.countryLocalStorageList = JSON.parse(localStorage.countryLocalStorage)
 
+    // make three function rfor each page ;)
+    $scope.setCountryField = function (item) {
+      console.log("item", item);
+
+    }
+
+    $scope.setBilateralField = function (item) {
+      console.log("item", item);
+      localStorage.sourceEntitySelected = JSON.stringify(item.source);
+      localStorage.targetEntitySelected = JSON.stringify(item.target);
+      localStorage.selectedMinDate = JSON.stringify(item.dateMin);
+      localStorage.selectedMaxDate = JSON.stringify(item.dateMax);    
+    }
 
   })
   

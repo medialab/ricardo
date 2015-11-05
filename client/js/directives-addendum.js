@@ -438,7 +438,7 @@ angular.module('ricardo.directives-addendum', [])
       ,link: function(scope, element, attrs){
         scope.$watch('ngData', function(newValue, oldValue) {
           if ( newValue ) {
-            console.log("scope.ngData 1", scope.ngData);
+            //console.log("scope.ngData 1", scope.ngData);
             draw(scope.ngData)
           }
         })
@@ -1210,7 +1210,7 @@ angular.module('ricardo.directives-addendum', [])
               years = Object.keys(indexYears),
               limits = d3.extent(years);
               //maxWidth = yearWidth * (limits[1]-limits[0]+1);
-              //years.pop();
+              years.pop();
 
             var x = d3.scale.linear()
                 .domain(d3.extent(years))
@@ -1586,7 +1586,7 @@ angular.module('ricardo.directives-addendum', [])
         var chart = d3.select(element[0])
 
         scope.$watch("ngData", function(newValue, oldValue){
-          console.log("newValue", newValue);
+          
           if(newValue && newValue !== oldValue && newValue.length > 0){      
             newValue.forEach(function (e) {
               if (e.color === undefined)

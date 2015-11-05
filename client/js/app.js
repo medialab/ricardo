@@ -75,6 +75,10 @@ config(['$routeProvider', function($routeProvider) {
       },
     }
   });
+  $routeProvider.when('/about', {
+    templateUrl: 'partials/about.html',
+    controller: 'about'
+  });
   $routeProvider.otherwise({redirectTo: '/'});
 }])
   .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {

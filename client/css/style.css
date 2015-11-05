@@ -207,10 +207,18 @@ body > .container {
   border-right: 1px solid #e7e7e7;
 }
 
-#nav .navbar-nav > li > a{
+#nav .navbar-nav > li > a {
   font-variant: small-caps;
   letter-spacing: 2px;
   text-transform: lowercase;
+}
+
+#dLabel{
+  font-variant: small-caps;
+  letter-spacing: 2px;
+  text-transform: lowercase;
+  padding-bottom: 15px;
+  padding-top: 15px;
 }
 
 #nav .navbar-right > li > a{
@@ -660,6 +668,7 @@ font-size: 1.1em;
 .circle-tooltip {
   position: absolute;
   height: 20px;
+  width:auto;
   background: #333;
   color: #ddd;
   opacity: 0;
@@ -866,3 +875,86 @@ path.lineTrajectory {
 text {
   font: 10px sans-serif;
 }*/
+
+
+/* Drop DOwn Menu */
+
+/*.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu>.dropdown-menu {
+    top: 0;
+    right: 100%;
+    margin-top: -6px;
+    margin-left: -1px;
+    -webkit-border-radius: 0 6px 6px 6px;
+    -moz-border-radius: 0 6px 6px;
+    border-radius: 0 6px 6px 6px;
+}
+
+.dropdown-submenu:hover>.dropdown-menu {
+    display: block;
+}
+
+.dropdown-submenu>a:after {
+    display: block;
+    content: " ";
+    float: left;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 5px 0 5px 5px;
+    border-left-color: #ccc;
+    margin-top: 5px;
+    margin-right: 10px;
+}
+
+.dropdown-submenu:hover>a:after {
+    border-left-color: #fff;
+}
+
+.dropdown-submenu.pull-right {
+    float: none;
+}
+
+.dropdown-submenu.pull-right>.dropdown-menu {
+    left: -100%;
+    margin-left: 10px;
+    -webkit-border-radius: 6px 0 6px 6px;
+    -moz-border-radius: 6px 0 6px 6px;
+    border-radius: 6px 0 6px 6px;
+}*/
+
+.aboutTitles {
+  text-align: center;
+}
+
+.aboutListAll>ul {
+  list-style-type: none;
+  
+}
+
+.aboutListAll>ul>li {
+padding-left: 10px;
+}
+
+.aboutList>a {
+   text-decoration: none;
+   color: black;
+}
+
+.aboutList:hover {
+   text-decoration: none;
+   color: black;
+   background-color: white;
+   border: solid 1px black;
+}
+
+.aboutEntities {
+  font-size: 16px
+}
+.aboutDate {
+  font-size: 13px
+}
