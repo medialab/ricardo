@@ -99,13 +99,14 @@
       </ui-select>
     </div>
       <!-- no need geoEntities beacause there is no data for this entity with worldbestguess -->
-
-     <!--  <ui-select  ng-model="entities.sourceGeoEntity.selected" theme="bootstrap">
+    <div class="inline-select" >
+      <ui-select  ng-model="entities.sourceGeoEntity.selected" theme="bootstrap">
         <match placeholder="Geographical area">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingGeoEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
-      </ui-select> -->
+      </ui-select>
+    </div>
 
     <div class="inline-select" >
       <ui-select  ng-model="entities.sourceContinentEntity.selected" theme="bootstrap">

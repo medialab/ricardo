@@ -11,7 +11,7 @@ angular.module('ricardo.controllers', [])
       {slug:"world", label:"World view"},
       {slug:"country", label:"Country view"},
       {slug:"bilateral", label:"Bilateral view"},
-      //{slug:"RICentities", label:"RICentities view"}
+      {slug:"RICentities", label:"RICentities view"}
     ]
   })
   // Manage display if no data available
@@ -1092,7 +1092,7 @@ angular.module('ricardo.controllers', [])
       utils.downloadCSV($scope.tableData, headers, order);
     };
   })
-  .controller('world', function ($scope, $location, $timeout, reportingEntities, reportingColonialEntities, reportingCountryEntities, reportingGeoEntities, reportingContinentEntities, reportingWorldFlows, cfSource, cfTarget, cfSourceLine, apiService, utils, DEFAULT_REPORTING, WORLD_TABLE_HEADERS) {
+  .controller('world', function ($scope, $location, $timeout, reportingEntities, reportingWorldFlows, apiService, utils, DEFAULT_REPORTING, WORLD_TABLE_HEADERS) {
 
     var data
 
@@ -1185,9 +1185,10 @@ angular.module('ricardo.controllers', [])
       
       $scope.RICentities = {};
 
-      $scope.reportingCountryEntities = reportingCountryEntities;
-      $scope.reportingColonialEntities = reportingColonialEntities;
-      $scope.reportingContinentEntities = reportingContinentEntities;
+      $scope.reportingCountryEntities = reportingEntities.filter(function (d) {return d.type === "country"});
+      $scope.reportingColonialEntities = reportingEntities.filter(function (d) {return d.type === "colonial_area"});
+      $scope.reportingGeoEntities = reportingEntities.filter(function (d) {return d.type === "geographical_area"});
+      $scope.reportingContinentEntities = reportingEntities.filter(function (d) {return d.type === "continent"});
      
       $scope.reporting = []
       $scope.entities.sourceCountryEntity = {}
