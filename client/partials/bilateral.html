@@ -1,42 +1,68 @@
-
+<!-- 
 <div id="sticky-marker"></div>
 <div id="sticky-container">
+ -->
+
 <div class="container">
-<div ng-show="missing" class="alert"> 
-  <div class="modal-body" >
-   <p>
-      There is <strong>no data available</strong> in the database for {{entities.sourceEntity.selected.RICname}}
-   </p>
-   <p>
-   between {{selectedMinDate}} and {{selectedMaxDate}}  
-   </p>
-    <p>
-      Choose another one or change date selection, thank you !
-   </p>
-  </div>
-  <div class="modal-footer">
-      <button class="btn btn-default" ng-click="ok()">OK</button>
-  </div>
-</div>
-<div ng-show="missingTarget" class="alert"> 
-  <div class="modal-body" >
-   <p>
-      There is <strong>no data available</strong> in the database for {{entities.sourceEntity.selected.RICname}} with {{entities.targetEntity.selected.RICname}}
-   </p>
-   <p>
-   between {{selectedMinDate}} and {{selectedMaxDate}}  
-   </p>
-    <p>
-      Choose another one or change date selection, thank you !
-   </p>
-  </div>
-  <div class="modal-footer">
-      <button class="btn btn-default" ng-click="okTarget()">OK</button>
-  </div>
-</div>
+    <div ng-show="missing" class="alert"> 
+      <div class="modal-body" >
+       <p>
+          There is <strong>no data available</strong> in the database for {{entities.sourceEntity.selected.RICname}}
+       </p>
+       <p>
+       between {{selectedMinDate}} and {{selectedMaxDate}}  
+       </p>
+        <p>
+          Choose another one or change date selection, thank you !
+       </p>
+      </div>
+      <div class="modal-footer">
+          <button class="btn btn-default" ng-click="ok()">Change fields manually</button> or 
+          <button class="btn btn-default" ng-click="fieldsByDefault()">Set fields by default</button>
+      </div>
+    </div>
+    <div ng-show="missingTarget" class="alert"> 
+      <div class="modal-body" >
+      <h4> {{message}} </h4>
+       <p>
+          There is <strong>no data available</strong> in the database for {{entities.sourceEntity.selected.RICname}} with {{entities.targetEntity.selected.RICname}}
+       </p>
+       <p>
+       between {{selectedMinDate}} and {{selectedMaxDate}}  
+       </p>
+        <p>
+          Choose another one or change date selection, thank you !
+       </p>
+      </div>
+      <div class="modal-footer">
+          <button class="btn btn-default" ng-click="okTarget()">Change fields manually</button> or 
+          <button class="btn btn-default" ng-click="fieldsByDefault()">Set fields by default</button>
+      </div>
+    </div>
   <div class="row">
-  	<div class="timeline-cont col-sm-12">
-      <bilateral-title></bilateral-title>
+    <div class="col-md-12">
+    <bilateral-title></bilateral-title>
+    <p class="paragraphPage">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. Curabitur auctor nisi non aliquam facilisis. Aliquam at pretium eros. Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+    </p>
+
+      <h4>Available years for {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} </h4>
+      <p class="paragraphViz">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
+      </p>
+      <brushing-timeline
+        ng-data="timelineData"
+        start-date="selectedMinDate"
+        end-date="selectedMaxDate"
+        raw-start-date="rawMinDate"
+        raw-end-date="rawMaxDate"
+        source-country="entities.sourceEntity.selected.RICname"
+        target-country="entities.targetEntity.selected.RICname"
+        mirror-lines="true"
+      ></brushing-timeline>
+    </div>
+
+    <div class="timeline-cont col-md-12">
       <div class="legend">
         <div class="legend-item">
           <div class="square import"></div> Import
@@ -54,40 +80,39 @@
           Data expressed in <strong>{{actualCurrency}}</strong>
         </div>
       </div>
-      <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></dual-timeline>
+      <br>
+      <br>
+      <h4> Import and export evolution of {{entities.sourceEntity.selected.RICname}} between {{selectedMinDate}} and {{selectedMaxDate}}</h4>
+      <p class="paragraphViz">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
+      </p> 
+      <dual-timeline 
+        ng-data="timelineData" 
+        start-date="selectedMinDate" 
+        end-date="selectedMaxDate">
+      </dual-timeline>
     </div>
   </div>
 </div>
-</div>
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-12">
-        <bilateral-title id="alt-title" style="display:none;"></bilateral-title>
-        <brushing-timeline
-          ng-data="timelineData"
-          start-date="selectedMinDate"
-          end-date="selectedMaxDate"
-          raw-start-date="rawMinDate"
-          raw-end-date="rawMaxDate"
-          source-country="entities.sourceEntity.selected.RICname"
-          target-country="entities.targetEntity.selected.RICname"
-          mirror-lines="true"
-        ></brushing-timeline>
-      </div>
-    </div>
-  </div>
+
 
 <div class="container">
   <div class="row">
-    <div class="col-sm-12">
+    <div class="col-md-12">
       <br>
       <br>
-      <h3>Discrepancies in mirror flows</h3>
-      <h4>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
+      <h4>Discrepancies in mirror flows</h4>
+      <h5>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h5>
+      <p class="paragraphViz">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
+        </p>
+      <comparison-timeline 
+      ng-data="timelineData" 
+      start-date="selectedMinDate" 
+      end-date="selectedMaxDate">
+      </comparison-timeline>
       <div class="legend">
         <div class="legend-item">
-           <!-- Imports & exports informations coming from sources with the country's point of view.
-           <br> -->
            <strong>A</strong> : {{entities.sourceEntity.selected.RICname}} | <strong>B</strong> : {{entities.targetEntity.selected.RICname}}
            <br>
           <strong>ImpA</strong> = country A imports from country B as reported by country A | <strong>ImpB</strong> = country B imports from country A as reported by country B
@@ -104,10 +129,9 @@
           <strong>(ImpB - ExpA) / ExpA</strong>
         </div>
       </div>
-      <comparison-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></comparison-timeline>
       <br>
       <br>
-</div>
+    </div>
   </div>
   <div class="row">
     <div class="col-sm-12 text-center shdt">

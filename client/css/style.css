@@ -369,10 +369,6 @@ li.storyline {
   color: white;
 }
 
-
-
-
-
 /* navbar */
 
 #nav .navbar{
@@ -415,6 +411,19 @@ li.storyline {
   font-weight: bold;
   font-size: 0.7em;
 }
+
+
+/* text presentation and definition */
+.paragraphPage {
+  width:66%;
+  font-size: 12px;
+}
+
+.paragraphViz {
+  width:66%;
+  font-size: 11px;
+}
+
 
 /* select geo-entities dropdown*/
 
@@ -513,8 +522,6 @@ li.storyline {
   font-size: 16px;
   font-weight: 600;
 }
-
-
 
 .selectPartners > .ui-select-match {
   padding:6px 8px;
