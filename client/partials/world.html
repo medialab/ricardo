@@ -1,9 +1,32 @@
 <!-- <div id="sticky-marker"></div>
 <div id="sticky-container"> -->
-  <div class="container">
+<div class="container">
+    <world-title></world-title>
+    <div class="row" >
+      <div class="col-sm-12">
+        <h4>Reportings available</h4>
+        <bar-chart 
+          ng-data="nbReportings"
+          start-date="selectedMinDate"
+          end-date="selectedMaxDate"
+          raw-start-date="rawMinDate"
+          raw-end-date="rawMaxDate"
+          ></bar-chart>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="square import"></div> Reportings available to build the curve
+        </div>
+      </div>
+      </div>
+    </div>
     <div class="row">
       <div class="timeline-cont col-sm-12">
-        <world-title></world-title>
+        <h4>Import and export evolution of World</h4>
+        <dual-timeline 
+        ng-data="timelineData" 
+        start-date="selectedMinDate" 
+        end-date="selectedMaxDate" 
+        ></dual-timeline>
         <div class="legend">
         <div class="legend-item">
           <div class="square import"></div> Import
@@ -21,38 +44,55 @@
             Data expressed in <strong>sterling pound</strong>
           </div>
         </div>
-        <dual-timeline 
-        ng-data="timelineData" 
-        start-date="selectedMinDate" 
-        end-date="selectedMaxDate" 
-        ></dual-timeline>
       </div>
     </div>
-  </div>
+</div>
 <!-- </div> -->
 
-<div class="container">
-    <div class="row" >
-      <div class="col-sm-12">
-      <div class="legend">
-        <div class="legend-item">
-          <div class="square import"></div> Reportings available to build the curve
-        </div>
-      </div>
-        <bar-chart 
-          ng-data="nbReportings"
-          start-date="selectedMinDate"
-          end-date="selectedMaxDate"
-          raw-start-date="rawMinDate"
-          raw-end-date="rawMaxDate"
-          ></bar-chart>
-      </div>
-    </div>
+<!-- <div class="container">
+    
 
-</div>
+</div> -->
 
 <div class="container">
   <div class="row">
+    <div class="col-md-12">
+      <h4 class="titleDualTL">World trade comparaison with  
+      <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
+      
+      <span class="close-btn">
+        <i class="fa fa-times"></i>
+      </span>
+      <span ng-if="!$last">, </span>
+      </span>, {{selectedMinDate}} – {{selectedMaxDate}}, in   
+      <div class="inline-select">
+        <ui-select ng-model="linechartCurrency.selected" theme="bootstrap">
+        <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
+        <choices repeat="item in linechartCurrencyChoices | filter: $select.search">
+          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+        </choices>
+      </ui-select>
+    </div> 
+    for
+    <div class="inline-select">
+        <ui-select ng-model="linechartFlow.selected" theme="bootstrap">
+        <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
+        <choices repeat="item in linechartFlowChoices | filter: $select.search">
+          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+        </choices>
+      </ui-select>
+    </div>
+
+      <i class="fa fa-info-circle"></i> 
+      </h4>
+        <div ng-show="messagePercent"> 
+         <p>
+            The percentages are based on the total amount of world sumpartners of {{entities.sourceEntity.selected.RICname}}
+         </p>
+        </div>
+    </div>
+  </div>
+  <!-- <div class="row">
       <div class="col-sm-12">
        <h3 class="subtitle">World trade comparaison with 
         <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
@@ -61,8 +101,8 @@
         </span>, {{selectedMinDate}} – {{selectedMaxDate}}, in {{actualCurrency}}
         <i class="fa fa-info-circle"></i> </h3>
       </div>
-  </div>
-  <div class="row">  
+  </div> -->
+  <!-- <div class="row">  
     <div class="col-sm-12 filter-group" >
         <div class="btn-group pull-right">
           <label class="btn btnLineChart" ng-model="yValue" btn-radio="'total'" uncheckable>Total</label>
@@ -74,7 +114,7 @@
           <label class="btn btnLineChart" ng-model="conversion" btn-radio="'value'" uncheckable>Percent</label>
         </div>
     </div>
-  </div>
+  </div> -->
   <div id="select-lineChart">
     <div>
       <h3 class="subtitle col-md-3">Select up to 5 reportings :</h3>

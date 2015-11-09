@@ -1033,8 +1033,6 @@ angular.module('ricardo.controllers', [])
     }, true);
 
     $scope.$watchCollection('[reporting, linechartFlow.selected, linechartCurrency.selected]', function (newValue, oldValue){
-      console.log("newValue", newValue);
-      console.log("newValue selected", newValue[1].type.value);
       if(newValue !== oldValue && newValue){
         initLinechart($scope.reporting, newValue[1].type.value, newValue[2].type.value);
       }
@@ -1190,8 +1188,8 @@ angular.module('ricardo.controllers', [])
     $scope.missingData = [];
     $scope.viewTable = 0;
     $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
-    $scope.yValue = "exp"
-    $scope.conversion = "sterling";
+    // $scope.yValue = "exp"
+    // $scope.conversion = "sterling";
     $scope.tableData = [{
                         reporting_id: null,
                         type: null,
@@ -1211,6 +1209,22 @@ angular.module('ricardo.controllers', [])
     $scope.rawYearsRange                                  // Range of years in data (useful for selectors)
     $scope.rawYearsRange_forInf                           // Range of years in data adapted to inferior bound (useful for selectors)
     $scope.rawYearsRange_forSup                           // Range of years in data adapted to superior bound (useful for selectors)
+
+    $scope.linechartCurrency = {}
+    $scope.linechartCurrencyChoices = [
+      {type: {value: "sterling",writable: true},name: {value: "Sterling",writable: true}},
+      {type: {value: "value",writable: true},name: {value: "Percent",writable: true}
+    }];
+
+    $scope.linechartFlow = {}
+    $scope.linechartFlowChoices = [
+      {type: {value: "total",writable: true},name: {value: "Total",writable: true}},
+      {type: {value: "exp",writable: true},name: {value: "Exports",writable: true}},
+      {type: {value: "imp",writable: true},name: {value: "Imports",writable: true}
+    }];
+
+    $scope.linechartCurrency.selected = {type: {value :"sterling",writable: true},name: {value:"Sterling",writable: true}};
+    $scope.linechartFlow.selected = {type: {value :"total",writable: true},name: {value:"Total",writable: true}};  
 
     // Calling the API
     function init() {
@@ -1447,12 +1461,12 @@ angular.module('ricardo.controllers', [])
       }
     })
 
-    $scope.$watchCollection('[reporting, yValue, conversion, viewTable]', function (newValue, oldValue){
-      if(newValue !== undefined && newValue !== oldValue){
-          updateTableData()
-          initLinechart($scope.reporting, $scope.yValue, $scope.conversion);
-        }
-    })
+    $scope.$watchCollection('[reporting, linechartFlow.selected, linechartCurrency.selected, viewTable]', function (newValue, oldValue){
+      if(newValue !== oldValue && newValue){
+        console.log("newValue world", newValue);
+        initLinechart($scope.reporting, newValue[1].type.value, newValue[2].type.value);
+      }
+    }, true)
 
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
