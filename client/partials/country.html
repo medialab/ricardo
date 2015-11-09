@@ -1,4 +1,5 @@
 <div class="container">
+
   <div ng-show="missing" class="alert"> 
     <div class="modal-body" >
      <p>
@@ -18,11 +19,29 @@
 </div>
 <!-- <div id="sticky-marker"></div>
 <div id="sticky-container"> -->
-<div class="container">
 
+<div class="container">  
+  <country-title></country-title>
+  <div class="row" >
+    <div id="countryBrushing" class="col-sm-12">
+    <h4>Available years for {{entities.sourceEntity.selected.RICname}}</h4>
+      <brushing-timeline
+        ng-data="timelineData"
+        start-date="selectedMinDate"
+        end-date="selectedMaxDate"
+        raw-start-date="rawMinDate"
+        raw-end-date="rawMaxDate"
+        source-country="entities.sourceEntity.selected.RICname"
+        target-country="entities.targetEntity.selected.RICname"
+      ></brushing-timeline>
+    </div>
+  </div>
+</div>
+
+
+<div class="container">
   <div class="row">
     <div class="timeline-cont col-sm-12">
-      <country-title></country-title>
       <div class="legend">
         <div class="legend-item">
           <div class="square import"></div> Import
@@ -42,6 +61,7 @@
         <i class="fa fa-info-circle"></i>
 
       </div>
+      <h4> Import and export evolution of {{entities.sourceEntity.selected.RICname}}</h4>
       <dual-timeline 
         ng-data="timelineData" 
         start-date="selectedMinDate" 
@@ -52,37 +72,13 @@
 </div>
 <!-- </div> -->
 
-<div class="container">
-  
-  <div class="row" >
-    <div id="countryBrushing" class="col-sm-12">
-      <brushing-timeline
-        ng-data="timelineData"
-        start-date="selectedMinDate"
-        end-date="selectedMaxDate"
-        raw-start-date="rawMinDate"
-        raw-end-date="rawMaxDate"
-        source-country="entities.sourceEntity.selected.RICname"
-        target-country="entities.targetEntity.selected.RICname"
-      ></brushing-timeline>
-    </div>
-  </div>
-</div>
 
 
 <div class="container">
+  <h4> Partners trade balance of {{entities.sourceEntity.selected.RICname}}</h4>
   <div class="row">
     <div class="col-md-6">
-      <h3 class="subtitle">Balance of trade of {{entities.sourceEntity.selected.RICname}} with partners, {{selectedMinDate}} – {{selectedMaxDate}} <i class="fa fa-info-circle"></i></h3>
-      <div class="legend-item">
-          {{ordered.selected.name.value}} in <strong>pourcentage</strong> | Trade balance in <strong>sterling</strong>
-      </div>
-        <div class="legend-item">
-          <strong>Balance : </strong> (Exports - Imports) / (Exports + Imports)
-        </div> 
-        <div class="legend-item">
-          <strong>| Total | : </strong> Trade share average for available years
-        </div> 
+      <h4 class="subtitle">Balance of trade of {{entities.sourceEntity.selected.RICname}} with partners, {{selectedMinDate}} – {{selectedMaxDate}} <i class="fa fa-info-circle"></i></h4>
     </div>
     <div class="col-md-6 inline-select" style="float:right;">
         
@@ -126,19 +122,50 @@
         ></partners-histogram>
       </div>
     </div>
+        <div class="partnersHistoLegend">
+          <div class="legend-item">
+              {{ordered.selected.name.value}} in <strong>pourcentage</strong> | Trade balance in <strong>sterling</strong>
+          </div>
+          <div class="legend-item">
+            <strong>Balance : </strong> (Exports - Imports) / (Exports + Imports)
+          </div> 
+          <div class="legend-item">
+            <strong>| Total | : </strong> Trade share average for available years
+          </div> 
+          
+        </div>
   </div>
 
   <div class="row">
     <div class="col-md-12">
-      <h3 class="subtitle">Trade of {{entities.sourceEntity.selected.RICname}} with 
+      <h4 class="titleDualTL">Trade of {{entities.sourceEntity.selected.RICname}} with 
       <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
       
       <span class="close-btn">
         <i class="fa fa-times"></i>
       </span>
       <span ng-if="!$last">, </span>
-      </span>, {{selectedMinDate}} – {{selectedMaxDate}}, in {{actualCurrency}}
-      <i class="fa fa-info-circle"></i> </h3>
+      </span>, {{selectedMinDate}} – {{selectedMaxDate}}, in   
+      <div class="inline-select">
+        <ui-select ng-model="linechartCurrency.selected" theme="bootstrap">
+        <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
+        <choices repeat="item in linechartCurrencyChoices | filter: $select.search">
+          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+        </choices>
+      </ui-select>
+    </div> 
+    for
+    <div class="inline-select">
+        <ui-select ng-model="linechartFlow.selected" theme="bootstrap">
+        <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
+        <choices repeat="item in linechartFlowChoices | filter: $select.search">
+          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+        </choices>
+      </ui-select>
+    </div>
+
+      <i class="fa fa-info-circle"></i> 
+      </h4>
         <div ng-show="messagePercent"> 
          <p>
             The percentages are based on the total amount of world sumpartners of {{entities.sourceEntity.selected.RICname}}
@@ -146,8 +173,9 @@
         </div>
     </div>
   </div>
-  <div class="row">    
-    <div class="col-md-12 filter-group">
+  <div class="row"> 
+
+    <!-- <div class="col-md-12 filter-group">
       <div class="btn-group pull-right">
         <label class="btn btnLineChart" ng-model="yValue" btn-radio="'total'" uncheckable>Total</label>
         <label class="btn btnLineChart" ng-model="yValue" btn-radio="'imp'" uncheckable>Imports</label>
@@ -157,11 +185,11 @@
         <label class="btn btnLineChart" ng-model="conversion" btn-radio="'sterling'" uncheckable>Sterling</label>
         <label class="btn btnLineChart" ng-model="conversion" btn-radio="'value'" uncheckable>Percent</label>
       </div>
-  </div>
+    </div> -->
   </div>
   <div id="select-lineChart">
     <div>
-      <h3 class="subtitle col-md-2" style="width:190px;">select up to 5 partners:</h3>
+      <h4 class="subtitle col-md-2" style="width:190px;">select up to 5 partners:</h4>
     </div>
     <div class="select-dropdown col-md-9" ng-show="RICentitiesDD.length" style="padding-top:10px;">
     

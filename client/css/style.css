@@ -571,10 +571,15 @@ li.storyline {
   padding-top: 10px;
 }
 
+.timeline-cont, .partnersHistoLegend {
+  margin-top: 20px;
+}
+
 h4{
   margin-bottom: 0;
   padding-bottom: 5px;
 }
+
 .axis path,
 .axis line {
   fill: none;

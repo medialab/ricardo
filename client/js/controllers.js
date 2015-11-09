@@ -401,29 +401,60 @@ angular.module('ricardo.controllers', [])
     var data
     $scope.messagePercent = 0;
     $scope.reportingEntities = reportingEntities;  
+    // Partners Histo filter
     $scope.filtered = {};
     $scope.filters = [
-      { type: { value : "all", writable: true },name: {value: "All",writable: true}},
-      {type: {value : "city/part_of",writable: true},name: {value: "City",writable: true}},
-      {type: {value : "colonial_area",writable: true},name: {value: "Colonial",writable: true}},
-      {type: {value : "country",writable: true},name: {value: "Country",writable: true}},
-      {type: {value : "geographical_area",writable: true},name: {value: "Geo",writable: true}},
-      {type: {value : "group",writable: true},name: {value: "Group",writable: true}
+      {type: {value: "all", writable: true },name: {value: "All",writable: true}},
+      {type: {value: "city/part_of",writable: true},name: {value: "City",writable: true}},
+      {type: {value: "colonial_area",writable: true},name: {value: "Colonial",writable: true}},
+      {type: {value: "country",writable: true},name: {value: "Country",writable: true}},
+      {type: {value: "geographical_area",writable: true},name: {value: "Geo",writable: true}},
+      {type: {value: "group",writable: true},name: {value: "Group",writable: true}
     }];
     $scope.ordered = { 
-      type: {value :"tot",writable: true},
-      name: {value:"Average share on Total",writable: true}
+      type: {value: "tot",writable: true},
+      name: {value: "Average share on Total",writable: true}
     };
     $scope.orders = [
-      { type: {value :"tot",writable: true},name: {value:"Average share on Total",writable: true}},
-      {type: {value :"imp",writable: true},name: {value:"Average share on Imports",writable: true}},
-      {type: {value :"exp",writable: true},name: {value:"Average share on Exports",writable: true}},
-      {type: {value :"name",writable: true},name: {value:"Name",writable: true}
+      {type: {value: "tot",writable: true},name: {value: "Average share on Total",writable: true}},
+      {type: {value: "imp",writable: true},name: {value: "Average share on Imports",writable: true}},
+      {type: {value: "exp",writable: true},name: {value: "Average share on Exports",writable: true}},
+      {type: {value: "name",writable: true},name: {value: "Name",writable: true}
     }];
     $scope.grouped = {};
     $scope.groups = [
-      {type: {value :0,writable: true},name: {value:"None",writable: true}},
-      {type: {value :1,writable: true},name: {value: "Continent",writable: true}
+      {type: {value: 0,writable: true},name: {value: "None",writable: true}},
+      {type: {value: 1,writable: true},name: {value: "Continent",writable: true}
+    }];
+
+    // line chart filters
+
+
+
+    // $scope.lineSterling = {};
+    // $scope.lineSterlings = [
+    //   {type: {value: "sterling",writable: true},name: {value: "Sterling",writable: true}},
+    //   {type: {value: "value",writable: true},name: {value: "Percent",writable: true}
+    // }];
+
+    // $scope.lineFlowsType = {};
+    // $scope.lineFlowsTypes = [
+    //   {type: {value: "sterling",writable: true},name: {value: "Sterling",writable: true}},
+    //   {type: {value: "sterling",writable: true},name: {value: "Sterling",writable: true}},
+    //   {type: {value: "value",writable: true},name: {value: "Percent",writable: true}
+    // }];
+
+    $scope.linechartCurrency = {}
+    $scope.linechartCurrencyChoices = [
+      {type: {value: "sterling",writable: true},name: {value: "Sterling",writable: true}},
+      {type: {value: "value",writable: true},name: {value: "Percent",writable: true}
+    }];
+
+    $scope.linechartFlow = {}
+    $scope.linechartFlowChoices = [
+      {type: {value: "total",writable: true},name: {value: "Total",writable: true}},
+      {type: {value: "exp",writable: true},name: {value: "Exports",writable: true}},
+      {type: {value: "imp",writable: true},name: {value: "Imports",writable: true}
     }];
 
     $scope.entities = {sourceEntity : {}, sourceCountryEntity : {}, sourceColonialEntity : {}, sourceGeoEntity : {}, sourceContinentEntity : {}, sourceWorldEntity : {}}
@@ -448,7 +479,9 @@ angular.module('ricardo.controllers', [])
     $scope.missingData = [];
     $scope.viewTable = 0;
     $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
-    $scope.yValue = "total"; 
+    $scope.yValue = "total";
+    $scope.linechartCurrency.selected = {type: {value :"sterling",writable: true},name: {value:"Sterling",writable: true}};
+    $scope.linechartFlow.selected = {type: {value :"total",writable: true},name: {value:"Total",writable: true}};  
     $scope.conversion = "sterling";
 
 
@@ -655,8 +688,8 @@ angular.module('ricardo.controllers', [])
              }); 
             // factorise these lines
             $scope.yValue = yValue;
-            $scope.conversion = "sterling";
-            $scope.actualCurrency = "sterling pound";
+            $scope.linechartCurrency.selected = {type: {value :"sterling",writable: true},name: {value:"Sterling",writable: true}};
+            //$scope.actualCurrency = "sterling pound";
             $scope.messagePercent = 0;
           }
           else {
@@ -671,8 +704,8 @@ angular.module('ricardo.controllers', [])
                 
              }); 
             $scope.yValue = yValue;
-            $scope.conversion = "sterling";
-            $scope.actualCurrency = "sterling pound"; 
+            $scope.linechartCurrency.selected = {type: {value :"sterling",writable: true},name: {value:"Sterling",writable: true}};
+            //$scope.actualCurrency = "sterling pound"; 
             $scope.messagePercent = 0;
           }
         })
@@ -756,8 +789,8 @@ angular.module('ricardo.controllers', [])
                       });
 
                       $scope.yValue = yValue;
-                      $scope.conversion = "value";
-                      $scope.actualCurrency = "pourcent";
+                      $scope.linechartCurrency.selected = {type: {value :"value",writable: true},name: {value:"Percent",writable: true}};
+                      $scope.actualCurrency = "percent";
                       $scope.messagePercent = 1;
                     });
                   })
@@ -781,8 +814,8 @@ angular.module('ricardo.controllers', [])
                   });
 
                   $scope.yValue = yValue;
-                  $scope.conversion = "value";
-                  $scope.actualCurrency = "pourcent";
+                  $scope.linechartCurrency.selected = {type: {value :"value",writable: true},name: {value:"Percent",writable: true}};
+                  $scope.actualCurrency = "percent";
                   $scope.messagePercent = 1;
                 });
               })
@@ -999,9 +1032,11 @@ angular.module('ricardo.controllers', [])
         }
     }, true);
 
-    $scope.$watchCollection('[reporting, yValue, conversion]', function (newValue, oldValue){
+    $scope.$watchCollection('[reporting, linechartFlow.selected, linechartCurrency.selected]', function (newValue, oldValue){
+      console.log("newValue", newValue);
+      console.log("newValue selected", newValue[1].type.value);
       if(newValue !== oldValue && newValue){
-        initLinechart($scope.reporting, $scope.yValue, $scope.conversion);
+        initLinechart($scope.reporting, newValue[1].type.value, newValue[2].type.value);
       }
     }, true)
 
