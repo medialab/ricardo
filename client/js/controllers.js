@@ -1124,6 +1124,22 @@ angular.module('ricardo.controllers', [])
 
       utils.downloadCSV($scope.tableData, headers, order);
     };
+
+    $scope.downloadCurrency = function() {
+      apiService
+        .getFlows({reporting_ids: $scope.entities.sourceEntity.selected.RICid, with_sources:1, original_currency:1})
+        .then(function (result) {
+          var headers = TABLE_HEADERS.map(function (h) {
+            return h.displayName;
+          });
+
+          var order = TABLE_HEADERS.map(function (h) {
+            return h.field;
+          });
+
+          utils.downloadCSV(result.flows, headers, order);
+      })
+    };
   })
   .controller('world', function ($scope, $location, $timeout, reportingEntities, reportingWorldFlows, apiService, utils, DEFAULT_REPORTING, WORLD_TABLE_HEADERS) {
 
