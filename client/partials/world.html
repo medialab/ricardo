@@ -3,7 +3,7 @@
 <div class="container">
     <world-title></world-title>
     <p class="paragraphPage">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. Curabitur auctor nisi non aliquam facilisis. Aliquam at pretium eros. Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+     La vue mondiale montre une estimation du <strong> <em> commerce mondial </em> </strong> calculée à partir des flux de commerce total de tous les reporting entities. Elle indique le nombre de reporting entities disponible pour calculer l’estimation du commerce mondial. Elle permet aussi de comparer l’évolution du commerce total des reporting entities sélectionnés et leur part dans le commerce mondial.
     </p>
     <div class="row" >
       <div class="col-sm-12">
@@ -42,12 +42,6 @@
         </div>
           <div class="legend-item">
             <div class="square export"></div> Export
-          </div>
-          <div class="legend-item">
-            <div class="line available"></div> Available data
-          </div>
-          <div class="legend-item">
-            <div class="line unavailable"></div> Unavailable data
           </div>
           <div class="legend-item">
             Data expressed in <strong>sterling pound</strong>
@@ -173,23 +167,6 @@
 
   <div class="row">
     <div class="col-sm-12">
-    
-<!--       <div ng-show="c" class="alert"> 
-        <div class="modal-body" >
-         <p>
-            There is <strong>no data available</strong> in the database for {{entitiesMissing}}
-         </p>
-         <p>
-         between {{selectedMinDate}} and {{selectedMaxDate}}  
-         </p>
-          <p>
-            Choose another one or change date selection, thank you !
-         </p>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-default" ng-click="ok()">OK</button>
-        </div>
-    </div> -->
       <linechart-world ng-data="linechartData">
       </linechart-world>
     </div>
