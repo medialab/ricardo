@@ -41,25 +41,21 @@
     </div>
   <div class="row">
     <div class="col-md-12">
-    <bilateral-title></bilateral-title>
     <p class="paragraphPage">
+    </br>
+    </br>
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. Curabitur auctor nisi non aliquam facilisis. Aliquam at pretium eros. Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
     </p>
-
-      <h4>Available years for {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} </h4>
-      <p class="paragraphViz">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
-      </p>
-      <brushing-timeline
-        ng-data="timelineData"
-        start-date="selectedMinDate"
-        end-date="selectedMaxDate"
-        raw-start-date="rawMinDate"
-        raw-end-date="rawMaxDate"
-        source-country="entities.sourceEntity.selected.RICname"
-        target-country="entities.targetEntity.selected.RICname"
-        mirror-lines="true"
-      ></brushing-timeline>
+    <bilateral-title></bilateral-title>
+    <!-- <h4> Import and export evolution of {{entities.sourceEntity.selected.RICname}} with {{entities.targetEntity.selected.RICname}} between {{selectedMinDate}} and {{selectedMaxDate}}</h4> -->
+      <!-- <p class="paragraphViz">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
+      </p>  -->
+      <dual-timeline 
+        ng-data="timelineData" 
+        start-date="selectedMinDate" 
+        end-date="selectedMaxDate">
+      </dual-timeline>      
     </div>
 
     <div class="timeline-cont col-md-12">
@@ -82,15 +78,22 @@
       </div>
       <br>
       <br>
-      <h4> Import and export evolution of {{entities.sourceEntity.selected.RICname}} between {{selectedMinDate}} and {{selectedMaxDate}}</h4>
-      <p class="paragraphViz">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
-      </p> 
-      <dual-timeline 
-        ng-data="timelineData" 
-        start-date="selectedMinDate" 
-        end-date="selectedMaxDate">
-      </dual-timeline>
+      <h4>Available years in {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
+      <!-- <p class="paragraphViz">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
+      </p> -->
+      <brushing-timeline
+        ng-data="timelineData"
+        start-date="selectedMinDate"
+        end-date="selectedMaxDate"
+        raw-start-date="rawMinDate"
+        raw-end-date="rawMaxDate"
+        source-country="entities.sourceEntity.selected.RICname"
+        target-country="entities.targetEntity.selected.RICname"
+        mirror-lines="true"
+        ng-model="timelineData"
+        ng-change="dataChange()"
+      ></brushing-timeline>
     </div>
   </div>
 </div>
@@ -101,8 +104,8 @@
     <div class="col-md-12">
       <br>
       <br>
-      <h4>Discrepancies in mirror flows</h4>
-      <h5>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h5>
+      <!-- <h4>Discrepancies in mirror flows</h4> -->
+      <h4>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
       <p class="paragraphViz">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
         </p>
@@ -115,9 +118,9 @@
         <div class="legend-item">
            <strong>A</strong> : {{entities.sourceEntity.selected.RICname}} | <strong>B</strong> : {{entities.targetEntity.selected.RICname}}
            <br>
-          <strong>ImpA</strong> = country A imports from country B as reported by country A | <strong>ImpB</strong> = country B imports from country A as reported by country B
+          <span class="legendImport">ImpA</span> = country A imports from country B as reported by country A | <span class="legendExport">ImpB</span> = country B imports from country A as reported by country B
           <br>
-          <strong>ExpA</strong> = country A exports to country B as reported by country A   | <strong>ExpB</strong> = country B exports to country A as reported by country B
+          <span class="legendImport">ExpB</span> = country B exports to country A as reported by country B | <span class="legendExport">ExpA</span> = country A exports to country B as reported by country A 
       </div>
       <div class="legend">
         <div class="legend-item">
