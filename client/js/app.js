@@ -10,9 +10,9 @@ angular.module('ricardo', [
   'ui.select',
   'ngGrid',
   'angular-loading-bar',
+  'pascalprecht.translate',
   'ricardo.filters',
   'ricardo.services',
-  // 'ricardo.directives',
   'ricardo.directives-addendum',
   'ricardo.controllers'
   ]).
@@ -43,21 +43,6 @@ config(['$routeProvider', function($routeProvider) {
     templateUrl: 'partials/world.html',
     controller: 'world',
     resolve: {
-      // reportingColonialEntities : function (apiService) {
-      //   return apiService.getReportingEntities({'type_filter': 'colonial_area','to_partner_ids': "Worldbestguess"})
-      // },
-      // reportingCountryEntities : function (apiService) {
-      //   return apiService.getReportingEntities({'type_filter': 'country','to_partner_ids': "Worldbestguess"})
-      // },
-      // reportingGeoEntities : function (apiService) {
-      //   return apiService.getReportingEntities({'type_filter': 'geographical_area','to_partner_ids': "Worldbestguess"})
-      // },
-      // reportingContinentEntities : function (apiService) {
-      //   return apiService.getReportingEntities({'type_filter': 'continent','to_partner_ids': "Worldbestguess"})
-      // },
-      // reportingEntities : function (apiService) {
-      //   return apiService.getReportingEntities({'type_filter': 'country'})
-      // },
       reportingEntities : function (apiService) {
         return apiService.getReportingEntities({'partners_ids': 'Worldbestguess'})
       },
@@ -87,11 +72,22 @@ config(['$routeProvider', function($routeProvider) {
   .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
     cfpLoadingBarProvider.includeBar = false;
   }])
-  .config(function (uiSelectConfig) {
-    uiSelectConfig.theme = 'bootstrap';
-    uiSelectConfig.resetSearchInput = true;
-    uiSelectConfig.appendToBody = true;
+  .config(function($translateProvider) {
+    $translateProvider.translations('en', {
+      HEADLINE: 'Hello there, This is my awesome app!',
+      INTRO_TEXT: 'And it has i18n support!'
+    })
+    .translations('fr', {
+      HEADLINE: 'Salut',
+      INTRO_TEXT: 'Coucou !'
+    });
+    $translateProvider.preferredLanguage('en');
   });
+  // .config(function (uiSelectConfig) {
+  //   uiSelectConfig.theme = 'bootstrap';
+  //   uiSelectConfig.resetSearchInput = true;
+  //   uiSelectConfig.appendToBody = true;
+  // });
 
 
 // Scroll spy for sticky brushing timeline

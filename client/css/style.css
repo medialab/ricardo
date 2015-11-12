@@ -162,6 +162,9 @@ body {
   background-color: white;
 }
 
+/*NavBar */
+
+
 
 /* Custom page CSS
 -------------------------------------------------- */
@@ -404,7 +407,7 @@ li.storyline {
   padding-top: 15px;
 }
 
-#nav .navbar-right > li > a{
+#nav .navbar-right > li > a, {
   font-family: 'montserrat', 'Arial', sans-serif;
   text-transform: uppercase;
   font-variant: normal;
@@ -412,6 +415,15 @@ li.storyline {
   font-size: 0.7em;
 }
 
+#nav .navbar-right > li > .translateButtons {
+  font-family: 'montserrat', 'Arial', sans-serif;
+  text-transform: uppercase;
+  font-variant: normal;
+  font-weight: bold;
+  font-size: 0.7em;
+  padding-bottom: 15px;
+  padding-top: 15px;
+}
 
 /* text presentation and definition */
 .paragraphPage {
@@ -706,6 +718,14 @@ h4{
 .legend .line.unavailable{  border-bottom: 1px solid #e5b2b2; }
 .legend .line.diff-import{    border-color: #cc6666; }
 .legend .line.diff-export{    border-color: #dbb994; }
+
+.legendImport {
+  color: #cc6666;
+}
+
+.legendExport {
+  color: #dbb994;
+}
 
 /* stream */
 

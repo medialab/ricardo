@@ -13,7 +13,13 @@
       <ul class="nav navbar-nav">
         <li ng-repeat="view in views" ng-class="{ active: isActive('/' + view.slug)}"><a href="#/{{view.slug}}">{{view.label}}</a></li>
       </ul>
-      <ul class="nav navbar-nav navbar-right">
+      <ul class="nav navbar-nav navbar-right" ng-controller="TranslateController">
+            <li>
+              <a class="translateButtons" ng-click="changeLanguage('fr')">Fr</a>
+            </li>
+            <li>
+              <a class="translateButtons" ng-click="changeLanguage('en')">En</a>
+            </li>
             <li><a href="#/about">About</a></li>
       </ul>
     </div>

@@ -39,6 +39,14 @@ angular.module('ricardo.directives-addendum', [])
   }])
 
   /* directive with only template */
+  .directive('linechartTitle', [function() {
+    return {
+      restrict: 'E'
+      ,templateUrl: 'partials/linechartTitle.html'
+    }
+  }])
+
+  /* directive with only template */
   .directive('inlineSelectCountry', [function(){
     return {
       restrict: 'E'
@@ -86,6 +94,17 @@ angular.module('ricardo.directives-addendum', [])
       }
     }
   }])
+  /* directive with only template */
+  .directive('inlineSelectCurrency', [function(){
+    return {
+      restrict: 'E'
+      ,templateUrl: 'partials/inlineSelectCurrency.html'
+      ,scope: {
+          model: '=ngModel'
+        , list: '=list'
+      }
+    }
+  }])
 
   /* directive with watch, update and draw functions */
   .directive('dualTimeline', [function(){
@@ -101,6 +120,7 @@ angular.module('ricardo.directives-addendum', [])
         
         scope.$watch('ngData', function(newValue, oldValue) {
           if ( newValue ) {
+        console.log("scope.ngData", scope.ngData);
             draw(scope.ngData)
           }
         })
@@ -822,7 +842,7 @@ angular.module('ricardo.directives-addendum', [])
           
           svg.append("text")
               .attr("class", "baselineLabel")
-              .text("Available data reported by " + entityDataAvaible)
+              .text(entityDataAvaible)
               .attr("x", 0)
               .attr("y", baselineHeight_1on2 - interline / 2 - 8)
 
@@ -844,7 +864,7 @@ angular.module('ricardo.directives-addendum', [])
 
             svg.append("text")
                 .attr("class", "baselineLabel")
-                .text("Available data reported by " + scope.targetCountry)
+                .text(scope.targetCountry)
                 .attr("x", 0)
                 .attr("y", baselineHeight_2on2 - interline / 2 - 8)
 
@@ -1352,7 +1372,19 @@ angular.module('ricardo.directives-addendum', [])
                   });   
                   
               }
+
           });
+
+        // // Legend circle
+        // var circleLegend = d3.select("#circleLegend").append("svg")
+
+        // circleLegend.append("circle")
+        //             .attr("cx", 10)
+        //             .attr("cy", 5)
+        //             .attr("r", 12)
+        //             .style("stroke", "#777") 
+        //             .style("fill", "transparent")
+
         }
       } //end of link
     }
