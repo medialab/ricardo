@@ -2,30 +2,30 @@
 # Protocol
 GET HTTP request
 
-# arguments norm
-GET request parameters as URL query
+## Arguments norm
+All routes take only GET request parameters as URL query, no inputs
 
 
-# RICentities
+## API calls
+### all routes
 
-list all entities from the database
+* /reporting_entities
+* /flows
+* /continent_flows
+* /world_flows
+* /mirror_entities
+* /RICentities
 
-## API call
-### root
 
-  /RICentities
 
-### inputs
-
-No inputs
-
-### example
+### Example
 
   ricardo_server.tld/RICentities
 
-## outputs
+### Outputs
 
-```json
+```
+json
 [
   {
     "RICid":456
@@ -37,13 +37,10 @@ No inputs
 ]
 ```
 
-
-
 # reporting_entities
 
-list entities which has reported Imp/Exp flows.
+List entities which has reported Imp/Exp flows.
 
-## API call
 ### root
 
   /reporting_entities
@@ -59,7 +56,8 @@ list entities which has reported Imp/Exp flows.
 
 ## outputs
 
-```json
+```
+json
 [
   {
         "type": "continent", 
@@ -85,7 +83,6 @@ API root used in
 - country view : in this case no partner should be specified.
 - world view : specifies many reporting and "world" as partner.
 
-## API call
 ### root 
 
   /flows
@@ -104,15 +101,13 @@ ids are provided by the reporting_entities API call
 not implemented yet :
 - null flows ?
 
-
 ### example
 
   ricardo_server.tld/flows?reporting_ids=885&partner_ids=841
 
-
-
 ## outputs
-```json
+```
+json
 { 
   "RICentities": [
     "reportings":[
@@ -149,7 +144,9 @@ not implemented yet :
 ```
 
 not implemented:
-```json
+
+```
+json
 "metadata":
       {
         reporting_ids:[456,53],
@@ -170,7 +167,6 @@ API root used in
 - continent view : in this case no partner should be specified.
 - world view : specifies continents and "world" as partner.
 
-## API call
 ### root 
 
   /continent_flows
@@ -186,13 +182,13 @@ API root used in
 not implemented yet :
 - null flows ?
 
-
 ### example
 
   ricardo_server.tld/continent_flows?continent=Asiapartner_ids=841
 
 ## outputs
-```json
+```
+json
 {
     "RICentities": {
         "partners": [
@@ -237,14 +233,15 @@ not implemented yet :
 Provide a list of all sources used in a flow API call.
 Used to get them all at once without repeating them in flow.
 
-## inputs
+### inputs
 - reporting_ids = 456,53
 - partner_ids = 598 - Optional
 - from=YYYY - Optionnal
 - to=YYYY - Optionnal
 
-## outputs
-```json
+### outputs
+```
+json
 {
   "sources":["source1","source2",...]
 }

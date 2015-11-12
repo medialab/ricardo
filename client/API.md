@@ -15,6 +15,10 @@
 - List of all geo-entities
 - All data filtered on selected geo-entities (partener alway world)
 
+###Continent view
+
+###RICentities view
+
 ###Timeline view
 
 ###Federation view

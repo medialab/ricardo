@@ -6,34 +6,33 @@ If you want to run your instance of RICardo locally on your machine, be sure you
 - [Git](http://git-scm.com/book/en/Getting-Started-Installing-Git)
 - [Bower](http://bower.io/#installing-bower)
 
-
 Clone RICardo from the command line:
 
-``` sh
+``` 
 $ git clone https://github.com/medialab/ricardo.git
 ```
 
 browse to RICardo root folder:
 
-``` sh
+``` 
 $ cd ricardo
 ```
 
 browse to RICardo client root folder:
 
-``` sh
+``` 
 $ cd ricardo/client
 ```
 
 install client-side dependencies:
 
-``` sh
+``` 
 $ bower install
 ```
 
 edit configuration file
 
-```sh
+```
 $ cd js
 $ cp config.sample.js config.js
 $ vi config.js
@@ -46,13 +45,13 @@ angular.module('ricardo')
 
 You can now run RICardo from your local web server. For example, you can run Python's built-in server:
 
-``` sh
+``` 
 $ python -m SimpleHTTPServer 4000
 ```
 
 or for Python 3+
 
-``` sh
+``` 
 $ python -m http.server 4000
 ```
 
@@ -96,7 +95,7 @@ Used to get them all at once without repeating them in flow.
 - api calls are in services.js 
 - some files are in lib/ricardo/*.js ?
 
-# New app's architecture proposition
+# App architecture
 ```
 /client
 |_+css
@@ -104,31 +103,36 @@ Used to get them all at once without repeating them in flow.
 	|__app.js 						-> all routes and databinding form DB
 	|__config.js
 	|__config.sample.js 			-> config and config.sample are files for load constants to display default value
-	|__+controllers 				-> one controller file by controller for maintenance, scalability and lazyloading 
-		|__bilateral.controller.js	-> new version [done]
-		|__country.controller.js	-> new version [done]
-		|__world.controller.js		-> new version
-	|__directives.js 				-> maybe a directory with many files like controllers ?
-	|__services.js 					-> maybe a directory with many files like controllers ?
-	|__filters.js 					-> use ?
+	|__+controllers 				
+		|__navbar
+		|__TranslateController 
+		|__bilateral
+		|__country
+		|__world
+	|__directives.js
+		|__navbar
+		|__bilateralTitle
+		|__countryTitle
+		|__worldTitle
+		|__inlineSelectCountry
+		|__inlineSelectYear
+		|__dualTimeline
+		|__comparisonTimeline
+		|__brushingTimeline
+		|__partnersHistogram
+		|__barChart
+		|__linechartWorld 					
+	|__services.js 					
+	|__filters.js 					
 |_+lib
 	|_+angular
 	|_+bower_components
-	|_+ricardo
-		|_linecharts.js 			-> useless ?
-		|_missing.js 				
-		|_partnersHistogram.js		-> new version [done]
-		|_stackedbar.js				-> new version [done]
-		|_stream.js 				-> useless ?
 |_+partials
-	|_+commons 						-> views include in every views
-		|_modal.html
-		|_navbar.html
-	|_+bilateral
-	|_+country
-	|_+world
+	|_modal.html
+	|_navbar.html
+	|_bilateral
+	|_country
+	|_world
 ```
 
-# Propositions
-_ use grunt or gulp to minify js and css
-_ there are two README and two API.md 
+
