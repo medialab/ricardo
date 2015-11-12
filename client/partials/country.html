@@ -21,33 +21,42 @@
 <div id="sticky-container"> -->
 
 <div class="container">  
-  <country-title></country-title>
   <p class="paragraphPage">
       La vue pays montre comment le commerce total d’un reporting country se répartit entre ses différents partners. Elle compare les partner entities suivant leur part moyenne dans le commerce total du pays reporting, calcule le solde commercial bilateral annuel et permet de suivre l’évolution du commerce du pays reporting avec ses partners. 
     </p>
-  <div class="row" >
-    <div id="countryBrushing" class="col-sm-12">
-    <h4>Available years for {{entities.sourceEntity.selected.RICname}}</h4>
-    <p class="paragraphViz">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
-        </p>
-      <brushing-timeline
-        ng-data="timelineData"
-        start-date="selectedMinDate"
-        end-date="selectedMaxDate"
-        raw-start-date="rawMinDate"
-        raw-end-date="rawMaxDate"
-        source-country="entities.sourceEntity.selected.RICname"
-        target-country="entities.targetEntity.selected.RICname"
-      ></brushing-timeline>
-    </div>
+  <div class="row timeline-cont" >
+  <!-- <h4> Import and export evolution of {{entities.sourceEntity.selected.RICname}}</h4> -->
+    <div class="col-md-12">
+        <country-title></country-title>
+        <p class="paragraphViz">
+            In this graph, total trade equals the sum of export (import) flows with all partner entities. 
+          </p>
+        <dual-timeline 
+          ng-data="timelineData" 
+          start-date="selectedMinDate" 
+          end-date="selectedMaxDate" 
+        ></dual-timeline>  
+    </div>   
   </div>
 </div>
 
 
 <div class="container">
   <div class="row">
-    <div class="timeline-cont col-sm-12">
+      <div id="countryBrushing" class="col-sm-12">
+        <h4>Available and unavailable data for {{entities.sourceEntity.selected.RICname}}</h4>
+        <p class="paragraphViz">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
+            </p>
+        <brushing-timeline
+          ng-data="timelineData"
+          start-date="selectedMinDate"
+          end-date="selectedMaxDate"
+          raw-start-date="rawMinDate"
+          raw-end-date="rawMaxDate"
+          source-country="entities.sourceEntity.selected.RICname"
+          target-country="entities.targetEntity.selected.RICname"
+        ></brushing-timeline>
       <div class="legend">
         <div class="legend-item">
           <div class="square import"></div> Import
@@ -65,18 +74,9 @@
           Data expressed in <strong>Sterling</strong>
         </div>
         <i class="fa fa-info-circle"></i>
-
       </div>
-      <h4> Import and export evolution of {{entities.sourceEntity.selected.RICname}}</h4>
-      <p class="paragraphViz">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
-        </p>
-      <dual-timeline 
-        ng-data="timelineData" 
-        start-date="selectedMinDate" 
-        end-date="selectedMaxDate" 
-      ></dual-timeline>   
     </div>
+         
   </div>
 </div>
 <!-- </div> -->
@@ -84,7 +84,7 @@
 
 
 <div class="container">
-  <h4> Partners trade balance of {{entities.sourceEntity.selected.RICname}} sort by
+  <h4> Trade of reporting with partners sorted by
   <div class="inline-select">   
       <ui-select ng-model="grouped.selected" theme="bootstrap">
       <match placeholder="Group by...">{{$select.selected.name.value}}</match>
@@ -115,7 +115,7 @@
   </h4>
   <div class="row">
     <div class="col-md-12">
-      <h4 class="subtitle">Balance of trade of {{entities.sourceEntity.selected.RICname}} with partners, {{selectedMinDate}} – {{selectedMaxDate}} <i class="fa fa-info-circle"></i></h4>
+      <!-- <h4 class="subtitle">Balance of trade of {{entities.sourceEntity.selected.RICname}} with partners, {{selectedMinDate}} – {{selectedMaxDate}} <i class="fa fa-info-circle"></i></h4> -->
       <p class="paragraphViz">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
            <strong>Balance : </strong> (Exports - Imports) / (Exports total + Imports total)
@@ -169,15 +169,15 @@
           </div> -->
           <div class="legend-item">
             <svg height="35" width="300">
-              <circle cx="15" cy="18" r="12" stroke="black" stroke-width="1" fill="transparent" />
-              <circle cx="15" cy="18" r="3" stroke="black" stroke-width="1" fill="black" />
-              <text x="35" y="20" fill="black">Trade share average for available years</text>
+              <circle cx="25" cy="18" r="12" stroke="black" stroke-width="1" fill="transparent" />
+              <circle cx="25" cy="18" r="3" stroke="black" stroke-width="1" fill="black" />
+              <text x="45" y="20" fill="black">Trade share average for available years</text>
             </svg> 
           </div> 
           <div class="legend-item">
             <svg height="35" width="300">
               <rect x="15" y="0" width="10" height="15" style="fill:#cc6666" />
-              <rect x="25" y="15" width="10" height="15" style="fill:#666633" />
+              <rect x="25" y="15" width="10" height="15" style="fill:#663333" />
               <text x="40" y="20" fill="black">Commercial Balance</text>
             </svg> 
           </div> 

@@ -1,33 +1,15 @@
 <!-- <div id="sticky-marker"></div>
 <div id="sticky-container"> -->
 <div class="container">
-    <world-title></world-title>
+    
     <p class="paragraphPage">
      La vue mondiale montre une estimation du <strong> <em> commerce mondial </em> </strong> calculée à partir des flux de commerce total de tous les reporting entities. Elle indique le nombre de reporting entities disponible pour calculer l’estimation du commerce mondial. Elle permet aussi de comparer l’évolution du commerce total des reporting entities sélectionnés et leur part dans le commerce mondial.
     </p>
     <div class="row" >
-      <div class="col-sm-12">
-        <h4>Reportings available</h4>
-        <p class="paragraphViz">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
-        </p>
-        <bar-chart 
-          ng-data="nbReportings"
-          start-date="selectedMinDate"
-          end-date="selectedMaxDate"
-          raw-start-date="rawMinDate"
-          raw-end-date="rawMaxDate"
-          ></bar-chart>
-      <div class="legend">
-        <div class="legend-item">
-          <div class="square import"></div> Reportings available to build the curve
-        </div>
-      </div>
-      </div>
-    </div>
-    <div class="row">
+
       <div class="timeline-cont col-sm-12">
-        <h4>Import and export evolution of World</h4>
+        <!-- <h4>Import and export evolution of World</h4> -->
+        <world-title></world-title>
         <p class="paragraphViz">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
         </p>
@@ -47,15 +29,32 @@
             Data expressed in <strong>sterling pound</strong>
           </div>
         </div>
+      </div>  
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <h4>Number of reporting entities in estimating World trade</h4>
+        <p class="paragraphViz">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
+        </p>
+        <bar-chart 
+          ng-data="nbReportings"
+          start-date="selectedMinDate"
+          end-date="selectedMaxDate"
+          raw-start-date="rawMinDate"
+          raw-end-date="rawMaxDate"
+          ></bar-chart>
+        <div class="legend">
+          <div class="legend-item">
+            <div class="square import"></div> Reportings available to build the curve
+          </div>
+        </div>
       </div>
     </div>
 </div>
 <!-- </div> -->
 
-<!-- <div class="container">
-    
 
-</div> -->
 
 <div class="container">
   <div class="row">
