@@ -1,8 +1,0 @@
-<div class="inline-select">
-  <ui-select ng-model="$parent.model" theme="bootstrap">
-    <match placeholder="select mode...">{{$select.selected.name.value}}</match>
-    <choices repeat="item in list | filter: $select.search">
-      <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-    </choices>
-  </ui-select>
-</div>
