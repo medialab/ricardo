@@ -47,9 +47,9 @@
   <div class="row">
       <div id="countryBrushing" class="col-sm-12">
         <h4>Available and unavailable data for {{entities.sourceEntity.selected.RICname}}</h4>
-        <p class="paragraphViz">
+        <!-- <p class="paragraphViz">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
-            </p>
+        </p> -->
         <brushing-timeline
           ng-data="timelineData"
           start-date="selectedMinDate"
@@ -119,9 +119,24 @@
     <div class="col-md-12">
       <!-- <h4 class="subtitle">Balance of trade of {{entities.sourceEntity.selected.RICname}} with partners, {{selectedMinDate}} – {{selectedMaxDate}} <i class="fa fa-info-circle"></i></h4> -->
       <p class="paragraphViz">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
-           <strong>Balance : </strong> (Exports - Imports) / (Exports total + Imports total)
-        </p>
+          In this view, the partners of the reporting country are compared by calculating two indicators: the average bilateral trade share estimated for available years over the selected period and the relative bilateral trade balance estimated for each available year over the selected period.
+      </p>
+          <div class="legend-item">
+          A = reporting  /   B = partner
+          </div>
+          <div class="legend-item">
+          Exp A -> B = exports from A to B
+          </div>
+          <div class="legend-item">
+          ExpA = total exports of A
+          </div> 
+          </br>
+          <div class="legend-item">
+          Average bilateral trade share = Exp A->B / ExpA * 100
+          </div>
+          <div class="legend-item">
+          Relative bilateral trade balance = (Exp A->B – Imp A->B) / (Exp A->B + Imp A->B)
+          </div>
     </div>
   </div>
     <!-- <div class="col-md-6 inline-select" style="float:right;">
@@ -173,14 +188,14 @@
             <svg height="35" width="300">
               <circle cx="25" cy="18" r="12" stroke="black" stroke-width="1" fill="transparent" />
               <circle cx="25" cy="18" r="3" stroke="black" stroke-width="1" fill="black" />
-              <text x="45" y="20" fill="black">Trade share average for available years</text>
+              <text x="45" y="20" fill="black">Average bilateral trade share</text>
             </svg> 
           </div> 
           <div class="legend-item">
             <svg height="35" width="300">
               <rect x="15" y="0" width="10" height="15" style="fill:#cc6666" />
               <rect x="25" y="15" width="10" height="15" style="fill:#663333" />
-              <text x="40" y="20" fill="black">Commercial Balance</text>
+              <text x="40" y="20" fill="black">Relative bilateral trade balance</text>
             </svg> 
           </div> 
            
@@ -217,9 +232,9 @@
 
       <i class="fa fa-info-circle"></i> 
       </h4>
-      <p class="paragraphViz">
+        <!-- <p class="paragraphViz">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
-        </p>
+        </p> -->
         <div ng-show="messagePercent"> 
          <p>
             The percentages are based on the total amount of world sumpartners of {{entities.sourceEntity.selected.RICname}}

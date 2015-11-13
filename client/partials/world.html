@@ -12,7 +12,7 @@
         <!-- <h4>Import and export evolution of World</h4> -->
         <world-title></world-title>
         <p class="paragraphViz">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
+         For more information about this graph, report to <a href="">World defintions</a> 
         </p>
         <dual-timeline 
         ng-data="timelineData" 
@@ -35,9 +35,9 @@
     <div class="row">
       <div class="col-sm-12">
         <h4>Number of reporting entities in estimating World trade</h4>
-        <p class="paragraphViz">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
-        </p>
+        <!-- <p class="paragraphViz">
+          In this graph, bars represent for each year the sum of available reportings with Worldbestguess as partner 
+        </p> -->
         <bar-chart 
           ng-data="nbReportings"
           start-date="selectedMinDate"
@@ -86,9 +86,9 @@
 
       <i class="fa fa-info-circle"></i> 
       </h4>
-      <p class="paragraphViz">
+        <!-- <p class="paragraphViz">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
-        </p>
+        </p> -->
         <div ng-show="messagePercent"> 
          <p>
             The percentages are based on the total amount of world sumpartners of {{entities.sourceEntity.selected.RICname}}

@@ -107,7 +107,7 @@
       <!-- <h4>Discrepancies in mirror flows</h4> -->
       <h4>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
       <p class="paragraphViz">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
+          This view estimates the discrepancies in mirror flows. 
         </p>
       <comparison-timeline 
       ng-data="timelineData" 
@@ -116,20 +116,22 @@
       </comparison-timeline>
       <div class="legend">
         <div class="legend-item">
-           <strong>A</strong> : {{entities.sourceEntity.selected.RICname}} | <strong>B</strong> : {{entities.targetEntity.selected.RICname}}
+           <strong>A</strong> reporting : {{entities.sourceEntity.selected.RICname}} | <strong>B</strong> partner : {{entities.targetEntity.selected.RICname}}
            <br>
-          <span class="legendImport">ImpA</span> = country A imports from country B as reported by country A | <span class="legendExport">ImpB</span> = country B imports from country A as reported by country B
+          <span class="legendImport">Imp A <-B </span> = country A imports from country B as reported by country A | <span class="legendExport">Imp B <-A </span> = country B imports from country A as reported by country B
           <br>
-          <span class="legendImport">ExpB</span> = country B exports to country A as reported by country B | <span class="legendExport">ExpA</span> = country A exports to country B as reported by country A 
+          <span class="legendImport">Exp B->A</span> = country B exports to country A as reported by country B | <span class="legendExport">Exp A->B</span> = country A exports to country B as reported by country A 
       </div>
       <div class="legend">
         <div class="legend-item">
+        Mirror flows discrepancy
           <div class="line diff-import"></div>
-          <strong>(ImpA - ExpB) / ExpB</strong>
+          <strong>(Imp A <-B - Exp B->A) / Exp B->A</strong>
         </div>
+        or
         <div class="legend-item">
           <div class="line diff-export"></div>
-          <strong>(ImpB - ExpA) / ExpA</strong>
+          <strong>(Imp B <-A - Exp A->B) / Exp A->B</strong>
         </div>
       </div>
       <br>
