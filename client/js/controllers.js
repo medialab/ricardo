@@ -456,6 +456,11 @@ angular.module('ricardo.controllers', [])
       {type: {value: 0,writable: true},name: {value: "None",writable: true}},
       {type: {value: 1,writable: true},name: {value: "Continent",writable: true}
     }];
+    $scope.sorted = {};
+    $scope.sorts = [
+      {type: {value: 0,writable: true},name: {value: "Name",writable: true}},
+      {type: {value: 1,writable: true},name: {value: "Average share",writable: true}
+    }];
 
     // line chart filters
 
@@ -570,6 +575,9 @@ angular.module('ricardo.controllers', [])
         .getFlows({reporting_ids: sourceID, original_currency: currency, with_sources: 1})
         .then(function (result) {
           data = result
+
+          $scope.tableData = data.flows;
+
           $scope.selectedMinDate = 1600;                   // Min year as selected by selector or brushing
           $scope.selectedMaxDate = 2000;                   // Max year as selected by selector or brushing
 
@@ -764,7 +772,6 @@ angular.module('ricardo.controllers', [])
             $scope.linechartCurrency.selected = {
               type: {value :"sterling",writable: true},
               name: {value:"Sterling",writable: true}};
-            //$scope.actualCurrency = "sterling pound";
             $scope.messagePercent = 0;
           }
           else {
@@ -967,15 +974,17 @@ angular.module('ricardo.controllers', [])
       $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
 
       updateTableData();
-      initLinechart($scope.reporting, $scope.yValue, $scope.conversion);
-    }
+      initLinechart($scope.reporting, $scope.linechartFlow.selected, $scope.linechartCurrency.selected);    }
 
     function updateTableData(){
-      cfSource.year().filter(
-        function(d){ 
-        return new Date($scope.selectedMinDate-1,1,0) <= d && d< new Date($scope.selectedMaxDate + 1,1,0)}
-      );
-      $scope.tableData = cfSource.year().top(Infinity);
+      // cfSource.year().filter(
+      //   function(d){ 
+      //   return new Date($scope.selectedMinDate-1,1,0) <= d && d< new Date($scope.selectedMaxDate + 1,1,0)}
+      // );
+
+      // $scope.tableData = cfSource.year().top(Infinity);
+
+      // $scope.tableData = 
       
       var missing;
       var allExpNull = $scope.tableData.every(function (d) {
@@ -1011,7 +1020,7 @@ angular.module('ricardo.controllers', [])
         localStorage.selectedMinDate = newValue[0];
         localStorage.selectedMaxDate = newValue[1];
         updateDateRange();
-        initLinechart($scope.reporting, $scope.yValue, $scope.conversion);
+        initLinechart($scope.reporting, $scope.linechartFlow.selected, $scope.linechartCurrency.selected);
       }
     })
 
@@ -1055,8 +1064,6 @@ angular.module('ricardo.controllers', [])
       elm["color"]=$scope.lineColors.pop()
       $scope.reporting.push(elm)
       $scope.resetDD(elm.type)
-
-
       addReportingToLocalStorage($scope.reporting);
       initLinechart($scope.reporting, $scope.linechartFlow.selected, $scope.linechartCurrency.selected);
     }
@@ -1073,8 +1080,7 @@ angular.module('ricardo.controllers', [])
       initLinechart($scope.reporting, $scope.linechartFlow.selected, $scope.linechartCurrency.selected);
     }
 
-    $scope.resetDD = function(t){
-     
+    $scope.resetDD = function(t){   
       if(t === "country"){$scope.entities.sourceCountryEntity.selected = undefined}
       else if(t === "colonial_area"){$scope.entities.sourceColonialEntity.selected = undefined}
       else if(t === "geographical_area"){
