@@ -442,15 +442,16 @@ angular.module('ricardo.controllers', [])
       name: {value: "Average share on Total",writable: true}
     };
     $scope.orders = [
-      {type: {value: "tot",writable: true},
-      name: {value: "Average share on Total",writable: true}},
+      {
+        type: {value: "tot",writable: true},
+        name: {value: "Average share on Total",writable: true}
+      },
       {type: {value: "imp",writable: true},
       name: {value: "Average share on Imports",writable: true}},
-      {type: {value: "exp",writable: true},
-      name: {value: "Average share on Exports",writable: true}},
-      {type: {value: "name",writable: true},
-      name: {value: "Name",writable: true}
-    }];
+      {
+        type: {value: "exp",writable: true},
+        name: {value: "Average share on Exports",writable: true}
+      }];
     $scope.grouped = {};
     $scope.groups = [
       {type: {value: 0,writable: true},name: {value: "None",writable: true}},
@@ -458,8 +459,8 @@ angular.module('ricardo.controllers', [])
     }];
     $scope.sorted = {};
     $scope.sorts = [
-      {type: {value: 0,writable: true},name: {value: "Name",writable: true}},
-      {type: {value: 1,writable: true},name: {value: "Average share",writable: true}
+      {type: {value: "name",writable: true},name: {value: "Name",writable: true}},
+      {type: {value: "average",writable: true},name: {value: "Average share",writable: true}
     }];
 
     // line chart filters
@@ -682,6 +683,8 @@ angular.module('ricardo.controllers', [])
           name: {value:"None",writable: true}};
           $scope.filtered.selected = { type: {value :"all",writable: true},
           name: {value:"All",writable: true}};
+          $scope.sorted.selected = { type: {value :"name",writable: true},
+          name: {value:"Name",writable: true}};
           
           $scope.timelineData=timelineData;  
 

@@ -1016,7 +1016,7 @@ angular.module('ricardo.directives-addendum', [])
         countryData: '=',
         groupData: '=',
         orderData: '=',
-        sortDate: '=',
+        sortData: '=',
         filterData: '='
       },
       link: function(scope, element, attrs) {
@@ -1024,7 +1024,7 @@ angular.module('ricardo.directives-addendum', [])
         scope.$watch("ngData", function(newValue, oldValue){
           if(newValue !== oldValue){
             removeSvgElements(chart)            
-            partnersHistogram(newValue, continents, order, filtered, scope.startDate, scope.endDate);
+            partnersHistogram(newValue, continents, order, filtered, sort, scope.startDate, scope.endDate);
           }
         }, true);
 
@@ -1032,41 +1032,56 @@ angular.module('ricardo.directives-addendum', [])
           if (newValue !== oldValue) {
             removeSvgElements(chart)
             continents = newValue;
-            partnersHistogram(scope.ngData, continents, order, filtered, scope.startDate, scope.endDate);
+            partnersHistogram(scope.ngData, continents, order, filtered, sort, scope.startDate, scope.endDate);
           }
         }, true);
 
         scope.$watch("orderData", function(newValue, oldValue){
             if (newValue !== oldValue) {
               removeSvgElements(chart)
-              partnersHistogram(scope.ngData, continents, newValue, filtered, scope.startDate, scope.endDate);
+              partnersHistogram(scope.ngData, continents, newValue, filtered, sort, scope.startDate, scope.endDate);
             }
         }, true);
 
         // uncomments these lines to use filter selection with calcul on all data
         scope.$watch("filterData", function (newValue, oldValue){
           if(newValue !== oldValue){
-            if(newValue === "all") {
-              removeSvgElements(chart)
-              partnersHistogram(scope.ngData, continents, order, newValue, scope.startDate, scope.endDate);
-            }
-            else {
               removeSvgElements(chart) 
-              //var data=scope.ngData.filter(function(p){return p.type === newValue})
-              // if (data.length === 0){
-              //   noData ();
-              // }
-              partnersHistogram(scope.ngData, continents, order, newValue, scope.startDate, scope.endDate);
-            } 
+              partnersHistogram(scope.ngData, continents, order, newValue, sort, scope.startDate, scope.endDate);
           }
-        })
+        }, true)
+
+        scope.$watch("sortData", function(newValue, oldValue){
+            if (newValue !== oldValue) {
+              console.log("newValue", newValue);
+              removeSvgElements(chart)
+              partnersHistogram(scope.ngData, continents, order, filtered, newValue, scope.startDate, scope.endDate);
+            }
+        }, true);
+
+        scope.$watch("startDate", function(newValue, oldValue){
+            if (newValue !== oldValue) {
+              console.log("newValue", newValue);
+              removeSvgElements(chart)
+              partnersHistogram(scope.ngData, continents, order, filtered, sort, newValue, scope.endDate);
+            }
+        }, true);
+
+        scope.$watch("endDate", function(newValue, oldValue){
+            if (newValue !== oldValue) {
+              console.log("newValue", newValue);
+              removeSvgElements(chart)
+              partnersHistogram(scope.ngData, continents, order, filtered, sort, scope.startDate, newValue);
+            }
+        }, true);
 
 
         // var transmit by scope affectation
         var RICentities = scope.countryData, 
             continents = scope.groupData ? scope.groupData : 1, 
             order = scope.orderData ? scope.orderData : "tot",
-            filtered = scope.filterData ? scope.filterData : "all";
+            filtered = scope.filterData ? scope.filterData : "all",
+            sort = scope.sortData ? scope.sortData : "name";
 
          // Partner Histo var initialization
         var height = 600,
@@ -1093,11 +1108,9 @@ angular.module('ricardo.directives-addendum', [])
         var refresh = function(newValue, oldValue){
           if(newValue !== oldValue){
             removeSvgElements(chart)
-            partnersHistogram(scope.ngData, continents, order, filtered, scope.startDate, scope.endDate);
+            partnersHistogram(scope.ngData, continents, order, filtered, sorted, scope.startDate, scope.endDate);
           }
         }
-
-        
 
         function noData () {
           d3.select("#partners-histogram-container").append("div")
@@ -1136,6 +1149,12 @@ angular.module('ricardo.directives-addendum', [])
            return (res ? res : "0.0");
         }
 
+        function formatPercent3(val){
+          var res = parseInt(val);     
+          if (!res) res = Math.round(parseFloat(val * 10)) / 10;
+           return (res ? res : "0.00");
+        }
+
         var tooltip = d3.select("body")
           .append("div")
           .attr("class", "partners-tooltip");
@@ -1164,8 +1183,8 @@ angular.module('ricardo.directives-addendum', [])
           return res;
         }
 
-        function partnersHistogram(data, continents, order, filtered, minDate, maxDate){
-          
+        function partnersHistogram(data, continents, order, filtered, sort, minDate, maxDate){
+
           var indexYears = {};
           d3.nest()
             .key(function(d){ return d.year })
@@ -1178,7 +1197,6 @@ angular.module('ricardo.directives-addendum', [])
           // We get rid of World partners
           data=data.filter(function(p){ return !/^World/.test(p.partner_id)})
           
-          //console.log("data 3", data);
           var partners = d3.nest()  
             .key(function(d){ return d[continents ? "continent" : "partner_id"] })
             .key(function(d){ return d.year })
@@ -1203,7 +1221,6 @@ angular.module('ricardo.directives-addendum', [])
           partners = addTypePartner(partners);
 
           partners.forEach(function(p){
-            //console.log("p", p)
             p.years = []
             p.values.forEach(function(d){
               p.years.push({
@@ -1228,15 +1245,14 @@ angular.module('ricardo.directives-addendum', [])
           if (filtered !== "all")
             partners = partners.filter(function (d) { return d.type === filtered})
 
-          partners.sort(function(a,b){
-            if (order === 'name') 
-              return d3.ascending(a.key, b.key);
-            else return d3.descending(a["avg_" + order], b["avg_" + order]);
-          });
-
-
           partners = partners.sort(function(a,b){
-             return d3.descending(a["avg_" + order], b["avg_" + order]);
+            if (sort === 'name') 
+              return d3.ascending(a.key, b.key);
+            else {
+              console.log("sort by average");
+              console.log("a", a);
+              return d3.descending(a["avg_" + order], b["avg_" + order]);
+            }
           });
 
           height = (partners.length + 1) * (barMaxHeigth + barGap);
@@ -1258,15 +1274,16 @@ angular.module('ricardo.directives-addendum', [])
               limits = d3.extent(years);
               years.pop(); // adjust year with timeline
 
+            console.log("years", years);
+
             var x = d3.scale.linear()
-                .domain(d3.extent(years))
+                .domain([minDate, maxDate])
                 .range([0, width]), // witdh replace max width 
                 y = d3.scale.linear()
                 .range([0, barMaxHeigth/2]);
 
 
-          partners.forEach(function(p, i){
-            //console.log("p", p);
+          partners.forEach(function(p, i) {
 
             var entity = RICentities[""+p.key],
               name = (entity ? entity.RICname : p.key);

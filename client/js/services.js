@@ -26,56 +26,55 @@ angular.module('ricardo.services', [])
     return {
 
       adjustArrayTime : function (linechart_flows, min, max) {
-      var years = d3.nest()
-        .key(function (d) {return d.year})
-        .entries(linechart_flows)
+          var years = d3.nest()
+            .key(function (d) {return d.year})
+            .entries(linechart_flows)
 
-      var minDate = d3.min(years, function (years) {return years.key})
-      var maxDate = d3.max(years, function (years) {return years.key})
+          var minDate = d3.min(years, function (years) {return years.key})
+          var maxDate = d3.max(years, function (years) {return years.key})
 
-      if (minDate > min) {
-        for (var i = min; i < minDate; i++) 
-        {
-          linechart_flows.push({
-            reporting_id: linechart_flows[0].reporting_id,
-            type: linechart_flows[0].reporting_id,
-            partner_id: linechart_flows[0].partner_id, 
-            year: i, 
-            imp:null,
-            exp:null, 
-            tot: null , 
-            currency: null,
-            sources: null
-          })
-        }   
-      }
+          if (minDate > min) {
+            for (var i = min; i < minDate; i++) 
+            {
+              linechart_flows.push({
+                reporting_id: linechart_flows[0].reporting_id,
+                type: linechart_flows[0].reporting_id,
+                partner_id: linechart_flows[0].partner_id, 
+                year: i, 
+                imp:null,
+                exp:null, 
+                tot: null , 
+                currency: null,
+                sources: null
+              })
+            }   
+          }
 
-      if ( maxDate < max ) {
-        for (var i = maxDate; i < max; i++) 
-        {
-          linechart_flows.push({
-            reporting_id: linechart_flows[0].reporting_id,
-            type: linechart_flows[0].reporting_id,
-            partner_id: linechart_flows[0].partner_id, 
-            year: i, 
-            imp:null,
-            exp:null, 
-            tot: null , 
-            currency: null,
-            sources: null
-          })
-        }  
-      }
-      return linechart_flows;
-    }
-
+          if ( maxDate < max ) {
+            for (var i = maxDate; i < max; i++) 
+            {
+              linechart_flows.push({
+                reporting_id: linechart_flows[0].reporting_id,
+                type: linechart_flows[0].reporting_id,
+                partner_id: linechart_flows[0].partner_id, 
+                year: i, 
+                imp:null,
+                exp:null, 
+                tot: null , 
+                currency: null,
+                sources: null
+              })
+            }  
+          }
+          return linechart_flows;
+      },    
     }
   })
   .factory('apiService', function($http, $q, $rootScope, BASE_API_URL) {
 
    return {
 
-     getReportingEntities : function(params){
+     getReportingEntities: function(params){
        var deferred = $q.defer();
        var serviceUrl = '/reporting_entities'
        $http({
@@ -85,12 +84,12 @@ angular.module('ricardo.services', [])
         }).success(function(data){
          deferred.resolve(data);
        }).error(function(){
-         deferred.reject("An error occured while fetching data");
+         deferred.reject("Error 500 : An error occured while fetching data");
        });
 
        return deferred.promise;
      },
-     getFlows : function(params){
+     getFlows: function(params){
        var deferred = $q.defer();
        var serviceUrl = '/flows'
        $http({
@@ -99,13 +98,13 @@ angular.module('ricardo.services', [])
           params : params
         }).success(function(data){
          deferred.resolve(data);
-       }).error(function(){
-         deferred.reject("An error occured while fetching data");
+       }).error(function (err){
+         deferred.reject(arguments);
        });
 
        return deferred.promise;
      },
-     getContinentFlows : function(params){
+     getContinentFlows: function(params){
        var deferred = $q.defer();
        var serviceUrl = '/continent_flows'
        $http({
@@ -120,7 +119,7 @@ angular.module('ricardo.services', [])
 
        return deferred.promise;
      },
-     getWorldFlows : function(params){
+     getWorldFlows: function(params){
        var deferred = $q.defer();
        var serviceUrl = '/world_flows'
        $http({
@@ -135,7 +134,7 @@ angular.module('ricardo.services', [])
 
        return deferred.promise;
      },
-     getFlowsResources : function(url){
+     getFlowsResources: function(url){
        var deferred = $q.defer();
        $http.get(url).success(function(data){
          deferred.resolve(data);
@@ -145,9 +144,24 @@ angular.module('ricardo.services', [])
 
        return deferred.promise;
      },
-    getMirrorEntities : function(params){
+    getMirrorEntities: function(params){
        var deferred = $q.defer();
        var serviceUrl = '/mirror_entities'
+       $http({
+          method: 'GET',
+          url : BASE_API_URL + serviceUrl,
+          params : params
+        }).success(function(data){
+         deferred.resolve(data);
+       }).error(function(){
+         deferred.reject("An error occured while fetching data");
+       });
+
+       return deferred.promise;
+     },
+     getRICEntities: function(params){
+       var deferred = $q.defer();
+       var serviceUrl = '/RICentities'
        $http({
           method: 'GET',
           url : BASE_API_URL + serviceUrl,
