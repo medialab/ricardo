@@ -21,6 +21,8 @@
 <div id="sticky-container"> -->
 
 <div class="container">  
+  </br>
+  </br>
   <p class="paragraphPage">
       La vue pays montre comment le commerce total d’un reporting country se répartit entre ses différents partners. Elle compare les partner entities suivant leur part moyenne dans le commerce total du pays reporting, calcule le solde commercial bilateral annuel et permet de suivre l’évolution du commerce du pays reporting avec ses partners. 
     </p>
@@ -206,7 +208,7 @@
     for
     <div class="inline-select">
         <ui-select ng-model="linechartFlow.selected" theme="bootstrap">
-        <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
+        <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
         <choices repeat="item in linechartFlowChoices | filter: $select.search">
           <div ng-bind-html="item.name.value | highlight: $select.search"></div>
         </choices>

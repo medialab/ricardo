@@ -1,7 +1,8 @@
 <!-- <div id="sticky-marker"></div>
 <div id="sticky-container"> -->
 <div class="container">
-    
+    </br>
+    </br>
     <p class="paragraphPage">
      La vue mondiale montre une estimation du <strong> <em> commerce mondial </em> </strong> calculée à partir des flux de commerce total de tous les reporting entities. Elle indique le nombre de reporting entities disponible pour calculer l’estimation du commerce mondial. Elle permet aussi de comparer l’évolution du commerce total des reporting entities sélectionnés et leur part dans le commerce mondial.
     </p>
@@ -54,8 +55,6 @@
 </div>
 <!-- </div> -->
 
-
-
 <div class="container">
   <div class="row">
     <div class="col-md-12">
@@ -78,7 +77,7 @@
     for
     <div class="inline-select">
         <ui-select ng-model="linechartFlow.selected" theme="bootstrap">
-        <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
+        <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
         <choices repeat="item in linechartFlowChoices | filter: $select.search">
           <div ng-bind-html="item.name.value | highlight: $select.search"></div>
         </choices>
@@ -97,16 +96,7 @@
         </div>
     </div>
   </div>
-  <!-- <div class="row">
-      <div class="col-sm-12">
-       <h3 class="subtitle">World trade comparaison with 
-        <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
-        <span class="close-btn">X</span>
-        <span ng-if="!$last">, </span>
-        </span>, {{selectedMinDate}} – {{selectedMaxDate}}, in {{actualCurrency}}
-        <i class="fa fa-info-circle"></i> </h3>
-      </div>
-  </div> -->
+
   <!-- <div class="row">  
     <div class="col-sm-12 filter-group" >
         <div class="btn-group pull-right">
