@@ -210,6 +210,7 @@ body > .container {
    top: 100px; 
    left: 0; 
    width: 100%;
+   font-size: 40px;
 }
 
 #imgSubtitle {
@@ -217,6 +218,8 @@ body > .container {
    top: 170px; 
    left: 0; 
    width: 100%;
+   font-size: 30px;
+}
 }
 
 #homeSubtitle, #studiesAbstract {
@@ -348,6 +351,12 @@ li.storyline {
 
 .slPara {
   color: #999;
+  font-size: 16px;
+}
+
+.slPara ul {
+  color: #999;
+  font-size: 16px;
 }
 
 .frontSL {

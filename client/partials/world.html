@@ -91,7 +91,7 @@
         </p> -->
         <div ng-show="messagePercent"> 
          <p>
-            The percentages are based on the total amount of world sumpartners of {{entities.sourceEntity.selected.RICname}}
+            The percentages are based on the total amount of <a href="/#worldTrade"> world bestguess</a> of {{entities.sourceEntity.selected.RICname}}
          </p>
         </div>
     </div>
@@ -125,16 +125,16 @@
         </ui-select>
       </div>
 
-    <div class="inline-select" >
+   <!--  <div class="inline-select" >
       <ui-select  ng-model="entities.sourceColonialEntity.selected" theme="bootstrap">
         <match placeholder="Colonial area">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingColonialEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
       </ui-select>
-    </div>
+    </div> -->
       <!-- no need geoEntities beacause there is no data for this entity with worldbestguess -->
-    <div class="inline-select" >
+    <!-- <div class="inline-select" >
       <ui-select  ng-model="entities.sourceGeoEntity.selected" theme="bootstrap">
         <match placeholder="Geographical area">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingGeoEntities | filter: $select.search">
@@ -150,7 +150,7 @@
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
       </ui-select>
-    </div>
+    </div> -->
 
   </div>
 

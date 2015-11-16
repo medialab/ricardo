@@ -126,16 +126,16 @@ angular.module('ricardo.controllers', [])
             {
               $scope.selectedMinDate = minDate;
               $scope.selectedMaxDate = maxDate;
-              console.log("$scope.selectedMaxDate", $scope.selectedMaxDate);
+
             }
             else
             {
               // $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
               $scope.selectedMinDate = $scope.rawMinDate;
-              console.log("$scope.rawMaxDate", $scope.rawMaxDate)
+
               // $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
               $scope.selectedMaxDate = $scope.rawMaxDate;
-              console.log("$scope.selectedMaxDate 2", $scope.selectedMaxDate);
+
             }
 
             // Consolidate data, add mirror's data to flows array
@@ -197,7 +197,7 @@ angular.module('ricardo.controllers', [])
             apiService
               .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
               .then(function (result) {
-                console.log("result", result);
+
                 for (var i=0, len = result.flows.length; i < len; i++) {
                   if (!/^World/.test(result.flows[i].partner_id)) {
                     var target = {RICid:"", name:""};
@@ -256,7 +256,7 @@ angular.module('ricardo.controllers', [])
     $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newValue, oldValue) {
       if (newValue !== oldValue && newValue[0] !== newValue[1]) {
         // set data in local storage
-        console.log("newValue date", newValue[1]);
+
         localStorage.removeItem('selectedMinDate');
         localStorage.removeItem('selectedMaxDate');
         localStorage.selectedMinDate = newValue[0];
@@ -683,8 +683,8 @@ angular.module('ricardo.controllers', [])
           name: {value:"None",writable: true}};
           $scope.filtered.selected = { type: {value :"all",writable: true},
           name: {value:"All",writable: true}};
-          $scope.sorted.selected = { type: {value :"name",writable: true},
-          name: {value:"Name",writable: true}};
+          $scope.sorted.selected = { type: {value :"average",writable: true},
+          name: {value:"Average share",writable: true}};
           
           $scope.timelineData=timelineData;  
 
@@ -698,8 +698,7 @@ angular.module('ricardo.controllers', [])
             countryLocalStorageObject.partnerHistoFilter = $scope.filtered.selected
             countryLocalStorage.push(countryLocalStorageObject);
 
-            localStorage.countryLocalStorage = JSON.stringify(countryLocalStorage);
-            console.log("$scope.countryLocalStorageMenu", $scope.countryLocalStorageMenu)       
+            localStorage.countryLocalStorage = JSON.stringify(countryLocalStorage);    
       });
     }
 
@@ -1076,7 +1075,7 @@ angular.module('ricardo.controllers', [])
       var i = $scope.reporting.map(function (d){return d.RICid}).indexOf(elm.RICid)
       $scope.lineColors.push(elm["color"])
       $scope.reporting.splice(i, 1);
-      console.log("$scope.reporting", $scope.reporting);
+
       if ($scope.reporting.length == 0) {
         d3.select("#linechart-world-container > svg").remove();
       }
@@ -1563,9 +1562,9 @@ angular.module('ricardo.controllers', [])
       $scope.tableData = [];
       $scope.tableData = worldFlowsYearsFormat;
       $scope.tableData.concat(worldFlowsYearsFormat);
-      console.log("$scope.linechartData 1", $scope.linechartData);
+
       if ($scope.linechartData) {
-        console.log("$scope.linechartData", $scope.linechartData);
+
         var len = $scope.linechartData.length;
         for (var i = 0; i < len; i++) {
           $scope.tableData = $scope.tableData.concat($scope.linechartData[i].values);
