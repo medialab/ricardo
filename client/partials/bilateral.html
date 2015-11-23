@@ -46,11 +46,19 @@
     </br>
       La vue bilatérale montre le commerce entre un reporting country et un partner country. Elle précise quelles données miroirs sont disponibles pour le partner country et elle compare la divergence des flux miroirs entre les deux sources disponibles. 
     </p>
-    <bilateral-title></bilateral-title>
-    <!-- <h4> Import and export evolution of {{entities.sourceEntity.selected.RICname}} with {{entities.targetEntity.selected.RICname}} between {{selectedMinDate}} and {{selectedMaxDate}}</h4> -->
-      <!-- <p class="paragraphViz">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
-      </p>  -->
+    <!-- <bilateral-title>  </bilateral-title> -->
+    <h4>
+  Trade between
+  <inline-select-country ng-model="entities.sourceEntity.selected" list="reportingEntities" ></inline-select-country>
+  and
+  <inline-select-country ng-model="entities.targetEntity.selected" list="reportingEntities"></inline-select-country>
+  - From
+  <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf" ></inline-select-year>
+  to
+  <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup" ></inline-select-year>
+  as reported by {{entities.sourceEntity.selected.RICname}}
+</h4>
+    </br>
       <dual-timeline 
         ng-data="timelineData" 
         start-date="selectedMinDate" 

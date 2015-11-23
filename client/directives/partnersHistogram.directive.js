@@ -23,26 +23,22 @@ angular.module('ricardo.directives.partnersHistogram', [])
 
         // var transmit by scope affectation
         var RICentities = scope.countryData;
-            // continents = scope.groupData ? scope.groupData : 1, 
-            // order = scope.orderData ? scope.orderData : "tot",
-            // filtered = scope.filterData ? scope.filterData : "all",
-            // sort = scope.sortData ? scope.sortData : "name";
 
-        scope.$watch("ngData", function(newValue, oldValue){
+        scope.$watch("ngData", function (newValue, oldValue){
           if(newValue !== oldValue){
             removeSvgElements(chart)            
             partnersHistogram(newValue, scope.groupData, scope.orderData, scope.filterData, scope.sortData, scope.startDate, scope.endDate);
           }
         }, true);
 
-        scope.$watch("groupData", function(newValue, oldValue){
+        scope.$watch("groupData", function (newValue, oldValue){
           if (newValue !== oldValue) {
             removeSvgElements(chart);
             partnersHistogram(scope.ngData, newValue, scope.orderData, scope.filterData, scope.sortData, scope.startDate, scope.endDate);
           }
         }, true);
 
-        scope.$watch("orderData", function(newValue, oldValue){
+        scope.$watch("orderData", function (newValue, oldValue){
             if (newValue !== oldValue) {
               removeSvgElements(chart)
               partnersHistogram(scope.ngData, scope.groupData, newValue, scope.filterData, scope.sortData, scope.startDate, scope.endDate);
@@ -57,21 +53,21 @@ angular.module('ricardo.directives.partnersHistogram', [])
           }
         }, true)
 
-        scope.$watch("sortData", function(newValue, oldValue){
+        scope.$watch("sortData", function (newValue, oldValue){
             if (newValue !== oldValue) {
               removeSvgElements(chart)
               partnersHistogram(scope.ngData, scope.groupData, scope.orderData, scope.filterData, newValue, scope.startDate, scope.endDate);
             }
         }, true);
 
-        scope.$watch("startDate", function(newValue, oldValue){
+        scope.$watch("startDate", function (newValue, oldValue){
             if (newValue !== oldValue) {
               removeSvgElements(chart)
               partnersHistogram(scope.ngData, scope.groupData, scope.orderData, scope.filterData, scope.sortData, newValue, scope.endDate);
             }
         }, true);
 
-        scope.$watch("endDate", function(newValue, oldValue){
+        scope.$watch("endDate", function (newValue, oldValue){
             if (newValue !== oldValue) {
               removeSvgElements(chart)
               partnersHistogram(scope.ngData, scope.groupData, scope.orderData, scope.filterData, scope.sortData, scope.startDate, newValue);
@@ -182,6 +178,7 @@ angular.module('ricardo.directives.partnersHistogram', [])
         }
 
         function partnersHistogram(data, continents, order, filtered, sort, minDate, maxDate){
+
           var indexYears = {};
           d3.nest()
             .key(function(d){ return d.year })
@@ -275,6 +272,8 @@ angular.module('ricardo.directives.partnersHistogram', [])
                 y = d3.scale.linear()
                 .range([0, barMaxHeigth/2]);
 
+          if (partners.length === 0)
+            noData ();
 
           partners.forEach(function(p, i) {
 

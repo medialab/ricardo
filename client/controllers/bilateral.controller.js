@@ -157,6 +157,7 @@ angular.module('ricardo.controllers.bilateral', [])
     
     // First init - check if data are in local storage
       try {
+        console.log("try")
           if (localStorage.sourceEntitySelected && localStorage.targetEntitySelected) 
           {
             var sourceEntityLocalStorage = localStorage.getItem('sourceEntitySelected');
@@ -194,8 +195,17 @@ angular.module('ricardo.controllers.bilateral', [])
                     $scope.selectedMinDate, $scope.selectedMaxDate);
               })
           }
+          else 
+          {
+            $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
+            return e.RICid===DEFAULT_REPORTING})[0]
+          $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){
+            return e.RICid===DEFAULT_PARTNER})[0]
+          init(DEFAULT_REPORTING, DEFAULT_PARTNER);
+          }
         }
         catch (e) {
+          console.log("catch", e);
           $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
             return e.RICid===DEFAULT_REPORTING})[0]
           $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){

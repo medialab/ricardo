@@ -28,8 +28,9 @@ angular.module('ricardo.directives.linechartWorld', [])
         var chart = d3.select(element[0])
 
         scope.$watch("ngData", function(newValue, oldValue){
-          
-          if(newValue && newValue !== oldValue && newValue.length > 0){      
+
+          if(newValue && newValue !== oldValue && newValue.length > 0){     
+
             newValue.forEach(function (e) {
               if (e.color === undefined)
                 e.color=scope.reporting.filter(function(r){return r.RICid===e.key})[0]["color"]
@@ -43,17 +44,18 @@ angular.module('ricardo.directives.linechartWorld', [])
             else
               yValueSelect = newValue[0].type ? newValue[0].type : newValue[0].flowType;           
 
-            var missing;
-            var allExpNull = newValue[0].values.every(function (d) {return d.exp === null ;})
-            var allImpNull = newValue[0].values.every(function (d) {return d.imp === null ;})
+            // var missing;
+            // var allExpNull = newValue[0].values.every(function (d) {return d.exp === null ;})
+            // var allImpNull = newValue[0].values.every(function (d) {return d.imp === null ;})
 
             for (var i = 0, len = newValue.length; i < len ; i++)
             {
               var allExpNull = newValue[0].values.every(function (d) {return d.exp === null ;})
               var allImpNull = newValue[0].values.every(function (d) {return d.imp === null ;})
-              if (allExpNull && allImpNull)
-                noData(newValue[i].values[0].reporting_id)
             }
+            if (allExpNull && allImpNull)
+              noData(newValue[i].values[0].reporting_id)
+            
             linechart(newValue, yValueSelect);
           }
         })
@@ -139,7 +141,8 @@ angular.module('ricardo.directives.linechartWorld', [])
           var gy = chart.select("g.y.axis"),
               gx = chart.select("g.x.axis");
 
-          if(chart.select("g.x.axis").empty() || chart.select("g.y.axis").empty()){
+
+          if(chart.select("g.x.axis").empty() || chart.select("g.y.axis").empty() && data){
 
             gx = chart.append("g")
               .attr("class", "x axis")
@@ -216,7 +219,8 @@ angular.module('ricardo.directives.linechartWorld', [])
           var voronoiGraph = voronoiGroup.selectAll("path")
             .data(voronoi(d3.merge(data.map(function(d) { return d.values.filter(function(d){return d[yValue]}); }))))
               
-          voronoiGraph.attr("d", function(d) { if(d!==undefined) return "M" + d.join("L") + "Z"; })
+          voronoiGraph
+            .attr("d", function(d) { if(d!==undefined) return "M" + d.join("L") + "Z"; })
             .datum(function(d) { if(d!==undefined) return d.point; })
             .on("mouseover", mouseover)
             .on("mouseout", mouseout);

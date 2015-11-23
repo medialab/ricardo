@@ -215,10 +215,10 @@ angular.module('ricardo.directives.comparisonTimeline', [])
             if (data.year >= scope.startDate && data.year <= scope.endDate) {
               var source = diffSource(data);
               var target = diffTarget(data);
-              if ( source !== undefined) {
+              if ( source !== undefined && source !== null) {
                 ComparisonTabData.push({type: "source", points: source, year: data.year}); 
               }
-              if (target !== undefined) {
+              if (target !== undefined && target !== null) {
                 ComparisonTabData.push({type: "target", points: target, year: data.year});
               }
             }
@@ -246,15 +246,17 @@ angular.module('ricardo.directives.comparisonTimeline', [])
 
             var voronoiGraph = voronoiGroup.selectAll("path")
                 .data(voronoi(data.filter(function(d){ 
-                  // if(d.points !== "-Infinity" && !isNaN(d.points) ) { 
+                  if(d.points !== "-Infinity" && !isNaN(d.points) && d.points !== undefined) { 
                     return d[yValue] !== null 
-                  // } 
+                  } 
                 })))
 
             voronoiGraph
                   .enter().append("path")
-                  .attr("d", function(data) { return "M" + data.join("L") + "Z"; })
-                  .datum(function(d) { return d.point; })
+                  .attr("d", function(data) {
+                    if (data !== null && data !== undefined && data.length > 1) 
+                    return "M" + data.join("L") + "Z"; })
+                  .datum(function(d) { if(d!==undefined) return d.point; })
                   .on("mouseover", mouseover)
                   .on("mouseout", mouseout);
 
