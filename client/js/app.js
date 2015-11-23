@@ -13,7 +13,8 @@ angular.module('ricardo', [
   'pascalprecht.translate',
   'ricardo.filters',
   'ricardo.services',
-  'ricardo.directives-addendum',
+  'ricardo.directives',
+  //'ricardo.directives-addendum',
   'ricardo.controllers'
   ]).
 config(['$routeProvider', function($routeProvider) {

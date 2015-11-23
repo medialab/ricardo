@@ -445,6 +445,21 @@ li.storyline {
   font-size: 11px;
 }
 
+.paragraphViz ul li {
+  width:66%;
+  font-size: 11px;
+}
+
+.paragraphViz ul {
+  width:66%;
+  font-size: 11px;
+}
+
+.paragraphViz li {
+  width:66%;
+  font-size: 11px;
+}
+
 
 /* select geo-entities dropdown*/
 
