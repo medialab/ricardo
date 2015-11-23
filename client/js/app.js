@@ -14,8 +14,11 @@ angular.module('ricardo', [
   'ricardo.filters',
   'ricardo.services',
   'ricardo.directives',
-  //'ricardo.directives-addendum',
-  'ricardo.controllers'
+  'ricardo.controllers.navbar',
+  'ricardo.controllers.TranslateController',
+  'ricardo.controllers.bilateral',
+  'ricardo.controllers.country',
+  'ricardo.controllers.world'
   ]).
 config(['$routeProvider', function($routeProvider) {
 
