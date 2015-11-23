@@ -88,11 +88,11 @@
 <div class="container">
   <h4> Trade of reporting with partners sorted by
   <div class="inline-select">   
-      <ui-select ng-model="grouped.selected" theme="bootstrap">
-      <match placeholder="Group by...">{{$select.selected.name.value}}</match>
-      <choices repeat="item in groups | filter: $select.search">
-        <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-      </choices>
+      <ui-select ng-model="grouped.selected" theme="bootstrap" on-select="someFunction(grouped.selected)">
+        <match placeholder="Group by...">{{$select.selected.name.value}}</match>
+        <choices repeat="item in groups | filter: $select.search">
+          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+        </choices>
       </ui-select>
   </div>
     on
@@ -128,7 +128,15 @@
     <div class="col-md-12">
       <!-- <h4 class="subtitle">Balance of trade of {{entities.sourceEntity.selected.RICname}} with partners, {{selectedMinDate}} – {{selectedMaxDate}} <i class="fa fa-info-circle"></i></h4> -->
       <p class="paragraphViz">
-          In this view, the partners of the reporting country are compared by calculating two indicators: the average bilateral trade share estimated for available years over the selected period and the relative bilateral trade balance estimated for each available year over the selected period.
+          In this graph, the partners of the reporting country are compared by calculating two indicators: 
+          <ul>
+            <li>
+              the average bilateral trade share estimated for available years over the selected period
+            </li>
+            <li>
+              the relative bilateral trade balance estimated for each available year over the selected period
+            </li>
+          </ul>
       </p>
           <div class="legend-item">
           A = reporting  /   B = partner
@@ -310,7 +318,7 @@
 
     <div class="inline-select">
       <ui-select  ng-model="entities.sourceWorldEntity.selected" theme="bootstrap" ng-show="reportingWorldEntities.length">
-        <match placeholder="World aggregate">{{$select.selected.RICname}}</match>
+        <match placeholder="World trade">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingWorldEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
