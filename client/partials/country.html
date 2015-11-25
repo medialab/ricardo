@@ -92,7 +92,7 @@
   <br>
   <h4> Trade of reporting with partners sorted by
   <div class="inline-select">   
-      <ui-select ng-model="grouped.selected" theme="bootstrap" on-select="someFunction(grouped.selected)">
+      <ui-select ng-model="grouped" theme="bootstrap" ng-change="changeGroup(grouped)">
         <match placeholder="Group by...">{{$select.selected.name.value}}</match>
         <choices repeat="item in groups | filter: $select.search">
           <div ng-bind-html="item.name.value | highlight: $select.search"></div>
@@ -101,7 +101,7 @@
   </div>
     on
   <div class="inline-select">
-      <ui-select ng-model="ordered.selected" theme="bootstrap">
+      <ui-select ng-model="ordered" theme="bootstrap" ng-change="changeOrder(ordered)">
       <match placeholder="Order by...">{{$select.selected.name.value}}</match>
       <choices repeat="item in orders | filter: $select.search">
         <div ng-bind-html="item.name.value | highlight: $select.search"></div>
@@ -110,7 +110,7 @@
   </div>
     on
   <div class="inline-select">
-      <ui-select ng-model="filtered.selected" theme="bootstrap">
+      <ui-select ng-model="filtered" theme="bootstrap" ng-change="changeFilter(filtered)">
       <match placeholder="Filter by...">{{$select.selected.name.value}}</match>
       <choices repeat="item in filters | filter: $select.search">
         <div ng-bind-html="item.name.value | highlight: $select.search"></div>
@@ -119,7 +119,7 @@
   </div>
   by
   <div class="inline-select">
-      <ui-select ng-model="sorted.selected" theme="bootstrap">
+      <ui-select ng-model="sorted" theme="bootstrap" ng-change="changeSort(sorted)">
       <match placeholder="Sort by...">{{$select.selected.name.value}}</match>
       <choices repeat="item in sorts | filter: $select.search">
         <div ng-bind-html="item.name.value | highlight: $select.search"></div>
@@ -160,45 +160,18 @@
           </div>
     </div>
   </div>
-    <!-- <div class="col-md-6 inline-select" style="float:right;">
-        
-        <ui-select class="filterSelection" ng-model="filtered.selected" theme="bootstrap" style="float:right;">
-        <match placeholder="Filter by...">{{$select.selected.name.value}}</match>
-        <choices repeat="item in filters | filter: $select.search">
-          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-        </choices>
-        </ui-select>
 
-        
-        <ui-select class="filterSelection" ng-model="ordered.selected" theme="bootstrap" style="float:right;">
-        <match placeholder="Order by...">{{$select.selected.name.value}}</match>
-        <choices repeat="item in orders | filter: $select.search">
-          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-        </choices>
-        </ui-select>
-
-        
-        <ui-select class="filterSelection" ng-model="grouped.selected" theme="bootstrap" style="float:right;">
-        <match placeholder="Group by...">{{$select.selected.name.value}}</match>
-        <choices repeat="item in groups | filter: $select.search">
-          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-        </choices>
-        </ui-select>
-          
-    </div> -->
 
 <div id="select-doubleChart">
     <div class="row">
       <div  class="col-sm-12">
         <partners-histogram 
-        ng-data="tableData" 
+        ng-data="partnersData" 
         start-date="selectedMinDate"
         end-date="selectedMaxDate"
+        index-years="indexYears"
         country-data="entities.sourceEntity.selected"
-        group-data="grouped.selected.type.value"
-        order-data="ordered.selected.type.value"
-        filter-data="filtered.selected.type.value"
-        sort-data="sorted.selected.type.value"
+        order-data="ordered.type.value"
         ></partners-histogram>
       </div>
     </div>
@@ -226,6 +199,8 @@
 
   <div class="row">
     <div class="col-md-12">
+      <br/>
+      <br/>
       <h4 class="titleDualTL">Trade of {{entities.sourceEntity.selected.RICname}} with 
       <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
       
@@ -237,7 +212,7 @@
       <br/>
       {{selectedMinDate}} – {{selectedMaxDate}}, in   
       <div class="inline-select">
-        <ui-select ng-model="linechartCurrency.selected" theme="bootstrap">
+        <ui-select ng-model="linechartCurrency" theme="bootstrap" ng-change="changeCurrency(linechartCurrency)">
         <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
         <choices repeat="item in linechartCurrencyChoices | filter: $select.search">
           <div ng-bind-html="item.name.value | highlight: $select.search"></div>
@@ -246,7 +221,7 @@
     </div> 
     for
     <div class="inline-select">
-        <ui-select ng-model="linechartFlow.selected" theme="bootstrap">
+        <ui-select ng-model="linechartFlow" theme="bootstrap" ng-change="changeFlow(linechartFlow)">
         <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
         <choices repeat="item in linechartFlowChoices | filter: $select.search">
           <div ng-bind-html="item.name.value | highlight: $select.search"></div>
@@ -254,9 +229,6 @@
       </ui-select>
     </div>
       </h4>
-        <!-- <p class="paragraphViz">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
-        </p> -->
         <div ng-show="messagePercent"> 
          <p>
             The percentages are based on the total amount of <a href="/#worldTrade">world sum partners</a> of {{entities.sourceEntity.selected.RICname}}
@@ -264,17 +236,15 @@
         </div>
     </div>
   </div>
-  <div class="row"> 
-  </div>
   <div id="select-lineChart">
     <div>
       <h4 class="subtitle col-md-2" style="width:190px;">select up to 5 partners:</h4>
     </div>
-    <div class="select-dropdown col-md-9" ng-show="RICentitiesDD.length" style="padding-top:10px;">
+    <div class="col-md-9"  style="padding-top:10px;">
     
     <div class="inline-select" >
-      <ui-select   ng-model="entities.sourceCountryEntity.selected" theme="bootstrap" ng-show="reportingCountryEntities.length">
-        <match placeholder="Country">{{$select.selected.RICname}}</match>
+      <ui-select   ng-model="entities.sourceCountryEntity" theme="bootstrap" ng-show="reportingCountryEntities.length" ng-change="changeCountry(entities.sourceCountryEntity)">
+        <match placeholder="Country"></match>
         <choices repeat="item in reportingCountryEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
@@ -282,8 +252,8 @@
     </div>
 
     <div class="inline-select">
-      <ui-select  ng-model="entities.sourceColonialEntity.selected" theme="bootstrap" ng-show="reportingColonialEntities.length">
-        <match placeholder="Colonial area">{{$select.selected.RICname}}</match>
+      <ui-select  ng-model="entities.sourceColonialEntity" theme="bootstrap" ng-show="reportingColonialEntities.length" ng-change="changeColonial(entities.sourceColonialEntity)">
+        <match placeholder="Colonial area"></match>
         <choices repeat="item in reportingColonialEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
@@ -291,8 +261,8 @@
     </div>
 
     <div class="inline-select">
-      <ui-select  ng-model="entities.sourceGeoEntity.selected" theme="bootstrap" ng-show="reportingGeoEntities.length">
-        <match placeholder="Geographical area">{{$select.selected.RICname}}</match>
+      <ui-select  ng-model="entities.sourceGeoEntity" theme="bootstrap" ng-show="reportingGeoEntities.length" ng-change="changeGeo(entities.sourceGeoEntity)">
+        <match placeholder="Geographical area"></match>
         <choices repeat="item in reportingGeoEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
@@ -300,8 +270,8 @@
     </div>
 
     <div class="inline-select">
-      <ui-select  ng-model="entities.sourceContinentEntity.selected" theme="bootstrap" ng-show="reportingContinentEntities.length">
-        <match placeholder="Continent">{{$select.selected.RICname}}</match>
+      <ui-select  ng-model="entities.sourceContinentEntity" theme="bootstrap" ng-show="reportingContinentEntities.length" ng-change="changeContinent(entities.sourceContinentEntity)">
+        <match placeholder="Continent"></match>
         <choices repeat="item in reportingContinentEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
@@ -309,7 +279,7 @@
     </div>
 
     <div class="inline-select">
-      <ui-select  ng-model="entities.sourceWorldEntity.selected" theme="bootstrap" ng-show="reportingWorldEntities.length">
+      <ui-select  ng-model="entities.sourceWorldEntity" theme="bootstrap" ng-show="reportingWorldEntities.length" ng-change="changeWorld(entities.sourceWorldEntity)">
         <match placeholder="World trade">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingWorldEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
@@ -319,14 +289,10 @@
   </div>
     
   <div class="row">
-
-    
     <div class="col-sm-12">
       <linechart-world ng-data="linechartData">
       </linechart-world>
     </div>
-    
-
   </div>
 </div>
   <div class="row">
@@ -354,5 +320,4 @@
       </div>
     </div>
   </div>
-
 </div>

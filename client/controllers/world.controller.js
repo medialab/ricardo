@@ -346,13 +346,6 @@ angular.module('ricardo.controllers.world', [])
       }
     })
 
-    // $scope.$watchCollection('[reporting, linechartFlow.selected, linechartCurrency.selected, viewTable]', function (newValue, oldValue){
-    //   if(newValue !== oldValue && newValue){
-    //     console.log("newValue world", newValue);
-    //     initLinechart($scope.reporting, newValue[1].type.value, newValue[2].type.value);
-    //   }
-    // }, true)
-
     $scope.$watch('reporting', function (newValue, oldValue){
       if(newValue !== oldValue && newValue){
         initLinechart($scope.reporting, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);
@@ -360,18 +353,6 @@ angular.module('ricardo.controllers.world', [])
         //updateDateRange();
       }
     }, true)
-
-    // $scope.$watch('linechartFlow.selected', function (newValue, oldValue){
-    //   if(newValue !== oldValue && newValue){
-    //     initLinechart($scope.reporting, newValue.type.value, $scope.linechartCurrency.selected.type.value);
-    //   }
-    // }, true)
-
-    // $scope.$watch('linechartCurrency.selected', function (newValue, oldValue){
-    //   if(newValue !== oldValue && newValue){
-    //     initLinechart($scope.reporting, $scope.linechartFlow.selected.type.value, newValue.type.value);
-    //   }
-    // }, true)
 
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
@@ -410,13 +391,11 @@ angular.module('ricardo.controllers.world', [])
     }
 
     $scope.changeCurrency = function (currency) {
-      console.log("currency", currency)
       initLinechart($scope.reporting, $scope.linechartFlow.type.value, currency.type.value);
       $scope.linechartCurrency = currency;
     }
 
     $scope.changeFlow = function (flow) {
-      console.log("flow", flow)
       initLinechart($scope.reporting, flow.type.value, $scope.linechartCurrency.type.value);
       $scope.linechartFlow = flow;
     }

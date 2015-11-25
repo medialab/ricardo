@@ -1,10 +1,14 @@
 'use strict';
 
-/* Directives */
+/* 
+ * Partners Histogram directive displays a visualisation about each partner
+ * of the reporting selected. Each partner has a circle with the % of total trade
+ * and a line with bars which represent the commercial balance.
+ */
 
 angular.module('ricardo.directives.partnersHistogram', [])
 
-  /* directive with only watch */
+
   .directive('partnersHistogram', ['$timeout', function ($timeout){
     return {
       restrict: 'E',
@@ -13,6 +17,7 @@ angular.module('ricardo.directives.partnersHistogram', [])
         ngData: '=',
         startDate: '=',
         endDate: '=',
+        indexYears: '=',
         countryData: '=',
         groupData: '=',
         orderData: '=',
@@ -26,58 +31,66 @@ angular.module('ricardo.directives.partnersHistogram', [])
 
         scope.$watch("ngData", function (newValue, oldValue){
           if(newValue !== oldValue){
-            removeSvgElements(chart)            
-            partnersHistogram(newValue, scope.groupData, scope.orderData, scope.filterData, scope.sortData, scope.startDate, scope.endDate);
+            removeSvgElements(chart)          
+            partnersHistogram(newValue, scope.orderData, scope.indexYears, scope.startDate, scope.endDate);
           }
         }, true);
 
-        scope.$watch("groupData", function (newValue, oldValue){
-          if (newValue !== oldValue) {
-            removeSvgElements(chart);
-            partnersHistogram(scope.ngData, newValue, scope.orderData, scope.filterData, scope.sortData, scope.startDate, scope.endDate);
-          }
-        }, true);
+        function removeSvgElements(chart) {
+          chart.selectAll("text.legend").remove();
+          chart.selectAll("rect.bar").remove();
+          chart.selectAll("circle").remove();
+       }
 
-        scope.$watch("orderData", function (newValue, oldValue){
-            if (newValue !== oldValue) {
-              removeSvgElements(chart)
-              partnersHistogram(scope.ngData, scope.groupData, newValue, scope.filterData, scope.sortData, scope.startDate, scope.endDate);
-            }
-        }, true);
-
-        // uncomments these lines to use filter selection with calcul on all data
-        scope.$watch("filterData", function (newValue, oldValue){
-          if(newValue !== oldValue){
-              removeSvgElements(chart) 
-              partnersHistogram(scope.ngData, scope.groupData, scope.orderData, newValue, scope.sortData, scope.startDate, scope.endDate);
-          }
-        }, true)
-
-        scope.$watch("sortData", function (newValue, oldValue){
-            if (newValue !== oldValue) {
-              removeSvgElements(chart)
-              partnersHistogram(scope.ngData, scope.groupData, scope.orderData, scope.filterData, newValue, scope.startDate, scope.endDate);
-            }
-        }, true);
-
-        scope.$watch("startDate", function (newValue, oldValue){
-            if (newValue !== oldValue) {
-              removeSvgElements(chart)
-              partnersHistogram(scope.ngData, scope.groupData, scope.orderData, scope.filterData, scope.sortData, newValue, scope.endDate);
-            }
-        }, true);
-
-        scope.$watch("endDate", function (newValue, oldValue){
-            if (newValue !== oldValue) {
-              removeSvgElements(chart)
-              partnersHistogram(scope.ngData, scope.groupData, scope.orderData, scope.filterData, scope.sortData, scope.startDate, newValue);
-            }
-        }, true);
-
+        // scope.$watch("groupData", function (newValue, oldValue){
+        //   if (newValue !== oldValue) {
+        //     removeSvgElements(chart);
+        //     partnersHistogram(scope.ngData, newValue, scope.orderData, scope.filterData, scope.sortData, scope.startDate, scope.endDate);
+        //   }
+        // }, true);
 
         
 
-         // Partner Histo var initialization
+        // scope.$watch("orderData", function (newValue, oldValue){
+        //     if (newValue !== oldValue) {
+        //       removeSvgElements(chart)
+        //       partnersHistogram(scope.ngData, scope.groupData, newValue, scope.filterData, scope.sortData, scope.startDate, scope.endDate);
+        //     }
+        // }, true);
+
+        // // uncomments these lines to use filter selection with calcul on all data
+        // scope.$watch("filterData", function (newValue, oldValue){
+        //   if(newValue !== oldValue){
+        //       removeSvgElements(chart) 
+        //       partnersHistogram(scope.ngData, scope.groupData, scope.orderData, newValue, scope.sortData, scope.startDate, scope.endDate);
+        //   }
+        // }, true)
+
+        // scope.$watch("sortData", function (newValue, oldValue){
+        //     if (newValue !== oldValue) {
+        //       removeSvgElements(chart)
+        //       partnersHistogram(scope.ngData, scope.groupData, scope.orderData, scope.filterData, newValue, scope.startDate, scope.endDate);
+        //     }
+        // }, true);
+
+        // scope.$watch("startDate", function (newValue, oldValue){
+        //     if (newValue !== oldValue) {
+        //       removeSvgElements(chart)
+        //       partnersHistogram(scope.ngData, scope.groupData, scope.orderData, scope.filterData, scope.sortData, newValue, scope.endDate);
+        //     }
+        // }, true);
+
+        // scope.$watch("endDate", function (newValue, oldValue){
+        //     if (newValue !== oldValue) {
+        //       removeSvgElements(chart)
+        //       partnersHistogram(scope.ngData, scope.groupData, scope.orderData, scope.filterData, scope.sortData, scope.startDate, newValue);
+        //     }
+        // }, true);
+
+
+        /*
+         * Partner Histo var initialization
+         */ 
         var height = 600,
             width = document.querySelector('#partners-histogram-container').offsetWidth,
             marginTop = 15,
@@ -91,20 +104,16 @@ angular.module('ricardo.directives.partnersHistogram', [])
             currency = "sterling pound",
             sum = 0;
 
-       function removeSvgElements(chart) {
-          chart.selectAll("text.legend").remove();
-          chart.selectAll("rect.bar").remove();
-          chart.selectAll("circle").remove();
-       }
-
         var chart = d3.select(element[0])
+       
 
-        var refresh = function(newValue, oldValue){
-          if(newValue !== oldValue){
-            removeSvgElements(chart)
-            partnersHistogram(scope.ngData, continents, order, filtered, sorted, scope.startDate, scope.endDate);
-          }
-        }
+
+        // var refresh = function(newValue, oldValue){
+        //   if(newValue !== oldValue){
+        //     removeSvgElements(chart)
+        //     partnersHistogram(scope.ngData, continents, order, filtered, sorted, scope.startDate, scope.endDate);
+        //   }
+        // }
 
         function noData () {
           d3.select("#partners-histogram-container").append("div")
@@ -117,7 +126,9 @@ angular.module('ricardo.directives.partnersHistogram', [])
             })
         } 
 
-        // Partner Histo tools functions 
+        /*
+         * Partner Histo tools functions 
+         */ 
 
         function cleanids(str){
           return str.replace(/\W/g, '');
@@ -149,14 +160,6 @@ angular.module('ricardo.directives.partnersHistogram', [])
            return (res ? res : "0.00");
         }
 
-        var tooltip = d3.select("body")
-          .append("div")
-          .attr("class", "partners-tooltip");
-
-        var tooltipCircle = d3.select("body")
-          .append("div")
-          .attr("class", "circle-tooltip");
-
         function rollupYears(leaves){
           var res = {
             exp: d3.sum(leaves, function(d){
@@ -177,75 +180,12 @@ angular.module('ricardo.directives.partnersHistogram', [])
           return res;
         }
 
-        function partnersHistogram(data, continents, order, filtered, sort, minDate, maxDate){
+        function partnersHistogram(data, order, indexYears, minDate, maxDate){
+          /*
+           * Start pure work of visualisation
+           */
 
-          var indexYears = {};
-          d3.nest()
-            .key(function(d){ return d.year })
-            .rollup(rollupYears)
-            .entries(data)
-            .forEach(function(y){
-              indexYears[y.key] = y.values;
-            })
-
-          // We get rid of World partners
-          data=data.filter(function(p){ return !/^World/.test(p.partner_id)})
-          
-          var partners = d3.nest()  
-            .key(function(d){ return d[continents ? "continent" : "partner_id"] })
-            .key(function(d){ return d.year })
-            .rollup(rollupYears)
-            .entries(data)
-
-          function addTypePartner (partners) {
-            var entityChecked = []; 
-            partners.forEach(function (d) {
-              if (entityChecked.indexOf(d.key) === -1 ) {
-                for (var i = 0, len = data.length; i < len; i++) {
-                  if (d.key === data[i].partner_id) {
-                    d.type = data[i].type
-                    entityChecked.push(d.key);
-                  }
-                }  
-              }
-            })
-            return partners;
-          }
-
-          partners = addTypePartner(partners);
-
-          partners.forEach(function(p){
-            p.years = []
-            p.values.forEach(function(d){
-              p.years.push({
-                key: d.key,
-                exp: d.values.exp,
-                imp: d.values.imp,
-                balance: (d.values.exp - d.values.imp) / (d.values.exp + d.values.imp) || 0,
-                pct_exp: d.values.exp / indexYears[d.key].exp * 100,
-                pct_imp: d.values.imp / indexYears[d.key].imp * 100,
-                pct_tot: (d.values.exp + d.values.imp) / indexYears[d.key].tot * 100
-              });
-            });
-
-            delete p.values;
-            p.avg_tot = d3.mean(p.years, function(d){ return d.pct_tot });
-            p.avg_imp = d3.mean(p.years, function(d){ return d.pct_imp });
-            p.avg_exp = d3.mean(p.years, function(d){ return d.pct_exp });
-          })
-
-
-          //filter data with filters selection
-          if (filtered !== "all")
-            partners = partners.filter(function (d) { return d.type === filtered})
-
-          partners = partners.sort(function(a,b){
-            if (sort === 'name') 
-              return d3.ascending(a.key, b.key);
-            else {
-              return d3.descending(a["avg_" + order], b["avg_" + order]);
-            }
-          });
+          var partners = data;
 
           height = (partners.length + 1) * (barMaxHeigth + barGap);
 
@@ -268,15 +208,15 @@ angular.module('ricardo.directives.partnersHistogram', [])
 
             var x = d3.scale.linear()
                 .domain([minDate, maxDate])
-                .range([0, width]), // witdh replace max width 
+                .range([0, width]), 
                 y = d3.scale.linear()
                 .range([0, barMaxHeigth/2]);
 
           if (partners.length === 0)
             noData ();
 
-          partners.forEach(function(p, i) {
 
+          partners.forEach(function(p, i) {
             var entity = RICentities[""+p.key],
               name = (entity ? entity.RICname : p.key);
 
@@ -313,6 +253,10 @@ angular.module('ricardo.directives.partnersHistogram', [])
               .attr("fill", function(d){ return barColors[+(d.balance >=0)] })
               .attr("opacity", function(d){ return (d.imp !== null && d.exp !== null ? 1 : 0.3) })
               .style("border-left", "solid 1px white");
+
+            var tooltip = d3.select("body")
+              .append("div")
+              .attr("class", "partners-tooltip");
 
             histo.selectAll(".tooltipBar")
               .data(p.years)
@@ -360,25 +304,7 @@ angular.module('ricardo.directives.partnersHistogram', [])
                   .attr("cy", -40)
                   .attr("r", rBigCircle)
                   .style("stroke", "#777") 
-                  .style("fill", "transparent")
-                  .on('mouseover', function(d) {
-                  return tooltipCircle.html(
-                    "<p>Total : " + formatPercent(p["avg_" + order]) + "</p>"
-                    ).transition().style("opacity", .9);
-                  })
-                  //.on('mouseenter', this.onmouseover)
-                  .on('mouseout', function(d) {
-                    return tooltipCircle.transition().style("opacity", 0);
-                  })
-                  .on('mousemove', function(d) {
-                    tooltipCircle.style("opacity", .9);
-                    var wid = tooltipCircle.style("width").replace("px", "");
-                    return tooltipCircle
-                      .style("left", Math.min(window.innerWidth - wid - 20,
-                        Math.max(0, (d3.event.pageX - wid/2))) + "px")
-                      .style("top", (d3.event.pageY + 40) + "px")
-                      .style("width", wid + "px");
-                  });    
+                  .style("fill", "transparent")   
    
                 var rLittleCircle = formatPercent2(p["avg_" + order]) / 100 * rBigCircle;
                 histo.append("circle")
@@ -387,24 +313,6 @@ angular.module('ricardo.directives.partnersHistogram', [])
                   .attr("r", rLittleCircle)
                   .style("stroke", "#333")  
                   .style("fill", "#333")
-                  .on('mouseover', function(d) {
-                  return tooltipCircle.html(
-                    "<p>Total : " + formatPercent(p["avg_" + order]) + "</p>"
-                    ).transition().style("opacity", .9);
-                  })
-                  //.on('mouseenter', this.onmouseover)
-                  .on('mouseout', function(d) {
-                    return tooltipCircle.transition().style("opacity", 0);
-                  })
-                  .on('mousemove', function(d) {
-                    tooltipCircle.style("opacity", .9);
-                    var wid = tooltipCircle.style("width").replace("px", "");
-                    return tooltipCircle
-                      .style("left", Math.min(window.innerWidth - wid - 20,
-                        Math.max(0, (d3.event.pageX - wid/2))) + "px")
-                      .style("top", (d3.event.pageY + 40) + "px")
-                      .style("width", wid + "px");
-                  });  
 
                   histo.append("text")
                     .attr("class", "legend")
@@ -416,17 +324,6 @@ angular.module('ricardo.directives.partnersHistogram', [])
               }
 
           });
-
-        // // Legend circle
-        // var circleLegend = d3.select("#circleLegend").append("svg")
-
-        // circleLegend.append("circle")
-        //             .attr("cx", 10)
-        //             .attr("cy", 5)
-        //             .attr("r", 12)
-        //             .style("stroke", "#777") 
-        //             .style("fill", "transparent")
-
         }
       } //end of link
     }
