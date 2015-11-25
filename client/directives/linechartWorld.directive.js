@@ -1,10 +1,11 @@
 'use strict';
 
-/* Directives */
+/* 
+ * Linechart directive displays line of entities selected 
+ */
 
 angular.module('ricardo.directives.linechartWorld', [])
 
- // /* directive with only watch */
   .directive('linechartWorld',[ 'fileService', 'apiService', '$timeout',function (fileService, apiService, $timeout){
     return {
       restrict: 'E',
@@ -49,12 +50,14 @@ angular.module('ricardo.directives.linechartWorld', [])
               var allExpNull = newValue[0].values.every(function (d) {return d.exp === null ;})
               var allImpNull = newValue[0].values.every(function (d) {return d.imp === null ;})
             }
-            if (allExpNull && allImpNull)
-              noData(newValue[i].values[0].reporting_id)
+            // if (allExpNull && allImpNull)
+            //   noData(newValue[i].values[0].reporting_id) //problem
             
             linechart(newValue, yValueSelect);
           }
         })
+
+        
 
         var height = 400,
             width = document.querySelector('#linechart-world-container').offsetWidth,
@@ -99,7 +102,9 @@ angular.module('ricardo.directives.linechartWorld', [])
           x.domain([xMin,xMax])
           y.domain([0,yMax])
 
-         /* axis */
+         /* 
+          * Axis config 
+          */
 
           var xAxis = d3.svg.axis()
             .scale(x)
@@ -134,7 +139,6 @@ angular.module('ricardo.directives.linechartWorld', [])
 
           var gy = chart.select("g.y.axis"),
               gx = chart.select("g.x.axis");
-
 
           if(chart.select("g.x.axis").empty() || chart.select("g.y.axis").empty() && data){
 
@@ -172,7 +176,9 @@ angular.module('ricardo.directives.linechartWorld', [])
               .attr("font-size", "0.85em");
             }
 
-         /* lines */
+         /* 
+          * Lines 
+          */
 
           var line = d3.svg.line()
               .defined(function(d) {return d[yValue]; })
@@ -195,6 +201,10 @@ angular.module('ricardo.directives.linechartWorld', [])
             .attr("fill", "none")
 
           entities.exit().remove()
+
+          /*
+           * Voronoi
+           */
 
           var voronoi = d3.geom.voronoi()
             .x(function(d) { return x(new Date(d.year, 0, 1)); })
@@ -229,6 +239,10 @@ angular.module('ricardo.directives.linechartWorld', [])
             .on("mouseout", mouseout);
 
           voronoiGraph.exit().remove()
+
+          /*
+           * Mouse interactions
+           */
 
           var focus = chart.select(".focus")
                     

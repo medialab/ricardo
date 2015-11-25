@@ -7,8 +7,6 @@
  */
 
 angular.module('ricardo.directives.partnersHistogram', [])
-
-
   .directive('partnersHistogram', ['$timeout', function ($timeout){
     return {
       restrict: 'E',
@@ -26,8 +24,10 @@ angular.module('ricardo.directives.partnersHistogram', [])
       },
       link: function(scope, element, attrs) {
 
-        // var transmit by scope affectation
-        var RICentities = scope.countryData;
+        /*
+         * Watch functions to update visualisation
+         */
+        var chart = d3.select(element[0]);
 
         scope.$watch("ngData", function (newValue, oldValue){
           if(newValue !== oldValue){
@@ -36,84 +36,29 @@ angular.module('ricardo.directives.partnersHistogram', [])
           }
         }, true);
 
+        scope.$watch("startDate", function (newValue, oldValue){
+          if(newValue !== oldValue){
+            removeSvgElements(chart)          
+            partnersHistogram(scope.ngData, scope.orderData, scope.indexYears, newValue, scope.endDate);
+          }
+        }, true);
+
+        scope.$watch("endDate", function (newValue, oldValue){
+          if(newValue !== oldValue){
+            removeSvgElements(chart)          
+            partnersHistogram(scope.ngData, scope.orderData, scope.indexYears, scope.startDate, newValue);
+          }
+        }, true);
+
+        /*
+         * Displaying functionx
+         */
+
         function removeSvgElements(chart) {
           chart.selectAll("text.legend").remove();
           chart.selectAll("rect.bar").remove();
           chart.selectAll("circle").remove();
-       }
-
-        // scope.$watch("groupData", function (newValue, oldValue){
-        //   if (newValue !== oldValue) {
-        //     removeSvgElements(chart);
-        //     partnersHistogram(scope.ngData, newValue, scope.orderData, scope.filterData, scope.sortData, scope.startDate, scope.endDate);
-        //   }
-        // }, true);
-
-        
-
-        // scope.$watch("orderData", function (newValue, oldValue){
-        //     if (newValue !== oldValue) {
-        //       removeSvgElements(chart)
-        //       partnersHistogram(scope.ngData, scope.groupData, newValue, scope.filterData, scope.sortData, scope.startDate, scope.endDate);
-        //     }
-        // }, true);
-
-        // // uncomments these lines to use filter selection with calcul on all data
-        // scope.$watch("filterData", function (newValue, oldValue){
-        //   if(newValue !== oldValue){
-        //       removeSvgElements(chart) 
-        //       partnersHistogram(scope.ngData, scope.groupData, scope.orderData, newValue, scope.sortData, scope.startDate, scope.endDate);
-        //   }
-        // }, true)
-
-        // scope.$watch("sortData", function (newValue, oldValue){
-        //     if (newValue !== oldValue) {
-        //       removeSvgElements(chart)
-        //       partnersHistogram(scope.ngData, scope.groupData, scope.orderData, scope.filterData, newValue, scope.startDate, scope.endDate);
-        //     }
-        // }, true);
-
-        // scope.$watch("startDate", function (newValue, oldValue){
-        //     if (newValue !== oldValue) {
-        //       removeSvgElements(chart)
-        //       partnersHistogram(scope.ngData, scope.groupData, scope.orderData, scope.filterData, scope.sortData, newValue, scope.endDate);
-        //     }
-        // }, true);
-
-        // scope.$watch("endDate", function (newValue, oldValue){
-        //     if (newValue !== oldValue) {
-        //       removeSvgElements(chart)
-        //       partnersHistogram(scope.ngData, scope.groupData, scope.orderData, scope.filterData, scope.sortData, scope.startDate, newValue);
-        //     }
-        // }, true);
-
-
-        /*
-         * Partner Histo var initialization
-         */ 
-        var height = 600,
-            width = document.querySelector('#partners-histogram-container').offsetWidth,
-            marginTop = 15,
-            marginLeft = 0,
-            marginRight = 0,
-            duration = 1000,
-            barMinHeigth = 2,
-            barMaxHeigth = 30,
-            barGap = 40,
-            barColors = ["#663333", "#cc6666"],
-            currency = "sterling pound",
-            sum = 0;
-
-        var chart = d3.select(element[0])
-       
-
-
-        // var refresh = function(newValue, oldValue){
-        //   if(newValue !== oldValue){
-        //     removeSvgElements(chart)
-        //     partnersHistogram(scope.ngData, continents, order, filtered, sorted, scope.startDate, scope.endDate);
-        //   }
-        // }
+        }
 
         function noData () {
           d3.select("#partners-histogram-container").append("div")
@@ -136,7 +81,9 @@ angular.module('ricardo.directives.partnersHistogram', [])
         function shorten(str){
           return (str.length < 24 ? str : str.slice(0, 22).replace(/\s+$/, '') + "…");
         }
+        
         var format = d3.format("0,000");
+
         function formatAmount(line, field){
           var res = parseInt(line[field]);
           res = format(Math.round(res));
@@ -180,17 +127,30 @@ angular.module('ricardo.directives.partnersHistogram', [])
           return res;
         }
 
+          var height = 600,
+              width = document.querySelector('#partners-histogram-container').offsetWidth,
+              marginTop = 15,
+              marginLeft = 0,
+              marginRight = 0,
+              duration = 1000,
+              barMinHeigth = 2,
+              barMaxHeigth = 30,
+              barGap = 40,
+              barColors = ["#663333", "#cc6666"],
+              currency = "sterling pound",
+              sum = 0,
+              RICentities = scope.countryData,
+              chart;
+        /*
+         * Start pure work of visualisation
+         */
+
         function partnersHistogram(data, order, indexYears, minDate, maxDate){
-          /*
-           * Start pure work of visualisation
-           */
 
           var partners = data;
-
           height = (partners.length + 1) * (barMaxHeigth + barGap);
-
           var selection = d3.select("#partners-histogram-container");
-          var chart;
+
           if (selection.select('svg').empty()){
             chart = selection.append('svg')
             .attr('width', width)
@@ -206,11 +166,11 @@ angular.module('ricardo.directives.partnersHistogram', [])
               limits = d3.extent(years);
               years.pop(); // adjust year with timeline
 
-            var x = d3.scale.linear()
-                .domain([minDate, maxDate])
-                .range([0, width]), 
-                y = d3.scale.linear()
-                .range([0, barMaxHeigth/2]);
+          var x = d3.scale.linear()
+              .domain([minDate, maxDate])
+              .range([0, width]), 
+              y = d3.scale.linear()
+              .range([0, barMaxHeigth/2]);
 
           if (partners.length === 0)
             noData ();
@@ -296,33 +256,30 @@ angular.module('ricardo.directives.partnersHistogram', [])
               .attr("font-size", "0.8em")
               .text(function(d){ return name })
 
-              if (order !== "name") {
-               
-                var rBigCircle = 12;
-                histo.append("circle")
-                  .attr("cx", 25)
-                  .attr("cy", -40)
-                  .attr("r", rBigCircle)
-                  .style("stroke", "#777") 
-                  .style("fill", "transparent")   
-   
-                var rLittleCircle = formatPercent2(p["avg_" + order]) / 100 * rBigCircle;
-                histo.append("circle")
-                  .attr("cx", 25)
-                  .attr("cy", -40)
-                  .attr("r", rLittleCircle)
-                  .style("stroke", "#333")  
-                  .style("fill", "#333")
+            if (order !== "name") {
+              var rBigCircle = 12;
+              histo.append("circle")
+                .attr("cx", 25)
+                .attr("cy", -40)
+                .attr("r", rBigCircle)
+                .style("stroke", "#777") 
+                .style("fill", "transparent")   
+ 
+              var rLittleCircle = formatPercent2(p["avg_" + order]) / 100 * rBigCircle;
+              histo.append("circle")
+                .attr("cx", 25)
+                .attr("cy", -40)
+                .attr("r", rLittleCircle)
+                .style("stroke", "#333")  
+                .style("fill", "#333")
 
-                  histo.append("text")
-                    .attr("class", "legend")
-                    .attr("x", 18)
-                    .attr("y", -17)
-                    .attr("font-size", "0.8em")
-                    .text(function(d){ return formatPercent(p["avg_" + order]) })
-                  
-              }
-
+              histo.append("text")
+                .attr("class", "legend")
+                .attr("x", 18)
+                .attr("y", -17)
+                .attr("font-size", "0.8em")
+                .text(function(d){ return formatPercent(p["avg_" + order]) })  
+            }
           });
         }
       } //end of link

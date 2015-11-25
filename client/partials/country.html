@@ -17,8 +17,6 @@
     </div>
   </div>
 </div>
-<!-- <div id="sticky-marker"></div>
-<div id="sticky-container"> -->
 
 <div class="container">  
   </br>
@@ -27,7 +25,6 @@
       La vue pays montre comment le commerce total d’un reporting country se répartit entre ses différents partners. Elle compare les partner entities suivant leur part moyenne dans le commerce total du pays reporting, calcule le solde commercial bilateral annuel et permet de suivre l’évolution du commerce du pays reporting avec ses partners. 
     </p>
   <div class="row timeline-cont" >
-  <!-- <h4> Import and export evolution of {{entities.sourceEntity.selected.RICname}}</h4> -->
     <div class="col-md-12">
         <country-title></country-title>
         <p class="paragraphViz">
@@ -77,15 +74,11 @@
         <div class="legend-item">
           Data expressed in <strong>Sterling</strong>
         </div>
-        <i class="fa fa-info-circle"></i>
       </div>
     </div>
          
   </div>
 </div>
-<!-- </div> -->
-
-
 
 <div class="container">
   <br>
@@ -130,7 +123,6 @@
   </h4>
   <div class="row">
     <div class="col-md-12">
-      <!-- <h4 class="subtitle">Balance of trade of {{entities.sourceEntity.selected.RICname}} with partners, {{selectedMinDate}} – {{selectedMaxDate}} <i class="fa fa-info-circle"></i></h4> -->
       <p class="paragraphViz">
           In this graph, the partners of the reporting country are compared by calculating two indicators: 
           <ul>
@@ -163,39 +155,35 @@
 
 
 <div id="select-doubleChart">
-    <div class="row">
-      <div  class="col-sm-12">
-        <partners-histogram 
-        ng-data="partnersData" 
-        start-date="selectedMinDate"
-        end-date="selectedMaxDate"
-        index-years="indexYears"
-        country-data="entities.sourceEntity.selected"
-        order-data="ordered.type.value"
-        ></partners-histogram>
-      </div>
+  <div class="row">
+    <div  class="col-sm-12">
+      <partners-histogram 
+      ng-data="partnersData" 
+      start-date="selectedMinDate"
+      end-date="selectedMaxDate"
+      index-years="indexYears"
+      country-data="entities.sourceEntity.selected"
+      order-data="ordered.type.value"
+      ></partners-histogram>
     </div>
-        <div class="partnersHistoLegend">
-          <!-- <div class="legend-item">
-              {{ordered.selected.name.value}} in <strong>pourcentage</strong> | Trade balance in <strong>sterling</strong>
-          </div> -->
-          <div class="legend-item">
-            <svg height="35" width="300">
-              <circle cx="25" cy="18" r="12" stroke="black" stroke-width="1" fill="transparent" />
-              <circle cx="25" cy="18" r="3" stroke="black" stroke-width="1" fill="black" />
-              <text x="45" y="20" fill="black">Average bilateral trade share</text>
-            </svg> 
-          </div> 
-          <div class="legend-item">
-            <svg height="35" width="300">
-              <rect x="15" y="0" width="10" height="15" style="fill:#cc6666" />
-              <rect x="25" y="15" width="10" height="15" style="fill:#663333" />
-              <text x="40" y="20" fill="black">Relative bilateral trade balance</text>
-            </svg> 
-          </div> 
-           
-        </div>
   </div>
+    <div class="partnersHistoLegend">
+      <div class="legend-item">
+        <svg height="35" width="300">
+          <circle cx="25" cy="18" r="12" stroke="black" stroke-width="1" fill="transparent" />
+          <circle cx="25" cy="18" r="3" stroke="black" stroke-width="1" fill="black" />
+          <text x="45" y="20" fill="black">Average bilateral trade share</text>
+        </svg> 
+      </div> 
+      <div class="legend-item">
+        <svg height="35" width="300">
+          <rect x="15" y="0" width="10" height="15" style="fill:#cc6666" />
+          <rect x="25" y="15" width="10" height="15" style="fill:#663333" />
+          <text x="40" y="20" fill="black">Relative bilateral trade balance</text>
+        </svg> 
+      </div>  
+    </div>
+</div>
 
   <div class="row">
     <div class="col-md-12">
@@ -243,7 +231,7 @@
     <div class="col-md-9"  style="padding-top:10px;">
     
     <div class="inline-select" >
-      <ui-select   ng-model="entities.sourceCountryEntity" theme="bootstrap" ng-show="reportingCountryEntities.length" ng-change="changeCountry(entities.sourceCountryEntity)">
+      <ui-select   ng-model="entities.sourceCountryEntity" theme="bootstrap"  ng-change="changeCountry(entities.sourceCountryEntity)">
         <match placeholder="Country"></match>
         <choices repeat="item in reportingCountryEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
@@ -252,7 +240,7 @@
     </div>
 
     <div class="inline-select">
-      <ui-select  ng-model="entities.sourceColonialEntity" theme="bootstrap" ng-show="reportingColonialEntities.length" ng-change="changeColonial(entities.sourceColonialEntity)">
+      <ui-select  ng-model="entities.sourceColonialEntity" theme="bootstrap"  ng-change="changeColonial(entities.sourceColonialEntity)">
         <match placeholder="Colonial area"></match>
         <choices repeat="item in reportingColonialEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
@@ -280,7 +268,7 @@
 
     <div class="inline-select">
       <ui-select  ng-model="entities.sourceWorldEntity" theme="bootstrap" ng-show="reportingWorldEntities.length" ng-change="changeWorld(entities.sourceWorldEntity)">
-        <match placeholder="World trade">{{$select.selected.RICname}}</match>
+        <match placeholder="World trade"></match>
         <choices repeat="item in reportingWorldEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
