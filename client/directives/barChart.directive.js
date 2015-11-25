@@ -81,23 +81,6 @@ angular.module('ricardo.directives.barChart', [])
               var endStart = (end-start);
               var barWidth = Math.floor(width / endStart);
 
-                  /* 50 line */
-              svg.append("line")
-                   .attr("x1", 0)
-                   .attr("y1", y(50))
-                   .attr("x2", width)
-                   .attr("y2", y(50))
-                   .attr("stroke-width", 1)
-                   .attr("stroke", "grey");
-
-                  /* 100 line */
-              svg.append("line")
-                   .attr("x1", 0)
-                   .attr("y1", y(100))
-                   .attr("x2", width)
-                   .attr("y2", y(100))
-                   .attr("stroke-width", 1)
-                   .attr("stroke", "grey");
 
               svg.selectAll(".bar")
                   .data(impNbReportings)
@@ -126,6 +109,24 @@ angular.module('ricardo.directives.barChart', [])
                   //     .style("width", wid + "px");
                   // });
 
+                  /* 50 line */
+              svg.append("line")
+                   .attr("x1", 0)
+                   .attr("y1", y(50))
+                   .attr("x2", width)
+                   .attr("y2", y(50))
+                   .attr("stroke-width", 1)
+                   .attr("stroke", "grey");
+
+                  /* 100 line */
+              svg.append("line")
+                   .attr("x1", 0)
+                   .attr("y1", y(100))
+                   .attr("x2", width)
+                   .attr("y2", y(100))
+                   .attr("stroke-width", 1)
+                   .attr("stroke", "grey");
+                   
             function type(d) {
 
               d.nb_reporting = +d.nb_reporting;

@@ -46,6 +46,8 @@
 <div class="container">
   <div class="row">
       <div id="countryBrushing" class="col-sm-12">
+        <br>
+        <br>
         <h4>Available and unavailable data for {{entities.sourceEntity.selected.RICname}}</h4>
         <!-- <p class="paragraphViz">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
@@ -86,6 +88,8 @@
 
 
 <div class="container">
+  <br>
+  <br>
   <h4> Trade of reporting with partners sorted by
   <div class="inline-select">   
       <ui-select ng-model="grouped.selected" theme="bootstrap" on-select="someFunction(grouped.selected)">
@@ -226,10 +230,12 @@
       <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
       
       <span class="close-btn">
-        <i class="fa fa-times"></i>
+       <i class="fa fa-times-circle"></i>
       </span>
       <span ng-if="!$last">, </span>
-      </span>, {{selectedMinDate}} – {{selectedMaxDate}}, in   
+      </span>, 
+      <br/>
+      {{selectedMinDate}} – {{selectedMaxDate}}, in   
       <div class="inline-select">
         <ui-select ng-model="linechartCurrency.selected" theme="bootstrap">
         <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
@@ -247,8 +253,6 @@
         </choices>
       </ui-select>
     </div>
-
-      <i class="fa fa-info-circle"></i> 
       </h4>
         <!-- <p class="paragraphViz">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
@@ -261,18 +265,6 @@
     </div>
   </div>
   <div class="row"> 
-
-    <!-- <div class="col-md-12 filter-group">
-      <div class="btn-group pull-right">
-        <label class="btn btnLineChart" ng-model="yValue" btn-radio="'total'" uncheckable>Total</label>
-        <label class="btn btnLineChart" ng-model="yValue" btn-radio="'imp'" uncheckable>Imports</label>
-        <label class="btn btnLineChart" ng-model="yValue" btn-radio="'exp'" uncheckable>Exports</label>
-      </div>
-      <div class="btn-group pull-right" style="margin-right:30px;">
-        <label class="btn btnLineChart" ng-model="conversion" btn-radio="'sterling'" uncheckable>Sterling</label>
-        <label class="btn btnLineChart" ng-model="conversion" btn-radio="'value'" uncheckable>Percent</label>
-      </div>
-    </div> -->
   </div>
   <div id="select-lineChart">
     <div>

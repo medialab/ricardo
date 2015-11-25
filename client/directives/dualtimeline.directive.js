@@ -65,7 +65,7 @@ angular.module('ricardo.directives.dualTimeline', [])
               .scale(y)
               .orient("right")
               .ticks(4)
-              .tickSize(0)
+              .tickSize(width)
               .tickFormat(function(d,i){
                 var prefix = d3.formatPrefix(d)
                 if(i === 0){
@@ -189,7 +189,9 @@ angular.module('ricardo.directives.dualTimeline', [])
               .attr("font-size", "0.85em");
             }
 
-          /* select only imp & exp data from country selected */
+          /* 
+           * select only imp & exp data from country selected 
+           */
           var ImpExp = [];
           data.forEach(function (data) {
             if (data.year >= scope.startDate && data.year <= scope.endDate) {

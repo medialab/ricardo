@@ -48,7 +48,7 @@ angular.module('ricardo.controllers.world', [])
     $scope.order = "tot"
     $scope.currency = 0
     $scope.actualCurrency = "sterling pound"
-    $scope.gbContinent = 0;
+    // $scope.gbContinent = 0;
     $scope.RICentities = {}
     $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
           if(a.RICname < b.RICname) return -1;
@@ -58,10 +58,10 @@ angular.module('ricardo.controllers.world', [])
 
     $scope.reporting = [];
     $scope.reportingCountryEntities = [];
-    $scope.reportingColonialEntities = [];
-    $scope.reportingGeoEntities = [];
-    $scope.reportingContinentEntities = [];
-    $scope.reportingWorldEntities = [];
+    // $scope.reportingColonialEntities = [];
+    // $scope.reportingGeoEntities = [];
+    // $scope.reportingContinentEntities = [];
+    // $scope.reportingWorldEntities = [];
     $scope.missingData = [];
     $scope.viewTable = 0;
     $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
@@ -100,8 +100,8 @@ angular.module('ricardo.controllers.world', [])
       {type: {value: "imp",writable: true},name: {value: "Imports",writable: true}
     }];
 
-    $scope.linechartCurrency.selected = {type: {value :"sterling",writable: true},name: {value:"Sterling",writable: true}};
-    $scope.linechartFlow.selected = {type: {value :"total",writable: true},name: {value:"Total",writable: true}};  
+    $scope.linechartCurrency = {type: {value :"sterling",writable: true},name: {value:"Sterling",writable: true}};
+    $scope.linechartFlow = {type: {value :"total",writable: true},name: {value:"Total",writable: true}};  
 
     // Calling the API
     function init() {
@@ -111,16 +111,22 @@ angular.module('ricardo.controllers.world', [])
       
       $scope.RICentities = {};
 
-      $scope.reportingCountryEntities = reportingEntities.filter(function (d) {return d.type === "country"});
-      $scope.reportingColonialEntities = reportingEntities.filter(function (d) {return d.type === "colonial_area"});
-      $scope.reportingGeoEntities = reportingEntities.filter(function (d) {return d.type === "geographical_area"});
-      $scope.reportingContinentEntities = reportingEntities.filter(function (d) {return d.type === "continent"});
+      $scope.reportingCountryEntities1 = reportingEntities.filter(function (d) {return d.type === "country"});
+      $scope.reportingCountryEntities2 = reportingEntities.filter(function (d) {return d.type === "country"});
+      $scope.reportingCountryEntities3 = reportingEntities.filter(function (d) {return d.type === "country"});
+      $scope.reportingCountryEntities4 = reportingEntities.filter(function (d) {return d.type === "country"});
+      $scope.reportingCountryEntities5 = reportingEntities.filter(function (d) {return d.type === "country"});
+
+
+      // $scope.reportingColonialEntities = reportingEntities.filter(function (d) {return d.type === "colonial_area"});
+      // $scope.reportingGeoEntities = reportingEntities.filter(function (d) {return d.type === "geographical_area"});
+      // $scope.reportingContinentEntities = reportingEntities.filter(function (d) {return d.type === "continent"});
      
       $scope.reporting = []
       $scope.entities.sourceCountryEntity = {}
-      $scope.entities.sourceColonialEntity = {}
-      $scope.entities.sourceGeoEntity = {}
-      $scope.entities.sourceContinentEntity = {}
+      // $scope.entities.sourceColonialEntity = {}
+      // $scope.entities.sourceGeoEntity = {}
+      // $scope.entities.sourceContinentEntity = {}
 
       $scope.rawMinDate = d3.min( reportingWorldFlows, function(d) { return d.year; })
       $scope.rawMaxDate = d3.max( reportingWorldFlows, function(d) { return d.year; })
@@ -349,23 +355,23 @@ angular.module('ricardo.controllers.world', [])
 
     $scope.$watch('reporting', function (newValue, oldValue){
       if(newValue !== oldValue && newValue){
-        initLinechart($scope.reporting, $scope.linechartFlow.selected.type.value, $scope.linechartCurrency.selected.type.value);
+        initLinechart($scope.reporting, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);
         updateTableData();
         //updateDateRange();
       }
     }, true)
 
-    $scope.$watch('linechartFlow.selected', function (newValue, oldValue){
-      if(newValue !== oldValue && newValue){
-        initLinechart($scope.reporting, newValue.type.value, $scope.linechartCurrency.selected.type.value);
-      }
-    }, true)
+    // $scope.$watch('linechartFlow.selected', function (newValue, oldValue){
+    //   if(newValue !== oldValue && newValue){
+    //     initLinechart($scope.reporting, newValue.type.value, $scope.linechartCurrency.selected.type.value);
+    //   }
+    // }, true)
 
-    $scope.$watch('linechartCurrency.selected', function (newValue, oldValue){
-      if(newValue !== oldValue && newValue){
-        initLinechart($scope.reporting, $scope.linechartFlow.selected.type.value, newValue.type.value);
-      }
-    }, true)
+    // $scope.$watch('linechartCurrency.selected', function (newValue, oldValue){
+    //   if(newValue !== oldValue && newValue){
+    //     initLinechart($scope.reporting, $scope.linechartFlow.selected.type.value, newValue.type.value);
+    //   }
+    // }, true)
 
     $scope.pushReporting = function(elm){
       if($scope.reporting.length >= 5) return;
@@ -373,8 +379,8 @@ angular.module('ricardo.controllers.world', [])
         return d.RICid ? d.RICid : d.RICname }).indexOf(elm.RICid) > -1) return;
       elm["color"]=$scope.lineColors.pop()
       $scope.reporting.push(elm)
-      $scope.resetDD(elm.type)
-      initLinechart($scope.reporting, $scope.linechartFlow.selected.type.value, $scope.linechartCurrency.selected.type.value);
+      //$scope.resetDD(elm.type)
+      initLinechart($scope.reporting, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);
     }
 
     $scope.removeReporting = function(elm){
@@ -384,49 +390,40 @@ angular.module('ricardo.controllers.world', [])
       $scope.reporting.splice(i, 1);
       if ($scope.reporting.length === 0)
         d3.select("#linechart-world-container>svg").remove();
-      initLinechart($scope.reporting, $scope.linechartFlow.selected.type.value, $scope.linechartCurrency.selected.type.value);
+      initLinechart($scope.reporting, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);
     }
 
     $scope.resetDD = function(t){
-      if(t === "country"){$scope.entities.sourceCountryEntity.selected = undefined}
-      else if(t === "colonial_area"){$scope.entities.sourceColonialEntity.selected = undefined}
-      else if(t === "geographical_area"){
-        $scope.entities.sourceGeoEntity.selected = undefined
-        $scope.entities.sourceWorldEntity.selected = undefined
-      }else if(t === "continent"){$scope.entities.sourceContinentEntity.selected = undefined}
+      if(t === "country"){$scope.entities.sourceCountryEntity1 = undefined}
+      if(t === "country"){$scope.entities.sourceCountryEntity2 = undefined}
+      if(t === "country"){$scope.entities.sourceCountryEntity3 = undefined}
+      if(t === "country"){$scope.entities.sourceCountryEntity4 = undefined}
+      if(t === "country"){$scope.entities.sourceCountryEntity5 = undefined}
     }
 
-    $scope.$watch('entities.sourceCountryEntity', function (newVal, oldVal) {
-        if (newVal !== oldVal && newVal.selected) {
-          $scope.pushReporting(newVal.selected);
-        }
-    }, true);
+   /*
+    * Catch user action on filter and push country selected to array reporting
+    */
 
-    $scope.$watch('entities.sourceColonialEntity', function (newVal, oldVal) {
-        if (newVal !== oldVal && newVal.selected) {
-          $scope.pushReporting(newVal.selected)
-        }
-    }, true);
+    $scope.change = function (item){
+      $scope.pushReporting(item);
+    }
 
-    $scope.$watch('entities.sourceGeoEntity', function (newVal, oldVal) {
-        if (newVal !== oldVal && newVal.selected) {
-          $scope.pushReporting(newVal.selected)
-        }
-    }, true);
+    $scope.changeCurrency = function (currency) {
+      console.log("currency", currency)
+      initLinechart($scope.reporting, $scope.linechartFlow.type.value, currency.type.value);
+      $scope.linechartCurrency = currency;
+    }
 
-    $scope.$watch('entities.sourceContinentEntity', function (newVal, oldVal) {
-        if (newVal !== oldVal && newVal.selected) {
-          $scope.pushReporting(newVal.selected)
-        }
-    }, true);
+    $scope.changeFlow = function (flow) {
+      console.log("flow", flow)
+      initLinechart($scope.reporting, flow.type.value, $scope.linechartCurrency.type.value);
+      $scope.linechartFlow = flow;
+    }
 
-    $scope.$watch('entities.sourceWorldEntity', function (newVal, oldVal) {
-        if (newVal !== oldVal && newVal.selected) {
-          $scope.pushReporting(newVal.selected)
-        }
-    }, true);
-
-     /* Display and sort table data + download csv */
+   /* 
+    * Display and sort table data + download csv 
+    */
     
     $scope.totalServerItems = 0;
     $scope.pagingOptions = {
@@ -473,6 +470,10 @@ angular.module('ricardo.controllers.world', [])
         directions: ["asc"]
       }
     }
+
+    /*
+     * Trigger user interaction on table data
+     */
 
     $scope.$watch('tableData', function (newVal, oldVal) {
         if (newVal !== oldVal) {

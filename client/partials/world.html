@@ -34,6 +34,8 @@
     </div>
     <div class="row">
       <div class="col-sm-12">
+        <br>
+        <br>
         <h4>Number of reporting entities in estimating World trade</h4>
         <!-- <p class="paragraphViz">
           In this graph, bars represent for each year the sum of available reportings with Worldbestguess as partner 
@@ -58,16 +60,59 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12">
+      <br>
+      <br>
       <h4 class="titleDualTL">World trade comparaison with  
-      <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
-      
-      <span class="close-btn">
-        <i class="fa fa-times"></i>
-      </span>
-      <span ng-if="!$last">, </span>
-      </span>, {{selectedMinDate}} – {{selectedMaxDate}}, in   
+      <div class="inline-select" >
+        <ui-select  ng-model="entities.sourceCountryEntity1" theme="bootstrap" ng-change="change(entities.sourceCountryEntity1)" >
+          <match placeholder="Country" ng-style="{color:elm.color}" >{{$select.selected.RICname}}</match>
+          <choices repeat="item in reportingCountryEntities1 | filter: $select.search">
+            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
+      </div>
+      <div class="inline-select" >
+        <ui-select   ng-model="entities.sourceCountryEntity2" theme="bootstrap" ng-change="change(entities.sourceCountryEntity2)">
+          <match placeholder="Country">{{$select.selected.RICname}}</match>
+          <choices repeat="item in reportingCountryEntities2 | filter: $select.search">
+            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
+      </div>
+      <div class="inline-select" >
+        <ui-select   ng-model="entities.sourceCountryEntity3" theme="bootstrap" ng-change="change(entities.sourceCountryEntity3)">
+          <match placeholder="Country">{{$select.selected.RICname}}</match>
+          <choices repeat="item in reportingCountryEntities3 | filter: $select.search">
+            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
+      </div>
+      <div class="inline-select" >
+        <ui-select   ng-model="entities.sourceCountryEntity4" theme="bootstrap" ng-change="change(entities.sourceCountryEntity4)">
+          <match placeholder="Country">{{$select.selected.RICname}}</match>
+          <choices repeat="item in reportingCountryEntities4 | filter: $select.search">
+            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
+      </div>
+      <div class="inline-select" >
+        <ui-select   ng-model="entities.sourceCountryEntity5" theme="bootstrap" ng-change="change(entities.sourceCountryEntity5)">
+          <match placeholder="Country">{{$select.selected.RICname}}</match>
+          <choices repeat="item in reportingCountryEntities5 | filter: $select.search">
+            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
+      </div>
+      <!-- <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
+        <span class="close-btn">
+          <i class="fa fa-times-circle"></i>
+        </span>
+        <span ng-if="!$last">, </span>
+      </span>, -->
+      <br/> 
+      {{selectedMinDate}} – {{selectedMaxDate}}, in   
       <div class="inline-select">
-        <ui-select ng-model="linechartCurrency.selected" theme="bootstrap">
+        <ui-select ng-model="linechartCurrency" theme="bootstrap" ng-change="changeCurrency(linechartCurrency)">
         <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
         <choices repeat="item in linechartCurrencyChoices | filter: $select.search">
           <div ng-bind-html="item.name.value | highlight: $select.search"></div>
@@ -76,15 +121,13 @@
     </div> 
     for
     <div class="inline-select">
-        <ui-select ng-model="linechartFlow.selected" theme="bootstrap">
+        <ui-select ng-model="linechartFlow" theme="bootstrap" ng-change="changeFlow(linechartFlow)">
         <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
         <choices repeat="item in linechartFlowChoices | filter: $select.search">
           <div ng-bind-html="item.name.value | highlight: $select.search"></div>
         </choices>
       </ui-select>
     </div>
-
-      <i class="fa fa-info-circle"></i> 
       </h4>
         <p class="paragraphViz">
           In this graph the <a href="/#/#worldTrade">World trade / Total trade</a> of a country is the <a href="/#/#worldbestguess">World best guess</a> 
@@ -96,22 +139,8 @@
         </div>
     </div>
   </div>
-
-  <!-- <div class="row">  
-    <div class="col-sm-12 filter-group" >
-        <div class="btn-group pull-right">
-          <label class="btn btnLineChart" ng-model="yValue" btn-radio="'total'" uncheckable>Total</label>
-          <label class="btn btnLineChart" ng-model="yValue" btn-radio="'imp'" uncheckable>Imports</label>
-          <label class="btn btnLineChart" ng-model="yValue" btn-radio="'exp'" uncheckable>Exports</label>
-        </div>
-        <div class="btn-group pull-right" style="margin-right:30px;">
-          <label class="btn btnLineChart" ng-model="conversion" btn-radio="'sterling'" uncheckable>Sterling</label>
-          <label class="btn btnLineChart" ng-model="conversion" btn-radio="'value'" uncheckable>Percent</label>
-        </div>
-    </div>
-  </div> -->
   <div id="select-lineChart">
-    <div>
+    <!-- <div>
       <h3 class="subtitle col-md-3">Select up to 5 reportings :</h3>
     </div>
     <div class="select-dropdown col-md-9" style="padding-top:10px;">
@@ -125,35 +154,8 @@
         </ui-select>
       </div>
 
-   <!--  <div class="inline-select" >
-      <ui-select  ng-model="entities.sourceColonialEntity.selected" theme="bootstrap">
-        <match placeholder="Colonial area">{{$select.selected.RICname}}</match>
-        <choices repeat="item in reportingColonialEntities | filter: $select.search">
-          <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-        </choices>
-      </ui-select>
-    </div> -->
-      <!-- no need geoEntities beacause there is no data for this entity with worldbestguess -->
-    <!-- <div class="inline-select" >
-      <ui-select  ng-model="entities.sourceGeoEntity.selected" theme="bootstrap">
-        <match placeholder="Geographical area">{{$select.selected.RICname}}</match>
-        <choices repeat="item in reportingGeoEntities | filter: $select.search">
-          <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-        </choices>
-      </ui-select>
     </div>
-
-    <div class="inline-select" >
-      <ui-select  ng-model="entities.sourceContinentEntity.selected" theme="bootstrap">
-        <match placeholder="Continent">{{$select.selected.RICname}}</match>
-        <choices repeat="item in reportingContinentEntities | filter: $select.search">
-          <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-        </choices>
-      </ui-select>
-    </div> -->
-
-  </div>
-
+ -->
   <div class="row">
     <div class="col-sm-12">
       <linechart-world ng-data="linechartData">

@@ -65,25 +65,6 @@ angular.module('ricardo.controllers.country', [])
       {type: {value: "average",writable: true},name: {value: "Average share",writable: true}
     }];
 
-    /*
-     * Line chart filters
-     */
-
-
-
-    // $scope.lineSterling = {};
-    // $scope.lineSterlings = [
-    //   {type: {value: "sterling",writable: true},name: {value: "Sterling",writable: true}},
-    //   {type: {value: "value",writable: true},name: {value: "Percent",writable: true}
-    // }];
-
-    // $scope.lineFlowsType = {};
-    // $scope.lineFlowsTypes = [
-    //   {type: {value: "sterling",writable: true},name: {value: "Sterling",writable: true}},
-    //   {type: {value: "sterling",writable: true},name: {value: "Sterling",writable: true}},
-    //   {type: {value: "value",writable: true},name: {value: "Percent",writable: true}
-    // }];
-
     $scope.linechartCurrency = {}
     $scope.linechartCurrencyChoices = [
       {type: {value: "sterling",writable: true},
@@ -110,8 +91,6 @@ angular.module('ricardo.controllers.country', [])
       sourceContinentEntity : {}, 
       sourceWorldEntity : {}
     }
-
-
 
     $scope.filter = "all"
     $scope.order = "tot"
@@ -318,38 +297,6 @@ angular.module('ricardo.controllers.country', [])
       });
     }
 
-    // change this function to make only two array, one before and one after date limits
-    // function initTabLineChart(result, yearSelected, type, ric, dateMin, dateMax ) {
-    //   for (var i = dateMin; i <= dateMax; i++) {
-    //     yearSelected.push({
-    //       reporting_id: ric,
-    //       type: type,
-    //       partner_id:"Worldbestguess",
-    //       year: i, 
-    //       imp: null,
-    //       exp: null, 
-    //       total: null, 
-    //       currency:null,
-    //       sources:null
-    //       });                      
-    //   }
-
-    //   yearSelected.forEach( function (d) {
-    //     result.flows.forEach( function (e) {
-    //       if (d.year === e.year && d.year >= dateMin && d.year <= dateMax) {
-    //         d.exp = e.exp; 
-    //         d.imp = e.imp;
-    //         d.currency = e.currency,
-    //         d.sources = e.sources
-    //         d.total = e.exp + e.imp;
-    //         if (d.total === 0)
-    //           d.total = null;
-    //       }
-    //     })
-    //   })
-    //   return yearSelected;
-    // }
-
     function initLineChart2(linechart_flows, yearSelected, linechartData, ric, yValue, color) {
         var countryTab = {};
         countryTab.values = yearSelected;
@@ -362,8 +309,6 @@ angular.module('ricardo.controllers.country', [])
       })
     }
 
-
-    // change comparaison to have !continent
     var initLinechart = function(partners, yValue, conversion){   
         var linechart_flows=[]
         if(partners.length>0 && conversion === "sterling" )
@@ -684,20 +629,6 @@ angular.module('ricardo.controllers.country', [])
     }
 
     /* 
-     * Function to display message when no entity selected
-     */
-    function selectData() {
-          d3.select("#linechart-world-container").append("div")
-            .attr("class", "selectData")
-            .html(function() {
-               return '<div class="selectData" > Select an entity please </div>';})
-        }
-
-    if ($scope.reporting.length === 0) {
-        selectData();
-      }
-
-    /* 
      * Push item in array to display line chart 
      */
 
@@ -707,12 +638,6 @@ angular.module('ricardo.controllers.country', [])
       elm["color"]=$scope.lineColors.pop()
       $scope.reporting.push(elm)
       $scope.resetDD(elm.type)
-
-
-      if($scope.reporting.length >= 1) {
-        d3.selectAll(".selectData").remove();
-      }
-
       addReportingToLocalStorage($scope.reporting);
       initLinechart($scope.reporting, $scope.linechartFlow.selected, $scope.linechartCurrency.selected);
     }
@@ -725,11 +650,7 @@ angular.module('ricardo.controllers.country', [])
       var i = $scope.reporting.map(function (d){return d.RICid}).indexOf(elm.RICid)
       $scope.lineColors.push(elm["color"])
       $scope.reporting.splice(i, 1);
-
-      if ($scope.reporting.length === 0) {
-        d3.select("#linechart-world-container > svg").remove();
-        selectData();
-      }
+      d3.select("#linechart-world-container > svg").remove();
       initLinechart($scope.reporting, $scope.linechartFlow.selected, $scope.linechartCurrency.selected);
     }
 

@@ -11,14 +11,15 @@ angular.module('ricardo', [
   'ngGrid',
   'angular-loading-bar',
   'pascalprecht.translate',
+  'oc.lazyLoad',
   'ricardo.filters',
   'ricardo.services',
   'ricardo.directives',
   'ricardo.controllers.navbar',
-  'ricardo.controllers.TranslateController',
-  'ricardo.controllers.bilateral',
-  'ricardo.controllers.country',
-  'ricardo.controllers.world'
+  'ricardo.controllers.TranslateController'
+  // 'ricardo.controllers.bilateral',
+  // 'ricardo.controllers.country',
+  // 'ricardo.controllers.world'
   ]).
 config(['$routeProvider', function($routeProvider) {
 
@@ -29,6 +30,15 @@ config(['$routeProvider', function($routeProvider) {
     templateUrl: 'partials/bilateral.html',
     controller: 'bilateral',
     resolve: {
+      lazy: ['$ocLazyLoad', function($ocLazyLoad) {
+          return $ocLazyLoad.load({
+              name: 'ricardo',
+              files: [
+                  'controllers/bilateral.controller.js',
+                  'directives/comparisonTimeline.directive.js'
+              ]
+          })
+      }],
       reportingEntities : function (apiService) {
         return apiService.getReportingEntities({'type_filter': 'country'})
       }
@@ -38,6 +48,15 @@ config(['$routeProvider', function($routeProvider) {
     templateUrl: 'partials/country.html',
     controller: 'country',
     resolve: {
+      lazy: ['$ocLazyLoad', function($ocLazyLoad) {
+          return $ocLazyLoad.load({
+              name: 'ricardo',
+              files: [
+                  'controllers/country.controller.js',
+                  'directives/partnersHistogram.directive.js'
+              ]
+          })
+      }],
       reportingEntities : function (apiService) {
         return apiService.getReportingEntities({'type_filter': 'country'})
       }
@@ -47,6 +66,15 @@ config(['$routeProvider', function($routeProvider) {
     templateUrl: 'partials/world.html',
     controller: 'world',
     resolve: {
+      lazy: ['$ocLazyLoad', function($ocLazyLoad) {
+          return $ocLazyLoad.load({
+              name: 'ricardo',
+              files: [
+                  'controllers/world.controller.js',
+                  'directives/barChart.directive.js'
+              ]
+          })
+      }],
       reportingEntities : function (apiService) {
         return apiService.getReportingEntities({'partners_ids': 'Worldbestguess'})
       },

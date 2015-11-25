@@ -9,9 +9,9 @@ angular.module('ricardo.directives', [
 	'ricardo.directives.inlineSelectCurrency',
 	'ricardo.directives.inlineSelectYear',
 	'ricardo.directives.linechartTitle',
-	'ricardo.directives.comparisonTimeline',
+	// 'ricardo.directives.comparisonTimeline',
 	'ricardo.directives.brushingTimeline',
-	'ricardo.directives.partnersHistogram',
-	'ricardo.directives.barChart',
+	// 'ricardo.directives.partnersHistogram',
+	// 'ricardo.directives.barChart',
 	'ricardo.directives.linechartWorld'
 ])

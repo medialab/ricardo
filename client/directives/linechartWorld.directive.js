@@ -44,10 +44,6 @@ angular.module('ricardo.directives.linechartWorld', [])
             else
               yValueSelect = newValue[0].type ? newValue[0].type : newValue[0].flowType;           
 
-            // var missing;
-            // var allExpNull = newValue[0].values.every(function (d) {return d.exp === null ;})
-            // var allImpNull = newValue[0].values.every(function (d) {return d.imp === null ;})
-
             for (var i = 0, len = newValue.length; i < len ; i++)
             {
               var allExpNull = newValue[0].values.every(function (d) {return d.exp === null ;})
@@ -95,8 +91,6 @@ angular.module('ricardo.directives.linechartWorld', [])
 
           var y = d3.scale.linear()
               .range([chartHeight, 0]);
-
-          // var colorDomain = sort;
 
           var yMax = d3.max(data, function(elm) {return d3.max(elm.values, function(d) { return d[yValue]; }); });
           var xMax = d3.max(data, function(elm) {return d3.max(elm.values, function(d) { return new Date(d.year, 0, 1) }); });

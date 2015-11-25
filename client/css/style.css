@@ -102,7 +102,9 @@
     }
 }*/
 
-/* alert */
+/* 
+ * Alert 
+ */
 
 .alert{
   top: 50%;
@@ -117,7 +119,10 @@
   color:#555;
 }
 
-/* modal */
+/* 
+ * Modal 
+ */
+
 .modal-content{
   border-radius: 0px;
   text-align: center;
@@ -127,7 +132,9 @@
   text-align: center;
 }
 
-/* Global style */
+/* 
+ * Global style 
+ */
 
 body {
     font-family: 'merriweather', 'Georgia', serif;
@@ -139,9 +146,6 @@ h1,h2,h3,h4{
     font-weight: bold;
 }
 
-
-.Exp {
-}
 
 /* Sticky footer styles
 -------------------------------------------------- */
@@ -182,7 +186,9 @@ body > .container {
   padding-left: 15px;
 }
 
-/* Home */
+/* 
+ * Home 
+ */
 
 #homeImage {
   height: 300px;
@@ -223,6 +229,10 @@ body > .container {
   line-height: 40px;
 }
 
+#homeSubtitle {
+  font-size: 20px;
+}
+
 .workingPaperContainer {
   margin-top: 40px;
 }
@@ -255,7 +265,6 @@ padding:0; margin:0;
   line-height: 30px;
 }
 .studyDescription {
-  /*margin-top: 10px;*/
   font-family: 'montserrat';
   font-weight: 400;
   padding: 10px 0px;
@@ -375,7 +384,9 @@ li.storyline {
   color: white;
 }
 
-/* navbar */
+/* 
+ * Navbar 
+ */
 
 #nav .navbar{
   background: white;
@@ -428,7 +439,9 @@ li.storyline {
   padding-top: 15px;
 }
 
-/* text presentation and definition */
+/* 
+ * Text presentation and definition 
+ */
 .paragraphPage {
   width:66%;
   font-size: 12px;
@@ -455,7 +468,9 @@ li.storyline {
 }
 
 
-/* select geo-entities dropdown*/
+/* 
+ * Select geo-entities dropdown 
+ */
 
 #select{
   background-color: white;
@@ -521,7 +536,9 @@ li.storyline {
   padding: 10px 20px;
 }
 
-/* inline selector */
+/* 
+ * Inline selector 
+ */
 
 .filterSelection {
   padding-top: 10px;
@@ -602,7 +619,9 @@ li.storyline {
   color:#999;
 }
 
-/* timeline */
+/* 
+ * Timeline 
+ */
 
 #dual-timeline-container>svg, #comparison-timeline-container>svg{
   padding-top: 10px;
@@ -700,7 +719,9 @@ h4{
   padding-bottom: 0px;
 }
 
-/* Legend */
+/* 
+ * Legend 
+ */
 
 .legend .legend-item{
   display: inline-block;
@@ -1011,7 +1032,6 @@ path.lineTrajectory {
 .close-btn { 
     position: relative;
     padding: 1px 5px;
-    top: -10px;
 }
 
 #partners-histograms-container {

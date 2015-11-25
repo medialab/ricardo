@@ -67,7 +67,37 @@ angular.module('ricardo.services', [])
             }  
           }
           return linechart_flows;
-      },    
+      },
+      initTabLineChart: function (result, yearSelected, type, ric, dateMin, dateMax )  {
+        for (var i = dateMin; i <= dateMax; i++) {
+        yearSelected.push({
+          reporting_id: ric,
+          type: type,
+          partner_id:"Worldbestguess",
+          year: i, 
+          imp: null,
+          exp: null, 
+          total: null, 
+          currency:null,
+          sources:null
+          });                      
+      }
+
+      yearSelected.forEach( function (d) {
+        result.flows.forEach( function (e) {
+          if (d.year === e.year && d.year >= dateMin && d.year <= dateMax) {
+            d.exp = e.exp; 
+            d.imp = e.imp;
+            d.currency = e.currency,
+            d.sources = e.sources
+            d.total = e.exp + e.imp;
+            if (d.total === 0)
+              d.total = null;
+          }
+        })
+      })
+      return yearSelected;
+      }   
     }
   })
   .factory('apiService', function($http, $q, $rootScope, BASE_API_URL) {
