@@ -206,7 +206,7 @@ angular.module('ricardo.controllers.country', [])
           })
 
           /*
-           *  Init all entities by types' filters for linechart viz
+           *  Init all entities by types filters for linechart viz
            */
 
           $scope.reportingCountryEntities = $scope.RICentitiesDD.filter(function(d){
@@ -426,6 +426,11 @@ angular.module('ricardo.controllers.country', [])
       if($scope.reporting.map(function (d){return d.RICid}).indexOf(elm.RICid) > -1) return;
       elm["color"]=$scope.lineColors.pop()
       $scope.reporting.push(elm)
+      if ($scope.reporting.length >= 1)
+      {
+        console.log("reporting")
+        $('.collapse').collapse()
+      }
       $scope.resetDD(elm.type)
       addReportingToLocalStorage($scope.reporting);
       initLinechart($scope.reporting, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);

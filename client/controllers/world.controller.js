@@ -377,7 +377,14 @@ angular.module('ricardo.controllers.world', [])
         return d.RICid ? d.RICid : d.RICname }).indexOf(elm.RICid) > -1) return;
       elm["color"]=$scope.lineColors.pop()
       $scope.reporting.push(elm)
+      
+      // if ($scope.reporting.length >= 1)
+      // {
+      //   console.log("reporting")
+      //   $('.collapse').collapse()
+      // }
       //$scope.resetDD(elm.type)
+
       initLinechart($scope.reporting, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);
     }
 

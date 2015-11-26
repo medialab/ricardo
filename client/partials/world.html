@@ -63,7 +63,7 @@
       <br>
       <br>
       <h4 class="titleDualTL">World trade comparaison with  
-      
+
       <div class="inline-select" >
         <ui-select  ng-model="entities.sourceCountryEntity1" theme="bootstrap" ng-change="change(entities.sourceCountryEntity1)" >
           <match placeholder="Country" ng-style="{color:elm.color}" >{{$select.selected.RICname}}</match>
@@ -72,6 +72,7 @@
           </choices>
         </ui-select>
       </div>
+
       <div class="inline-select" >
         <ui-select   ng-model="entities.sourceCountryEntity2" theme="bootstrap" ng-change="change(entities.sourceCountryEntity2)">
           <match placeholder="Country">{{$select.selected.RICname}}</match>
@@ -80,6 +81,7 @@
           </choices>
         </ui-select>
       </div>
+
       <div class="inline-select" >
         <ui-select   ng-model="entities.sourceCountryEntity3" theme="bootstrap" ng-change="change(entities.sourceCountryEntity3)">
           <match placeholder="Country">{{$select.selected.RICname}}</match>
@@ -88,6 +90,7 @@
           </choices>
         </ui-select>
       </div>
+
       <div class="inline-select" >
         <ui-select   ng-model="entities.sourceCountryEntity4" theme="bootstrap" ng-change="change(entities.sourceCountryEntity4)">
           <match placeholder="Country">{{$select.selected.RICname}}</match>
@@ -96,6 +99,7 @@
           </choices>
         </ui-select>
       </div>
+      
       <div class="inline-select" >
         <ui-select   ng-model="entities.sourceCountryEntity5" theme="bootstrap" ng-change="change(entities.sourceCountryEntity5)">
           <match placeholder="Country">{{$select.selected.RICname}}</match>
@@ -140,7 +144,7 @@
         </div>
     </div>
   </div>
-  <div id="select-lineChart">
+  <div id="select-lineChart" class="collapse">
     <!-- <div>
       <h3 class="subtitle col-md-3">Select up to 5 reportings :</h3>
     </div>

@@ -13,9 +13,13 @@ from flask.ext.cors import CORS
 # ricardo
 import config
 
+from flask.ext.compress import Compress
+
 app = Flask(__name__)
+# app.run(threaded=True)
 cors = CORS(app)
 app.config.from_object(config)
+Compress(app)
 
 # logging
 handler = RotatingFileHandler(os.path.join(os.path.dirname(os.path.realpath(__file__)),'ricardoapi.log'), maxBytes=10000, backupCount=1)

@@ -184,6 +184,33 @@ def get_world_flows(from_year,to_year):
 
     return json.dumps(json_response,encoding="UTF8")
 
+def get_continent_nb_partners(from_year, to_year):
+  cursor = get_db().cursor()
+  from_year_clause = """ AND Yr>%s"""%from_year if from_year!="" else ""
+  to_year_clause = """ AND Yr<%s"""%to_year if to_year!="" else ""
+  print from_year_clause, to_year_clause
+  cursor.execute("""SELECT RIC_reporting.continent as reporting_continent, RIC_partner.continent as partner_continent,
+                    Yr, COUNT(distinct(RIC_partner.id)) as nb_partners
+                    FROM flow_joined
+                    %s
+                    INNER JOIN RICentities as RIC_reporting 
+                      on flow_joined.reporting_id = RIC_reporting.id 
+                    INNER JOIN RICentities as RIC_partner 
+                      on flow_joined.partner_id = RIC_partner.id
+                    GROUP BY Yr, reporting_continent, partner_continent
+                    """%(from_year_clause+to_year_clause)
+                )
+
+  json_response=[]
+  for (reporting_continent, partner_continent, year, nb_partners) in cursor:
+    json_response.append({
+      "year":year,
+      "reporting_continent": reporting_continent,
+      "partner_continent": partner_continent,
+      "nb_partners": nb_partners
+      })
+
+    return json.dumps(json_response,encoding="UTF8")
 
 def get_flows(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources):
 

@@ -4,6 +4,8 @@ from flask import request
 from flask import Response
 from flask import abort
 from flask import jsonify
+from cStringIO import StringIO as IO
+import gzip
 
 import ricardo_api.models as models
 
@@ -28,7 +30,9 @@ def flows():
     except Exception as e:
         app.logger.exception("exception occurs in flows")
         abort(500)
+
     return Response(json_data, status=200, mimetype='application/json')
+
 
 def split_listarg(req, key):
     arg = request.args.get(key, '')
@@ -69,6 +73,18 @@ def world_flows():
         abort(500)
     return Response(json_data, status=200, mimetype='application/json')
 
+@app.route('/continent_with_partners')
+def continent_with_partners():
+    flow_field = request.args.get('flow_field', '')
+    with_sources = request.args.get('with_sources', '0') == '1'
+    from_year = request.args.get('from', '')
+    to_year = request.args.get('to', '')
+    try:
+        json_data = models.get_continent_nb_partners(from_year, to_year)
+    except Exception as e:
+        app.logger.exception("exception occurs in flows")
+        abort(500)
+    return Response(json_data, status=200, mimetype='application/json')
 
 @app.route('/reporting_entities')
 def reporting_entities():
