@@ -243,6 +243,7 @@ angular.module('ricardo.controllers.country', [])
           $scope.entities.sourceColonialEntity = {}
           $scope.entities.sourceGeoEntity = {}
           $scope.entities.sourceContinentEntity = {}
+          $scope.entities.sourceWorldEntity = {}
 
           $scope.rawMinDate = d3.min( data.flows, function(d) {return d.year; })
           $scope.rawMaxDate = d3.max( data.flows, function(d) {return d.year; })

@@ -228,11 +228,11 @@
     <div>
       <h4 class="subtitle col-md-2" style="width:190px;">select up to 5 partners:</h4>
     </div>
-    <div class="col-md-9"  style="padding-top:10px;">
+  <div class="col-md-9"  style="padding-top:10px;">
     
     <div class="inline-select" >
-      <ui-select   ng-model="entities.sourceCountryEntity" theme="bootstrap"  ng-change="changeCountry(entities.sourceCountryEntity)">
-        <match placeholder="Country"></match>
+      <ui-select   ng-model="entities.sourceCountryEntity.selected" theme="bootstrap"  ng-change="changeCountry(entities.sourceCountryEntity.selected)">
+        <match placeholder="Country">{{$select.selected.RICname}}</match>
         <choices repeat="item in reportingCountryEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
@@ -240,7 +240,7 @@
     </div>
 
     <div class="inline-select">
-      <ui-select  ng-model="entities.sourceColonialEntity" theme="bootstrap"  ng-change="changeColonial(entities.sourceColonialEntity)">
+      <ui-select  ng-model="entities.sourceColonialEntity.selected" theme="bootstrap"  ng-change="changeColonial(entities.sourceColonialEntity.selected)">
         <match placeholder="Colonial area"></match>
         <choices repeat="item in reportingColonialEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
@@ -249,7 +249,7 @@
     </div>
 
     <div class="inline-select">
-      <ui-select  ng-model="entities.sourceGeoEntity" theme="bootstrap" ng-show="reportingGeoEntities.length" ng-change="changeGeo(entities.sourceGeoEntity)">
+      <ui-select  ng-model="entities.sourceGeoEntity.selected" theme="bootstrap" ng-show="reportingGeoEntities.length" ng-change="changeGeo(entities.sourceGeoEntity.selected)">
         <match placeholder="Geographical area"></match>
         <choices repeat="item in reportingGeoEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
@@ -258,7 +258,7 @@
     </div>
 
     <div class="inline-select">
-      <ui-select  ng-model="entities.sourceContinentEntity" theme="bootstrap" ng-show="reportingContinentEntities.length" ng-change="changeContinent(entities.sourceContinentEntity)">
+      <ui-select  ng-model="entities.sourceContinentEntity.selected" theme="bootstrap" ng-show="reportingContinentEntities.length" ng-change="changeContinent(entities.sourceContinentEntity.selected)">
         <match placeholder="Continent"></match>
         <choices repeat="item in reportingContinentEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
@@ -267,13 +267,14 @@
     </div>
 
     <div class="inline-select">
-      <ui-select  ng-model="entities.sourceWorldEntity" theme="bootstrap" ng-show="reportingWorldEntities.length" ng-change="changeWorld(entities.sourceWorldEntity)">
+      <ui-select  ng-model="entities.sourceWorldEntity.selected" theme="bootstrap" ng-show="reportingWorldEntities.length" ng-change="changeWorld(entities.sourceWorldEntity.selected)">
         <match placeholder="World trade"></match>
         <choices repeat="item in reportingWorldEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
       </ui-select>
     </div>
+
   </div>
     
   <div class="row">
