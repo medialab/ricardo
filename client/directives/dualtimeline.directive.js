@@ -50,7 +50,9 @@ angular.module('ricardo.directives.dualTimeline', [])
               width = document.querySelector('#dual-timeline-container').offsetWidth - margin.left - margin.right,
               height = 180 - margin.top - margin.bottom;
 
-          /* config axis */
+          /* 
+           * Config axis 
+           */
           x = d3.time.scale()
               .range([0, width]);
 
@@ -87,9 +89,13 @@ angular.module('ricardo.directives.dualTimeline', [])
               })
 
            x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
-           y.domain([0, d3.max( data.filter(function(d){  return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) { return Math.max( d.imp, d.exp ); })]);
+           y.domain([0, d3.max( data.filter(function(d){ return d.year >= scope.startDate 
+            && d.year <= scope.endDate}), function(d) { return Math.max( d.imp, d.exp ); })]);
 
-          /* draw areas & lines */
+          /* 
+           * Draw areas & lines 
+           */
+
           areaImp = d3.svg.area()
               .defined(function(d) { return d.imp !== null; })
               .x(function(d) { return x(d.date); })
@@ -150,7 +156,9 @@ angular.module('ricardo.directives.dualTimeline', [])
               .attr("class", "line-exp")
               .attr("d", lineExp)
 
-          /* add axis to svg */
+          /* 
+           * Add axis to svg 
+           */
           var gy = svg.select("g.y.axis"),
               gx = svg.select("g.x.axis");
 
@@ -190,7 +198,7 @@ angular.module('ricardo.directives.dualTimeline', [])
             }
 
           /* 
-           * select only imp & exp data from country selected 
+           * Select only imp & exp data from country selected 
            */
           var ImpExp = [];
           data.forEach(function (data) {
@@ -203,10 +211,11 @@ angular.module('ricardo.directives.dualTimeline', [])
           voronoi(ImpExp, "points", svg, margin, height, width);
           
         }
-          /* voronoi fonction */
+          /* 
+           * Voronoi fonction 
+           */
+
           function voronoi(data, yValue, svg, margin, height, width) {
-            
-            
             var voronoi = d3.geom.voronoi()
             .x(function(d) { return x(new Date(d.year, 0, 1)); })
             .y(function(d) { return y(d[yValue]); })
@@ -249,12 +258,6 @@ angular.module('ricardo.directives.dualTimeline', [])
                 .attr("y", -10)
                 .attr("text-anchor", "middle")
 
-            // svg.append("rect")
-            //     .attr("x", 100)
-            //     .attr("y", 100)
-            //     .attr("width", 10)
-            //     .attr("heigth", 15)
-
             var format = d3.format("0,000");
 
             function mouseover(d) {
@@ -267,7 +270,9 @@ angular.module('ricardo.directives.dualTimeline', [])
                   .attr("fill", colorPoint)
                   .text(format(Math.round(d[yValue])) + ' £');
                   
-                /* vertical line */
+                /* 
+                 * Vertical line 
+                 */
                 svg.append("line")
                      .attr("class", "lineDate")
                      .attr("x1", x(new Date(d.year, 0, 1)))
@@ -277,7 +282,9 @@ angular.module('ricardo.directives.dualTimeline', [])
                      .attr("stroke-width", 1)
                      .attr("stroke", "grey");
 
-                // add date
+                /* 
+                 * Add date
+                 */
                 var text = svg.append("text")
                      .attr("class", "lineDateText")
                      .attr("x", x(new Date(d.year, 0, 1)) - 15)
@@ -286,7 +293,9 @@ angular.module('ricardo.directives.dualTimeline', [])
                      .text(d.year);
 
 
-                // Define the gradient
+                /*
+                 *  Define the gradient
+                 */
                 var gradient = svg.append("svg:defs")
                     .append("svg:linearGradient")
                     .attr("id", "gradient")
@@ -296,7 +305,9 @@ angular.module('ricardo.directives.dualTimeline', [])
                     .attr("y2", "100%")
                     .attr("spreadMethod", "pad");
 
-                // Define the gradient colors
+                /*
+                 *  Define the gradient colors
+                 */
                 gradient.append("svg:stop")
                     .attr("offset", "0%")
                     .attr("stop-color", "#f5f5f5")
@@ -312,7 +323,9 @@ angular.module('ricardo.directives.dualTimeline', [])
                     .attr("stop-color", "#f5f5f5")
                     .attr("stop-opacity", 0.1);
 
-                // add rect as background to hide date display in 
+                /*
+                 *  Add rect as background to hide date display in 
+                 */
                 var bbox = text.node().getBBox();
                 var rect = svg.append("svg:rect")
                     .attr("class", "lineDateText")
@@ -323,7 +336,9 @@ angular.module('ricardo.directives.dualTimeline', [])
                     .style("fill", 'url(#gradient)')
 
 
-                // add date
+                /*
+                 * Add date
+                 */
                 var textDate = svg.append("text")
                      .attr("class", "lineDateText")
                      .attr("x", x(new Date(d.year, 0, 1)) - 15)

@@ -1,5 +1,3 @@
-<!-- <div id="sticky-marker"></div>
-<div id="sticky-container"> -->
 <div class="container">
     </br>
     </br>
@@ -9,15 +7,14 @@
     <div class="row" >
 
       <div class="timeline-cont col-sm-12">
-        <!-- <h4>Import and export evolution of World</h4> -->
         <world-title></world-title>
         <p class="paragraphViz">
          For more information about this graph, report to <a href="/#/#worldTrade">World trade / Total trade</a> 
         </p>
         <dual-timeline 
-        ng-data="timelineData" 
-        start-date="selectedMinDate" 
-        end-date="selectedMaxDate" 
+          ng-data="timelineData" 
+          start-date="selectedMinDate" 
+          end-date="selectedMaxDate" 
         ></dual-timeline>
         <div class="legend">
         <div class="legend-item">
@@ -37,9 +34,6 @@
         <br>
         <br>
         <h4>Number of reporting entities in estimating World trade</h4>
-        <!-- <p class="paragraphViz">
-          In this graph, bars represent for each year the sum of available reportings with Worldbestguess as partner 
-        </p> -->
         <bar-chart 
           ng-data="nbReportings"
           start-date="selectedMinDate"
@@ -55,7 +49,6 @@
       </div>
     </div>
 </div>
-<!-- </div> -->
 
 <div class="container">
   <div class="row">
@@ -72,47 +65,6 @@
           </choices>
         </ui-select>
       </div> :
-
-      <!-- <div class="inline-select" >
-        <ui-select   ng-model="entities.sourceCountryEntity2" theme="bootstrap" ng-change="change(entities.sourceCountryEntity2)">
-          <match placeholder="Country">{{$select.selected.RICname}}</match>
-          <choices repeat="item in reportingCountryEntities2 | filter: $select.search">
-            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-          </choices>
-        </ui-select>
-      </div>
-
-      <div class="inline-select" >
-        <ui-select   ng-model="entities.sourceCountryEntity3" theme="bootstrap" ng-change="change(entities.sourceCountryEntity3)">
-          <match placeholder="Country">{{$select.selected.RICname}}</match>
-          <choices repeat="item in reportingCountryEntities3 | filter: $select.search">
-            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-          </choices>
-        </ui-select>
-      </div>
-
-      <div class="inline-select" >
-        <ui-select   ng-model="entities.sourceCountryEntity4" theme="bootstrap" ng-change="change(entities.sourceCountryEntity4)">
-          <match placeholder="Country">{{$select.selected.RICname}}</match>
-          <choices repeat="item in reportingCountryEntities4 | filter: $select.search">
-            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-          </choices>
-        </ui-select>
-      </div>
-      
-      <div class="inline-select" >
-        <ui-select   ng-model="entities.sourceCountryEntity5" theme="bootstrap" ng-change="change(entities.sourceCountryEntity5)">
-          <match placeholder="Country" >
-          <span ng-style="{color:elm.color}">
-            
-          {{$select.selected.RICname}}
-          </span>
-          </match>
-          <choices repeat="item in reportingCountryEntities5 | filter: $select.search">
-            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-          </choices>
-        </ui-select>
-      </div> -->
       <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
         <span class="close-btn">
           <i class="fa fa-times-circle"></i>
@@ -150,22 +102,6 @@
     </div>
   </div>
   <div id="select-lineChart" >
-    <!-- <div>
-      <h3 class="subtitle col-md-3">Select up to 5 reportings :</h3>
-    </div>
-    <div class="select-dropdown col-md-9" style="padding-top:10px;">
-
-      <div class="inline-select" >
-        <ui-select   ng-model="entities.sourceCountryEntity.selected" theme="bootstrap">
-          <match placeholder="Country">{{$select.selected.RICname}}</match>
-          <choices repeat="item in reportingCountryEntities | filter: $select.search">
-            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-          </choices>
-        </ui-select>
-      </div>
-
-    </div>
- -->
   <div class="row">
     <div class="col-sm-12">
       <linechart-world ng-data="linechartData">

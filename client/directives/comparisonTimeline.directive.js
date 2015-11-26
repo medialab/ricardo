@@ -86,7 +86,7 @@ angular.module('ricardo.directives.comparisonTimeline', [])
               .scale(y)
               .orient("right")
               .ticks(4)
-              .tickSize(0)
+              .tickSize(width)
 
           x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
           y.domain([
@@ -165,7 +165,7 @@ angular.module('ricardo.directives.comparisonTimeline', [])
                .attr("x2", width)
                .attr("y2", y(0))
                .attr("stroke-width", 1)
-               .attr("stroke", "grey");
+               .attr("stroke", "#663333");
         
           /* axis */
 
