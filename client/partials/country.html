@@ -232,7 +232,7 @@
     
     <div class="inline-select" >
       <ui-select   ng-model="entities.sourceCountryEntity.selected" theme="bootstrap"  ng-change="changeCountry(entities.sourceCountryEntity.selected)">
-        <match placeholder="Country">{{$select.selected.RICname}}</match>
+        <match placeholder="Country"></match>
         <choices repeat="item in reportingCountryEntities | filter: $select.search">
           <div ng-bind-html="item.RICname | highlight: $select.search"></div>
         </choices>
@@ -278,7 +278,7 @@
   </div>
     
   <div class="row">
-    <div class="col-sm-12 collapse" id="collapseExample">
+    <div class="col-sm-12">
       <linechart-world ng-data="linechartData">
       </linechart-world>
     </div>

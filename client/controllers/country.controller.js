@@ -426,11 +426,6 @@ angular.module('ricardo.controllers.country', [])
       if($scope.reporting.map(function (d){return d.RICid}).indexOf(elm.RICid) > -1) return;
       elm["color"]=$scope.lineColors.pop()
       $scope.reporting.push(elm)
-      if ($scope.reporting.length >= 1)
-      {
-        console.log("reporting")
-        $('.collapse').collapse()
-      }
       $scope.resetDD(elm.type)
       addReportingToLocalStorage($scope.reporting);
       initLinechart($scope.reporting, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);
@@ -449,14 +444,13 @@ angular.module('ricardo.controllers.country', [])
     }
 
     $scope.resetDD = function(t){ 
-      console.log("t", t);
-      if(t === "country"){$scope.entities.sourceCountryEntity = undefined}
-      if(t === "colonial_area"){$scope.entities.sourceColonialEntity = undefined}
+      if(t === "country"){$scope.entities.sourceCountryEntity.selected = undefined}
+      if(t === "colonial_area"){$scope.entities.sourceColonialEntity.selected = undefined}
       if(t === "geographical_area"){
-        $scope.entities.sourceGeoEntity = undefined
-        $scope.entities.sourceWorldEntity = undefined
+        $scope.entities.sourceGeoEntity.selected = undefined
+        $scope.entities.sourceWorldEntity.selected = undefined
       }
-      if(t === "continent"){$scope.entities.sourceContinentEntity = undefined}
+      if(t === "continent"){$scope.entities.sourceContinentEntity.selected = undefined}
     }
 
     /*
@@ -465,7 +459,7 @@ angular.module('ricardo.controllers.country', [])
 
     function rollupYears(leaves){
           var res = {
-            exp: d3.sum(leaves, function(d){
+            exp: d3.sum(leaves, function(d){ 
               if (!/^World/.test(d.partner_id) )
                 return d.exp
               else
@@ -723,6 +717,7 @@ angular.module('ricardo.controllers.country', [])
 
 
     $scope.changeCountry = function (country) {
+      console.log("country", country);
       $scope.pushReporting(country)
     }
 

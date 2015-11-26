@@ -5,9 +5,9 @@
 angular.module('ricardo', [
   'ngRoute',
   'ngAnimate',
+  'ui.select',
   'ngSanitize',
   'ui.bootstrap',
-  'ui.select',
   'ngGrid',
   'angular-loading-bar',
   'pascalprecht.translate',
@@ -83,18 +83,6 @@ config(['$routeProvider', function($routeProvider) {
       }
     }
   });
-  $routeProvider.when('/RICentities', {
-    templateUrl: 'partials/RICentities.html',
-    controller: 'RICentities',
-    resolve: {
-      RICentities : function (apiService) {
-        return apiService.getRICEntities()
-      },
-      reportingEntities : function (apiService) {
-        return apiService.getReportingEntities()
-      },
-    }
-  });
   $routeProvider.when('/about', {
     templateUrl: 'partials/about.html',
     controller: 'about'
@@ -115,12 +103,7 @@ config(['$routeProvider', function($routeProvider) {
     });
     $translateProvider.preferredLanguage('en');
   });
-  // .config(function (uiSelectConfig) {
-  //   uiSelectConfig.theme = 'bootstrap';
-  //   uiSelectConfig.resetSearchInput = true;
-  //   uiSelectConfig.appendToBody = true;
-  // });
-
+  
 
 // Scroll spy for sticky brushing timeline
 // $(window).scroll(function(){

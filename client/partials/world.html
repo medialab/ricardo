@@ -65,15 +65,15 @@
       <h4 class="titleDualTL">World trade comparaison with  
 
       <div class="inline-select" >
-        <ui-select  ng-model="entities.sourceCountryEntity1" theme="bootstrap" ng-change="change(entities.sourceCountryEntity1)" >
-          <match placeholder="Country" ng-style="{color:elm.color}" >{{$select.selected.RICname}}</match>
+        <ui-select  ng-model="entities.sourceCountryEntity1.selected" theme="bootstrap" ng-change="change(entities.sourceCountryEntity1.selected)" >
+          <match placeholder="Country" ng-style="{color:elm.color}" ></match>
           <choices repeat="item in reportingCountryEntities1 | filter: $select.search">
             <div ng-bind-html="item.RICname | highlight: $select.search"></div>
           </choices>
         </ui-select>
-      </div>
+      </div> :
 
-      <div class="inline-select" >
+      <!-- <div class="inline-select" >
         <ui-select   ng-model="entities.sourceCountryEntity2" theme="bootstrap" ng-change="change(entities.sourceCountryEntity2)">
           <match placeholder="Country">{{$select.selected.RICname}}</match>
           <choices repeat="item in reportingCountryEntities2 | filter: $select.search">
@@ -102,18 +102,23 @@
       
       <div class="inline-select" >
         <ui-select   ng-model="entities.sourceCountryEntity5" theme="bootstrap" ng-change="change(entities.sourceCountryEntity5)">
-          <match placeholder="Country">{{$select.selected.RICname}}</match>
+          <match placeholder="Country" >
+          <span ng-style="{color:elm.color}">
+            
+          {{$select.selected.RICname}}
+          </span>
+          </match>
           <choices repeat="item in reportingCountryEntities5 | filter: $select.search">
             <div ng-bind-html="item.RICname | highlight: $select.search"></div>
           </choices>
         </ui-select>
-      </div>
-      <!-- <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
+      </div> -->
+      <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
         <span class="close-btn">
           <i class="fa fa-times-circle"></i>
         </span>
         <span ng-if="!$last">, </span>
-      </span>, -->
+      </span>
       <br/> 
       {{selectedMinDate}} – {{selectedMaxDate}}, in   
       <div class="inline-select">
@@ -144,7 +149,7 @@
         </div>
     </div>
   </div>
-  <div id="select-lineChart" class="collapse">
+  <div id="select-lineChart" >
     <!-- <div>
       <h3 class="subtitle col-md-3">Select up to 5 reportings :</h3>
     </div>

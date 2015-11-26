@@ -122,10 +122,6 @@ angular.module('ricardo.controllers.world', [])
        */
 
       $scope.reportingCountryEntities1 = reportingEntities.filter(function (d) {return d.type === "country"});
-      $scope.reportingCountryEntities2 = reportingEntities.filter(function (d) {return d.type === "country"});
-      $scope.reportingCountryEntities3 = reportingEntities.filter(function (d) {return d.type === "country"});
-      $scope.reportingCountryEntities4 = reportingEntities.filter(function (d) {return d.type === "country"});
-      $scope.reportingCountryEntities5 = reportingEntities.filter(function (d) {return d.type === "country"});
      
       $scope.reporting = []
       $scope.entities.sourceCountryEntity = {}
@@ -383,7 +379,7 @@ angular.module('ricardo.controllers.world', [])
       //   console.log("reporting")
       //   $('.collapse').collapse()
       // }
-      //$scope.resetDD(elm.type)
+      $scope.resetDD(elm.type)
 
       initLinechart($scope.reporting, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);
     }
@@ -399,11 +395,7 @@ angular.module('ricardo.controllers.world', [])
     }
 
     $scope.resetDD = function(t){
-      if(t === "country"){$scope.entities.sourceCountryEntity1 = undefined}
-      if(t === "country"){$scope.entities.sourceCountryEntity2 = undefined}
-      if(t === "country"){$scope.entities.sourceCountryEntity3 = undefined}
-      if(t === "country"){$scope.entities.sourceCountryEntity4 = undefined}
-      if(t === "country"){$scope.entities.sourceCountryEntity5 = undefined}
+      if(t === "country"){$scope.entities.sourceCountryEntity1.selected = undefined}
     }
 
    /*
