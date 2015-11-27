@@ -448,19 +448,21 @@ angular.module('ricardo.services', [])
       }).join('\n');
     }
 
-    function downloadCSV(data, headers, order) {
+    function downloadCSV(data, headers, order, fileName) {
       var csv = toCSVString(data, {headers: headers, order: order}),
-          blob = new Blob([csv], {type: 'text/csv;charset=utf-8'}),
+          blob = new Blob([csv], {type: "attachment/csv;charset=utf-8"}),
           dataUrl = URL.createObjectURL(blob);
 
-      var a = document.createElement('a');
-      a.href = dataUrl;
-      a.setAttribute('download', 'Export.csv');
-
+      var a = document.createElement("a");
+      a.style.display = 'none';
+      a.setAttribute("href", dataUrl);
+      document.body.appendChild(a);
+      a.setAttribute("download", fileName + ".csv");
       a.click();
+      document.body.removeChild(a);
 
-      a = null;
-      URL.revokeObjectURL(dataUrl);
+      // a = null;
+      // URL.revokeObjectURL(dataUrl);
     }
 
     return {
