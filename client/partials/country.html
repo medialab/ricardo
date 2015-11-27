@@ -103,21 +103,21 @@
   </div>
     on
   <div class="inline-select">
-      <ui-select ng-model="filtered" theme="bootstrap" ng-change="changeFilter(filtered)">
+    <ui-select ng-model="filtered" theme="bootstrap" ng-change="changeFilter(filtered)">
       <match placeholder="Filter by...">{{$select.selected.name.value}}</match>
       <choices repeat="item in filters | filter: $select.search">
         <div ng-bind-html="item.name.value | highlight: $select.search"></div>
       </choices>
-      </ui-select>
+    </ui-select>
   </div>
   by
   <div class="inline-select">
-      <ui-select ng-model="sorted" theme="bootstrap" ng-change="changeSort(sorted)">
+    <ui-select ng-model="sorted" theme="bootstrap" ng-change="changeSort(sorted)">
       <match placeholder="Sort by...">{{$select.selected.name.value}}</match>
       <choices repeat="item in sorts | filter: $select.search">
         <div ng-bind-html="item.name.value | highlight: $select.search"></div>
       </choices>
-      </ui-select>
+    </ui-select>
   </div>
    
   </h4>
@@ -201,15 +201,15 @@
       {{selectedMinDate}} – {{selectedMaxDate}}, in   
       <div class="inline-select">
         <ui-select ng-model="linechartCurrency" theme="bootstrap" ng-change="changeCurrency(linechartCurrency)">
-        <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
-        <choices repeat="item in linechartCurrencyChoices | filter: $select.search">
-          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-        </choices>
-      </ui-select>
+          <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
+          <choices repeat="item in linechartCurrencyChoices | filter: $select.search">
+            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
     </div> 
     for
     <div class="inline-select">
-        <ui-select ng-model="linechartFlow" theme="bootstrap" ng-change="changeFlow(linechartFlow)">
+      <ui-select ng-model="linechartFlow" theme="bootstrap" ng-change="changeFlow(linechartFlow)">
         <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
         <choices repeat="item in linechartFlowChoices | filter: $select.search">
           <div ng-bind-html="item.name.value | highlight: $select.search"></div>

@@ -349,6 +349,10 @@ angular.module('ricardo.controllers.country', [])
       }
     })
 
+    $scope.changeCountry = function (country) {
+      console.log("lol");
+    }
+
     /*
      * Update data table
      */
@@ -1074,6 +1078,8 @@ angular.module('ricardo.controllers.country', [])
      * Download functions to have data in csv
      */
     $scope.download = function() {
+      var fileName = "RICardo - Country - " + $scope.entities.sourceEntity.selected.RICid 
+      + ' - ' + $scope.selectedMinDate + ' - ' + $scope.selectedMaxDate;
       var headers = TABLE_HEADERS.map(function (h) {
         return h.displayName;
       });
@@ -1082,7 +1088,7 @@ angular.module('ricardo.controllers.country', [])
         return h.field;
       });
 
-      utils.downloadCSV($scope.tableData, headers, order);
+      utils.downloadCSV($scope.tableData, headers, order, fileName);
     };
 
     $scope.downloadCurrency = function() {
@@ -1097,7 +1103,11 @@ angular.module('ricardo.controllers.country', [])
             return h.field;
           });
 
-          utils.downloadCSV(result.flows, headers, order);
+          var fileName = "RICardo - Country - " + $scope.entities.sourceEntity.selected.RICid 
+          + ' - ' + $scope.selectedMinDate + ' - ' + $scope.selectedMaxDate
+          + ' - Original currency';
+
+          utils.downloadCSV(result.flows, headers, order, fileName);
       })
     };
   })

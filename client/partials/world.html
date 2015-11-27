@@ -75,15 +75,15 @@
       {{selectedMinDate}} – {{selectedMaxDate}}, in   
       <div class="inline-select">
         <ui-select ng-model="linechartCurrency" theme="bootstrap" ng-change="changeCurrency(linechartCurrency)">
-        <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
-        <choices repeat="item in linechartCurrencyChoices | filter: $select.search">
-          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-        </choices>
-      </ui-select>
+          <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
+          <choices repeat="item in linechartCurrencyChoices | filter: $select.search">
+            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
     </div> 
     for
     <div class="inline-select">
-        <ui-select ng-model="linechartFlow" theme="bootstrap" ng-change="changeFlow(linechartFlow)">
+      <ui-select ng-model="linechartFlow" theme="bootstrap" ng-change="changeFlow(linechartFlow)">
         <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
         <choices repeat="item in linechartFlowChoices | filter: $select.search">
           <div ng-bind-html="item.name.value | highlight: $select.search"></div>

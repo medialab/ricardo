@@ -5,10 +5,10 @@
 angular.module('ricardo', [
   'ngRoute',
   'ngAnimate',
-  'ui.select',
   'ngSanitize',
   'ui.bootstrap',
   'ngGrid',
+  'ui.select',
   'angular-loading-bar',
   'pascalprecht.translate',
   'oc.lazyLoad',

@@ -495,6 +495,7 @@ angular.module('ricardo.controllers.world', [])
     }, true);
 
     $scope.download = function() {
+      var fileName = "RICardo - World - " + $scope.selectedMinDate + ' - ' + $scope.selectedMaxDate;
       var headers = WORLD_TABLE_HEADERS.map(function(h) {
         return h.displayName;
       });
@@ -503,6 +504,6 @@ angular.module('ricardo.controllers.world', [])
         return h.field;
       });
 
-      utils.downloadCSV($scope.tableData, headers, order);
+      utils.downloadCSV($scope.tableData, headers, order, fileName);
     };
   })

@@ -292,7 +292,6 @@ angular.module('ricardo.directives.dualTimeline', [])
                      .attr("font-size", "0.85em")
                      .text(d.year);
 
-
                 /*
                  *  Define the gradient
                  */

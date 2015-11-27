@@ -384,6 +384,9 @@ angular.module('ricardo.controllers.bilateral', [])
     }, true);
 
     $scope.download = function() {
+      var fileName = "RICardo - Bilateral - " + $scope.entities.sourceEntity.selected.RICid 
+      + ' - ' + $scope.entities.targetEntity.selected.RICid + ' - ' + $scope.selectedMinDate
+      + ' - ' + $scope.selectedMaxDate;
       var headers = TABLE_HEADERS.map(function(h) {
         return h.displayName;
       });
@@ -392,6 +395,7 @@ angular.module('ricardo.controllers.bilateral', [])
         return h.field;
       });
 
-      utils.downloadCSV($scope.tableData, headers, order);
+      var data = $scope.tableData;
+      utils.downloadCSV(data, headers, order, fileName);
     };   
   })
