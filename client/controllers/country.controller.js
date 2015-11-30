@@ -170,11 +170,9 @@ angular.module('ricardo.controllers.country', [])
     function init(sourceID, currency) {
       apiService
         .getFlows({
-          reporting_ids: sourceID, 
-          original_currency: currency, 
-          with_sources:1})
-        .then(function (result) {
-          data = result
+          reporting_ids: sourceID
+        })
+        .then(function (data) {
           $scope.tableData = data.flows;
           $scope.selectedMinDate = 1600;                   
           $scope.selectedMaxDate = 2000;                   
@@ -304,7 +302,6 @@ angular.module('ricardo.controllers.country', [])
 
           initPartnerHisto($scope.tableData)
           
-
           /* 
            * Save all object in localStorage
            */
@@ -368,15 +365,6 @@ angular.module('ricardo.controllers.country', [])
         $scope.linechartCurrency.type.value);    }
 
     function updateTableData(){
-      // cfSource.year().filter(
-      //   function(d){ 
-      //   return new Date($scope.selectedMinDate-1,1,0) <= d && d< new Date($scope.selectedMaxDate + 1,1,0)}
-      // );
-
-      // $scope.tableData = cfSource.year().top(Infinity);
-
-      // $scope.tableData = 
-      
       var missing;
       var allExpNull = $scope.tableData.every(function (d) { 
         return d.exp === null;
@@ -796,8 +784,8 @@ angular.module('ricardo.controllers.country', [])
             apiService
               .getFlows({
                 reporting_ids: $scope.entities.sourceEntity.selected.RICid, 
-                partner_ids: d.RICid, 
-                with_sources: 1})
+                partner_ids: d.RICid
+              })
               .then(function (result) {
                 var yearSelected = [];
                 yearSelected = lineChartService.initTabLineChart(result, 
@@ -820,8 +808,8 @@ angular.module('ricardo.controllers.country', [])
              apiService
               .getContinentFlows({
                 continents: d.RICid , 
-                reporting_ids: $scope.entities.sourceEntity.selected.RICid, 
-                with_sources: 1})
+                reporting_ids: $scope.entities.sourceEntity.selected.RICid 
+              })
               .then(function (result) {
                var yearSelected = [];
               yearSelected = lineChartService.initTabLineChart(result, yearSelected, 
@@ -849,8 +837,8 @@ angular.module('ricardo.controllers.country', [])
               apiService
                   .getFlows({
                     reporting_ids: $scope.entities.sourceEntity.selected.RICid, 
-                    partner_ids:d.RICid, 
-                    with_sources:1})
+                    partner_ids:d.RICid
+                  })
                   .then(function (result) {
                     var yearSelected = [];
                     yearSelected = lineChartService.initTabLineChart(result, 
@@ -880,8 +868,8 @@ angular.module('ricardo.controllers.country', [])
               apiService
                   .getContinentFlows({
                     continents: d.RICid, 
-                    reporting_ids:$scope.entities.sourceEntity.selected.RICid, 
-                    with_sources:1})
+                    reporting_ids:$scope.entities.sourceEntity.selected.RICid 
+                  })
                   .then(function (result) {
                    var yearSelected = [];
                     yearSelected = lineChartService.initTabLineChart(
@@ -916,8 +904,8 @@ angular.module('ricardo.controllers.country', [])
         apiService
           .getFlows({
             reporting_ids: partner_ids, 
-            partner_ids:"Worldsumpartners", 
-            with_sources:1})
+            partner_ids:"Worldsumpartners"
+          })
           .then(function (result) {
 
             // we could don't need this array if api data have good format
@@ -973,6 +961,21 @@ angular.module('ricardo.controllers.country', [])
           })
     }
 
+    /*
+     * Api call to take data with sources for dataTable
+     */
+
+    $scope.takeData = function (){
+      apiService
+        .getFlows({
+          reporting_ids: $scope.entities.sourceEntity.selected.RICid,
+          with_sources:1
+        })
+        .then(function (data) {
+          $scope.tableDataSources = data.flows;
+        })
+    }
+
     /* 
      * Display and sort table data 
      */
@@ -1016,9 +1019,9 @@ angular.module('ricardo.controllers.country', [])
     /* 
      * First load data 
      */ 
-    $scope.$watch('tableData', function (newVal, oldVal) {
+    $scope.$watch('tableDataSources', function (newVal, oldVal) {
         if (newVal !== oldVal) {
-          setPagingData($scope.tableData, $scope.pagingOptions.pageSize, 
+          setPagingData($scope.tableDataSources, $scope.pagingOptions.pageSize, 
             $scope.pagingOptions.currentPage);
         }
     }, true);
@@ -1028,7 +1031,7 @@ angular.module('ricardo.controllers.country', [])
      */
     $scope.$watch('pagingOptions', function (newVal, oldVal) {
         if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
-          setPagingData($scope.tableData,$scope.pagingOptions.pageSize, 
+          setPagingData($scope.tableDataSources,$scope.pagingOptions.pageSize, 
             $scope.pagingOptions.currentPage);
         }
     }, true);
@@ -1037,16 +1040,16 @@ angular.module('ricardo.controllers.country', [])
      * Watch filter on colomn and changed data 
      */
     $scope.$watch('gridOptions.sortInfo', function (newVal, oldVal) {
-        if ($scope.tableData) {
-          $scope.loading = true;
-          dataTableService.sortData($scope.tableData, newVal.fields[0], newVal.directions[0]);
-          $scope.loading = false;
-          setPagingData($scope.tableData,$scope.pagingOptions.pageSize, 
+        if ($scope.tableDataSources) {
+          dataTableService.sortData($scope.tableDataSources, newVal.fields[0], newVal.directions[0]);
+          setPagingData($scope.tableDataSources,$scope.pagingOptions.pageSize, 
             $scope.pagingOptions.currentPage); 
-          $scope.pagingOptions.currentPage = $scope.pagingOptions.currentPage;
+          $scope.pagingOptions.currentPage = $scope.pagingOptions.currentPage; // ?
           
         }
     }, true);
+
+    
 
     /*
      * Download functions to have data in csv
@@ -1055,8 +1058,8 @@ angular.module('ricardo.controllers.country', [])
        apiService
         .getFlows({
           reporting_ids: $scope.entities.sourceEntity.selected.RICid, 
-          with_sources: currency, 
-          original_currency: 1})
+          with_sources: 1
+        })
         .then(function (result) {
           var headers = TABLE_HEADERS.map(function (h) {
             return h.displayName;

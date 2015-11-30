@@ -65,39 +65,6 @@ angular.module('ricardo.controllers.bilateral', [])
     $scope.rawYearsRange_forInf                     
     $scope.rawYearsRange_forSup                    
 
-    var bilateralLocalStorage = [],
-        bilateralLocalStorageObject = {
-          source : {}, 
-          target: {}, 
-          dateMin: "", 
-          dateMax: ""
-        }
-
-    /*
-     * Check if bilateralLocalStorage is empty
-     */
-    if (localStorage.bilateralLocalStorage) 
-      bilateralLocalStorage = JSON.parse(localStorage.bilateralLocalStorage);
-
-    function checkbilateralLocalStorage(bilateralLocalStorage, object) {
-      var isAlreadyIn = 0;
-      for (var i = 0, len = bilateralLocalStorage.length; i < len; i++) {
-        if (bilateralLocalStorage[i].source.RICid == object.source.RICid 
-            && bilateralLocalStorage[i].target.RICid == object.target.RICid 
-            && bilateralLocalStorage[i].dateMin == object.dateMin 
-            && bilateralLocalStorage[i].dateMax == object.dateMax
-          ) 
-        {
-          isAlreadyIn = 1;
-          break;
-        }
-        else 
-          isAlreadyIn =  0
-      }
-      return isAlreadyIn
-    }
-
-
     /*
      * First init - check if data are in local storage
      */
@@ -106,10 +73,10 @@ angular.module('ricardo.controllers.bilateral', [])
       {
         $scope.entities.sourceEntity.selected = JSON.parse(localStorage.getItem('sourceEntitySelected'));
         $scope.entities.targetEntity.selected = JSON.parse(localStorage.getItem('targetEntitySelected'));
-
+        console.log("source", $scope.entities.sourceEntity.selected);
         init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected.RICid);
       }
-      if (localStorage.sourceEntitySelected && !localStorage.targetEntitySelected) 
+      else if (localStorage.sourceEntitySelected && !localStorage.targetEntitySelected) 
       {
         $scope.entities.sourceEntity.selected = JSON.parse(localStorage.getItem('sourceEntitySelected'));
         apiService
@@ -138,17 +105,18 @@ angular.module('ricardo.controllers.bilateral', [])
       {
         $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
         return e.RICid===DEFAULT_REPORTING})[0]
-      $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){
+        $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){
         return e.RICid===DEFAULT_PARTNER})[0]
-      init(DEFAULT_REPORTING, DEFAULT_PARTNER);
+        init(DEFAULT_REPORTING, DEFAULT_PARTNER);
       }
     }
     catch (e) {
-      $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
-        return e.RICid===DEFAULT_REPORTING})[0]
-      $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){
-        return e.RICid===DEFAULT_PARTNER})[0]
-      init(DEFAULT_REPORTING, DEFAULT_PARTNER);
+      console.log("e", e);
+      // $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
+      //   return e.RICid===DEFAULT_REPORTING})[0]
+      // $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){
+      //   return e.RICid===DEFAULT_PARTNER})[0]
+      // init(DEFAULT_REPORTING, DEFAULT_PARTNER);
     }
 
     function init(sourceID, targetID, minDate, maxDate) {
@@ -156,6 +124,7 @@ angular.module('ricardo.controllers.bilateral', [])
         apiService
           .getFlows({reporting_ids: sourceID, partner_ids: targetID, with_sources: 1})
           .then(function (data){
+            console.log("sourceID", sourceID);
   
             /* 
              * Set min & max dates
@@ -196,19 +165,10 @@ angular.module('ricardo.controllers.bilateral', [])
             /*
              * Save source & target in localStorage
              */
-            bilateralLocalStorageObject.source = $scope.entities.sourceEntity.selected;
-            bilateralLocalStorageObject.target = $scope.entities.targetEntity.selected;
-            bilateralLocalStorageObject.dateMin = $scope.selectedMinDate
-            bilateralLocalStorageObject.dateMax = $scope.selectedMaxDate
-
-            /* 
-             * Function to check if the new object is already in bilateralLocalStorage
-             */
-            var isIn = checkbilateralLocalStorage(bilateralLocalStorage, bilateralLocalStorageObject) 
-            if (isIn === 0) {
-                bilateralLocalStorage.push(bilateralLocalStorageObject);
-                localStorage.bilateralLocalStorage = JSON.stringify(bilateralLocalStorage);
-            }
+            localStorage.selectedMinDate = JSON.stringify($scope.selectedMinDate);
+            localStorage.selectedMaxDate = JSON.stringify($scope.selectedMaxDate);
+            localStorage.sourceEntitySelected = JSON.stringify($scope.entities.sourceEntity.selected);
+            localStorage.targetEntitySelected = JSON.stringify($scope.entities.targetEntity.selected);
           
             // call function to send data to tableData
             if (data !== undefined)
@@ -236,15 +196,15 @@ angular.module('ricardo.controllers.bilateral', [])
 
     $scope.$watch("entities.sourceEntity.selected", function (newValue, oldValue){
       if(newValue !== oldValue && newValue){
-        if (localStorage.sourceEntitySelected) {
-          try {
-            $scope.entities.targetEntity.selected = JSON.parse(localStorage.targetEntitySelected);
-          }
-          catch (e) {
-            $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
-              return e.RICid===DEFAULT_REPORTING})[0]
-          }
-        }
+        // if (localStorage.sourceEntitySelected) {
+        //   try {
+        //     $scope.entities.targetEntity.selected = JSON.parse(localStorage.targetEntitySelected);
+        //   }
+        //   catch (e) {
+        //     $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
+        //       return e.RICid===DEFAULT_REPORTING})[0]
+        //   }
+        // }
         // set data in local storage
         localStorage.removeItem('sourceEntitySelected');
         localStorage.sourceEntitySelected = JSON.stringify(newValue);
@@ -264,7 +224,6 @@ angular.module('ricardo.controllers.bilateral', [])
     $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newValue, oldValue) {
       if (newValue !== oldValue && newValue[0] !== newValue[1]) {
         // set data in local storage
-
         localStorage.removeItem('selectedMinDate');
         localStorage.removeItem('selectedMaxDate');
         localStorage.selectedMinDate = newValue[0];
