@@ -1,10 +1,12 @@
 'use strict';
 
-/* Directives */
+/* 
+ * Directive : comparison timeline between country source & country target 
+ * with watch, update and draw functions 
+ */
 
 angular.module('ricardo.directives.comparisonTimeline', [])
 
-  /* directive with watch, update and draw functions */
   .directive('comparisonTimeline', [function(){
     return {
       restrict: 'E'
@@ -47,25 +49,27 @@ angular.module('ricardo.directives.comparisonTimeline', [])
         
 
         function draw(data){
+
           diffSource = function(d){
-          if (!isNaN(d.exp) && !isNaN(d.imp) && d.imp !== null && d.exp !== null ) {
-            return ( d.imp_mirror - d.exp ) / d.exp ;
+            if (!isNaN(d.exp) && !isNaN(d.imp) && d.imp !== null && d.exp !== null ) {
+              return ( d.imp_mirror - d.exp ) / d.exp ;
+            }
           }
-        }
 
-        diffSourceDefined = function(d){
-          return d.imp_mirror !== null && d.exp !== null && d.exp !== 0;
-        }
-
-        diffTarget = function(d){
-          if (!isNaN(d.exp_mirror) && !isNaN(d.imp_mirror) && d.exp_mirror !== null && d.imp_mirror !== null) {
-            return ( d.imp - d.exp_mirror ) / d.exp_mirror ;
+          diffSourceDefined = function(d){
+            return d.imp_mirror !== null && d.exp !== null && d.exp !== 0;
           }
-        }
 
-        diffTargetDefined = function(d){
-          return d.exp_mirror !== null && d.imp !== null && d.exp_mirror !== 0;
-        }
+          diffTarget = function(d){
+            if (!isNaN(d.exp_mirror) && !isNaN(d.imp_mirror) && d.exp_mirror !== null && d.imp_mirror !== null) {
+              return ( d.imp - d.exp_mirror ) / d.exp_mirror ;
+            }
+          }
+
+          diffTargetDefined = function(d){
+            return d.exp_mirror !== null && d.imp !== null && d.exp_mirror !== 0;
+          }
+
           document.querySelector('#comparison-timeline-container').innerHTML = null;
 
           var margin = {top: 10, right: 0, bottom: 30, left: 0},
@@ -158,7 +162,9 @@ angular.module('ricardo.directives.comparisonTimeline', [])
               .attr("class", "line-compare-alt")
               .attr("d", diffTargetLine)
 
-          /* zero line */
+          /* 
+           * Zero line 
+           */
           svg.append("line")
                .attr("x1", 0)
                .attr("y1", y(0))
@@ -167,8 +173,9 @@ angular.module('ricardo.directives.comparisonTimeline', [])
                .attr("stroke-width", 1)
                .attr("stroke", "#663333");
         
-          /* axis */
-
+          /* 
+           * Axis 
+           */
           var gy = svg.select("g.y.axis"),
               gx = svg.select("g.x.axis");
 
@@ -208,7 +215,9 @@ angular.module('ricardo.directives.comparisonTimeline', [])
               .attr("font-size", "0.85em");
             }
 
-        /* select only imp & exp data from country selected */
+        /* 
+         * Select only imp & exp data from country selected 
+         */
           var ComparisonTabData = [];
 
           data.forEach(function (data) {
@@ -227,7 +236,9 @@ angular.module('ricardo.directives.comparisonTimeline', [])
 
         }
 
-          /* voronoi fonction */
+          /* 
+           * Voronoi fonction 
+           */
           function voronoi(data, yValue, svg, margin, height, width) {
             
             var voronoi = d3.geom.voronoi()
@@ -261,6 +272,10 @@ angular.module('ricardo.directives.comparisonTimeline', [])
                   .on("mouseout", mouseout);
 
             voronoiGraph.exit().remove()
+
+            /*
+             * Mouse interactions
+             */
 
             var focus = svg.select(".focus")
                       

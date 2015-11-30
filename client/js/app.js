@@ -14,6 +14,8 @@ angular.module('ricardo', [
   'angular-loading-bar',
   'pascalprecht.translate',
   'oc.lazyLoad',
+  'angulartics',
+  'angulartics.google.analytics',
   'ricardo.filters',
   'ricardo.services',
   'ricardo.directives',

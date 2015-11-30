@@ -44,9 +44,9 @@
     <!-- <bilateral-title>  </bilateral-title> -->
     <h4>
   Trade between
-  <inline-select-country ng-model="entities.sourceEntity.selected" list="reportingEntities" ></inline-select-country>
+  <inline-select-country ng-model="entities.sourceEntity.selected" list="reportingEntities" analytics-on="click" analytics-event="Bilateral source" ></inline-select-country>
   and
-  <inline-select-country ng-model="entities.targetEntity.selected" list="reportingEntities"></inline-select-country>
+  <inline-select-country ng-model="entities.targetEntity.selected" list="reportingEntities" analytics-on="click" analytics-event="Bilateral target" ></inline-select-country>
   - From
   <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf" ></inline-select-year>
   to
@@ -145,7 +145,7 @@
       <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
           Show/Hide data table
       </button>
-      <button type="button" ng-click="download()" class="btn">
+      <button type="button" ng-click="download()" class="btn" analytics-on="click" analytics-event="Download Bilateral">
           Download data of entities selected
       </button>
     </div>

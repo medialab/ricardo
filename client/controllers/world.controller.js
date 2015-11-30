@@ -141,10 +141,7 @@ angular.module('ricardo.controllers.world', [])
       $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
 
       $scope.timelineData = worldFlowsYearsFormat;
-      $scope.tableData = worldFlowsYearsFormat;
-
-      // save World Data in local storage
-      localStorage.worldData = JSON.stringify(worldFlowsYearsFormat);    
+      $scope.tableData = worldFlowsYearsFormat;          
     }
 
     init();

@@ -1,9 +1,11 @@
 'use strict';
 
-/* Controllers */
+/* 
+ * Bilateral view controller : api call and data manipulation to serve three 
+ * visualisations (dualtimeline, brushing & comparison timeline). 
+ */
 
 angular.module('ricardo.controllers.bilateral', [])
-
   .controller('bilateral', function ($scope, $location, reportingEntities, 
     cfSource, cfTarget, apiService, dataTableService, utils, 
     DEFAULT_REPORTING, DEFAULT_PARTNER, TABLE_HEADERS) {
@@ -42,7 +44,9 @@ angular.module('ricardo.controllers.bilateral', [])
     $scope.totalServerItems = 0;
     $scope.alerts = []
 
-    // data table init
+    /* 
+     * Data table init
+     */
     $scope.viewTable = 0;
     $scope.pagingOptions = {
         pageSizes: [50],
@@ -69,7 +73,9 @@ angular.module('ricardo.controllers.bilateral', [])
           dateMax: ""
         }
 
-    //check if bilateralLocalStorage is empty
+    /*
+     * Check if bilateralLocalStorage is empty
+     */
     if (localStorage.bilateralLocalStorage) 
       bilateralLocalStorage = JSON.parse(localStorage.bilateralLocalStorage);
 
@@ -91,14 +97,69 @@ angular.module('ricardo.controllers.bilateral', [])
       return isAlreadyIn
     }
 
+
+    /*
+     * First init - check if data are in local storage
+     */
+    try {
+      if (localStorage.sourceEntitySelected && localStorage.targetEntitySelected) 
+      {
+        $scope.entities.sourceEntity.selected = JSON.parse(localStorage.getItem('sourceEntitySelected'));
+        $scope.entities.targetEntity.selected = JSON.parse(localStorage.getItem('targetEntitySelected'));
+
+        init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected.RICid);
+      }
+      if (localStorage.sourceEntitySelected && !localStorage.targetEntitySelected) 
+      {
+        $scope.entities.sourceEntity.selected = JSON.parse(localStorage.getItem('sourceEntitySelected'));
+        apiService
+          .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
+          .then(function (result) {
+            for (var i=0, len = result.flows.length; i < len; i++) {
+              if (!/^World/.test(result.flows[i].partner_id)) {
+                var target = {RICid:"", name:""};
+                target.RICid = result.flows[i].partner_id;
+                target.RICname = result.flows[i].partner_id;
+                $scope.entities.targetEntity.selected = target;
+                break;
+              }
+              i++;
+            }
+            localStorage.targetEntitySelected = $scope.entities.targetEntity.selected
+            $scope.selectedMinDate = JSON.parse(localStorage.getItem('selectedMinDate'))
+            $scope.selectedMaxDate = JSON.parse(localStorage.getItem('selectedMaxDate'))
+            if ($scope.entities.targetEntity.selected !== undefined)
+              init($scope.entities.sourceEntity.selected.RICid, 
+                $scope.entities.targetEntity.selected.RICid, 
+                $scope.selectedMinDate, $scope.selectedMaxDate);
+          })
+      }
+      else 
+      {
+        $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
+        return e.RICid===DEFAULT_REPORTING})[0]
+      $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){
+        return e.RICid===DEFAULT_PARTNER})[0]
+      init(DEFAULT_REPORTING, DEFAULT_PARTNER);
+      }
+    }
+    catch (e) {
+      $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
+        return e.RICid===DEFAULT_REPORTING})[0]
+      $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){
+        return e.RICid===DEFAULT_PARTNER})[0]
+      init(DEFAULT_REPORTING, DEFAULT_PARTNER);
+    }
+
     function init(sourceID, targetID, minDate, maxDate) {
       if (targetID !== undefined) {
         apiService
           .getFlows({reporting_ids: sourceID, partner_ids: targetID, with_sources: 1})
-          .then(function (result){
-            data = result   
-
-            // set min & max dates
+          .then(function (data){
+  
+            /* 
+             * Set min & max dates
+             */
             $scope.rawMinDate = d3.min( data.flows, function(d) { 
               return d.year; 
             })
@@ -122,22 +183,29 @@ angular.module('ricardo.controllers.bilateral', [])
 
             }
 
-            // Consolidate data, add mirror's data to flows array
+            /* 
+             * Consolidate data, add mirror's data to flows array
+             */
             mergeMirrorInFlows(data)
 
-            // Send data to timeline directive
+            /*
+             * Send data to timeline directive
+             */
             $scope.timelineData = data.flows;   
 
-            // save all object in localStorage
+            /*
+             * Save source & target in localStorage
+             */
             bilateralLocalStorageObject.source = $scope.entities.sourceEntity.selected;
             bilateralLocalStorageObject.target = $scope.entities.targetEntity.selected;
-            //bilateralLocalStorageObject.data = data.flows;
             bilateralLocalStorageObject.dateMin = $scope.selectedMinDate
             bilateralLocalStorageObject.dateMax = $scope.selectedMaxDate
 
-            // function to check if the new object is already in bilateralLocalStorage
+            /* 
+             * Function to check if the new object is already in bilateralLocalStorage
+             */
             var isIn = checkbilateralLocalStorage(bilateralLocalStorage, bilateralLocalStorageObject) 
-            if (isIn === 0 ) {
+            if (isIn === 0) {
                 bilateralLocalStorage.push(bilateralLocalStorageObject);
                 localStorage.bilateralLocalStorage = JSON.stringify(bilateralLocalStorage);
             }
@@ -161,67 +229,7 @@ angular.module('ricardo.controllers.bilateral', [])
         )
       }
     }
-    
-    /*
-     * First init - check if data are in local storage
-     */
-      try {
-        console.log("try")
-          if (localStorage.sourceEntitySelected && localStorage.targetEntitySelected) 
-          {
-            var sourceEntityLocalStorage = localStorage.getItem('sourceEntitySelected');
-            $scope.entities.sourceEntity.selected = JSON.parse(sourceEntityLocalStorage);
-
-            var targetEntityLocalStorage = localStorage.getItem('targetEntitySelected');
-            $scope.entities.targetEntity.selected = JSON.parse(targetEntityLocalStorage);
-
-            init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected.RICid);
-          }
-          if (localStorage.sourceEntitySelected && !localStorage.targetEntitySelected) 
-          {
-            var sourceEntityLocalStorage = localStorage.getItem('sourceEntitySelected');
-            $scope.entities.sourceEntity.selected = JSON.parse(sourceEntityLocalStorage);
-            apiService
-              .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
-              .then(function (result) {
-
-                for (var i=0, len = result.flows.length; i < len; i++) {
-                  if (!/^World/.test(result.flows[i].partner_id)) {
-                    var target = {RICid:"", name:""};
-                    target.RICid = result.flows[i].partner_id;
-                    target.RICname = result.flows[i].partner_id;
-                    $scope.entities.targetEntity.selected = target;
-                    break;
-                  }
-                  i++;
-                }
-                localStorage.targetEntitySelected = $scope.entities.targetEntity.selected
-                $scope.selectedMinDate = JSON.parse(localStorage.getItem('selectedMinDate'))
-                $scope.selectedMaxDate = JSON.parse(localStorage.getItem('selectedMaxDate'))
-                if ($scope.entities.targetEntity.selected !== undefined)
-                  init($scope.entities.sourceEntity.selected.RICid, 
-                    $scope.entities.targetEntity.selected.RICid, 
-                    $scope.selectedMinDate, $scope.selectedMaxDate);
-              })
-          }
-          else 
-          {
-            $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
-            return e.RICid===DEFAULT_REPORTING})[0]
-          $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){
-            return e.RICid===DEFAULT_PARTNER})[0]
-          init(DEFAULT_REPORTING, DEFAULT_PARTNER);
-          }
-        }
-        catch (e) {
-          console.log("catch", e);
-          $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
-            return e.RICid===DEFAULT_REPORTING})[0]
-          $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){
-            return e.RICid===DEFAULT_PARTNER})[0]
-          init(DEFAULT_REPORTING, DEFAULT_PARTNER);
-        }
-
+     
     /*
      * Watch if entities and dates change
      */
@@ -286,7 +294,7 @@ angular.module('ricardo.controllers.bilateral', [])
 
         $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
     
-        // select data to check if there are and if not, display message no data
+        // Select data to check if there are and if not, display message no data
         var dataFilterBySource = d3.nest()
           .key(function (d) {return d.reporting_id})
           .entries($scope.tableData);
