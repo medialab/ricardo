@@ -157,6 +157,22 @@
 <div id="select-doubleChart">
   <div class="row">
     <div  class="col-sm-12">
+      <div ng-show="missingPartner" class="alert"> 
+        <div class="modal-body" >
+         <p>
+            There is <strong>no data available</strong> in the database for this filter
+         </p>
+         <p>
+         between {{selectedMinDate}} and {{selectedMaxDate}}  
+         </p>
+          <p>
+            Choose another one or change date selection, thank you !
+         </p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-default" ng-click="okPartner()">OK</button>
+        </div>
+      </div>
       <partners-histogram 
       ng-data="partnersData" 
       start-date="selectedMinDate"

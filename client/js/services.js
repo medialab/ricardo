@@ -22,6 +22,23 @@ angular.module('ricardo.services', [])
      }
    }
   })
+  .factory('dataTableService', function() {
+
+   return {
+     sortData : function(data, field, direction) {
+        if (data) {
+          data.sort(function (a, b) {
+                if (direction === "asc") {
+              return a[field]> b[field]? 1 : -1;
+            } else {
+              return a[field]> b[field]? -1 : 1;
+            }
+          })  
+        }
+      }
+      
+      }
+  })
   .factory('lineChartService', function(){
     return {
 
@@ -83,20 +100,20 @@ angular.module('ricardo.services', [])
           });                      
       }
 
-      yearSelected.forEach( function (d) {
-        result.flows.forEach( function (e) {
-          if (d.year === e.year && d.year >= dateMin && d.year <= dateMax) {
-            d.exp = e.exp; 
-            d.imp = e.imp;
-            d.currency = e.currency,
-            d.sources = e.sources
-            d.total = e.exp + e.imp;
-            if (d.total === 0)
-              d.total = null;
-          }
+        yearSelected.forEach( function (d) {
+          result.flows.forEach( function (e) {
+            if (d.year === e.year && d.year >= dateMin && d.year <= dateMax) {
+              d.exp = e.exp; 
+              d.imp = e.imp;
+              d.currency = e.currency,
+              d.sources = e.sources
+              d.total = e.exp + e.imp;
+              if (d.total === 0)
+                d.total = null;
+            }
+          })
         })
-      })
-      return yearSelected;
+        return yearSelected;
       }   
     }
   })
@@ -268,7 +285,7 @@ angular.module('ricardo.services', [])
       return p.tot;
     }
 
-    //decide which dimension/group to expose
+    // Decide which dimension/group to expose
     var exports = {};
 
     exports.add = function(data){ cf.add(data); }; // add new items, as array
@@ -296,7 +313,7 @@ angular.module('ricardo.services', [])
     year = cf.dimension(function(d) { return new Date(d.year, 0, 1); }),
     years = year.group(d3.time.year);
 
-    //decide which dimension/group to expose
+    // Decide which dimension/group to expose
     var exports = {};
 
     exports.add = function(data){ cf.add(data); }; // add new items, as array
@@ -345,7 +362,7 @@ angular.module('ricardo.services', [])
       return p.tot;
     }
 
-    //decide which dimension/group to expose
+    // Decide which dimension/group to expose
     var exports = {};
 
     exports.add = function(data){ cf.add(data); }; // add new items, as array

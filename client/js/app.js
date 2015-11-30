@@ -1,7 +1,9 @@
 'use strict';
 
 
-// Declare app level module which depends on filters, and services
+/*
+ * Declare app level module which depends on filters, and services
+ */ 
 angular.module('ricardo', [
   'ngRoute',
   'ngAnimate',

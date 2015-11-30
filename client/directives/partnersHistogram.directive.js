@@ -60,17 +60,6 @@ angular.module('ricardo.directives.partnersHistogram', [])
           chart.selectAll("circle").remove();
         }
 
-        function noData () {
-          d3.select("#partners-histogram-container").append("div")
-            .attr("class", "alert")
-            .attr("id", "missingDataHisto")
-            .html(function() {
-               return '<div class="modal-body" ><p> There is <strong>no data available</strong> in the database for this filter</p><p>Choose another one or change date selection, thank you !</p> </div> <div class="modal-footer"><button class="btn btn-default" ng-click="okPartner()">OK</button></div>';})
-            .on("click", function(){
-              chart.selectAll("div#missingDataHisto").remove();
-            })
-        } 
-
         /*
          * Partner Histo tools functions 
          */ 
@@ -172,10 +161,7 @@ angular.module('ricardo.directives.partnersHistogram', [])
               y = d3.scale.linear()
               .range([0, barMaxHeigth/2]);
 
-          if (partners.length === 0)
-            noData ();
-
-
+          
           partners.forEach(function(p, i) {
             var entity = RICentities[""+p.key],
               name = (entity ? entity.RICname : p.key);

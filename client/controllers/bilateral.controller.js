@@ -5,8 +5,12 @@
 angular.module('ricardo.controllers.bilateral', [])
 
   .controller('bilateral', function ($scope, $location, reportingEntities, 
-    cfSource, cfTarget, apiService, utils, DEFAULT_REPORTING, DEFAULT_PARTNER, 
-    TABLE_HEADERS) {
+    cfSource, cfTarget, apiService, dataTableService, utils, 
+    DEFAULT_REPORTING, DEFAULT_PARTNER, TABLE_HEADERS) {
+
+    /*
+     * Display message if error in selection
+     */
      $scope.ok = function () {
       $scope.missing = "0";
     };
@@ -28,14 +32,18 @@ angular.module('ricardo.controllers.bilateral', [])
       $scope.alerts.splice(index, 1);
       };
 
+    /*
+     * Var initialisation
+     */
     var data
     $scope.reportingEntities = reportingEntities;
     $scope.actualCurrency = "sterling pound"
     $scope.tableData = [];
     $scope.totalServerItems = 0;
     $scope.alerts = []
-    $scope.viewTable = 0;
 
+    // data table init
+    $scope.viewTable = 0;
     $scope.pagingOptions = {
         pageSizes: [50],
         pageSize: 50,
@@ -52,7 +60,6 @@ angular.module('ricardo.controllers.bilateral', [])
     $scope.rawYearsRange                            
     $scope.rawYearsRange_forInf                     
     $scope.rawYearsRange_forSup                    
-
 
     var bilateralLocalStorage = [],
         bilateralLocalStorageObject = {
@@ -118,7 +125,7 @@ angular.module('ricardo.controllers.bilateral', [])
             // Consolidate data, add mirror's data to flows array
             mergeMirrorInFlows(data)
 
-            // send data to timeline directive
+            // Send data to timeline directive
             $scope.timelineData = data.flows;   
 
             // save all object in localStorage
@@ -155,7 +162,9 @@ angular.module('ricardo.controllers.bilateral', [])
       }
     }
     
-    // First init - check if data are in local storage
+    /*
+     * First init - check if data are in local storage
+     */
       try {
         console.log("try")
           if (localStorage.sourceEntitySelected && localStorage.targetEntitySelected) 
@@ -213,6 +222,10 @@ angular.module('ricardo.controllers.bilateral', [])
           init(DEFAULT_REPORTING, DEFAULT_PARTNER);
         }
 
+    /*
+     * Watch if entities and dates change
+     */
+
     $scope.$watch("entities.sourceEntity.selected", function (newValue, oldValue){
       if(newValue !== oldValue && newValue){
         if (localStorage.sourceEntitySelected) {
@@ -248,12 +261,13 @@ angular.module('ricardo.controllers.bilateral', [])
         localStorage.removeItem('selectedMaxDate');
         localStorage.selectedMinDate = newValue[0];
         localStorage.selectedMaxDate = newValue[1];
-
         updateDateRange()
       }
     })
 
-    /* update Range from date on flows array */
+    /* 
+     * Update Range from date on flows array 
+     */
     function updateDateRange(){
       if (data !== undefined) {
         $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
@@ -295,11 +309,15 @@ angular.module('ricardo.controllers.bilateral', [])
       }
     }
 
-    /* Merge mirror array in flows array */
+    /* 
+     * Merge mirror array in flows array 
+     */
     function mergeMirrorInFlows(data){
       var mirrorFlows_byYear = {} // exchange between countries by year 
 
-      // first step : clean mirror_flows and push data into mirrorFlos_byYear
+      /*
+       * First step : clean mirror_flows and push data into mirrorFlos_byYear
+       */
       data.mirror_flows.forEach(function(d){
         var obj = mirrorFlows_byYear[d.year] || {}
         obj.imp = d.imp || null
@@ -307,7 +325,10 @@ angular.module('ricardo.controllers.bilateral', [])
         mirrorFlows_byYear[d.year] = obj // useless ?
       })
 
-      // second step : add mirror_flow to flow
+      /* 
+       * Second step : add mirror_flow to flow
+       */
+
       data.flows.forEach(function(d){
         var mirror = mirrorFlows_byYear[d.year]
         if (mirror) {
@@ -320,28 +341,9 @@ angular.module('ricardo.controllers.bilateral', [])
       })
     }
 
-    $scope.setPagingData = function(data, pageSize, page){
-        var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
-        $scope.tablePagedData = pagedData;
-        $scope.totalServerItems = data.length;
-        $scope.loading = false;
-        if (!$scope.$$phase) {
-            $scope.$apply();
-        }
-    };
-
-    function sortData(data, field, direction) {
-      var dataCopy = data
-      if (dataCopy) {
-        dataCopy.sort(function (a, b) {
-              if (direction === "asc") {
-            return a[field]> b[field]? 1 : -1;
-          } else {
-            return a[field]> b[field]? -1 : 1;
-          }
-        })     
-      }
-    }
+    /*
+     * Datatable initalisation & functions
+     */
 
     $scope.tablePagedData = []
     $scope.gridOptions = {
@@ -361,27 +363,46 @@ angular.module('ricardo.controllers.bilateral', [])
       }
     }
 
+    function setPagingData(data, pageSize, page){
+          var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
+          $scope.tablePagedData = pagedData;
+          $scope.totalServerItems = data.length;
+          $scope.loading = false;
+          if (!$scope.$$phase) {
+              $scope.$apply();
+          }
+      }
+
     $scope.$watch('tableData', function (newVal, oldVal) {
         if (newVal !== oldVal) {
-          $scope.setPagingData($scope.tableData, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+          setPagingData($scope.tableData, $scope.pagingOptions.pageSize, 
+            $scope.pagingOptions.currentPage);
         }
     }, true);
 
     $scope.$watch('pagingOptions', function (newVal, oldVal) {
         if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
-          $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+          setPagingData($scope.tableData,$scope.pagingOptions.pageSize, 
+            $scope.pagingOptions.currentPage);
         }
     }, true);
 
-    /* watch filter on colomn and changed data */
+    /* 
+     * Watch filter on colomn and changed data 
+     */
     $scope.$watch('gridOptions.sortInfo', function (newVal, oldVal) {
         if ($scope.tableData) {
           $scope.loading = true;
-          sortData($scope.tableData, newVal.fields[0], newVal.directions[0]);
-          $scope.setPagingData($scope.tableData,$scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage); 
+          dataTableService.sortData($scope.tableData, newVal.fields[0], newVal.directions[0]);
+          setPagingData($scope.tableData,$scope.pagingOptions.pageSize, 
+            $scope.pagingOptions.currentPage); 
           $scope.pagingOptions.currentPage = $scope.pagingOptions.currentPage;
         }
     }, true);
+
+    /*
+     * Download data selected
+     */
 
     $scope.download = function() {
       var fileName = "RICardo - Bilateral - " + $scope.entities.sourceEntity.selected.RICid 
