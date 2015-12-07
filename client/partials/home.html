@@ -12,22 +12,17 @@
     <div class="container">
       <div >
         <div id="homeSubtitle">
-          RICardo (Research on International Commerce) est une base de données sur le commerce bilatéral des pays du monde qui couvre une période de plus de cent ans, allant des débuts de la Révolution industrielle à la veille de la Seconde Guerre mondiale. Le site propose d’explorer l’histoire du commerce international à partir de visualisations des échanges commerciaux entre les pays des différents continents du monde.
+          {{ 'INTRO' | translate }}
         </div>
       </div>
       <div class="row workingPaperContainer">
         <div class="spaceBetweenParagraphs noFloat">&bull;</div>
         <div class="col-md-6"> 
-          Le projet RICardo a été initié en 2004 par une équipe d’historiens économistes de Sciences Po dans le but de constituer une base historique de données commerciales. Il est parti du constat que les bases de données existantes sont généralement construites par des chercheurs isolés pour les besoins d’un travail de recherche personnel, qu’elles ne couvrent pas l’ensemble des pays du monde, qu’elles ne remontent pas avant 1870 et qu’elles ne peuvent être utilisées que par un public spécialisé. Dix ans plus tard, une nouvelle équipe associant historiens, développeurs et designers de Sciences Po élargit le projet à la création d’un site dédié au commerce bilatéral des pays du monde sur la période 1800-1938.
-          </br>
-          Depuis la fin de la Seconde Guerre mondiale, ces statistiques sont rassemblées et publiées par les organisations internationales : base <a href="https://data.imf.org/">Direction of Trade Statistics du FMI</a> (données à partir de 1947); base <a href="http://comtrade.un.org/">Comtrade des Nations-Unies</a> (données à partir de 1962). 
+          {{ 'COLUMN1' | translate }}
 
         </div>
         <div class="col-md-6"> 
-          L’objectif du projet RICardo est de collecter des données sur le commerce bilatéral de tous les pays du monde à partir du début du XIXe siècle jusqu’en 1938 et de les mettre à la disposition d’un large public pour une large palette d’utilisations.  
-          Les views RICardo permettent de savoir en « un-click » quelles ont été les exportations de l’Inde vers la France en 1841, comment évolue le commerce total de la Chine entre 1864 et 1913, ou encore d’avoir une estimation des exportations mondiales sur la période 1830-1938. Elle facilite l’accès à une vision historique et synthétique du commerce international tout en offrant aux chercheurs spécialisés la possibilité d’exploiter les données pour une recherche plus approfondie. 
-          </br>
-          La base RICardo est une base évolutive. Notre ambition est de continuer à l’améliorer et à la compléter en recueillant de nouvelles sources statistiques commerciales. C’est pourquoi nous invitons les utilisateurs de la base à nous faire part de leurs remarques et suggestions en nous contactant à l'adresse suivante : <a href="mailto:beatrice.dedinger@sciencespo.fr"> beatrice.dedinger@sciencespo.fr </a>
+          {{ 'COLUMN2' | translate }}
         </div>
 
         </div>
@@ -36,10 +31,10 @@
         <div class="spaceBetweenParagraphs noFloat">&bull;</div>
         <div class="row workingPaperContainer">
           <div class="col-md-12">
-            <p>Vous trouverez ci-dessous les deux <em>working paper</em> qui ont été soumis pour le premier à la revue <em>Historical Methods</em> et le second à l'<em><a href="http://dh2016.adho.org/">Digital Humanities 2016</a></em>.
+            <p>{{ 'WORKING_PAPER_1' | translate }} <a href="http://dh2016.adho.org/">Digital Humanities 2016</a>.
             </p>
 
-            <p>Ces papiers sont tels que soumis et non dans leurs versions finales.</p>
+            <p>{{ 'WORKING_PAPER_2' | translate }} </p>
             
           </div>
           
@@ -79,7 +74,7 @@
                 <div class="slInfo">
                   <h5 class="slTitle">Trade flows</h5>
                   <p class="slPara">
-                    Trade flows are values of merchandise exports or imports. The RICardo database combines two sets of data: bilateral trade data are the distribution of total trade of a reporting country with its partner countries; total trade data are the sum of all bilateral exports/imports. Data from the original sources reproduced in the database are quoted in many different currencies. Trade flows have all been converted into sterling pound by using the RICardo exchange rate database.
+                    {{ 'TRADE_FLOWS' | translate }}
                   </p>
 
                 </div>
@@ -89,15 +84,19 @@
 
                 <a ng-href=""><div class="slInfo">
                   <h5 class="slTitle">RIC entities</h5>
-                  <p class="slPara"> The entities listed in the dataset are either reporting or partner entities. The term ‘entity’ has been privileged because there are many cases in historical trade statistics where the trading entity does not correspond to an internationally recognized state but describes a locality, an area or a group of states. The list of reporting entities does not match the list of partner entities. The list of RIC entities includes more than 1400 names. They have all been harmonized and translated into English. The entities are identified according to their type that may be: a country, a city/part of a country, a colonial area, a geographical area or a group of countries. The names of the countries have been defined after the Correlates of War country list (http://correlatesofwar.org). The other RIC names have been created.</p>
-
-                </div></a>
+                  <p class="slPara"> 
+                    {{ 'RICENTITIES' | translate }}
+                  </p>
+                </div>
+                </a>
               </li>
               <li class="storyline">
 
                 <a ng-href=""><div class="slInfo">
                   <h5 class="slTitle">Continent</h5>
-                  <p class="slPara"> Each entity (reporting or partner) is located on a continent. When the entity is a ‘group’ or a ‘geographical area’ corresponding to a multiple of entities located on different continents, it is identified by the continent ‘World’. The five major continents (Africa, America, Asia, Europe, Oceania) are present in the database plus “continents” pertaining to sea areas (Adriatic, Antarctic, Atlantic Ocean, Baltic, Mediterranean, Pacific). Turkey, when non-specified in Europe or in Asia, has been located in Asia; Russia/USSR, when non-specified in Europe or in Asia, has been located in Europe.</p>
+                  <p class="slPara"> 
+                    {{ 'CONTINENT' | translate }}
+                  </p>
 
                 </div></a>
               </li>
@@ -105,47 +104,42 @@
                 <a ng-href="">
                 <div class="slInfo">
                   <h5 id="worldTrade" class="slTitle">World trade / Total trade</h5>
-                  <p class="slPara"> The total trade of an entity corresponds to its trade with the entity partner ‘World’. The total trade of the world (or world trade) is estimated by summing the total trade of all the entities of the database (duplicates are eliminated). There may be up to four estimations of total trade (or trade with partner World):
-                  <ul>
-                    
-                  <li  class="slPara">
-                    World reported: total trade of a reporting entity as it is reported in the statistical source.
-                  </li> 
-                    
-                  <li class="slPara">
-                    World sum partners: total trade of reporting entity equals the sum of all trade partners flows.
-
-                  </li>
-                  <li class="slPara">
-                    World sub-reporting: total trade of a reporting entity (for example a city) that is dependent on a larger entity (for example a country).
-
-                  </li>
-                  <li class="slPara">
-                    World estimated: recent re-estimations of total trade for some countries (for example Belgium or the Netherlands) and estimations of total trade taken from synthetic sources (for example Mitchell's International Historical Statistics).
-
-                  </li>
-                  <li id="worldbestguess" class="slPara">
-                    
-                  World bestguess: when many estimations for a country's total trade are available, the World best guess is first World estimated, then World reported, then World sum partners.
-                  </li>
-                  </ul>
+                  <p class="slPara"> 
+                    {{ 'WORLD_TRADE' | translate }}
+                    <ul>
+                      <li  class="slPara">
+                        {{ 'WORLD_REPORTED' | translate }}
+                      </li> 
+                        
+                      <li class="slPara">
+                        {{ 'WORLD_SUM_PARTNERS' | translate }}
+                      </li>
+                      <li class="slPara">
+                        {{ 'WORLD_SUB_REPORTING' | translate }}
+                      </li>
+                      <li class="slPara">
+                        {{ 'WORLD_ESTIMATED' | translate }}
+                      </li>
+                      <li id="worldbestguess" class="slPara">
+                        {{ 'WORLD_BESTGUESS' | translate }}
+                      </li>
+                    </ul>
                   </p>
-
                 </div></a>
               </li>
               <li class="storyline">
-
                 <a ng-href=""><div class="slInfo">
                   <h5 class="slTitle">Mirror Flows</h5>
-
                   <p class="slPara"> 
-                  The RICardo database offers four bilateral flows for every country pair. A trade flow is recorded twice, by the two partner countries, in two different sources. It is therefore possible to check on the quality of the data by comparing so-called “mirror flows”. The term-to-term comparison of mirror flows (exports from A to B as declared by A and imports from B to A as declared by B) can reveal more or less important differences which are the result either of varying procedures for recording flows by country of origin or destination, or methods for estimating trade flows (c.i.f. vs. f.o.b. estimates, trade types), not forgetting the choice of the exchange rate. The difference between mirror trade flows is such an issue that several studies have been dedicated to its extent and ways to allay its impact.
+                    {{ 'MIRROR_FLOWS_1' | translate}}
                   </p>
-                  <p class="slPara">For more information read this working paper : 
+                  <p class="slPara">
+                    {{ 'MIRROR_FLOWS_2' | translate}}
                     <a href="http://ricardo.medialab.Sciences-po.fr/Dedinger_Girard_RICardo_HistoricalMethods.pdf"> historical methods (en) </a>. 
                   </p>
                   <p class="slPara">
-                  To help tackle this issue, the bilateral view shows an estimation of the discrepancy in mirror flows that facilitates the detection of major inconsistencies and provides the user with the opportunity to compare data and ultimately select the more reliable figures. </p>
+                    {{ 'MIRROR_FLOWS_3' | translate}}
+                  </p>
 
                 </div></a>
               </li>
