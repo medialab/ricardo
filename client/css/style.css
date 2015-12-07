@@ -913,10 +913,10 @@ font-size: 1.1em;
 }
 
 #select-lineChart{
-  background-color: white;
-  border: 1px solid #e7e7e7;
+/*  background-color: white;*/
+/*  border: 1px solid #e7e7e7;*/
   margin-top: 5px;
-  min-height: 500px;
+/*  min-height: 500px;*/
 }
 
 .subtitle > i{
