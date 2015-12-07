@@ -39,7 +39,7 @@
     <p class="paragraphPage">
     </br>
     </br>
-      La vue bilatérale montre le commerce entre un reporting country et un partner country. Elle précise quelles données miroirs sont disponibles pour le partner country et elle compare la divergence des flux miroirs entre les deux sources disponibles. 
+      {{ 'BILATERAL_VIEW_INTRO' | translate }}
     </p>
     <!-- <bilateral-title>  </bilateral-title> -->
     <h4>
@@ -70,21 +70,18 @@
           <div class="square export"></div> Export
         </div>
         <div class="legend-item">
-          <div class="line available"></div> Available data
+          <div class="line available"></div> {{ 'AVAILABLE' | translate }}
         </div>
         <div class="legend-item">
-          <div class="line unavailable"></div> Unavailable data
+          <div class="line unavailable"></div> {{ 'UNAVAILABLE' | translate }}
         </div>
         <div class="legend-item">
-          Data expressed in <strong>{{actualCurrency}}</strong>
+          {{ 'CURRENCY' | translate }} <strong>{{actualCurrency}}</strong> 
         </div>
       </div>
       <br>
       <br>
       <h4>Available years in {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
-      <!-- <p class="paragraphViz">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempus commodo leo a sagittis. Sed eu efficitur lorem. Phasellus at ex quis arcu accumsan blandit. Integer sit amet pharetra sapien, in tincidunt eros. Sed fringilla, leo ut vehicula cursus, tortor tortor sodales metus, ut pulvinar magna risus sed diam. Maecenas luctus iaculis rutrum. 
-      </p> -->
       <brushing-timeline
         ng-data="timelineData"
         start-date="selectedMinDate"
@@ -109,8 +106,8 @@
       <br>
       <h4>Comparison of {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
       <p class="paragraphViz">
-          This graph estimates the discrepancies in mirror flows. 
-        </p>
+        {{ 'COMPARISON_INTRO' | translate }}
+      </p>
       <comparison-timeline 
       ng-data="timelineData" 
       start-date="selectedMinDate" 
@@ -125,13 +122,13 @@
           <span class="legendImport">Exp B->A</span> = country B exports to country A as reported by country B | <span class="legendExport">Exp A->B</span> = country A exports to country B as reported by country A 
       </div>
       <div class="legend">
-        <div class="legend-item">
+        <div class="legend-item" >
         Mirror flows discrepancy
-          <div class="line diff-import"></div>
+          <div class="line diff-import" style="margin-left:20px;"></div>
           <strong>(Imp A <-B - Exp B->A) / Exp B->A</strong>
         </div>
         or
-        <div class="legend-item">
+        <div class="legend-item" style="margin-left:20px;">
           <div class="line diff-export"></div>
           <strong>(Imp B <-A - Exp A->B) / Exp A->B</strong>
         </div>
@@ -143,10 +140,10 @@
   <div class="row">
     <div class="col-sm-12 text-center shdt">
       <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
-          Show/Hide data table
+          {{ 'DOWNLOAD_1' | translate }}
       </button>
       <button type="button" ng-click="download()" class="btn" analytics-on="click" analytics-event="Download Bilateral">
-          Download data of entities selected
+          {{ 'DOWNLOAD_2' | translate }}
       </button>
     </div>
   </div>

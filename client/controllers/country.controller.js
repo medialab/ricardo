@@ -347,9 +347,6 @@ angular.module('ricardo.controllers.country', [])
       }
     })
 
-    $scope.changeCountry = function (country) {
-      console.log("lol");
-    }
 
     /*
      * Update data table
@@ -362,7 +359,8 @@ angular.module('ricardo.controllers.country', [])
 
       updateTableData();
       initLinechart($scope.reporting, $scope.linechartFlow.type.value, 
-        $scope.linechartCurrency.type.value);    }
+        $scope.linechartCurrency.type.value);    
+    }
 
     function updateTableData(){
       var missing;
@@ -526,6 +524,10 @@ angular.module('ricardo.controllers.country', [])
 
       data=data.filter(function(p){ return !/^World/.test(p.partner_id)})
       
+      /*
+       * Here we lost type information of entity. Need to use addTypePartner().
+       */
+
       var partners = d3.nest()  
         .key(function(d){ return d[$scope.grouped.type.value ? "continent" : "partner_id"] })
         .key(function(d){ return d.year })

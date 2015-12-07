@@ -196,15 +196,6 @@ angular.module('ricardo.controllers.bilateral', [])
 
     $scope.$watch("entities.sourceEntity.selected", function (newValue, oldValue){
       if(newValue !== oldValue && newValue){
-        // if (localStorage.sourceEntitySelected) {
-        //   try {
-        //     $scope.entities.targetEntity.selected = JSON.parse(localStorage.targetEntitySelected);
-        //   }
-        //   catch (e) {
-        //     $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
-        //       return e.RICid===DEFAULT_REPORTING})[0]
-        //   }
-        // }
         // set data in local storage
         localStorage.removeItem('sourceEntitySelected');
         localStorage.sourceEntitySelected = JSON.stringify(newValue);
@@ -280,7 +271,8 @@ angular.module('ricardo.controllers.bilateral', [])
      * Merge mirror array in flows array 
      */
     function mergeMirrorInFlows(data){
-      var mirrorFlows_byYear = {} // exchange between countries by year 
+      // exchange between countries by year
+      var mirrorFlows_byYear = {}  
 
       /*
        * First step : clean mirror_flows and push data into mirrorFlos_byYear

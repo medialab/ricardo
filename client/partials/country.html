@@ -22,14 +22,14 @@
   </br>
   </br>
   <p class="paragraphPage">
-      La vue pays montre comment le commerce total d’un reporting country se répartit entre ses différents partners. Elle compare les partner entities suivant leur part moyenne dans le commerce total du pays reporting, calcule le solde commercial bilateral annuel et permet de suivre l’évolution du commerce du pays reporting avec ses partners. 
-    </p>
+      {{ 'COUNTRY_VIEW_DUAL' | translate }}
+  </p>
   <div class="row timeline-cont" >
     <div class="col-md-12">
         <country-title></country-title>
         <p class="paragraphViz">
-            In this graph, total trade equals the sum of export (import) flows with all partner entities. 
-          </p>
+            {{ 'COUNTRY_VIEW_DUAL_LEGEND' | translate }} 
+        </p>
         <dual-timeline 
           ng-data="timelineData" 
           start-date="selectedMinDate" 
@@ -45,7 +45,7 @@
       <div id="countryBrushing" class="col-sm-12">
         <br>
         <br>
-        <h4>Available and unavailable data for {{entities.sourceEntity.selected.RICname}}</h4>
+        <h4>{{ 'BRUSHING' | translate }} {{entities.sourceEntity.selected.RICname}}</h4>
         <brushing-timeline
           ng-data="timelineData"
           start-date="selectedMinDate"
@@ -63,13 +63,13 @@
           <div class="square export"></div> Export
         </div>
         <div class="legend-item">
-          <div class="line available"></div> Available data
+          <div class="line available"></div> {{ 'AVAILABLE' | translate }}
         </div>
         <div class="legend-item">
-          <div class="line unavailable"></div> Unavailable data
+          <div class="line unavailable"></div> {{ 'UNAVAILABLE' | translate }}
         </div>
         <div class="legend-item">
-          Data expressed in <strong>Sterling</strong>
+          {{ 'CURRENCY' | translate }} <strong>Sterling</strong>
         </div>
       </div>
     </div>
@@ -121,13 +121,13 @@
   <div class="row">
     <div class="col-md-12">
       <p class="paragraphViz">
-          In this graph, the partners of the reporting country are compared by calculating two indicators: 
+          {{ 'COUNTRY_PARTNER_HISTO' | translate }} 
           <ul>
             <li class="paragraphViz">
-              the average bilateral trade share estimated for available years over the selected period
+              {{ 'COUNTRY_PARTNER_HISTO_1' | translate }}
             </li>
             <li class="paragraphViz">
-              the relative bilateral trade balance estimated for each available year over the selected period
+              {{ 'COUNTRY_PARTNER_HISTO_2' | translate }}
             </li>
           </ul>
       </p>
@@ -142,10 +142,10 @@
           </div> 
           </br>
           <div class="legend-item">
-          Average bilateral trade share = Exp A->B / ExpA * 100
+            {{ 'PARTNER_HISTO_LEG_1' | translate }} = Exp A->B / ExpA * 100
           </div>
           <div class="legend-item">
-          Relative bilateral trade balance = (Exp A->B – Imp A->B) / (Exp A->B + Imp A->B)
+            {{ 'PARTNER_HISTO_LEG_2' | translate }} = (Exp A->B – Imp A->B) / (Exp A->B + Imp A->B)
           </div>
     </div>
   </div>
@@ -160,7 +160,7 @@
             There is <strong>no data available</strong> in the database for this filter
          </p>
          <p>
-         between {{selectedMinDate}} and {{selectedMaxDate}}  
+            between {{selectedMinDate}} and {{selectedMaxDate}}  
          </p>
           <p>
             Choose another one or change date selection, thank you !
@@ -185,14 +185,14 @@
         <svg height="35" width="300">
           <circle cx="25" cy="18" r="12" stroke="black" stroke-width="1" fill="transparent" />
           <circle cx="25" cy="18" r="3" stroke="black" stroke-width="1" fill="black" />
-          <text x="45" y="20" fill="black">Average bilateral trade share</text>
+          <text x="45" y="20" fill="black">{{ 'PARTNER_HISTO_LEG_1' | translate }}</text>
         </svg> 
       </div> 
       <div class="legend-item">
         <svg height="35" width="300">
           <rect x="15" y="0" width="10" height="15" style="fill:#cc6666" />
           <rect x="25" y="15" width="10" height="15" style="fill:#663333" />
-          <text x="40" y="20" fill="black">Relative bilateral trade balance</text>
+          <text x="40" y="20" fill="black">{{ 'PARTNER_HISTO_LEG_2' | translate }}</text>
         </svg> 
       </div>  
     </div>
@@ -232,16 +232,17 @@
       </h4>
         <div ng-show="messagePercent"> 
          <p>
-            The percentages are based on the total amount of <a href="/#worldTrade">world sum partners</a> of {{entities.sourceEntity.selected.RICname}}
+             <a href="/#worldTrade">world sum partners</a> 
+             {{entities.sourceEntity.selected.RICname}}
          </p>
         </div>
     </div>
   </div>
   <div id="select-lineChart">
     <div>
-      <h4 class="subtitle col-md-2" style="width:190px;">select up to 5 partners:</h4>
+      <h4 class="subtitle col-md-2" style="width:190px;">{{ 'LINE_CHART_SELECT' | translate }}</h4>
     </div>
-  <div class="col-md-9"  style="padding-top:10px;">
+  <div class="col-md-9">
     
     <div class="inline-select" >
       <ui-select   ng-model="entities.sourceCountryEntity.selected" theme="bootstrap"  ng-change="changeCountry(entities.sourceCountryEntity.selected)">
@@ -300,13 +301,13 @@
   <div class="row">
     <div class="col-sm-12 text-center shdt">
       <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0" ng-click="takeData()">
-          Show/Hide data table
+        {{ 'DOWNLOAD_1' | translate }}
       </button>
       <button type="button" ng-click="download()" class="btn">
-          Download data
+        {{ 'DOWNLOAD_2' | translate }}
       </button>
       <button type="button" ng-click="downloadCurrency()" class="btn">
-          Download data with original currency
+        {{ 'DOWNLOAD_3' | translate }}
       </button>
     </div>
   </div>

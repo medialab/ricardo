@@ -97,18 +97,13 @@ config(['$routeProvider', function($routeProvider) {
     cfpLoadingBarProvider.includeBar = false;
   }])
   .config(function($translateProvider) {
-    $translateProvider.translations('en', {
-      HEADLINE: 'Hello there, This is my awesome app!',
-      INTRO_TEXT: 'And it has i18n support!'
-    })
-    .translations('fr', {
-      HEADLINE: 'Salut',
-      INTRO_TEXT: 'Coucou !'
+    $translateProvider.useStaticFilesLoader({
+      prefix: 'js/locale-',
+      suffix: '.json'
     });
-    $translateProvider.preferredLanguage('en');
+    $translateProvider.use('en_EN');
   });
   
-
 // Scroll spy for sticky brushing timeline
 // $(window).scroll(function(){
 //   var offset = $('#sticky-marker').offset().top

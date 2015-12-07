@@ -2,7 +2,7 @@
     </br>
     </br>
     <p class="paragraphPage">
-     La vue mondiale montre une estimation du <strong> <em> commerce mondial </em> </strong> calculée à partir des flux de commerce total de tous les reporting entities. Elle indique le nombre de reporting entities disponible pour calculer l’estimation du commerce mondial. Elle permet aussi de comparer l’évolution du commerce total des reporting entities sélectionnés et leur part dans le commerce mondial.
+     {{ ' WORLD_VIEW_INTRO' | translate }}
     </p>
     <div class="row" >
 
@@ -110,10 +110,10 @@
   <div class="row">
     <div class="col-sm-12 text-center shdt">
       <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
-          Show/Hide data table
+          {{ 'DOWNLOAD_1' | translate }}
       </button>
       <button type="button" ng-click="download()" class="btn">
-          Download data
+          {{ 'DOWNLOAD_2' | translate }}
       </button>
     </div>
   </div>
