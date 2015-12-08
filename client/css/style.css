@@ -450,6 +450,7 @@ li.storyline {
 .paragraphViz {
   width:66%;
   font-size: 11px;
+  margin-top: 15px;
 }
 
 .paragraphViz ul li {
@@ -709,6 +710,7 @@ h4{
 
 #brushing-timeline-container{
   background-color: #FAFAFA;
+  margin-top: 15px;
 }
 
 #alt-title{
@@ -722,6 +724,9 @@ h4{
 /* 
  * Legend 
  */
+.legend {
+  margin-top: 15px;
+}
 
 .legend .legend-item{
   display: inline-block;
