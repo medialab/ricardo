@@ -94,6 +94,20 @@
         ng-model="timelineData"
         ng-change="dataChange()"
       ></brushing-timeline>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="square import"></div> Import
+        </div>
+        <div class="legend-item">
+          <div class="square export"></div> Export
+        </div>
+        <div class="legend-item">
+          <div class="line available"></div> {{ 'AVAILABLE' | translate }}
+        </div>
+        <div class="legend-item">
+          <div class="line unavailable"></div> {{ 'UNAVAILABLE' | translate }}
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -117,7 +131,9 @@
         <div class="legend-item">
            <strong>A</strong> reporting : {{entities.sourceEntity.selected.RICname}} | <strong>B</strong> partner : {{entities.targetEntity.selected.RICname}}
            <br>
+           <br>
           <span class="legendImport">Imp A <-B </span> = country A imports from country B as reported by country A | <span class="legendExport">Imp B <-A </span> = country B imports from country A as reported by country B
+          <br>
           <br>
           <span class="legendImport">Exp B->A</span> = country B exports to country A as reported by country B | <span class="legendExport">Exp A->B</span> = country A exports to country B as reported by country A 
       </div>

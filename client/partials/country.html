@@ -35,6 +35,23 @@
           start-date="selectedMinDate" 
           end-date="selectedMaxDate" 
         ></dual-timeline>  
+        <div class="legend">
+        <div class="legend-item">
+          <div class="square import"></div> Import
+        </div>
+        <div class="legend-item">
+          <div class="square export"></div> Export
+        </div>
+        <div class="legend-item">
+          <div class="line available"></div> {{ 'AVAILABLE' | translate }}
+        </div>
+        <div class="legend-item">
+          <div class="line unavailable"></div> {{ 'UNAVAILABLE' | translate }}
+        </div>
+        <div class="legend-item">
+          {{ 'CURRENCY' | translate }} <strong>{{actualCurrency}}</strong> 
+        </div>
+      </div>
     </div>   
   </div>
 </div>
@@ -67,9 +84,6 @@
         </div>
         <div class="legend-item">
           <div class="line unavailable"></div> {{ 'UNAVAILABLE' | translate }}
-        </div>
-        <div class="legend-item">
-          {{ 'CURRENCY' | translate }} <strong>Sterling</strong>
         </div>
       </div>
     </div>
