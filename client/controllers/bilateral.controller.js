@@ -2,7 +2,7 @@
 
 /* 
  * Bilateral view controller : api call and data manipulation to serve three 
- * visualisations (dualtimeline, brushing & comparison timeline). 
+ * visualisations (dualtimeline, brushing & comparison timeline). ******
  */
 
 angular.module('ricardo.controllers.bilateral', [])
@@ -75,7 +75,6 @@ angular.module('ricardo.controllers.bilateral', [])
       {
         $scope.entities.sourceEntity.selected = JSON.parse(localStorage.getItem('sourceEntitySelected'));
         $scope.entities.targetEntity.selected = JSON.parse(localStorage.getItem('targetEntitySelected'));
-        console.log("source", $scope.entities.sourceEntity.selected);
         init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected.RICid);
       }
       else if (localStorage.sourceEntitySelected && !localStorage.targetEntitySelected) 
@@ -126,8 +125,6 @@ angular.module('ricardo.controllers.bilateral', [])
         apiService
           .getFlows({reporting_ids: sourceID, partner_ids: targetID, with_sources: 1})
           .then(function (data){
-            console.log("sourceID", sourceID);
-  
             /* 
              * Set min & max dates
              */
@@ -173,8 +170,7 @@ angular.module('ricardo.controllers.bilateral', [])
             localStorage.targetEntitySelected = JSON.stringify($scope.entities.targetEntity.selected);
           
             // call function to send data to tableData
-            if (data !== undefined)
-              updateDateRange()
+            updateDateRange(data)
 
           },function (res){
             if (res[1] === 500)
@@ -228,12 +224,11 @@ angular.module('ricardo.controllers.bilateral', [])
     /* 
      * Update Range from date on flows array 
      */
-    function updateDateRange(){
-      if (data !== undefined) {
+    function updateDateRange(data){
         $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
         $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
         $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
-
+      if (data !== undefined) {
         cfSource.clear()
         cfSource.add(data.flows.filter(function(d){
           return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
