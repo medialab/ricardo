@@ -4,7 +4,8 @@
 
 angular.module('ricardo.controllers.world', [])
 
-  .controller('world', function ($scope, $location, apiService, dataTableService,
+  .controller('world', [ "$scope", "$location", "apiService", "dataTableService",
+    "utils", "reportingEntities", "reportingWorldFlows", "WORLD_TABLE_HEADERS", function ($scope, $location, apiService, dataTableService,
     utils, reportingEntities, reportingWorldFlows, WORLD_TABLE_HEADERS) {
 
     $scope.nbReportings = reportingWorldFlows;
@@ -556,4 +557,5 @@ angular.module('ricardo.controllers.world', [])
 
       utils.downloadCSV($scope.tableData, headers, order, fileName);
     };
-  })
+  }])
+

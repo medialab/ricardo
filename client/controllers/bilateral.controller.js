@@ -6,7 +6,9 @@
  */
 
 angular.module('ricardo.controllers.bilateral', [])
-  .controller('bilateral', function ($scope, $location, reportingEntities, 
+  .controller('bilateral', [ "$scope", "$location", "reportingEntities", 
+    "cfSource", "cfTarget", "apiService", "dataTableService", "utils", 
+    "DEFAULT_REPORTING", "DEFAULT_PARTNER", "TABLE_HEADERS", function ($scope, $location, reportingEntities, 
     cfSource, cfTarget, apiService, dataTableService, utils, 
     DEFAULT_REPORTING, DEFAULT_PARTNER, TABLE_HEADERS) {
 
@@ -378,4 +380,4 @@ angular.module('ricardo.controllers.bilateral', [])
       var data = $scope.tableData;
       utils.downloadCSV(data, headers, order, fileName);
     };   
-  })
+  }])

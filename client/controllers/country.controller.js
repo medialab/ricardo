@@ -7,7 +7,9 @@
 
 angular.module('ricardo.controllers.country', [])
 
-  .controller('country', function ($scope, $location, cfSource, cfTarget, 
+  .controller('country', ["$scope", "$location", "cfSource", "cfTarget", 
+    "cfSourceLine", "apiService", "lineChartService", "dataTableService", "utils", 
+    "reportingEntities", "DEFAULT_REPORTING", "TABLE_HEADERS", function ($scope, $location, cfSource, cfTarget, 
     cfSourceLine, apiService, lineChartService, dataTableService, utils, 
     reportingEntities, DEFAULT_REPORTING, TABLE_HEADERS) {
     /* 
@@ -1103,4 +1105,5 @@ angular.module('ricardo.controllers.country', [])
           utils.downloadCSV(result.flows, headers, order, fileName);
       })
     };
-  })
+  }])
+

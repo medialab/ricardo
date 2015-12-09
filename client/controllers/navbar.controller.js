@@ -3,7 +3,7 @@
 /* Controllers */
 
 angular.module('ricardo.controllers.navbar', [])
-  .controller('navbar', function($scope, $location) {
+  .controller('navbar', [ "$scope", "$location", function($scope, $location) {
   	$scope.isActive = function (viewLocation) {
         return viewLocation === $location.path();
     };
@@ -13,4 +13,4 @@ angular.module('ricardo.controllers.navbar', [])
       {slug:"bilateral", label:"Bilateral view"},
       //{slug:"RICentities", label:"RICentities view"}
     ]
-  })
+  }])
