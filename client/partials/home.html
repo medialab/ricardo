@@ -1,7 +1,7 @@
-<div class="view-page container-fluid">
-  <div top-menu class="row"></div>
-
-  <div>
+<div class="view-page">
+  <div top-menu class="row">
+    
+  </div>
     <div id="homeImage" class="row">
       <img ng-src="../img/ricepaper_v3.png" id="backHomeImage"/>
       <div>
@@ -10,10 +10,8 @@
       </div>
     </div>
     <div class="container">
-      <div >
-        <div id="homeSubtitle">
-          {{ 'INTRO' | translate }}
-        </div>
+      <div id="homeSubtitle">
+        {{ 'INTRO' | translate }}
       </div>
       <div class="row workingPaperContainer">
         <div class="spaceBetweenParagraphs noFloat">&bull;</div>
@@ -30,9 +28,11 @@
         </div>
 
         </div>
-      </div>
-      <div class="container">
         <div class="spaceBetweenParagraphs noFloat">&bull;</div>
+      </div>
+   
+    <div id="workingPaper">
+      <div class="container">
         <div class="row workingPaperContainer">
           <div class="col-md-12">
             <p>{{ 'WORKING_PAPER_1' | translate }} <a href="http://dh2016.adho.org/">Digital Humanities 2016</a>.
@@ -59,11 +59,11 @@
             </div>
           </div>
 
-          <div class="spaceBetweenParagraphs noFloat">&bull;</div>
       </div>
-      
+    </div>
       <div id="studies" class="page">
         <div class="container">
+          <div class="spaceBetweenParagraphs noFloat">&bull;</div>
           <div>
           </br>
           </br>
@@ -152,7 +152,88 @@
         </div>
       </div>
     </div>
+    <!-- <div id="footer"> -->
+    <section id="footer">
+      
+    
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <h2 class="section-heading">
+              Contribute
+            </h2>
+            <hr>
+            <p class="links">
+             Share your ideas or issues on : 
+             <br>
+             <span>
+               <a href="https://github.com/medialab/ricardo/issues">https://github.com/medialab/ricardo/issues</a>
+             </span>     
+            </p>
+            <br>
+            <br>
+            <br>
+            <h2 class="section-heading">
+              Source code
+            </h2>
+            <hr>
+            <p class="links">
+             RICardo is a website under MIT Licence. 
+             <br>
+             Source code and documentation available on Github :
+             <span>
+               <a href="https://github.com/medialab/ricardo">https://github.com/medialab/ricardo</a>
+             </span>     
+            </p>
+          </div>
+          <div class="col-md-6">
+            <h2 class="section-heading" style="text-align:right;">
+              CREDITS
+            </h2>
+            <hr>
+            <br>
+            <a href="http://www.medialab.sciences-po.fr" class="pull-right">
+              <img src="../img/sciencespo_medialab.png" alt="Sciences Po medialab" style="width:200px;">
+            </a>
+            <br>
+            <br>
+            <br>
+            <br>
+            <p class="links" style="text-align:right; font-weight:bold;">
+               <a href="https://twitter.com/medialab_scpo">@medialab_ScPo</a>
+            </p>
+            <p class="links" style="text-align:right; font-weight:bold;">
+              Discover other médialab's tools on:
+              <br>
+              <a href="http://www.tools.medialab.sciences-po.fr" class="pull-right">
+                tools.medialab.sciences-po.fr
+              </a>
+            </p>
+            <br>
+            <br>
+            <a href="http://chsp.sciences-po.fr" class="pull-right">
+              <img src="../img/sciencespo_chsp.png" alt="Sciences Po chsp" style="width:200px;" class="invert">
+            </a>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <p class="links" style="text-align:right; font-weight:bold; float:right;">
+               <a href="https://twitter.com/ScPo_CHSP">@ScPo_CHSP</a>
+            </p>
+          </div>
+        </div>
+      </section>
+       <div class="container">
+       <div style="margin:auto;text-align:center; margin-top:20px;">
+         
+       <a href="" >Legal notice</a>
+       </div>
+       
+       </div>
   </div>
-  <div class="row noFloat" footer/>
+<!--   </div> -->
+<!--   <div class="row noFloat" footer/>
 </div>
-
+ -->
