@@ -26,7 +26,14 @@
   </p>
   <div class="row timeline-cont" >
     <div class="col-md-12">
-        <country-title></country-title>
+        <h4 class="titleDualTL">
+        {{ 'COUNTRY_TITLE_1' | translate }}
+        <inline-select-country ng-model="entities.sourceEntity.selected" list="reportingEntities"></inline-select-country>
+        {{ 'FROM' | translate }}
+        <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf"></inline-select-year>
+        {{ 'TO' | translate}}
+        <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup"></inline-select-year>
+      </h4>
         <p class="paragraphViz">
             {{ 'COUNTRY_VIEW_DUAL_LEGEND' | translate }} 
         </p>
@@ -94,7 +101,7 @@
 <div class="container">
   <br>
   <br>
-  <h4> Trade of reporting with partners sorted by
+  <h4>  {{ 'PARTNER_HISTO_1' | translate }}
   <div class="inline-select">   
       <ui-select ng-model="grouped" theme="bootstrap" ng-change="changeGroup(grouped)">
         <match placeholder="Group by...">{{$select.selected.name.value}}</match>
@@ -103,7 +110,7 @@
         </choices>
       </ui-select>
   </div>
-    on
+     {{ 'PARTNER_HISTO_2' | translate }}
   <div class="inline-select">
       <ui-select ng-model="ordered" theme="bootstrap" ng-change="changeOrder(ordered)">
       <match placeholder="Order by...">{{$select.selected.name.value}}</match>
@@ -112,7 +119,7 @@
       </choices>
       </ui-select>
   </div>
-    on
+     {{ 'PARTNER_HISTO_3' | translate }}
   <div class="inline-select">
     <ui-select ng-model="filtered" theme="bootstrap" ng-change="changeFilter(filtered)">
       <match placeholder="Filter by...">{{$select.selected.name.value}}</match>
@@ -121,7 +128,7 @@
       </choices>
     </ui-select>
   </div>
-  by
+     {{ 'PARTNER_HISTO_4' | translate }}
   <div class="inline-select">
     <ui-select ng-model="sorted" theme="bootstrap" ng-change="changeSort(sorted)">
       <match placeholder="Sort by...">{{$select.selected.name.value}}</match>
@@ -216,7 +223,7 @@
     <div class="col-md-12">
       <br/>
       <br/>
-      <h4 class="titleDualTL">Trade of {{entities.sourceEntity.selected.RICname}} with 
+      <h4 class="titleDualTL">{{ 'LINE_CHART_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'LINE_CHART_2' | translate }} 
       <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
       
       <span class="close-btn">

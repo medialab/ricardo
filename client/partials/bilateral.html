@@ -43,15 +43,15 @@
     </p>
     <!-- <bilateral-title>  </bilateral-title> -->
     <h4>
-  Trade between
+  {{ 'BILATERAL_1' | translate }}
   <inline-select-country ng-model="entities.sourceEntity.selected" list="reportingEntities" analytics-on="click" analytics-event="Bilateral source" ></inline-select-country>
-  and
+  {{ 'AND' | translate }}
   <inline-select-country ng-model="entities.targetEntity.selected" list="reportingEntities" analytics-on="click" analytics-event="Bilateral target" ></inline-select-country>
-  - From
+  - {{ 'FROM' | translate }}
   <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf" ></inline-select-year>
-  to
+  {{ 'TO' | translate }}
   <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup" ></inline-select-year>
-  as reported by {{entities.sourceEntity.selected.RICname}}
+  {{ 'BILATERAL_2' | translate }} {{entities.sourceEntity.selected.RICname}}
 </h4>
     </br>
       <dual-timeline 
@@ -81,7 +81,7 @@
       </div>
       <br>
       <br>
-      <h4>Available years in {{entities.sourceEntity.selected.RICname}} and {{entities.targetEntity.selected.RICname}} trade statistics</h4>
+      <h4>{{ 'BILATERAL_BRUSH_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'AND' | translate}} {{entities.targetEntity.selected.RICname}} {{ 'BILATERAL_BRUSH_2' | translate }} </h4>
       <brushing-timeline
         ng-data="timelineData"
         start-date="selectedMinDate"

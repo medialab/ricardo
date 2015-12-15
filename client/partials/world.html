@@ -2,14 +2,15 @@
     </br>
     </br>
     <p class="paragraphPage">
-     {{ ' WORLD_VIEW_INTRO' | translate }}
+     {{ 'WORLD_VIEW_INTRO' | translate }}
     </p>
     <div class="row" >
 
       <div class="timeline-cont col-sm-12">
         <world-title></world-title>
         <p class="paragraphViz">
-         For more information about this graph, report to <a href="/#/#worldTrade">World trade / Total trade</a> 
+         {{ 'WORLD_VIEW_1' | translate }} <a href="/#/#worldTrade">World trade / Total trade</a> 
+         
         </p>
         <dual-timeline 
           ng-data="timelineData" 
@@ -24,7 +25,7 @@
             <div class="square export"></div> Export
           </div>
           <div class="legend-item">
-            Data expressed in <strong>sterling pound</strong>
+            {{ 'CURRENCY' | translate }} <strong>sterling pound</strong>
           </div>
         </div>
       </div>  
@@ -33,7 +34,7 @@
       <div class="col-sm-12">
         <br>
         <br>
-        <h4>Number of reporting entities in estimating World trade</h4>
+        <h4> {{ 'WORLD_NB_REPORTINGS' | translate }}</h4>
         <bar-chart 
           ng-data="nbReportings"
           start-date="barMinDate"
@@ -41,7 +42,7 @@
           ></bar-chart>
         <div class="legend">
           <div class="legend-item">
-            <div class="square import"></div> Reportings available to build the curve
+            <div class="square import"></div> {{ 'WORLD_REPORTINGS' | translate }}
           </div>
         </div>
       </div>
@@ -53,7 +54,7 @@
     <div class="col-md-12">
       <br>
       <br>
-      <h4 class="titleDualTL">World trade comparaison with  
+      <h4 class="titleDualTL"> {{ 'WORLD_COMPARAISON' | translate }}
 
       <div class="inline-select" >
         <ui-select  ng-model="entities.sourceCountryEntity1.selected" theme="bootstrap" ng-change="change(entities.sourceCountryEntity1.selected)" >
@@ -90,7 +91,7 @@
     </div>
       </h4>
         <p class="paragraphViz">
-          In this graph the <a href="/#/#worldTrade">World trade / Total trade</a> of a country is the <a href="/#/#worldbestguess">World best guess</a> 
+          {{ 'WORLD_LINES_1' | translate }} <a href="/#/#worldTrade">World trade / Total trade</a> {{ 'WORLD_LINES_2' | translate }} <a href="/#/#worldbestguess">World best guess</a> 
         </p>
         <div ng-show="messagePercent"> 
          <p>
