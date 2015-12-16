@@ -7,7 +7,15 @@
     <div class="row" >
 
       <div class="timeline-cont col-sm-12">
-        <world-title></world-title>
+        <h4>
+          {{ 'WORLD_VIEW_TITLE' | translate }}
+
+          {{ 'FROM' | translate }}
+          <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf"></inline-select-year>
+          {{ 'TO' | translate }}
+          <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup"></inline-select-year>
+
+        </h4>
         <p class="paragraphViz">
          {{ 'WORLD_VIEW_1' | translate }} <a href="/#/#worldTrade">World trade / Total trade</a> 
          
