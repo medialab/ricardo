@@ -6,7 +6,7 @@ angular.module('ricardo.services', [])
   .config(function ( $httpProvider) {
       delete $httpProvider.defaults.headers.common['X-Requested-With'];
   })
-  .factory('fileService', function($http, $q) {
+  .factory('fileService', [ "$http", "$q", function($http, $q) {
 
    return {
 
@@ -21,7 +21,7 @@ angular.module('ricardo.services', [])
        return deferred.promise;
      }
    }
-  })
+  }])
   .factory('dataTableService', function() {
 
    return {
@@ -117,7 +117,7 @@ angular.module('ricardo.services', [])
       }   
     }
   })
-  .factory('apiService', function($http, $q, $rootScope, BASE_API_URL) {
+  .factory('apiService', ['$http', '$q', '$rootScope', 'BASE_API_URL', function($http, $q, $rootScope, BASE_API_URL) {
 
    return {
 
@@ -222,7 +222,7 @@ angular.module('ricardo.services', [])
        return deferred.promise;
      }
    }
-  })
+  }])
   .factory('cfSource', function() {
 
     var cf = crossfilter([]),
