@@ -17,9 +17,11 @@ CREATE TABLE `exchange_rates`
 	`modified_currency`		TEXT,
 	`rate_to_pounds`		REAL,
 	`source`			 	INTEGER,
-	PRIMARY KEY (`year`, `modified_currency`),
+	FOREIGN KEY (year) 					REFERENCES currencies(ID),
+	FOREIGN KEY (modified_currency) 	REFERENCES currencies(ID),
 	FOREIGN KEY (source) 	REFERENCES sources(ID)
 );
+	-- PRIMARY KEY (`year`, `modified_currency`),
 
 --currencies
 CREATE TABLE `currencies`
@@ -28,10 +30,10 @@ CREATE TABLE `currencies`
 	`year`								INTEGER,
 	`reporting`							TEXT,
 	`modified_currency`					TEXT,
-	PRIMARY KEY (`currency`, `year`, `reporting`),
-	FOREIGN KEY (year)					REFERENCES exchange_rates(year),
-	FOREIGN KEY (modified_currency)		REFERENCES exchange_rates(modified_currency)
+	PRIMARY KEY (`currency`, `year`, `reporting`)
 );
+	-- FOREIGN KEY (year)					REFERENCES exchange_rates(year),
+	-- FOREIGN KEY (modified_currency)		REFERENCES exchange_rates(modified_currency)
 
 CREATE TABLE `expimp_spegen`
 (

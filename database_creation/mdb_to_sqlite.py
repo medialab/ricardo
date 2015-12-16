@@ -419,10 +419,12 @@ print "-------------------------------------------------------------------------
 ##			Create table exchanges_rates
 #####################################################
 print "Create exchanges_rates"
-c.execute("""INSERT INTO exchange_rates(year, modified_currency, rate_to_pounds)
-	SELECT Yr as year, `Modified currency` as modified_currency,
-	`FX rate (NCU/£)` as rate_to_pounds
+c.execute("""INSERT INTO exchange_rates(year, modified_currency, rate_to_pounds, source)
+	SELECT Yr as year, `Modified currency` as modified_currency,`FX rate (NCU/£)` as rate_to_pounds, src.id
 	FROM old_rate
+	INNER JOIN sources as src
+	WHERE old_rate.`Source Currency` = src.source_name
+	GROUP BY rate_to_pounds
 	""")
 print "exchanges_rates created"
 print "-------------------------------------------------------------------------"
