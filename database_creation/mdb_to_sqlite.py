@@ -6,11 +6,12 @@ import json
 import itertools
 import csv
 from csv_unicode import UnicodeReader
+from csv_unicode import UnicodeWriter
 
 
-###################################################
+################################################################################
 ##          MDB to SQLite
-###################################################
+################################################################################
 
 try :
 	conf=json.load(open("config.json","r"))
@@ -30,29 +31,35 @@ except:
 conn=sqlite3.connect(mdb_sqlite_filename)
 c=conn.cursor()
 
-###################################################
+print "______ _____ _____   ___  ____________ _____ "
+print "| ___ \_   _/  __ \ / _ \ | ___ \  _  \  _  |"
+print "| |_/ / | | | /  \// /_\ \| |_/ / | | | | | |"
+print "|    /  | | | |    |  _  ||    /| | | | | | |"
+print "| |\ \ _| |_| \__/\| | | || |\ \| |/ /\ \_/ /"
+print "\_| \_|\___/ \____/\_| |_/\_| \_|___/  \___/ "
+
+################################################################################
 ##          Schema SQLite to copy ACCESS
-###################################################
+################################################################################
 print "-------------------------------------------------------------------------"
 print "Read the old schema of the data base to transfert access base into sqlite"
 with open(conf["sqlite_schema"],"r") as schema:
-	#c.executescript(subprocess.check_output("mdb-schema %s sqlite 2>/dev/null"%mdb_filename,shell=True))
 	c.executescript(schema.read())
 
-###################################################
+################################################################################
 ##          Schema SQLite with good tables 
-###################################################
+################################################################################
 print "-------------------------------------------------------------------------"
 print "Read the schema of the new data base"
 with open(conf["new_sqlite_schema"],"r") as new_schema:
-	#c.executescript(subprocess.check_output("mdb-schema %s sqlite 2>/dev/null"%mdb_filename,shell=True))
 	c.executescript(new_schema.read())
 
 
 print "-------------------------------------------------------------------------"
 print "Copy access tables into sqlite"
 print "-------------------------------------------------------------------------"
-for table in ["Entity_Names v1","RawData v1","Currency Name v1","Exchange Rate v1","Exp-Imp-Standard v1","RICentities v1","RICentities_groups v1"]:
+for table in ["Entity_Names v1","RawData v1","Currency Name v1","Exchange Rate v1",
+"Exp-Imp-Standard v1","RICentities v1","RICentities_groups v1"]:
  	 	# new_table_name=table.lower().replace(" ","_").replace("-","_")
 	 	# print new_table_name
 		#c.executescript()
@@ -87,37 +94,56 @@ print "-------------------------------------------------------------------------
 # cleaning dups in to-be-joined tables
 
 # duplicates in currency
-c.execute(""" DELETE FROM old_currency WHERE ID_Curr_Yr_RepEntity IN (SELECT ID_Curr_Yr_RepEntity from old_currency GROUP BY `Original Currency`,`Reporting Entity (Original Name)`,Yr HAVING count(*)>1)""")
+c.execute(""" DELETE FROM old_currency 
+	WHERE ID_Curr_Yr_RepEntity 
+	IN (SELECT ID_Curr_Yr_RepEntity 
+		from old_currency 
+		GROUP BY `Original Currency`,`Reporting Entity (Original Name)`,Yr HAVING count(*)>1)""")
 
 # duplicates in exp-imp
 c.execute("DELETE FROM `old_Exp-Imp-Standard` WHERE `ID_Exp_spe` in (7,16,25)")
 
 # checking unique on to-be-joined tables
-c.execute(""" CREATE UNIQUE INDEX unique_currency ON  old_currency (`Original Currency`,`Reporting Entity (Original Name)`,Yr); """)
+c.execute(""" CREATE UNIQUE INDEX unique_currency ON  old_currency (`Original Currency`,
+	`Reporting Entity (Original Name)`,Yr); """)
 c.execute(""" CREATE UNIQUE INDEX unique_expimp ON `old_Exp-Imp-Standard` (`Exp / Imp`,`Spe/Gen/Tot`)""")
 c.execute(""" CREATE UNIQUE INDEX unique_rate ON old_rate (Yr,`Modified Currency`)""")
 
-# clean data
-# trim and lower
-c.execute("UPDATE old_flow SET `Exp / Imp`=trim(lower(`Exp / Imp`)), `Spe/Gen/Tot`=trim(lower(`Spe/Gen/Tot`)) WHERE 1")
-c.execute("UPDATE `old_Exp-Imp-Standard` SET `Exp / Imp`=trim(lower(`Exp / Imp`)), `Spe/Gen/Tot`=trim(lower(`Spe/Gen/Tot`)) WHERE 1")
-c.execute("UPDATE old_flow SET `Initial Currency`=trim(lower(`Initial Currency`)),`Reporting Entity_Original Name`=trim(lower(`Reporting Entity_Original Name`)) WHERE 1")
-c.execute("UPDATE `old_currency` SET `Original Currency`=trim(lower(`Original Currency`)),`Modified Currency`=trim(lower(`Modified Currency`)),`Reporting Entity (Original Name)`=trim(lower(`Reporting Entity (Original Name)`)) WHERE 1")
-c.execute("UPDATE `old_rate` SET `Modified Currency`=trim(lower(`Modified Currency`)) WHERE 1")
-c.execute("""UPDATE `old_rate` SET `FX rate (NCU/£)`=replace(`FX rate (NCU/£)`,",",".") WHERE 1""")
-c.execute("""UPDATE old_RICentities SET type=lower(replace(trim(type)," ","_")) WHERE 1""")
+################################################################################
+##          clean data - trim and lower
+################################################################################
+c.execute("""UPDATE old_flow SET `Exp / Imp`=trim(lower(`Exp / Imp`)), 
+	`Spe/Gen/Tot`=trim(lower(`Spe/Gen/Tot`)) WHERE 1""")
+c.execute("""UPDATE `old_Exp-Imp-Standard` SET `Exp / Imp`=trim(lower(`Exp / Imp`)), 
+	`Spe/Gen/Tot`=trim(lower(`Spe/Gen/Tot`)) WHERE 1""")
+c.execute("""UPDATE old_flow SET `Initial Currency`=trim(lower(`Initial Currency`)),
+	`Reporting Entity_Original Name`=trim(lower(`Reporting Entity_Original Name`)) 
+	WHERE 1""")
+c.execute("""UPDATE `old_currency` SET `Original Currency`=trim(lower(`Original Currency`)),
+	`Modified Currency`=trim(lower(`Modified Currency`)),
+	`Reporting Entity (Original Name)`=trim(lower(`Reporting Entity (Original Name)`)) 
+	WHERE 1""")
+c.execute("""UPDATE `old_rate` SET `Modified Currency`=trim(lower(`Modified Currency`)) 
+	WHERE 1""")
+c.execute("""UPDATE `old_rate` SET `FX rate (NCU/£)`=replace(`FX rate (NCU/£)`,",",".") 
+	WHERE 1""")
+c.execute("""UPDATE old_RICentities SET type=lower(replace(trim(type)," ","_")) 
+	WHERE 1""")
 
 # DELETE unused spe/gen cleaning rows ID=13 
 
 # one lower on reporting 
-#c.execute("""UPDATE flow SET `Reporting Entity_Original Name`="espagne (îles baléares)" WHERE `Reporting Entity_Original Name`="espagne (Îles baléares)";""")
+#c.execute("""UPDATE flow SET `Reporting Entity_Original Name`="espagne (îles baléares)" 
+# WHERE `Reporting Entity_Original Name`="espagne (Îles baléares)";""")
 
 # clean Land/Sea
 c.execute("UPDATE `old_flow` SET `Land/Sea` = null WHERE `Land/Sea` = ' '")
 #clean total type
-c.execute("UPDATE `old_flow` SET `Total_type` = lower(`Total_type`) WHERE `Total_type` is not null")
+c.execute("""UPDATE `old_flow` SET `Total_type` = lower(`Total_type`) 
+	WHERE `Total_type` is not null""")
 
 # RICENTITIES
+
 # add a slug as RICentities id
 c.execute("""UPDATE old_RICentities SET id=REPLACE(RICname," ","") WHERE 1""")
 c.execute("""UPDATE old_RICentities SET id=REPLACE(id,"&","_") WHERE 1""")
@@ -125,7 +151,6 @@ c.execute("""UPDATE old_RICentities SET id=REPLACE(id,"/","") WHERE 1""")
 c.execute("""UPDATE old_RICentities SET id=REPLACE(id,"(","") WHERE 1""")
 c.execute("""UPDATE old_RICentities SET id=REPLACE(id,")","") WHERE 1""")
 c.execute("""UPDATE old_RICentities SET id=REPLACE(id,"***","") WHERE 1""")
-
 
 
 # remove 770 'Pas de données' : a priori on tente de les garder 
@@ -137,26 +162,32 @@ c.execute("""UPDATE old_RICentities SET id=REPLACE(id,"***","") WHERE 1""")
 #c.execute("DELETE FROM rate WHERE `FX rate (NCU/£)` is null")
 
 
-###################################################
+################################################################################
 ##          Import RICnames definition from CSV
-###################################################
+################################################################################
 # import RICnames_from_csv
 # RICnames_from_csv.import_in_sqlite(conn, conf)
 #  depecrated since RICnames were included into mdb file by Karine
 
 # add the missing Haïti
-c.execute('INSERT INTO `old_entity_names_cleaning` (`original_name`, `name`, `RICname`) VALUES ("Haïti","Haïti","Haiti");')
+c.execute("""INSERT INTO `old_entity_names_cleaning` (`original_name`, `name`, `RICname`) 
+	VALUES ("Haïti","Haïti","Haiti");""")
 
-##################################################
+################################################################################
 ##			Create table flow_joined
-#####################################################
+################################################################################
 
 print "Create table flow_joined"
 print "-------------------------------------------------------------------------"
 
 c.execute("""DROP TABLE IF EXISTS flow_joined;""")
 c.execute("""CREATE TABLE IF NOT EXISTS flow_joined AS 
-	 SELECT f.*, `Exp / Imp (standard)` as expimp, `Spe/Gen/Tot (standard)` as spegen, `FX rate (NCU/£)` as rate ,`Modified Currency` as currency, r2.RICname as reporting,r2.id as reporting_id, p2.RICname as partner,p2.id as partner_id, r.original_name as reporting_original_name, p.original_name as partner_original_name
+	 SELECT f.*, `Exp / Imp (standard)` as expimp, `Spe/Gen/Tot (standard)` as spegen, 
+	 `FX rate (NCU/£)` as rate ,`Modified Currency` as currency, 
+	 r2.RICname as reporting,r2.id as reporting_id, 
+	 p2.RICname as partner,p2.id as partner_id, 
+	 r.original_name as reporting_original_name, 
+	 p.original_name as partner_original_name
 	 from old_flow as f
 	 LEFT OUTER JOIN `old_Exp-Imp-Standard` USING (`Exp / Imp`,`Spe/Gen/Tot`)
 	 LEFT OUTER JOIN old_currency as c
@@ -178,19 +209,28 @@ c.execute("""CREATE TABLE IF NOT EXISTS flow_joined AS
 
 # taking care of Total_type flag to define the world partner
 # and ((`Total Trade Estimation` is null and partner != "World" )or(`Total Trade Estimation`=1 and partner = "World"))
-c.execute("""INSERT INTO old_RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldestimated","World estimated","geographical_area","World")""")
-c.execute("""UPDATE flow_joined SET partner="World estimated", partner_id="Worldestimated" WHERE partner="World" and Total_type="total_estimated" """)
-c.execute("""INSERT INTO old_RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldasreported","World as reported","geographical_area","World")""")
-c.execute("""UPDATE flow_joined SET partner="World as reported", partner_id="Worldasreported" WHERE partner="World" and Total_type="total_reporting1" """)
-c.execute("""INSERT INTO old_RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldasreported2","World as reported2","geographical_area","World")""")
-c.execute("""UPDATE flow_joined SET partner="World as reported2", partner_id="Worldasreported2" WHERE partner="World" and Total_type="total_reporting2" """)
-c.execute("""INSERT INTO old_RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldundefined","World undefined","geographical_area","World")""")
-c.execute("""UPDATE flow_joined SET partner="World undefined", partner_id="Worldundefined" WHERE partner="World" and Total_type is null """)
+c.execute("""INSERT INTO old_RICentities (`id`,`RICname`,`type`,`continent`) 
+	VALUES ("Worldestimated","World estimated","geographical_area","World")""")
+c.execute("""UPDATE flow_joined SET partner="World estimated", partner_id="Worldestimated" 
+	WHERE partner="World" and Total_type="total_estimated" """)
+c.execute("""INSERT INTO old_RICentities (`id`,`RICname`,`type`,`continent`) 
+	VALUES ("Worldasreported","World as reported","geographical_area","World")""")
+c.execute("""UPDATE flow_joined SET partner="World as reported", partner_id="Worldasreported" 
+	WHERE partner="World" and Total_type="total_reporting1" """)
+c.execute("""INSERT INTO old_RICentities (`id`,`RICname`,`type`,`continent`) 
+	VALUES ("Worldasreported2","World as reported2","geographical_area","World")""")
+c.execute("""UPDATE flow_joined SET partner="World as reported2", partner_id="Worldasreported2" 
+	WHERE partner="World" and Total_type="total_reporting2" """)
+c.execute("""INSERT INTO old_RICentities (`id`,`RICname`,`type`,`continent`) 
+	VALUES ("Worldundefined","World undefined","geographical_area","World")""")
+c.execute("""UPDATE flow_joined SET partner="World undefined", partner_id="Worldundefined" 
+	WHERE partner="World" and Total_type is null """)
 
 
 # c.execute("""DROP VIEW IF EXISTS flow_impexp_total;""")
 # c.execute(""" CREATE VIEW IF NOT EXISTS flow_impexp_world AS 
-# 	SELECT f.*, `Exp / Imp (standard)` as expimp, `Spe/Gen/Tot (standard)` as spegen, `FX rate (NCU/£)` as rate ,r2.RICname as reporting, p2.RICname as partner
+# 	SELECT f.*, `Exp / Imp (standard)` as expimp, `Spe/Gen/Tot (standard)` as spegen, 
+# `FX rate (NCU/£)` as rate ,r2.RICname as reporting, p2.RICname as partner
 # 	 from flow as f
 # 	 LEFT OUTER JOIN `Exp-Imp-Standard` USING (`Exp / Imp`,`Spe/Gen/Tot`)
 # 	 LEFT OUTER JOIN currency as c
@@ -212,7 +252,8 @@ c.execute("""UPDATE flow_joined SET partner="World undefined", partner_id="World
 # merge duplicates from land and sea 
 ################################################################################
 
-c.execute("""SELECT count(*) as nb,group_concat(`flow`,'|'),group_concat(ID,'|'),group_concat(`Land/Sea`,'|'),group_concat(`Notes`,'|'),group_concat(`Original No`,'|')
+c.execute("""SELECT count(*) as nb,group_concat(`flow`,'|'),group_concat(ID,'|'),
+	group_concat(`Land/Sea`,'|'),group_concat(`Notes`,'|'),group_concat(`Original No`,'|')
 	FROM `flow_joined`
 	WHERE `Land/Sea` is not null
 	GROUP BY Yr,expimp,reporting_original_name,partner_original_name HAVING count(*)>1
@@ -226,7 +267,8 @@ for n,flows,ids,land_seas,notes,original_nos in c :
 		if len(set(land_seas.split("|")))>1:
 			if notes :
 				notes=", ".join(set(notes.split("|")))+" ; "+original_no
-			sub_c.execute("""UPDATE `flow_joined` SET flow=%.1f,notes="%s",`Land/Sea`="%s" WHERE ID=%s"""%(sum(float(_) for _ in flows.split("|")),notes,land_sea,ids.split("|")[0]))
+			sub_c.execute("""UPDATE `flow_joined` SET flow=%.1f,notes="%s",`Land/Sea`="%s" 
+				WHERE ID=%s"""%(sum(float(_) for _ in flows.split("|")),notes,land_sea,ids.split("|")[0]))
 			sub_c.execute("""DELETE FROM `flow_joined` WHERE ID=%s"""%ids.split("|")[1])
 			rows_grouped+=2
 if rows_grouped>0:
@@ -239,7 +281,8 @@ print "-------------------------------------------------------------------------
 # for France between 1847 and 1856 both included
 ################################################################################
 
-c.execute("""SELECT count(*) as nb,group_concat(Notes,'|'),group_concat(ID,'|'),group_concat(Source,'|') as notes_group
+c.execute("""SELECT count(*) as nb,group_concat(Notes,'|'),group_concat(ID,'|'),
+	group_concat(Source,'|') as notes_group
 	FROM `flow_joined`
 	WHERE `reporting`="France" 
 		and Yr >= 1847 AND Yr <= 1856
@@ -267,7 +310,9 @@ print "-------------------------------------------------------------------------
 # remove "species and billions" remove species flows when exists
 ################################################################################
 
-c.execute("""SELECT * from (SELECT count(*) as nb,group_concat(`Species and Bullions`,'|') as sb,group_concat(ID,'|'),reporting,partner
+c.execute("""SELECT * from (SELECT count(*) as nb,
+	group_concat(`Species and Bullions`,'|') as sb,group_concat(ID,'|'),
+	reporting,partner
 	FROM `flow_joined`		
 	GROUP BY Yr,expimp,reporting,partner HAVING count(*)>1)
 	WHERE sb="S|NS"
@@ -291,7 +336,9 @@ print "-------------------------------------------------------------------------
 # remove GEN flows when duplicates with SPE flows
 ################################################################################
 
-c.execute("""SELECT count(*) as nb,group_concat(`spegen`,'|'),group_concat(`Species and Bullions`,'|') as sb,group_concat(ID,'|'),`reporting`,`partner`,Yr,`expimp`,group_concat(`flow`,'|') 
+c.execute("""SELECT count(*) as nb,group_concat(`spegen`,'|'),
+	group_concat(`Species and Bullions`,'|') as sb,group_concat(ID,'|'),
+	`reporting`,`partner`,Yr,`expimp`,group_concat(`flow`,'|') 
 	FROM `flow_joined`
 	GROUP BY Yr,`expimp`,`reporting`,`partner` HAVING count(*)>1
 	""")
@@ -328,7 +375,8 @@ for n,spe_gens,sb,ids,reporting,partner,Yr,e_i,f in lines :
 
 	if not dup_found:
 		# flows are dups but not on GEN/SPE distinction or some null values in the groupings
-		print ("duplicate found :%s flows for %s,%s,%s,%s,%s,%s"%(n,Yr,reporting,partner,e_i,spe_gens,sb)).encode("utf8")
+		print ("duplicate found :%s flows for %s,%s,%s,%s,%s,%s"%(n,Yr,reporting,
+			partner,e_i,spe_gens,sb)).encode("utf8")
 print "-------------------------------------------------------------------------"
 if ids_to_remove:
 	for r,ids in ids_to_remove.iteritems():
@@ -336,16 +384,33 @@ if ids_to_remove:
 		c.execute("DELETE FROM flow_joined WHERE id IN (%s)"%",".join(ids))
 
 print "-------------------------------------------------------------------------"
-# create the partner World as sum of partners 
-c.execute("""INSERT INTO old_RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldsumpartners","World sum partners","geographical_area","World")""")
-c.execute("INSERT INTO flow_joined (flow,unit,reporting,reporting_id,Yr,expimp,currency,spegen,partner,partner_id,rate,Source,`Source suite`) SELECT sum(flow*unit) as flow, 1 as unit, reporting, reporting_id, Yr, expimp, currency, '' as spegen,  'World_sum_partners' as partner, 'Worldsumpartners' as partner_id,rate,Source,`Source suite` from flow_joined WHERE partner not like 'World%' group by reporting,expimp,Yr ")
+ 
+################################################################################
+##			Create the partner World as sum of partners
+################################################################################
+c.execute("""INSERT INTO old_RICentities (`id`,`RICname`,`type`,`continent`) 
+	VALUES ("Worldsumpartners","World sum partners","geographical_area","World")""")
+c.execute("""INSERT INTO flow_joined (flow,unit,reporting,reporting_id,Yr,expimp,
+	currency,spegen,partner,partner_id,rate,Source,`Source suite`) 
+	SELECT sum(flow*unit) as flow, 1 as unit, reporting, reporting_id, Yr, 
+	expimp, currency, '' as spegen,  'World_sum_partners' as partner, 
+	'Worldsumpartners' as partner_id,rate,Source,`Source suite` 
+	from flow_joined 
+	WHERE partner not like 'World%' 
+	group by reporting,expimp,Yr """)
 
-# create the partner World as best guess
-c.execute("""INSERT INTO old_RICentities (`id`,`RICname`,`type`,`continent`) VALUES ("Worldbestguess","World best guess","geographical_area","World")""")
+################################################################################
+##			Create the partner World as best guess
+################################################################################
+c.execute("""INSERT INTO old_RICentities (`id`,`RICname`,`type`,`continent`) 
+	VALUES ("Worldbestguess","World best guess","geographical_area","World")""")
 
 conn.commit()
 
-c.execute("""SELECT Yr,expimp,partner,reporting,partner_id,reporting_id,flow,unit,currency,spegen,rate,Source,`Source suite` from flow_joined WHERE partner LIKE "World%"  """)
+c.execute("""SELECT Yr,expimp,partner,reporting,partner_id,reporting_id,flow,
+	unit,currency,spegen,rate,Source,`Source suite` 
+	from flow_joined 
+	WHERE partner LIKE "World%"  """)
 data=list(c)
 data.sort(key=lambda _:(_[3],_[0],_[1]))
 for g,d in itertools.groupby(data,lambda _:(_[3],_[0],_[1])):
@@ -363,16 +428,18 @@ for g,d in itertools.groupby(data,lambda _:(_[3],_[0],_[1])):
 		world_best_guess=list(world_best_guess[0])
 		world_best_guess[2]=u"World_best_guess"
 		world_best_guess[4]=u"Worldbestguess"
-		c.execute("""INSERT INTO flow_joined (Yr,expimp,partner,reporting,partner_id,reporting_id,flow,unit,currency,spegen,rate,Source,`Source suite`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",world_best_guess)
+		c.execute("""INSERT INTO flow_joined (Yr,expimp,partner,reporting,partner_id,
+			reporting_id,flow,unit,currency,spegen,rate,Source,`Source suite`) 
+		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",world_best_guess)
 
 
 print "-------------------------------------------------------------------------"
 print "Transfert old sqlite into the new sqlite database"
 print "-------------------------------------------------------------------------"
 
-#####################################################
+################################################################################
 ##			Create table currency_sources
-#####################################################
+################################################################################
 # print "Create currency_sources"
 # c.execute("""DROP TABLE IF EXISTS currency_sources;""")
 # c.execute("""CREATE TABLE IF NOT EXISTS currency_sources AS 
@@ -382,25 +449,30 @@ print "-------------------------------------------------------------------------
 # print "currency_sources created"
 
 
-#####################################################
+################################################################################
 ##			Create table flow_sources
-#####################################################
+################################################################################
 print "create flow_sources"
-c.execute("""CREATE TABLE IF NOT EXISTS flow_sources (source, transcript_filename, country, volume, date, cote, url)""")
+c.execute("""CREATE TABLE IF NOT EXISTS flow_sources (source, 
+	transcript_filename, country, volume, date, cote, url)""")
 with open('in_data/ricardo_flow_sources_final.csv', 'r') as sources:
 	reader=UnicodeReader(sources)
 	reader.next()
 	for row in reader:
-		c.execute("INSERT INTO flow_sources (source, transcript_filename, country, volume, date, cote, url) VALUES (?, ?, ?, ?, ?, ?, ?)",(row[0].strip(), row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(), row[7].strip()))
+		c.execute("""INSERT INTO flow_sources (source, transcript_filename, 
+			country, volume, date, cote, url) 
+			VALUES (?, ?, ?, ?, ?, ?, ?)""",(row[0].strip(), row[1].strip(), 
+				row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(), row[7].strip()))
 print "flow_sources create"
 print "-------------------------------------------------------------------------"
 
-#####################################################
+################################################################################
 ##			Create table sources
-#####################################################
+################################################################################
 print "Create sources"
 c.execute("""INSERT INTO sources(source_name, shelf_number, volume, url, dates) 
-	SELECT source as source_name, cote as shelf_number, group_concat(country, volume) as volume, url, date as dates
+	SELECT source as source_name, cote as shelf_number, 
+	group_concat(country, volume) as volume, url, date as dates
 	FROM flow_sources
 	GROUP BY source_name, shelf_number, volume
 	""")    
@@ -415,12 +487,14 @@ c.execute("""INSERT into sources(source_name, notes)
 print "currency_sources added into source"
 print "-------------------------------------------------------------------------"
 
-#####################################################
+################################################################################
 ##			Create table exchanges_rates
-#####################################################
+################################################################################
 print "Create exchanges_rates"
-c.execute("""INSERT INTO exchange_rates(year, modified_currency, rate_to_pounds, source)
-	SELECT Yr as year, `Modified currency` as modified_currency,`FX rate (NCU/£)` as rate_to_pounds, src.id
+c.execute("""INSERT INTO exchange_rates(year, modified_currency, 
+	rate_to_pounds, source)
+	SELECT Yr as year, `Modified currency` as modified_currency,
+	`FX rate (NCU/£)` as rate_to_pounds, src.id
 	FROM old_rate
 	INNER JOIN sources as src
 	WHERE old_rate.`Source Currency` = src.source_name
@@ -429,9 +503,9 @@ c.execute("""INSERT INTO exchange_rates(year, modified_currency, rate_to_pounds,
 print "exchanges_rates created"
 print "-------------------------------------------------------------------------"
 
-#####################################################
+################################################################################
 ##			Create table expimp_spegen
-#####################################################
+################################################################################
 print "Create expimp_spegen"
 c.execute("""INSERT INTO expimp_spegen
 	SELECT `Exp / Imp` as export_import, `Spe/Gen/Tot` as special_general,
@@ -442,9 +516,9 @@ c.execute("""INSERT INTO expimp_spegen
 print "expimp_spegen created"
 print "-------------------------------------------------------------------------"
 
-#####################################################
+################################################################################
 ##			Create table currencies
-#####################################################
+################################################################################
 print "Create currencies"
 c.execute("""INSERT INTO currencies
 	SELECT `Original Currency` as currency, Yr as year, 
@@ -456,9 +530,9 @@ print "currencies created"
 print "-------------------------------------------------------------------------"
 
 
-#####################################################
+################################################################################
 ##			Create table RICentities
-#####################################################
+################################################################################
 #create temp table to save RICentities
 print "Create RICentities_backup"
 c.execute("""DROP TABLE IF EXISTS RICentities_backup;""")
@@ -477,9 +551,9 @@ c.execute("""INSERT INTO RICentities
 print "RICentities created"
 print "-------------------------------------------------------------------------"
 
-#####################################################
+################################################################################
 ##			Create table entity_names
-#####################################################
+################################################################################
 #create temp table to save RICentities
 print "Create entity_names"
 c.execute("""INSERT INTO entity_names 
@@ -490,9 +564,9 @@ print "entity_names created"
 print "-------------------------------------------------------------------------"
 
 
-#####################################################
+################################################################################
 ##			Create table RICentities_groups
-#####################################################
+################################################################################
 #create temp table to save RICentities
 print "Create RICentities_groups"
 c.execute("""INSERT INTO RICentities_groups 
@@ -502,13 +576,20 @@ c.execute("""INSERT INTO RICentities_groups
 print "RICentities_groups created"
 print "-------------------------------------------------------------------------"
 
-##################################################
+################################################################################
 ##			Create table flows
-#####################################################
+################################################################################
 
 print "Create flows"
-c.execute("""INSERT INTO flows(source, flow, unit, currency, year, reporting, partner, export_import, special_general, species_bullions, transport_type, statistical_period, partner_sum, world_trade_type)
-	SELECT src.id as source, Flow, Unit, currency, Yr as Year, reporting_original_name as reporting, partner_original_name as partner, expimp as export_import, spegen as special_general, `Species and Bullions` as species_bullions, `Land/Sea` as transport_type, `Statistical Period` as statistical_period, `Partner Entity_Sum` as partner_sum, Total_type as world_trade_type
+c.execute("""INSERT INTO flows(source, flow, unit, currency, year, reporting, 
+	partner, export_import, special_general, species_bullions, transport_type, 
+	statistical_period, partner_sum, world_trade_type)
+	SELECT src.id as source, Flow, Unit, currency, Yr as Year, 
+	reporting_original_name as reporting, partner_original_name as partner, 
+	expimp as export_import, spegen as special_general, 
+	`Species and Bullions` as species_bullions, `Land/Sea` as transport_type, 
+	`Statistical Period` as statistical_period, `Partner Entity_Sum` as partner_sum, 
+	Total_type as world_trade_type
 	FROM flow_joined
 	INNER JOIN sources as src
 	WHERE flow_joined.source = src.source_name
@@ -516,8 +597,6 @@ c.execute("""INSERT INTO flows(source, flow, unit, currency, year, reporting, pa
 	""")
 print "flows created"
 print "-------------------------------------------------------------------------"
-
-# DESIGN NEWS TABLES WITH THE NEW SCHEMA
 
 # INDEX
 
@@ -529,13 +608,142 @@ print "-------------------------------------------------------------------------
 # c.execute("""CREATE UNIQUE INDEX i_re_id ON RICentities (id)""")
 # c.execute("""CREATE INDEX i_re_rn ON RICentities (RICname)""")
 
+c.execute("""DROP TABLE IF EXISTS flow_joined;""")
+print "drop flow_joined"
+print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS old_rate;""")
+print "drop old_rate"
+print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS old_RICentities;""")
+print "drop old_RICentities"
+print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS RICentities_backup;""")
+print "drop RICentities_backup"
+print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS old_currency;""")
+print "drop old_currency"
+print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS old_flow;""")
+print "drop old_flow"
+print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS old_RICentities_groups;""")
+print "drop old_RICentities_groups"
+print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS old_entity_names_cleaning;""")
+print "drop old_entity_names_cleaning"
+print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS 'old_Exp-Imp-Standard';""")
+print "drop old_Exp-Imp-Standard"
+print "-------------------------------------------------------------------------"
+
+
 print "cleaning done"
 conn.commit()
 print "commited"
-print "______ _____ _____   ___  ____________ _____ "
-print "| ___ \_   _/  __ \ / _ \ | ___ \  _  \  _  |"
-print "| |_/ / | | | /  \// /_\ \| |_/ / | | | | | |"
-print "|    /  | | | |    |  _  ||    /| | | | | | |"
-print "| |\ \ _| |_| \__/\| | | || |\ \| |/ /\ \_/ /"
-print "\_| \_|\___/ \____/\_| |_/\_| \_|___/  \___/ "
+print "-------------------------------------------------------------------------"
+
+################################################################################
+##			Export all tables in csv files
+################################################################################
+
+sources = "sources.csv"
+
+c.execute("select * from sources")
+writer_0 = UnicodeWriter(open(os.path.join("out_data", sources), "wb"))
+sources_headers = [description[0] for description in c.description]
+writer_0.writerow(sources_headers)
+writer_0.writerows(c)
+print "export sources.csv done"
+print "-------------------------------------------------------------------------"
+
+entity_names = "entity_names.csv"
+
+c.execute("select * from entity_names")
+writer_1 = UnicodeWriter(open(os.path.join("out_data", entity_names), "wb"))
+entity_names_headers = [description[0] for description in c.description]
+writer_1.writerow(entity_names_headers)
+writer_1.writerows(c)
+print "export entity_names.csv done"
+print "-------------------------------------------------------------------------"
+
+RICentities = "RICentities.csv"
+
+c.execute("select * from RICentities")
+writer_2 = UnicodeWriter(open(os.path.join("out_data", RICentities), "wb"))
+RICentities_headers = [description[0] for description in c.description]
+writer_2.writerow(RICentities_headers)
+writer_2.writerows(c)
+print "export RICentities.csv done"
+print "-------------------------------------------------------------------------"
+
+c.execute("select * from exchange_rates")
+exchange_rates = "exchange_rates.csv"
+writer_3 = UnicodeWriter(open(os.path.join("out_data", exchange_rates), "wb"))
+exchange_rates_headers = [description[0] for description in c.description]
+writer_3.writerow(exchange_rates_headers)
+writer_3.writerows(c)
+print "export exchange_rates.csv done"
+print "-------------------------------------------------------------------------"
+
+currencies = "currencies.csv"
+
+c.execute("select * from currencies")
+writer_2 = UnicodeWriter(open(os.path.join("out_data", currencies), "wb"))
+currencies_headers = [description[0] for description in c.description]
+writer_2.writerow(currencies_headers)
+writer_2.writerows(c)
+print "export currencies.csv done"
+print "-------------------------------------------------------------------------"
+
+expimp_spegen = "expimp_spegen.csv"
+
+c.execute("select * from expimp_spegen")
+writer_2 = UnicodeWriter(open(os.path.join("out_data", expimp_spegen), "wb"))
+expimp_spegen_headers = [description[0] for description in c.description]
+writer_2.writerow(expimp_spegen_headers)
+writer_2.writerows(c)
+print "export expimp_spegen.csv done"
+print "-------------------------------------------------------------------------"
+
+RICentities_groups = "RICentities_groups.csv"
+
+c.execute("select * from RICentities_groups")
+writer_2 = UnicodeWriter(open(os.path.join("out_data", RICentities_groups), "wb"))
+RICentities_groups_headers = [description[0] for description in c.description]
+writer_2.writerow(RICentities_groups_headers)
+writer_2.writerows(c)
+print "export RICentities_groups.csv done"
+print "-------------------------------------------------------------------------"
+
+flows = "flows.csv"
+
+c.execute("select * from flows")
+writer_2 = UnicodeWriter(open(os.path.join("out_data", flows), "wb"))
+flows_headers = [description[0] for description in c.description]
+writer_2.writerow(flows_headers)
+writer_2.writerows(c)
+print "export flows.csv done"
+print "-------------------------------------------------------------------------"
+
+
+################################################################################
+##			May the force be with you
+################################################################################
+
+
+
+print "           _.-'~~~~~~`-._           							   	"
+print "          /      ||      \\           							"
+print "         /       ||       \\         						  	"
+print "        |        ||        |        RICardo, I am your father 	"
+print "        | _______||_______ |       								"
+print "        |/ ----- \/ ----- \|        							   	"
+print "       /  (     )  (     )  \\       							"
+print "      / \  ----- () -----  / \\      							"
+print "     /   \      /||\      /   \\     							"
+print "    /     \    /||||\    /     \\    							"
+print "   /       \  /||||||\  /       \\   							"
+print "  /_        \o========o/        _\  							   	"
+print "    `--...__|`-._  _.-'|__...--'    							   	"
+print "            |    `'    |            							   	"
 
