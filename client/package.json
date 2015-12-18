@@ -1,0 +1,17 @@
+{
+  "name": "client",
+  "version": "0.0.0",
+  "description": "If you want to run your instance of RICardo locally on your machine, be sure you have the following requirements installed.",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "devDependencies": {
+    "gulp": "~3.9.0",
+    "gulp-concat": "~2.6.0",
+    "gulp-ng-annotate": "~1.1.0",
+    "gulp-uglify": "~1.5.1"
+  }
+}
