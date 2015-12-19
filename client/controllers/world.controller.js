@@ -31,16 +31,15 @@ angular.module('ricardo.controllers.world', [])
         });
     })
 
-    $scope.moded = {};
-    $scope.modes = [
-    {
-      type: {value :0,writable: true},
-      name: {value:"exp",writable: true}
-    },
-    {
-      type: {value :1,writable: true},
-      name: {value: "value",writable: true}
-    }];
+    $scope.dualtimeline = [];
+    worldFlowsYears.forEach( function (d) {
+      if (d.key)
+        $scope.dualtimeline.push({
+          year: d.key, 
+          imp:d.values[1].flows,
+          exp:d.values[0].flows, 
+        });
+    })
 
     $scope.entities = {
       sourceEntity : {}, 
@@ -51,8 +50,6 @@ angular.module('ricardo.controllers.world', [])
       sourceWorldEntity : {}
     }
 
-    $scope.filter = "all"
-    $scope.order = "tot"
     $scope.currency = 0
     $scope.actualCurrency = "sterling pound"
     $scope.RICentities = {}
@@ -80,16 +77,14 @@ angular.module('ricardo.controllers.world', [])
       currency:null,
       sources:null
       }]; // to show table under linechart World
-     
-    $scope.barMinDate = 1787                              
-    $scope.barMaxDate = 1938 
-    $scope.rawMinDate = 1787                              
-    $scope.rawMaxDate = 1938                              
-    $scope.selectedMinDate = 1787                         
-    $scope.selectedMaxDate = 1938                         
+                            
     $scope.rawYearsRange                                  
     $scope.rawYearsRange_forInf                           
-    $scope.rawYearsRange_forSup                           
+    $scope.rawYearsRange_forSup    
+
+    /*
+     * Config buttons of linechart
+     */                       
 
     $scope.linechartCurrency = {}
     $scope.linechartCurrencyChoices = [
@@ -119,24 +114,31 @@ angular.module('ricardo.controllers.world', [])
     };  
 
     /*
-     *  Calling the API
+     * Init the list of entities for linechart
      */
 
-    function init() {
-      $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
-      $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
-      $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
+    $scope.reportingCountryEntities1 = reportingEntities.filter(function (d) {
+        return d.type === "country"
+      });
+
+    /*
+     *  Init the timelines
+     */
+
+     init();
+
+    function init() {  
+
+      // $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
+      // $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
+      // $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
       
-      $scope.RICentities = {};
+      //$scope.RICentities = {};
 
       /*
        * Init arrays for filters in linechart viz
        */
 
-      $scope.reportingCountryEntities1 = reportingEntities.filter(function (d) {
-        return d.type === "country"
-      });
-     
       $scope.reporting = []
       $scope.entities.sourceCountryEntity = {}
 
@@ -153,14 +155,19 @@ angular.module('ricardo.controllers.world', [])
       $scope.selectedMaxDate = maxDate ? 
         maxDate : Math.min( $scope.selectedMaxDate, $scope.rawMaxDate );
 
+      if ($scope.selectedMaxDate > 1938)
+        $scope.selectedMaxDate = 1938;
+
       // $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
       // $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
 
-      $scope.timelineData = worldFlowsYearsFormat;
-      $scope.tableData = worldFlowsYearsFormat;          
+      // $scope.timelineData = worldFlowsYearsFormat;
+      $scope.tableData = worldFlowsYearsFormat;  
+
+      updateDateRange();        
     }
 
-    init();
+    
 
     /*
      * Init line chart functions
@@ -391,6 +398,7 @@ angular.module('ricardo.controllers.world', [])
      */
 
     $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {
+      console.log("newVal", newVal);
       if (newVal !== undefined && newVal !== oldVal && newVal[0] != newVal[1]) {
         $scope.selectedMinDate = newVal[0];
         $scope.selectedMaxDate = newVal[1];
@@ -400,10 +408,27 @@ angular.module('ricardo.controllers.world', [])
         localStorage.removeItem('selectedMaxDate');
         localStorage.selectedMinDate = newVal[0];
         localStorage.selectedMaxDate = newVal[1];
+
+        updateTableData();
+        updateDateRange();
         if ($scope.reporting.length > 0)
           initLinechart($scope.reporting, $scope.linechartFlow.selected.type.value, 
           $scope.linechartCurrency.selected.type.value);
+      }
+    })
 
+    $scope.$watch("dualtimeline", function (newValue, oldValue){
+        console.log("newValue", newValue);
+        console.log("oldValue", oldValue);
+        if (newValue === oldValue) {
+          console.log("ok");
+          init()
+          updateTableData();
+          updateDateRange();
+        }
+      if(newValue !== oldValue && newValue){
+        console.log("ko")
+        init()
         updateTableData();
         updateDateRange();
       }

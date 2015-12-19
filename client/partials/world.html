@@ -4,9 +4,8 @@
     <p class="paragraphPage">
      {{ 'WORLD_VIEW_INTRO' | translate }}
     </p>
-    <div class="row" >
-
-      <div class="timeline-cont col-sm-12">
+    <div class="row timeline-cont">
+      <div class="col-sm-12">
         <h4>
           {{ 'WORLD_VIEW_TITLE' | translate }}
 
@@ -20,11 +19,12 @@
          {{ 'WORLD_VIEW_1' | translate }} <a href="/#/#worldTrade">World trade / Total trade</a> 
          
         </p>
-        <dual-timeline 
-          ng-data="timelineData" 
+        <dual-timeline  
+          ng-data="tableData" 
           start-date="selectedMinDate" 
           end-date="selectedMaxDate" 
         ></dual-timeline>
+
         <div class="legend">
         <div class="legend-item">
           <div class="square import"></div> Import
@@ -38,6 +38,9 @@
         </div>
       </div>  
     </div>
+  </div>
+
+  <div class="container">
     <div class="row">
       <div class="col-sm-12">
         <br>
@@ -45,8 +48,10 @@
         <h4> {{ 'WORLD_NB_REPORTINGS' | translate }}</h4>
         <bar-chart 
           ng-data="nbReportings"
-          start-date="barMinDate"
-          end-date="barMaxDate"
+          start-date="selectedMinDate"
+          end-date="selectedMaxDate"
+          raw-start-date="rawMinDate"
+          raw-end-date="rawMaxDate"
           ></bar-chart>
         <div class="legend">
           <div class="legend-item">
