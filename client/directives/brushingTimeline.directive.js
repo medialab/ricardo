@@ -195,7 +195,6 @@ angular.module('ricardo.directives.brushingTimeline', [])
               .attr("font-size", "0.85em");
           }
 
-
           // Brush
 
           brush = d3.svg.brush()

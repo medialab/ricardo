@@ -111,7 +111,10 @@ angular.module('ricardo.directives.dualTimeline', [])
               .defined(function(d) { return d.exp !== null; })
               .x(function(d) { return x(d.date); })
               .y0(height)
-              .y1(function(d) { return y(d.exp); });
+              .y1(function(d) { 
+                if (d.exp !== null)
+                  return y(d.exp); 
+              });
 
           lineExp = d3.svg.line()
               .defined(function(d) { return d.exp !== null; })

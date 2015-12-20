@@ -731,7 +731,6 @@ angular.module('ricardo.controllers.country', [])
 
 
     $scope.changeCountry = function (country) {
-      console.log("country", country);
       $scope.pushReporting(country)
     }
 

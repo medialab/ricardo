@@ -163,7 +163,8 @@ angular.module('ricardo.controllers.world', [])
 
       // $scope.timelineData = worldFlowsYearsFormat;
       $scope.tableData = worldFlowsYearsFormat;  
-
+      if ($scope.tableData)
+        $scope.$apply();
       updateDateRange();        
     }
 
@@ -247,7 +248,6 @@ angular.module('ricardo.controllers.world', [])
                   partner_ids:"Worldbestguess", 
                   with_sources:1})
                 .then(function (result) {
-                  //console.log("d.RICid", d.RICid);
                  var yearSelected = [];
                   yearSelected = initTabLineChart(result, yearSelected, d.type, 
                     d.RICname, $scope.selectedMinDate, $scope.selectedMaxDate)
@@ -398,7 +398,6 @@ angular.module('ricardo.controllers.world', [])
      */
 
     $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {
-      console.log("newVal", newVal);
       if (newVal !== undefined && newVal !== oldVal && newVal[0] != newVal[1]) {
         $scope.selectedMinDate = newVal[0];
         $scope.selectedMaxDate = newVal[1];
@@ -414,23 +413,6 @@ angular.module('ricardo.controllers.world', [])
         if ($scope.reporting.length > 0)
           initLinechart($scope.reporting, $scope.linechartFlow.selected.type.value, 
           $scope.linechartCurrency.selected.type.value);
-      }
-    })
-
-    $scope.$watch("dualtimeline", function (newValue, oldValue){
-        console.log("newValue", newValue);
-        console.log("oldValue", oldValue);
-        if (newValue === oldValue) {
-          console.log("ok");
-          init()
-          updateTableData();
-          updateDateRange();
-        }
-      if(newValue !== oldValue && newValue){
-        console.log("ko")
-        init()
-        updateTableData();
-        updateDateRange();
       }
     })
 
