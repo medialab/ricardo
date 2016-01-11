@@ -17,9 +17,9 @@
         <div class="spaceBetweenParagraphs noFloat">&bull;</div>
         <div class="col-md-6"> 
           {{ 'COLUMN1' | translate }}
-          <a href="https://data.imf.org/">https://data.imf.org/</a>
+          <a href="https://data.imf.org/">data.imf.org</a>
           {{ 'COLUMN1_LINK' | translate }}
-          <a href="http://comtrade.un.org/">http://comtrade.un.org/</a>
+          <a href="http://comtrade.un.org/">comtrade.un.org</a>
 
         </div>
         <div class="col-md-6"> 
@@ -74,38 +74,33 @@
             <ol class="storylinesContainer">
               <li class="storyline">
 
-                <a ng-href="">
                 <div class="slInfo">
                   <h5 class="slTitle">Trade flows</h5>
                   <p class="slPara">
                     {{ 'TRADE_FLOWS' | translate }}
                   </p>
-
                 </div>
-                </a>
               </li>
               <li class="storyline">
 
-                <a ng-href=""><div class="slInfo">
+                <div class="slInfo">
                   <h5 class="slTitle">RIC entities</h5>
                   <p class="slPara"> 
-                    {{ 'RICENTITIES' | translate }}
+                    {{ 'RICENTITIES_1' | translate }} <a href="http://correlatesofwar.org\"> correlatesofwar.org</a> {{ 'RICENTITIES_2' | translate }}
                   </p>
                 </div>
-                </a>
               </li>
               <li class="storyline">
 
-                <a ng-href=""><div class="slInfo">
+                <div class="slInfo">
                   <h5 class="slTitle">Continent</h5>
                   <p class="slPara"> 
                     {{ 'CONTINENT' | translate }}
                   </p>
 
-                </div></a>
+                </div>
               </li>
               <li class="storyline">
-                <a ng-href="">
                 <div class="slInfo">
                   <h5 id="worldTrade" class="slTitle">World trade / Total trade</h5>
                   <p class="slPara"> 
@@ -129,10 +124,10 @@
                       </li>
                     </ul>
                   </p>
-                </div></a>
+                </div>
               </li>
               <li class="storyline">
-                <a ng-href=""><div class="slInfo">
+                <div class="slInfo">
                   <h5 class="slTitle">Mirror Flows</h5>
                   <p class="slPara"> 
                     {{ 'MIRROR_FLOWS_1' | translate}}
@@ -145,7 +140,7 @@
                     {{ 'MIRROR_FLOWS_3' | translate}}
                   </p>
 
-                </div></a>
+                </div>
               </li>
             </ol>
           </div>
@@ -200,7 +195,7 @@
                <a href="https://twitter.com/medialab_scpo">@medialab_ScPo</a>
             </p>
             <p class="links" style="text-align:right; font-weight:bold;">
-              Discover other médialab's tools on:
+              Discover other medialab's tools on:
               <br>
               <a href="http://www.tools.medialab.sciences-po.fr" class="pull-right">
                 tools.medialab.sciences-po.fr
@@ -225,7 +220,7 @@
           </div>
         </div>
       </section>
-      <center><a href="#touModal" class="portfolio-link" data-toggle="modal">legal notice</a></center>
+      <center><a href="#touModal" id="legal" class="portfolio-link" data-toggle="modal">legal notice</a></center>
        <!-- Terms of use Modal -->
     <div class="portfolio-modal modal fade" id="touModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-content">
