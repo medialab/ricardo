@@ -371,8 +371,8 @@ angular.module('ricardo.controllers.world', [])
 
       updateTableData();
       if ($scope.reporting.length > 0)
-        initLinechart($scope.reporting, $scope.linechartFlow.selected.type.value, 
-        $scope.linechartCurrency.selected.type.value);
+        initLinechart($scope.reporting, $scope.linechartFlow.type.value, 
+        $scope.linechartCurrency.type.value);
     }
 
     /*
@@ -411,8 +411,8 @@ angular.module('ricardo.controllers.world', [])
         updateTableData();
         updateDateRange();
         if ($scope.reporting.length > 0)
-          initLinechart($scope.reporting, $scope.linechartFlow.selected.type.value, 
-          $scope.linechartCurrency.selected.type.value);
+          initLinechart($scope.reporting, $scope.linechartFlow.type.value, 
+          $scope.linechartCurrency.type.value);
       }
     })
 
