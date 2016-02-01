@@ -335,6 +335,7 @@ angular.module('ricardo.controllers.country', [])
         updateDateRange();
         initLinechart($scope.reporting, $scope.linechartFlow.type.value, 
           $scope.linechartCurrency.type.value);
+        initPartnerHisto($scope.tableData)
       }
     })
 
@@ -436,23 +437,23 @@ angular.module('ricardo.controllers.country', [])
      */
 
     function rollupYears(leaves){
-          var res = {
-            exp: d3.sum(leaves, function(d){ 
-              if (!/^World/.test(d.partner_id) )
-                return d.exp
-              else
-                return 0
-            }),
-            imp: d3.sum(leaves, function(d){
-              if (!/^World/.test(d.partner_id) )
-                return d.imp
-              else
-                return 0
-            }),
-          };
-          res.tot = res.exp + res.imp;
-          res.type = leaves
-          return res;
+      var res = {
+        exp: d3.sum(leaves, function(d){ 
+          if (!/^World/.test(d.partner_id) )
+            return d.exp
+          else
+            return 0
+        }),
+        imp: d3.sum(leaves, function(d){
+          if (!/^World/.test(d.partner_id) )
+            return d.imp
+          else
+            return 0
+        }),
+      };
+      res.tot = res.exp + res.imp;
+      res.type = leaves
+      return res;
     }
 
     /* 
@@ -519,10 +520,19 @@ angular.module('ricardo.controllers.country', [])
      */
 
     function initPartnerHisto(data) {
-      var data = $scope.tableData;
+      //var data = $scope.tableData;
+      var data = [];
+
+      var temp = $scope.tableData;
+
+      temp.forEach( function (d) {
+        if (d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate) {
+          data.push(d); 
+        } 
+      })
+
       var indexYears = buildIndexYears(data);
       $scope.indexYears = indexYears;
-
 
       data=data.filter(function(p){ return !/^World/.test(p.partner_id)})
       
@@ -538,7 +548,6 @@ angular.module('ricardo.controllers.country', [])
 
       partners = addTypePartner(partners, data);
       partners = valuesToPartners(partners, indexYears);
-
 
       if ($scope.filtered.type.value !== "all")
         partners = partners.filter(function (d) { 
@@ -563,7 +572,6 @@ angular.module('ricardo.controllers.country', [])
       var data = $scope.tableData;
       var indexYears = buildIndexYears(data);
       $scope.indexYears = indexYears;
-
 
       data=data.filter(function(p){ return !/^World/.test(p.partner_id)})
       
@@ -600,8 +608,15 @@ angular.module('ricardo.controllers.country', [])
 
     $scope.changeSort = function (sort) {
         $scope.sorted = sort;
+        var data = [];
 
-        var data = $scope.tableData;
+        var temp = $scope.tableData;
+
+        temp.forEach( function (d) {
+          if (d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate) {
+            data.push(d); 
+          } 
+        })
         var indexYears = buildIndexYears(data);
         $scope.indexYears = indexYears;
 
@@ -617,7 +632,6 @@ angular.module('ricardo.controllers.country', [])
 
         partners = addTypePartner(partners, data);
         partners = valuesToPartners(partners, indexYears);
-
 
         if ($scope.filtered.type.value !== "all")
           partners = partners.filter(function (d) { 
@@ -658,7 +672,6 @@ angular.module('ricardo.controllers.country', [])
 
         partners = addTypePartner(partners, data);
         partners = valuesToPartners(partners, indexYears);
-
 
         if ($scope.filtered.type.value !== "all")
           partners = partners.filter(function (d) { 

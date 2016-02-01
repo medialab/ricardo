@@ -31,7 +31,8 @@ angular.module('ricardo.directives.partnersHistogram', [])
 
         scope.$watch("ngData", function (newValue, oldValue){
           if(newValue !== oldValue){
-            removeSvgElements(chart)          
+            removeSvgElements(chart)    
+            console.log("newValue", newValue);      
             partnersHistogram(newValue, scope.orderData, scope.indexYears, scope.startDate, scope.endDate);
           }
         }, true);
@@ -264,8 +265,8 @@ angular.module('ricardo.directives.partnersHistogram', [])
                 .attr("x", 18)
                 .attr("y", -17)
                 .attr("font-size", "0.8em")
-                .text(function(d){ return formatPercent(p["avg_" + order]) })  
-            }
+                .text(function(d){ return formatPercent(p["avg_" + order]) }) // display number under circles 
+              }
           });
         }
       } //end of link
