@@ -9,9 +9,10 @@ angular.module('ricardo.controllers.country', [])
 
   .controller('country', ["$scope", "$location", "cfSource", "cfTarget", 
     "cfSourceLine", "apiService", "lineChartService", "dataTableService", "utils", 
-    "reportingEntities", "DEFAULT_REPORTING", "TABLE_HEADERS", function ($scope, $location, cfSource, cfTarget, 
-    cfSourceLine, apiService, lineChartService, dataTableService, utils, 
-    reportingEntities, DEFAULT_REPORTING, TABLE_HEADERS) {
+    "countryService", "countryLines", "reportingEntities", "DEFAULT_REPORTING", "TABLE_HEADERS", 
+    function ($scope, $location, cfSource, cfTarget, 
+    cfSourceLine, apiService, lineChartService, dataTableService, utils, countryService,
+    countryLines, reportingEntities, DEFAULT_REPORTING, TABLE_HEADERS) {
     /* 
      * Message error if no data
      */
@@ -432,82 +433,13 @@ angular.module('ricardo.controllers.country', [])
       if(t === "continent"){$scope.entities.sourceContinentEntity.selected = undefined}
     }
 
-    /*
-     * Partners Histo tools functions
-     */
-
-    function rollupYears(leaves){
-      var res = {
-        exp: d3.sum(leaves, function(d){ 
-          if (!/^World/.test(d.partner_id) )
-            return d.exp
-          else
-            return 0
-        }),
-        imp: d3.sum(leaves, function(d){
-          if (!/^World/.test(d.partner_id) )
-            return d.imp
-          else
-            return 0
-        }),
-      };
-      res.tot = res.exp + res.imp;
-      res.type = leaves
-      return res;
-    }
-
-    /* 
-     * Add type to partner
-     */
-
-    function addTypePartner(partners, data) {
-      var entityChecked = []; 
-      partners.forEach(function (d) {
-        if (entityChecked.indexOf(d.key) === -1 ) {
-          for (var i = 0, len = data.length; i < len; i++) {
-            if (d.key === data[i].partner_id) {
-              d.type = data[i].type
-              entityChecked.push(d.key);
-            }
-          }  
-        }
-      })
-      return partners;
-    }
-
-    /*
-     * Add value for visualisation
-     */
-
-    function valuesToPartners(partners, indexYears) {
-      partners.forEach(function(p){
-        p.years = []
-        p.values.forEach(function(d){
-          p.years.push({
-            key: d.key,
-            exp: d.values.exp,
-            imp: d.values.imp,
-            balance: (d.values.exp - d.values.imp) / (d.values.exp + d.values.imp) || 0,
-            pct_exp: d.values.exp / indexYears[d.key].exp * 100,
-            pct_imp: d.values.imp / indexYears[d.key].imp * 100,
-            pct_tot: (d.values.exp + d.values.imp) / indexYears[d.key].tot * 100
-          });
-        });
-
-        delete p.values;
-        p.avg_tot = d3.mean(p.years, function(d){ return d.pct_tot });
-        p.avg_imp = d3.mean(p.years, function(d){ return d.pct_imp });
-        p.avg_exp = d3.mean(p.years, function(d){ return d.pct_exp });
-      })
-      return partners  
-    }
 
     function buildIndexYears(data) {
       var indexYears = {};
 
       d3.nest()
         .key(function(d){ return d.year })
-        .rollup(rollupYears)
+        .rollup(countryService.rollupYears)
         .entries(data)
         .forEach(function(y){
           indexYears[y.key] = y.values;
@@ -543,11 +475,11 @@ angular.module('ricardo.controllers.country', [])
       var partners = d3.nest()  
         .key(function(d){ return d[$scope.grouped.type.value ? "continent" : "partner_id"] })
         .key(function(d){ return d.year })
-        .rollup(rollupYears)
+        .rollup(countryService.rollupYears)
         .entries(data)
 
-      partners = addTypePartner(partners, data);
-      partners = valuesToPartners(partners, indexYears);
+      partners = countryService.addTypePartner(partners, data);
+      partners = countryService.valuesToPartners(partners, indexYears);
 
       if ($scope.filtered.type.value !== "all")
         partners = partners.filter(function (d) { 
@@ -580,11 +512,11 @@ angular.module('ricardo.controllers.country', [])
           return d[group.type.value ? "continent" : "partner_id"] 
         })
         .key(function(d){ return d.year })
-        .rollup(rollupYears)
+        .rollup(countryService.rollupYears)
         .entries(data)
 
-      partners = addTypePartner(partners, data);
-      partners = valuesToPartners(partners, indexYears);
+      partners = countryService.addTypePartner(partners, data);
+      partners = countryService.valuesToPartners(partners, indexYears);
 
 
       if ($scope.filtered.type.value !== "all")
@@ -627,11 +559,11 @@ angular.module('ricardo.controllers.country', [])
             return d[$scope.grouped.type.value ? "continent" : "partner_id"] 
           })
           .key(function(d){ return d.year })
-          .rollup(rollupYears)
+          .rollup(countryService.rollupYears)
           .entries(data)
 
-        partners = addTypePartner(partners, data);
-        partners = valuesToPartners(partners, indexYears);
+        partners = countryService.addTypePartner(partners, data);
+        partners = countryService.valuesToPartners(partners, indexYears);
 
         if ($scope.filtered.type.value !== "all")
           partners = partners.filter(function (d) { 
@@ -667,11 +599,11 @@ angular.module('ricardo.controllers.country', [])
             return d[$scope.grouped.type.value ? "continent" : "partner_id"] 
           })
           .key(function(d){ return d.year })
-          .rollup(rollupYears)
+          .rollup(countryService.rollupYears)
           .entries(data)
 
-        partners = addTypePartner(partners, data);
-        partners = valuesToPartners(partners, indexYears);
+        partners = countryService.addTypePartner(partners, data);
+        partners = countryService.countryService.valuesToPartners(partners, indexYears);
 
         if ($scope.filtered.type.value !== "all")
           partners = partners.filter(function (d) { 
@@ -706,11 +638,11 @@ angular.module('ricardo.controllers.country', [])
             return d[$scope.grouped.type.value ? "continent" : "partner_id"] 
           })
           .key(function(d){ return d.year })
-          .rollup(rollupYears)
+          .rollup(countryService.rollupYears)
           .entries(data)
 
-        partners = addTypePartner(partners, data);
-        partners = valuesToPartners(partners, indexYears);
+        partners = countryService.addTypePartner(partners, data);
+        partners = countryService.valuesToPartners(partners, indexYears);
 
         if (filter.type.value !== "all")
           partners = partners.filter(function (d) { 
@@ -779,18 +711,6 @@ angular.module('ricardo.controllers.country', [])
      * linechart functions
      */
 
-    function initLineChart2(linechart_flows, yearSelected, linechartData, ric, yValue, color) {
-        var countryTab = {};
-        countryTab.values = yearSelected;
-        countryTab.color = color;
-        countryTab.key = ric;
-        countryTab.flowType = yValue;
-        linechart_flows.push(countryTab);
-        linechart_flows.forEach( function (d) {
-        linechartData.push(d);        
-      })
-    }
-
     function initLinechart(partners, yValue, conversion){   
         var linechart_flows=[]
         if(partners.length>0 && conversion === "sterling" )
@@ -809,7 +729,7 @@ angular.module('ricardo.controllers.country', [])
                   $scope.selectedMaxDate)
 
                 $scope.linechartData = [];
-                initLineChart2(linechart_flows, yearSelected, 
+                countryLines.initLineChart2(linechart_flows, yearSelected, 
                   $scope.linechartData, d.RICid, yValue, d.color)
 
              }); 
@@ -832,7 +752,7 @@ angular.module('ricardo.controllers.country', [])
                 d.type, d.RICname, $scope.selectedMinDate, $scope.selectedMaxDate)
 
                 $scope.linechartData = [];
-                initLineChart2(linechart_flows, yearSelected, 
+                countryLines.initLineChart2(linechart_flows, yearSelected, 
                   $scope.linechartData, d.RICid, yValue, d.color)
                 
              }); 
@@ -1118,4 +1038,3 @@ angular.module('ricardo.controllers.country', [])
       })
     };
   }])
-

@@ -17,6 +17,7 @@ angular.module('ricardo', [
   'angulartics.google.analytics',
   'ricardo.filters',
   'ricardo.services',
+  'ricardo.services.country',
   'ricardo.directives',
   'ricardo.controllers.navbar',
   'ricardo.controllers.TranslateController',
