@@ -153,24 +153,41 @@
             </li>
           </ul>
       </p>
-          <div class="legend-item">
-          A = reporting  /   B = partner
-          </div>
-          <div class="legend-item">
-          Exp A -> B = exports {{ 'FROM' | translate }} A {{ 'TO' | translate }} B
-          </div>
-          <div class="legend-item">
-          ExpA = total exports A
-          </div> 
-          </br>
-          <div class="legend-item">
-            {{ 'PARTNER_HISTO_LEG_1' | translate }} = Exp A->B / ExpA * 100
-          </div>
-          <div class="legend-item">
-            {{ 'PARTNER_HISTO_LEG_2' | translate }} = (Exp A->B – Imp A->B) / (Exp A->B + Imp A->B)
-          </div>
+      <div class="legend-item">
+        A = reporting  /   B = partner
+      </div>
+      <div class="legend-item">
+        Exp A -> B = exports {{ 'FROM' | translate }} A {{ 'TO' | translate }} B
+      </div>
+      <div class="legend-item">
+        ExpA = total exports A
+      </div> 
+      </br>
+      <div class="legend-item">
+        {{ 'PARTNER_HISTO_LEG_1' | translate }} = Exp A->B / ExpA * 100
+      </div>
+      <div class="legend-item">
+        {{ 'PARTNER_HISTO_LEG_2' | translate }} = (Exp A->B – Imp A->B) / (Exp A->B + Imp A->B)
+      </div>
+      <div class="partnersHistoLegend">
+        <div class="legend-item">
+          <svg height="35" width="300">
+            <circle cx="25" cy="18" r="12" stroke="black" stroke-width="1" fill="transparent" />
+            <circle cx="25" cy="18" r="3" stroke="black" stroke-width="1" fill="black" />
+            <text x="45" y="20" fill="black">{{ 'PARTNER_HISTO_LEG_1' | translate }}</text>
+          </svg> 
+        </div> 
+        <div class="legend-item">
+          <svg height="35" width="300">
+            <rect x="15" y="0" width="10" height="15" style="fill:#cc6666" />
+            <rect x="25" y="15" width="10" height="15" style="fill:#663333" />
+            <text x="40" y="20" fill="black">{{ 'PARTNER_HISTO_LEG_2' | translate }}</text>
+          </svg> 
+        </div>  
+      </div>
     </div>
   </div>
+
 
 
 <div id="select-doubleChart">
@@ -202,24 +219,6 @@
       ></partners-histogram>
     </div>
   </div>
-    <div class="partnersHistoLegend">
-      <div class="legend-item">
-        <svg height="35" width="300">
-          <circle cx="25" cy="18" r="12" stroke="black" stroke-width="1" fill="transparent" />
-          <circle cx="25" cy="18" r="3" stroke="black" stroke-width="1" fill="black" />
-          <text x="45" y="20" fill="black">{{ 'PARTNER_HISTO_LEG_1' | translate }}</text>
-        </svg> 
-      </div> 
-      <div class="legend-item">
-        <svg height="35" width="300">
-          <rect x="15" y="0" width="10" height="15" style="fill:#cc6666" />
-          <rect x="25" y="15" width="10" height="15" style="fill:#663333" />
-          <text x="40" y="20" fill="black">{{ 'PARTNER_HISTO_LEG_2' | translate }}</text>
-        </svg> 
-      </div>  
-    </div>
-</div>
-
   <div class="row">
     <div class="col-md-12">
       <br/>
