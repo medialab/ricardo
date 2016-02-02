@@ -184,6 +184,29 @@ def get_world_flows(from_year,to_year):
 
     return json.dumps(json_response,encoding="UTF8")
 
+def get_nations_network_by_year(year):
+  cursor = get_db().cursor()
+  cursor.execute("""SELECT reporting, partner, Flow, expimp
+                    FROM flow_joined
+                    WHERE reporting NOT LIKE "Worl%%"
+                    AND partner NOT LIKE "Worl%%"
+                    AND Flow != "null"
+                    AND Yr = %s
+                    """%(year)
+              )
+
+
+  json_sql_response=[]
+  for (reporting, partner, Flow, expimp) in cursor:
+    json_sql_response.append({
+      "reporting": reporting,
+      "partner": partner,
+      "flow": Flow,
+      "expimp": expimp
+      })
+
+  return json.dumps(json_sql_response,encoding="UTF8")
+
 def get_continent_nb_partners(from_year, to_year):
   cursor = get_db().cursor()
   from_year_clause = """ AND Yr>%s"""%from_year if from_year!="" else ""
@@ -229,8 +252,6 @@ def get_flows(reporting_ids,partner_ids,original_currency,from_year,to_year,with
         json_response["mirror_flows"]=flows_data(partner_ids,reporting_ids,original_currency,from_year_in_flow,to_year_in_flow,with_sources)
 
     return json.dumps(json_response,encoding="UTF8")
-
-
 
 def get_continent_flows(continents,partner_ids,from_year,to_year,with_sources):
 

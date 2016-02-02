@@ -131,3 +131,14 @@ def flows_sources():
         app.logger.exception("exception in flow source")
         abort(500)
     return Response(json_data, status=200, mimetype='application/json')
+
+@app.route('/nations_network')
+def nations_network():
+    year = request.args.get('year', '')
+    try:
+        json_data=models.get_nations_network_by_year(year)
+    except:
+        app.logger.exception("exception in flow source")
+        abort(500)
+    return Response(json_data, status=200, mimetype='application/json')
+
