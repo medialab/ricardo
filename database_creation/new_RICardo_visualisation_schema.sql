@@ -1,4 +1,4 @@
---sources
+	--sources
 CREATE TABLE `sources`
 (
 	`ID`			INTEGER  PRIMARY KEY AUTOINCREMENT,
@@ -17,8 +17,7 @@ CREATE TABLE `exchange_rates`
 	`modified_currency`		TEXT,
 	`rate_to_pounds`		REAL,
 	`source`			 	INTEGER,
-	FOREIGN KEY (year) 					REFERENCES currencies(ID),
-	FOREIGN KEY (modified_currency) 	REFERENCES currencies(ID),
+	PRIMARY KEY (`year`,`modified_currency`),
 	FOREIGN KEY (source) 	REFERENCES sources(ID)
 );
 	-- PRIMARY KEY (`year`, `modified_currency`),
@@ -31,6 +30,7 @@ CREATE TABLE `currencies`
 	`reporting`							TEXT,
 	`modified_currency`					TEXT,
 	PRIMARY KEY (`currency`, `year`, `reporting`)
+	FOREIGN KEY (year,modified_currency) 	REFERENCES exchange_rates(year,modified_currency)
 );
 	-- FOREIGN KEY (year)					REFERENCES exchange_rates(year),
 	-- FOREIGN KEY (modified_currency)		REFERENCES exchange_rates(modified_currency)
@@ -93,11 +93,8 @@ CREATE TABLE `flows`
 	`partner_sum`					TEXT, 
 	`world_trade_type`				TEXT,
 	FOREIGN KEY (source) 			REFERENCES sources(ID),
-	FOREIGN KEY (reporting) 		REFERENCES entity_names(original_name),
+	FOREIGN KEY (currency,year,reporting) 			REFERENCES currencies(currency,year,reporting),
 	FOREIGN KEY (partner) 			REFERENCES entity_names(original_name),
-	FOREIGN KEY (currency) 			REFERENCES currencies(currency),
-	FOREIGN KEY (year) 				REFERENCES currencies(year),
-	FOREIGN KEY (reporting) 		REFERENCES currencies(reporting),
-	FOREIGN KEY (export_import)		REFERENCES expimp_spegen(export_import),
-	FOREIGN KEY (special_general)	REFERENCES expimp_spegen(special_general)
+	FOREIGN KEY (reporting) 		REFERENCES entity_names(original_name),
+	FOREIGN KEY (export_import,special_general)		REFERENCES expimp_spegen(export_import,special_general)
 );
