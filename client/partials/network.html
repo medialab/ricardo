@@ -1,0 +1,37 @@
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<h2>
+				Trade network of nations in 
+				<inline-select-year ng-model="selectedDate" list="allYears"></inline-select-year>
+			</h2>
+			<p>
+				Choose a year to display a network of trade between nations.
+				Size of network depends of reportings nulber for the year. For more information see world view.
+			</p>
+			 <button type="button" class="btn" ng-click="startLayout()">
+			 	Start Layout
+			 </button>
+			 <button type="button" class="btn" ng-click="stopLayout()">
+			 	Stop Layout
+			 </button>
+			 <button type="button" class="btn" ng-click="snapshot()">
+			 	Snapshot
+			 </button>
+			<div id="network">
+				
+			</div>
+			<div class="col-md-6">
+				<button type="button" class="btn" ng-click="zoom()">
+			 	Zoom
+			 </button>
+			 <button type="button" class="btn" ng-click="unzoom()">
+			 	Unzoom
+			 </button>
+			 <button type="button" class="btn" ng-click="rescale()">
+			 	Rescale
+			 </button>
+			</div>
+		</div>
+	</div>
+</div>
