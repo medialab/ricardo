@@ -23,7 +23,8 @@ angular.module('ricardo', [
   'ricardo.controllers.TranslateController',
   'ricardo.controllers.bilateral',
   'ricardo.controllers.country',
-  'ricardo.controllers.world'
+  'ricardo.controllers.world',
+  'ricardo.controllers.network'
   ]).
 config(['$routeProvider', function($routeProvider) {
 
@@ -59,6 +60,10 @@ config(['$routeProvider', function($routeProvider) {
         return apiService.getWorldFlows()
       }
     }
+  });
+  $routeProvider.when('/network', {
+    templateUrl: 'partials/network.html',
+    controller: 'network',
   });
   $routeProvider.otherwise({redirectTo: '/'});
 }])
