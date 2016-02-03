@@ -186,7 +186,7 @@ def get_world_flows(from_year,to_year):
 
 def get_nations_network_by_year(year):
   cursor = get_db().cursor()
-  cursor.execute("""SELECT reporting, partner, Flow, expimp
+  cursor.execute("""SELECT reporting, reporting_id, partner, partner_id, Flow, expimp
                     FROM flow_joined
                     WHERE reporting NOT LIKE "Worl%%"
                     AND partner NOT LIKE "Worl%%"
@@ -197,10 +197,12 @@ def get_nations_network_by_year(year):
 
 
   json_sql_response=[]
-  for (reporting, partner, Flow, expimp) in cursor:
+  for (reporting, reporting_id, partner, partner_id, Flow, expimp) in cursor:
     json_sql_response.append({
       "reporting": reporting,
+      "reporting_id": reporting_id,
       "partner": partner,
+      "partner_id": partner_id,
       "flow": Flow,
       "expimp": expimp
       })
