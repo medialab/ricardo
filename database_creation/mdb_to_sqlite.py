@@ -387,104 +387,21 @@ print "-------------------------------------------------------------------------
 ##			Export all tables in csv files
 ################################################################################
 
-sources = "sources.csv"
+tables = [
+		"sources",
+		"entity_names",
+		"RICentities",
+		"exchange_rates",
+		"currencies",
+		"expimp_spegen",
+		"RICentities_groups",
+		"flows"
+		]
 
-c.execute("select * from sources")
-writer_0 = UnicodeWriter(open(os.path.join("out_data", sources), "wb"))
-sources_headers = [description[0] for description in c.description]
-writer_0.writerow(sources_headers)
-writer_0.writerows(c)
-print "export sources.csv done"
-print "-------------------------------------------------------------------------"
-
-entity_names = "entity_names.csv"
-
-c.execute("select * from entity_names")
-writer_1 = UnicodeWriter(open(os.path.join("out_data", entity_names), "wb"))
-entity_names_headers = [description[0] for description in c.description]
-writer_1.writerow(entity_names_headers)
-writer_1.writerows(c)
-print "export entity_names.csv done"
-print "-------------------------------------------------------------------------"
-
-RICentities = "RICentities.csv"
-
-c.execute("select * from RICentities")
-writer_2 = UnicodeWriter(open(os.path.join("out_data", RICentities), "wb"))
-RICentities_headers = [description[0] for description in c.description]
-writer_2.writerow(RICentities_headers)
-writer_2.writerows(c)
-print "export RICentities.csv done"
-print "-------------------------------------------------------------------------"
-
-c.execute("select * from exchange_rates")
-exchange_rates = "exchange_rates.csv"
-writer_3 = UnicodeWriter(open(os.path.join("out_data", exchange_rates), "wb"))
-exchange_rates_headers = [description[0] for description in c.description]
-writer_3.writerow(exchange_rates_headers)
-writer_3.writerows(c)
-print "export exchange_rates.csv done"
-print "-------------------------------------------------------------------------"
-
-currencies = "currencies.csv"
-
-c.execute("select * from currencies")
-writer_2 = UnicodeWriter(open(os.path.join("out_data", currencies), "wb"))
-currencies_headers = [description[0] for description in c.description]
-writer_2.writerow(currencies_headers)
-writer_2.writerows(c)
-print "export currencies.csv done"
-print "-------------------------------------------------------------------------"
-
-expimp_spegen = "expimp_spegen.csv"
-
-c.execute("select * from expimp_spegen")
-writer_2 = UnicodeWriter(open(os.path.join("out_data", expimp_spegen), "wb"))
-expimp_spegen_headers = [description[0] for description in c.description]
-writer_2.writerow(expimp_spegen_headers)
-writer_2.writerows(c)
-print "export expimp_spegen.csv done"
-print "-------------------------------------------------------------------------"
-
-RICentities_groups = "RICentities_groups.csv"
-
-c.execute("select * from RICentities_groups")
-writer_2 = UnicodeWriter(open(os.path.join("out_data", RICentities_groups), "wb"))
-RICentities_groups_headers = [description[0] for description in c.description]
-writer_2.writerow(RICentities_groups_headers)
-writer_2.writerows(c)
-print "export RICentities_groups.csv done"
-print "-------------------------------------------------------------------------"
-
-flows = "flows.csv"
-
-c.execute("select * from flows")
-writer_2 = UnicodeWriter(open(os.path.join("out_data", flows), "wb"))
-flows_headers = [description[0] for description in c.description]
-writer_2.writerow(flows_headers)
-writer_2.writerows(c)
-print "export flows.csv done"
-print "-------------------------------------------------------------------------"
-
-
-################################################################################
-##			May the force be with you
-################################################################################
-
-
-
-print "           _.-'~~~~~~`-._           							   	"
-print "          /      ||      \\           							"
-print "         /       ||       \\         						  	"
-print "        |        ||        |        RICardo, I am your father 	"
-print "        | _______||_______ |       								"
-print "        |/ ----- \/ ----- \|        							   	"
-print "       /  (     )  (     )  \\       							"
-print "      / \  ----- () -----  / \\      							"
-print "     /   \      /||\      /   \\     							"
-print "    /     \    /||||\    /     \\    							"
-print "   /       \  /||||||\  /       \\   							"
-print "  /_        \o========o/        _\  							   	"
-print "    `--...__|`-._  _.-'|__...--'    							   	"
-print "            |    `'    |            							   	"
-
+for item in tables:
+	c.execute("select * from " + item)
+	writer = UnicodeWriter(open(os.path.join("out_data", item + ".csv"), "wb"))
+	writer.writerow([description[0] for description in c.description])
+	writer.writerows(c)
+	print "export " + item + ".csv done"
+	print "-------------------------------------------------------------------------"
