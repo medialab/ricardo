@@ -1,14 +1,15 @@
 	--sources
 CREATE TABLE `sources`
 (
-	`ID`			INTEGER  PRIMARY KEY AUTOINCREMENT,
+	`id`			TEXT  PRIMARY KEY,
 	`source_name`	TEXT,
 	`shelf_number`	TEXT,
 	`volume`		TEXT,
 	`pages`			TEXT,
 	`URL`			TEXT,
 	`dates`			TEXT,
-	`notes`			TEXT
+	`notes`			TEXT,
+	`country`		TEXT
 );
 
 CREATE TABLE `exchange_rates`
@@ -18,7 +19,7 @@ CREATE TABLE `exchange_rates`
 	`rate_to_pounds`		REAL,
 	`source`			 	INTEGER,
 	PRIMARY KEY (`year`,`modified_currency`),
-	FOREIGN KEY (source) 	REFERENCES sources(ID)
+	FOREIGN KEY (source) 	REFERENCES sources(id)
 );
 	-- PRIMARY KEY (`year`, `modified_currency`),
 
@@ -65,7 +66,7 @@ CREATE TABLE `entity_names`
 
 CREATE TABLE `RICentities_groups`
 (
-	`ID`						INTEGER PRIMARY KEY AUTOINCREMENT, 
+	`id`						INTEGER PRIMARY KEY AUTOINCREMENT, 
 	`RICname_group`				TEXT,
 	`RICname_part`				TEXT,
 	FOREIGN KEY (RICname_part) 	REFERENCES RICentities(RICname),
@@ -75,8 +76,8 @@ CREATE TABLE `RICentities_groups`
 --flows data
 CREATE TABLE `flows`
 (
-	`ID`							INTEGER  PRIMARY KEY AUTOINCREMENT, 
-	`source`		 				INTEGER,
+	`id`							INTEGER  PRIMARY KEY AUTOINCREMENT, 
+	`source`		 				TEXT,
 	`pages`							TEXT, 
 	`notes`							TEXT, 
 	`flow`							REAL,
@@ -92,7 +93,7 @@ CREATE TABLE `flows`
 	`statistical_period`			TEXT, 
 	`partner_sum`					TEXT, 
 	`world_trade_type`				TEXT,
-	FOREIGN KEY (source) 			REFERENCES sources(ID),
+	FOREIGN KEY (source) 			REFERENCES sources(id),
 	FOREIGN KEY (currency,year,reporting) 			REFERENCES currencies(currency,year,reporting),
 	FOREIGN KEY (partner) 			REFERENCES entity_names(original_name),
 	FOREIGN KEY (reporting) 		REFERENCES entity_names(original_name),
