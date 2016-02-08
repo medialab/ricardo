@@ -1,5 +1,3 @@
-
-
 @font-face {
     font-family: 'montserrat';
     src: url('fonts/montserrat-regular-webfont.eot');
@@ -9,7 +7,6 @@
          url('fonts/montserrat-regular-webfont.svg#montserratregular') format('svg');
     font-weight: normal;
     font-style: normal;
-
 }
 
 @font-face {
@@ -21,7 +18,6 @@
          url('fonts/montserrat-bold-webfont.svg#montserratbold') format('svg');
     font-weight: bold;
     font-style: normal;
-
 }
 
 @font-face {
@@ -33,7 +29,6 @@
          url('fonts/merriweather-regular-webfont.svg#merriweatherregular') format('svg');
     font-weight: normal;
     font-style: normal;
-
 }
 
 @font-face {
@@ -45,7 +40,6 @@
          url('fonts/merriweather-light-webfont.svg#merriweatherlight') format('svg');
     font-weight: lighter;
     font-style: normal;
-
 }
 
 @font-face {
@@ -69,40 +63,6 @@
     font-weight: bold;
     font-style: normal;
 }
-
-/* 
- * Media query for small device 
- */
-@media (min-height: 800px) {
-
-.sticky-container-fixed{
-  padding-top: 50px;
-  background-color: #FAFAFA;
-  position: fixed;
-  width: 100%;
-  margin: 0;
-  left: 0;
-  top: 0;
-  z-index: 10;
-  -webkit-box-shadow: 0px 3px 4px -3px rgba(0,0,0,0.38);
-     -moz-box-shadow: 0px 3px 4px -3px rgba(0,0,0,0.38);
-          box-shadow: 0px 3px 4px -3px rgba(0,0,0,0.38);
-}
-
-.sticky-placeholder{
-  height: 150px;
-}
-
-}
-
-/*Firefox config*/
-
-/*@-moz-document url-prefix()
-{
-    #some-text {
-        display: block;
-    }
-}*/
 
 /* 
  * Alert 
@@ -137,10 +97,15 @@
 /* 
  * Global style 
  */
+html {
+  position: relative;
+  min-height: 100%;
+}
 
 body {
     font-family: 'merriweather', 'Georgia', serif;
     background-color: #f5f5f5;
+    margin-bottom: 60px;
 }
 
 h1,h2,h3,h4{
@@ -148,21 +113,7 @@ h1,h2,h3,h4{
     font-weight: bold;
 }
 
-
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-  position: relative;
-  min-height: 100%;
-}
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
-}
 #footer {
-/*  position: absolute;
-  bottom: 0;*/
-
   width: 100%;
   /* Set the fixed height of the footer here */
   /*height: 60px;*/
@@ -174,6 +125,7 @@ body {
   padding-top: 20pc;
   font-size: 20px;
 }
+
 /* Custom page CSS
 -------------------------------------------------- */
 /* Not required for template or sticky footer method. */
@@ -185,6 +137,7 @@ body {
 body > .container {
   padding: 53px 15px 60px 15px;
 }
+
 .container .text-muted {
   margin: 20px 0;
 }
@@ -204,7 +157,6 @@ body > .container {
   margin-bottom: 40px;
   position: relative;
   overflow-x: hidden;
-  
 }
 
 #backHomeImage {
@@ -229,7 +181,6 @@ body > .container {
    width: 100%;
    font-size: 30px;
 }
-}
 
 #homeSubtitle, #studiesAbstract {
   font-family: 'montserrat';
@@ -252,7 +203,6 @@ body > .container {
 .workingPaper ul {
 list-style-type: none;
 padding:0; margin:0;
-  
 }
 
 .spaceBetweenParagraphs {
@@ -291,10 +241,12 @@ li.storyline {
   padding-bottom: 40px;
   line-height: 26px;
 }
+
 .exploreContainer {
   width: 100%;
   text-align: left;
 }
+
 .exploreButton {
   font-family: 'montserrat';
   text-transform: uppercase;
@@ -305,17 +257,21 @@ li.storyline {
   border: none;
   color: white;
 }
+
 .study{
   margin: 20px 0;
 }
+
 .thumbnailStudy {
   position: relative;
 }
+
 .backStudies {
   width: 100%;
   height: 150px;
   object-fit: cover;
 }
+
 .frontStudies {
   z-index: 1;
   position: absolute;
@@ -468,21 +424,13 @@ li.storyline {
   margin-top: 15px;
 }
 
-.paragraphViz ul li {
+.paragraphViz ul li,
+.paragraphViz ul,
+.paragraphViz li
+  {
   width:66%;
   font-size: 11px;
 }
-
-.paragraphViz ul {
-  width:66%;
-  font-size: 11px;
-}
-
-.paragraphViz li {
-  width:66%;
-  font-size: 11px;
-}
-
 
 /* 
  * Select geo-entities dropdown 
@@ -499,13 +447,8 @@ li.storyline {
   border-right: 1px solid #e7e7e7;
 }
 
-#select > div:first-child{
-  border-right: none;
-  border-left: none;
-  border-bottom: 1px solid #e7e7e7;
-}
-
-#select > div:last-child{
+#select > div:first-child,
+#select > div:last-child {
   border-right: none;
   border-left: none;
   border-bottom: 1px solid #e7e7e7;
@@ -647,7 +590,7 @@ li.storyline {
   margin-top: 20px;
 }
 
-h4{
+h4 {
   margin-bottom: 0;
   padding-bottom: 5px;
 }
@@ -744,13 +687,7 @@ h4{
   margin-top: 15px;
 }
 
-.legend .legend-item{
-  display: inline-block;
-  margin-right: 12px;
-  font-size: 0.8em;
-}
-
-.legend-item{
+.legend .legend-item, .legend-item{
   display: inline-block;
   margin-right: 12px;
   font-size: 0.8em;
@@ -811,8 +748,6 @@ h4{
 
 .grid-overlay-msg {
   position: absolute;
-/*  top: 0;
-  bottom: 0;*/
   width: 100%;
   z-index:10000;
   background: rgba(0, 0, 0, 0.4);
@@ -940,10 +875,7 @@ font-size: 1.1em;
 }
 
 #select-lineChart{
-/*  background-color: white;*/
-/*  border: 1px solid #e7e7e7;*/
   margin-top: 5px;
-/*  min-height: 500px;*/
 }
 
 .subtitle > i{
@@ -978,7 +910,7 @@ font-size: 1.1em;
   border-bottom: 1px solid #e7e7e7;
 }
 
-/* spinner */
+/* Spinner */
 #loading-bar-spinner{
   top:50%;
   left: 50%;
@@ -1009,17 +941,11 @@ font-size: 1.1em;
     -o-transition: all 1s ease;
     transition: all 1s ease;
 }
-.fade-view.ng-enter {
+.fade-view.ng-enter, .fade-view.ng-leave-active {
     opacity: 0;
 }
-.fade-view.ng-enter-active {
+.fade-view.ng-enter-active, .fade-view.ng-leave  {
     opacity: 1;
-}
-.fade-view.ng-leave {
-    opacity: 1;
-}
-.fade-view.ng-leave-active {
-    opacity: 0;
 }
 
 .dot {
@@ -1082,7 +1008,6 @@ path.lineTrajectory {
   margin: auto;
 }
 
-
 .node {
   cursor: pointer;
 }
@@ -1110,4 +1035,12 @@ path.lineTrajectory {
 }
 
 .invert {-webkit-filter: invert(100%); filter: invert(100%);}
+
+/* Network viz */
+
+#network {
+  height: 750px;
+  border: solid black 1px;
+  margin-top: 20px;
+}
 
