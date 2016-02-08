@@ -164,7 +164,7 @@ angular.module('ricardo.directives.partnersHistogram', [])
           
           partners.forEach(function(p, i) {
             var entity = RICentities[""+p.key],
-              name = (entity ? entity.RICname : p.key);
+                name = (entity ? entity.RICname : p.key);
 
             y0 = marginTop + 40 + i * (barMaxHeigth + barGap);
 
@@ -185,8 +185,8 @@ angular.module('ricardo.directives.partnersHistogram', [])
               .attr("shape-rendering", "crispEdges")
               .attr("stroke-width", 1)
 
-            var endStart = (maxDate-minDate);
-            var barWidth = Math.floor(width / endStart);
+            var endStart = (maxDate-minDate),
+                barWidth = Math.floor(width / endStart);
 
             histo.selectAll(".bar")
               .data(p.years)
@@ -195,9 +195,15 @@ angular.module('ricardo.directives.partnersHistogram', [])
               .attr("x", function(d){ return x(d.key) })
               .attr("y", function(d){ return (d.balance >= 0 ? -y(Math.abs(d.balance)) : 0);})
               .attr("width", barWidth)
-              .attr("height", function(d) { return (d.balance ? Math.max(barMinHeigth, y(Math.abs(d.balance))) : 0); })
+              .attr("height", function(d) { return (
+                d.balance ? Math.max(barMinHeigth, y(Math.abs(d.balance))) : 0
+                ); 
+              })
               .attr("fill", function(d){ return barColors[+(d.balance >=0)] })
-              .attr("opacity", function(d){ return (d.imp !== null && d.exp !== null ? 1 : 0.3) })
+              .attr("opacity", function(d){ return (
+                d.imp !== null && d.exp !== null ? 1 : 0.3
+                ) 
+              })
               .style("border-left", "solid 1px white");
 
             var tooltip = d3.select("body")

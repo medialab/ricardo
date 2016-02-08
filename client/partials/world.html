@@ -5,7 +5,7 @@
      {{ 'WORLD_VIEW_INTRO' | translate }}
     </p>
     <div class="row timeline-cont">
-      <div class="col-sm-12">
+      <div class="col-xs-12 col-sm-12">
         <h4>
           {{ 'WORLD_VIEW_TITLE' | translate }}
 
@@ -42,7 +42,7 @@
 
   <div class="container">
     <div class="row">
-      <div class="col-sm-12">
+      <div class="col-xs-12 col-sm-12">
         <br>
         <br>
         <h4> {{ 'WORLD_NB_REPORTINGS' | translate }}</h4>
@@ -64,7 +64,7 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-xs-12 col-md-12">
       <br>
       <br>
       <h4 class="titleDualTL"> {{ 'WORLD_COMPARAISON' | translate }}
@@ -115,14 +115,14 @@
   </div>
   <div id="select-lineChart" >
   <div class="row">
-    <div class="col-sm-12">
+    <div class="col-xs-12 col-sm-12">
       <linechart-world ng-data="linechartData">
       </linechart-world>
     </div>
   </div>
   </div>
   <div class="row">
-    <div class="col-sm-12 text-center shdt">
+    <div class="col-xs-12 col-sm-12 text-center shdt">
       <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
           {{ 'DOWNLOAD_1' | translate }}
       </button>
@@ -132,7 +132,7 @@
     </div>
   </div>
   <div ng-if="viewTable" class="row table-cont">
-    <div class="col-sm-12 grid-cont">
+    <div class="col-xs-12 col-sm-12 grid-cont">
       <div class="gridStyle" ng-grid="gridOptions"></div>
     </div>
   </div>

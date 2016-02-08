@@ -128,10 +128,10 @@ angular.module('ricardo.controllers.country', [])
      */
 
     $scope.lineColors = ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c']
-    $scope.linechartCurrency = {type: {value :"sterling",writable: true},
-                                name: {value:"Sterling",writable: true}};
-    $scope.linechartFlow = {type: {value :"total",writable: true},
-                            name: {value:"Total",writable: true}};  
+    $scope.linechartCurrency = {type: {value : "sterling", writable: true},
+                                name: {value: "Sterling", writable: true}};
+    $scope.linechartFlow = {type: {value: "total", writable: true},
+                            name: {value: "Total", writable: true}};  
 
     $scope.missingData = [];
     /* 
@@ -452,11 +452,11 @@ angular.module('ricardo.controllers.country', [])
      */
 
     function initPartnerHisto(data) {
-      //var data = $scope.tableData;
       var data = [];
 
       var temp = $scope.tableData;
 
+      // Select data between date selected
       temp.forEach( function (d) {
         if (d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate) {
           data.push(d); 
@@ -466,7 +466,8 @@ angular.module('ricardo.controllers.country', [])
       var indexYears = buildIndexYears(data);
       $scope.indexYears = indexYears;
 
-      data=data.filter(function(p){ return !/^World/.test(p.partner_id)})
+      // filter data without world reference
+      data = data.filter(function(p){ return !/^World/.test(p.partner_id)})
       
       /*
        * Here we lost type information of entity. Need to use addTypePartner().
