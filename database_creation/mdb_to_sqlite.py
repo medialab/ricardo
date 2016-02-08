@@ -95,13 +95,13 @@ print "-------------------------------------------------------------------------
 
 # duplicates in currency
 c.execute(""" DELETE FROM old_currency 
-	WHERE ID_Curr_Yr_RepEntity 
-	IN (SELECT ID_Curr_Yr_RepEntity 
+	WHERE id_Curr_Yr_RepEntity 
+	IN (SELECT id_Curr_Yr_RepEntity 
 		from old_currency 
 		GROUP BY `Original Currency`,`Reporting Entity (Original Name)`,Yr HAVING count(*)>1)""")
 
 # duplicates in exp-imp
-c.execute("DELETE FROM `old_Exp-Imp-Standard` WHERE `ID_Exp_spe` in (7,16,25)")
+c.execute("DELETE FROM `old_Exp-Imp-Standard` WHERE `id_Exp_spe` in (7,16,25)")
 
 # checking unique on to-be-joined tables
 c.execute(""" CREATE UNIQUE INDEX unique_currency ON  old_currency (`Original Currency`,
@@ -130,7 +130,7 @@ c.execute("""UPDATE `old_rate` SET `FX rate (NCU/£)`=replace(`FX rate (NCU/£)`
 c.execute("""UPDATE old_RICentities SET type=lower(replace(trim(type)," ","_")) 
 	WHERE 1""")
 
-# DELETE unused spe/gen cleaning rows ID=13 
+# DELETE unused spe/gen cleaning rows id=13 
 
 # one lower on reporting 
 #c.execute("""UPDATE flow SET `Reporting Entity_Original Name`="espagne (îles baléares)" 
@@ -191,7 +191,7 @@ print "-------------------------------------------------------------------------
 
 
 ################################################################################
-##			Create table flow_sources
+##			Create table sources
 ################################################################################
 print "create flow_sources"
 c.execute("""CREATE TABLE IF NOT EXISTS flow_sources (source, 
@@ -200,30 +200,41 @@ with open('in_data/ricardo_flow_sources_final.csv', 'r') as sources:
 	reader=UnicodeReader(sources)
 	reader.next()
 	for row in reader:
-		c.execute("""INSERT INTO flow_sources (source, transcript_filename, 
-			country, volume, date, cote, url) 
-			VALUES (?, ?, ?, ?, ?, ?, ?)""",(row[0].strip(), row[1].strip(), 
-				row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(), row[7].strip()))
+		if row[0]!="":
+			c.execute("""INSERT INTO sources (id,source_name,country, volume, dates, shelf_number, url)
+				VALUES (?, ?, ?, ?, ?, ?, ?)""",(row[0], row[1].strip(),row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(), row[7].strip()))
+
+c.execute("""UPDATE old_flow SET Source = Source || `Source suite`""")
+
+
+with open('in_data/ricardo_flow_sources_final_merge_duplicate.csv', 'r') as sources:
+	reader=UnicodeReader(sources)
+	reader.next()
+	for row in reader:
+		new_id=row[0]
+		old_ids='"'+'","'.join(oi for oi in row[1].split("|") if oi != new_id)+'"'
+		c.execute("""DELETE FROM sources WHERE id in (%s)"""%old_ids)
+		c.execute("""UPDATE  old_flow SET source=? WHERE source in (%s)"""%old_ids,(new_id,))
+
+## let's transform empty string value in flow to NULL
+c.execute("""UPDATE old_flow SET source=NULL WHERE source="" """)
+
+
+
 print "flow_sources create"
 print "-------------------------------------------------------------------------"
 
+
+
 ################################################################################
-##			Create table sources
+##			add curency source to table sources
 ################################################################################
-print "Create sources"
-c.execute("""INSERT INTO sources(source_name, shelf_number, volume, url, dates) 
-	SELECT fs.source as source_name, fs.cote as shelf_number, 
-	group_concat(fs.country, fs.volume) as volume, fs.url, fs.date as dates
-	FROM flow_sources fs
-	GROUP BY source_name, shelf_number, volume
-	""")    
-print "sources created"
-print "-------------------------------------------------------------------------"
 
 print "Insert currency_sources into sources"
-c.execute("""INSERT into sources(source_name, notes) 
-	SELECT `Source Currency` as source_name, `Note Currency`as notes 
+c.execute("""INSERT into sources(id,source_name, notes) 
+	SELECT 'currency_' || `Source Currency` as id,`Source Currency` as source_name, group_concat(`Note Currency`) as notes 
 	FROM old_rate
+	group by `Source Currency`
 	""")
 print "currency_sources added into source"
 print "-------------------------------------------------------------------------"
@@ -235,11 +246,8 @@ print "Create exchanges_rates"
 c.execute("""INSERT INTO exchange_rates(year, modified_currency, 
 	rate_to_pounds, source)
 	SELECT Yr as year, `Modified currency` as modified_currency,
-	`FX rate (NCU/£)` as rate_to_pounds, src.id
+	`FX rate (NCU/£)` as rate_to_pounds, 'currency_' || `Source Currency` as source
 	FROM old_rate
-	INNER JOIN sources as src
-	WHERE old_rate.`Source Currency` = src.source_name
-	GROUP BY rate_to_pounds
 	""")
 print "exchanges_rates created"
 print "-------------------------------------------------------------------------"
@@ -274,20 +282,12 @@ print "-------------------------------------------------------------------------
 ################################################################################
 ##			Create table RICentities
 ################################################################################
-#create temp table to save RICentities
-print "Create RICentities_backup"
-c.execute("""DROP TABLE IF EXISTS RICentities_backup;""")
-c.execute("""CREATE TABLE IF NOT EXISTS RICentities_backup AS 
-	SELECT ID, RICname, type, central_state, continent, COW_code
-	FROM old_RICentities
-	""")
-print "RICentities_backup created"
-print "-------------------------------------------------------------------------"
+
 # create new table RICentities
 print "Create RICentities"
 c.execute("""INSERT INTO RICentities 
-	SELECT RICname, type, continent, COW_code, ID as slug
-	FROM RICentities_backup
+	SELECT RICname, type, continent, COW_code, id as slug
+	FROM old_RICentities
 	""")
 print "RICentities created"
 print "-------------------------------------------------------------------------"
@@ -321,23 +321,21 @@ print "-------------------------------------------------------------------------
 ##			Create table flows : TO BE UPDATED 
 ################################################################################
 
-# print "Create flows"
-# c.execute("""INSERT INTO flows(source, flow, unit, currency, year, reporting, 
-# 	partner, export_import, special_general, species_bullions, transport_type, 
-# 	statistical_period, partner_sum, world_trade_type)
-# 	SELECT src.id as source, Flow, Unit, currency, Yr as Year, 
-# 	reporting_original_name as reporting, partner_original_name as partner, 
-# 	expimp as export_import, spegen as special_general, 
-# 	`Species and Bullions` as species_bullions, `Land/Sea` as transport_type, 
-# 	`Statistical Period` as statistical_period, `Partner Entity_Sum` as partner_sum, 
-# 	Total_type as world_trade_type
-# 	FROM flow_joined
-# 	INNER JOIN sources as src
-# 	WHERE flow_joined.source = src.source_name
-# 	GROUP BY Year,export_import,reporting,partner
-# 	""")
-# print "flows created"
-# print "-------------------------------------------------------------------------"
+print "Create flows"
+c.execute("""INSERT INTO flows(id,	source, flow, unit, currency, year, reporting, 
+	partner, export_import, special_general, species_bullions, transport_type, 
+	statistical_period, partner_sum, world_trade_type)
+	SELECT ID, Source, Flow, Unit, `Initial Currency`, Yr, 
+	`Reporting Entity_Original Name`, `Partner Entity_Original Name`, 
+	`Exp / Imp`, `Spe/Gen/Tot`, 
+	`Species and Bullions`, `Land/Sea`, 
+	`Statistical Period`, `Partner Entity_Sum`, 
+	Total_Type
+	FROM old_flow
+
+	""")
+print "flows created"
+print "-------------------------------------------------------------------------"
 
 # INDEX
 
