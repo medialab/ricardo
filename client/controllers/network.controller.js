@@ -10,7 +10,6 @@ angular.module('ricardo.controllers.network', [])
     $scope.allYears = d3.range( 1789, 1940 );
     $scope.selectedDate;
 
-
     sigma.classes.graph.addMethod('neighbors', function(nodeId) {
         var k,
             neighbors = {},
@@ -20,7 +19,7 @@ angular.module('ricardo.controllers.network', [])
           neighbors[k] = this.nodesIndex[k];
 
         return neighbors;
-      });
+    });
 
     function saveOriginalColor(s) {
       // We first need to save the original colors of our
@@ -33,13 +32,85 @@ angular.module('ricardo.controllers.network', [])
       });
     }
 
+    function stopLayout () {
+      $scope.sigma.stopForceAtlas2();
+    }
+
+    function communityDetection(nodes, node_data, edge_data, listNationsByKey) {
+          var community = jLouvain().nodes(node_data).edges(edge_data);
+          // Community Detection
+          var community_assignment_result = community();
+          var node_ids = Object.keys(community_assignment_result);
+          var node_community = [];
+
+          node_data.forEach( function (n) {
+              listNationsByKey[n].attributes["Modularity Class"] = community_assignment_result[n]
+          })
+
+          var max_community_number = 0;
+          node_ids.forEach(function(d){
+            listNationsByKey[d].community = community_assignment_result[d];
+
+            max_community_number = max_community_number < community_assignment_result[d] ? community_assignment_result[d]: max_community_number;
+          });
+
+          var color = d3.scale.category20().domain(d3.range([0, max_community_number]));
+
+          nodes.forEach( function (d) {
+              d.color = color(d.community);
+          })
+          return nodes;
+    }
+
+    function colorByContinent(nodes) {
+      var colors = { "Europe":"#7ED27C",
+                     "Asia":"#FC9FEB" ,
+                     "Africa":"#F6B42C",
+                     "America":"#BFFA27",
+                     "World":"#B1BCF5",
+                     "Oceania":"#36E120"
+                    }
+
+      nodes.forEach( function (d) {
+        d.color = colors[d.attributes.continent];
+      })
+          
+      return nodes         
+    }
+
+    function colorByType(nodes) {
+      var colors = { "country":"#A561C7",
+                     "city/part_of":"#669746" ,
+                     "group":"#B86634",
+                     "geographical_area":"#6481A2",
+                     "colonial_area":"#B74F74"
+                    }
+
+      nodes.forEach( function (d) {
+        d.color = colors[d.attributes.type];
+      })
+          
+      return nodes         
+    }
+
     function initGraph (trades) {
         var listNations = [];
+        var listOfNations = [];
         trades.forEach(function (t) {
-            if (listNations.indexOf(t.reporting_id) === -1)
+            if (listNations.indexOf(t.reporting_id) === -1) {
                 listNations.push(t.reporting_id)
-            if (listNations.indexOf(t.partner_id) === -1)
+                listOfNations.push({
+                  id: t.reporting_id, 
+                  continent: t.reporting_continent,
+                  type: t.reporting_type})
+            }
+            if (listNations.indexOf(t.partner_id) === -1) {
                 listNations.push(t.partner_id)
+                listOfNations.push({
+                  id: t.partner_id, 
+                  continent: t.partner_continent,
+                  type: t.partner_type})
+            }
         })
 
         var flows = trades.map(function (d) { return d.flow });
@@ -74,19 +145,20 @@ angular.module('ricardo.controllers.network', [])
         })
         
         var node_data = listNations;
-        var community = jLouvain().nodes(node_data).edges(edge_data); 
-
+         
         // nodes & edges for sigma
         var nodes = [];
         var i = 0;
-        listNations.forEach(function (n) {
+        listOfNations.forEach(function (n) {
             nodes.push({
-                id: n,
-                label: n,
+                id: n.id,
+                label: n.id,
                 x: Math.random(),
                 y: Math.random(),
                 attributes: {
-                    "Modularity Class": null
+                    "Modularity Class": null,
+                    "continent": n.continent,
+                    "type": n.type
                 },
                 color: "rgb(0,199,255)",
                 size: 3
@@ -101,27 +173,9 @@ angular.module('ricardo.controllers.network', [])
             listNationsByKey[nodes[i].id] = obj[nodes[i].id]
         }
 
-        // Community Detection
-        var community_assignment_result = community();
-        var node_ids = Object.keys(community_assignment_result);
-        var node_community = [];
+        //nodes = communityDetection(nodes, node_data, edge_data, listNationsByKey);
 
-        node_data.forEach( function (n) {
-            listNationsByKey[n].attributes["Modularity Class"] = community_assignment_result[n]
-        })
-
-        var max_community_number = 0;
-        node_ids.forEach(function(d){
-          listNationsByKey[d].community = community_assignment_result[d];
-
-          max_community_number = max_community_number < community_assignment_result[d] ? community_assignment_result[d]: max_community_number;
-        });
-
-        var color = d3.scale.category20().domain(d3.range([0, max_community_number]));
-
-        nodes.forEach( function (d) {
-            d.color = color(d.community);
-        })
+        nodes = colorByContinent(nodes);
 
         // Create Graph
         var data = {};
@@ -289,10 +343,11 @@ angular.module('ricardo.controllers.network', [])
       
       // read nodes
       graph.nodes().forEach(function(n) {
-        console.log("n", n);
         maxDegree = Math.max(maxDegree, graph.degree(n.id));
-        categories[n.attributes.acategory] = true;
+        categories[n.attributes] = true;
       })
+
+      console.log("categories", categories);
 
       console.log("_.$('min-degree')", _.$('min-degree'));
 
@@ -305,6 +360,7 @@ angular.module('ricardo.controllers.network', [])
       // node category
       var nodecategoryElt = _.$('node-category');
       Object.keys(categories).forEach(function(c) {
+        console.log("c --> ", c);
         var optionElt = document.createElement("option");
         optionElt.text = c;
         if (nodecategoryElt != null)
@@ -334,28 +390,30 @@ angular.module('ricardo.controllers.network', [])
       }
     }
 
-  
-
     function applyMinDegreeFilter(e) {
-        var v = e.target.value;
-        _.$('min-degree-val').textContent = v;
+      var v = e.target.value;
+      _.$('min-degree-val').textContent = v;
 
-        filter
-          .undo('min-degree')
-          .nodesBy(function(n) {
-            return this.degree(n.id) >= v;
-          }, 'min-degree')
-          .apply();
+      filter
+        .undo('min-degree')
+        .nodesBy(function(n) {
+          return this.degree(n.id) >= v;
+        }, 'min-degree')
+        .apply();
     }
 
     function applyCategoryFilter(e) {
-        var c = e.target[e.target.selectedIndex].value;
-        filter
-          .undo('node-category')
-          .nodesBy(function(n) {
-            return !c.length || n.attributes.acategory === c;
-          }, 'node-category')
-          .apply();
+      var c = e.target[e.target.selectedIndex].value;
+
+      console.log("c", c);
+
+      filter
+        .undo('node-category')
+        .nodesBy(function(n) {
+          console.log("n", n);
+          return !c.length || n.attributes === c;
+        }, 'node-category')
+        .apply();
     }
 
     $scope.sigma;
@@ -375,22 +433,22 @@ angular.module('ricardo.controllers.network', [])
                 // params to sigma
             	var PARAMS = {
             		graph: data,
-    			    container: 'network',
-                    settings: {
-                        minNodeSize: 4,
-                        maxNodeSize: 8,
-                        maxEdgeSize: 5,
-                        defaultNodeColor: '#ec5148',
-                        edgeColor: 'default',
-                        defaultEdgeColor: '#d1d1d1',
-                        labelSize: 'fixed',
-                        labelSizeRatio: 1,
-                        labelThreshold: 5,
-                        enableCamera: true,
-                        enableHovering: true
-                    },
-                    type: 'webgl'
-    			}
+    			      container: 'network',
+                settings: {
+                    minNodeSize: 4,
+                    maxNodeSize: 8,
+                    maxEdgeSize: 5,
+                    defaultNodeColor: '#ec5148',
+                    edgeColor: 'default',
+                    defaultEdgeColor: '#d1d1d1',
+                    labelSize: 'fixed',
+                    labelSizeRatio: 1,
+                    labelThreshold: 5,
+                    enableCamera: true,
+                    enableHovering: true
+                },
+                type: 'webgl'
+    			    }
 
                 // delete graph if exist
                 if ($scope.sigma) 
@@ -476,10 +534,6 @@ angular.module('ricardo.controllers.network', [])
                     $scope.sigma.stopForceAtlas2();
                 }
 
-                function stopLayout () {
-                    $scope.sigma.stopForceAtlas2();
-                }
-
                 $scope.startLayout = function () {
                     $scope.sigma.startForceAtlas2(LAYOUT_SETTINGS)
                 }
@@ -525,10 +579,12 @@ angular.module('ricardo.controllers.network', [])
                     );
                 }
 
-                $scope.showNodeOnGraph = function(node) {
-                    //lightening node on graph
 
-                }
+
+                // $scope.showNodeOnGraph = function(node) {
+                //     //lightening node on graph
+
+                // }
 
                 // $scope.exp = function () {
                 //     var expTrades = trades.filter(function (t) {return t.expimp === 'Exp'})
@@ -546,9 +602,9 @@ angular.module('ricardo.controllers.network', [])
                 //     drawGraph($scope.sigma, data);
                 // }
 
-                  _.$('min-degree').addEventListener("input", applyMinDegreeFilter);  // for Chrome and FF
-                  _.$('min-degree').addEventListener("change", applyMinDegreeFilter); // for IE10+, that sucks
-                  _.$('node-category').addEventListener("change", applyCategoryFilter);
+                 _.$('min-degree').addEventListener("input", applyMinDegreeFilter);  // for Chrome and FF
+                 _.$('min-degree').addEventListener("change", applyMinDegreeFilter); // for IE10+, that sucks
+                 _.$('node-category').addEventListener("change", applyCategoryFilter);
             }
         })
       }
