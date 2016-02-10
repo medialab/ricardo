@@ -176,9 +176,11 @@ angular.module('ricardo.controllers.country', [])
           reporting_ids: sourceID
         })
         .then(function (data) {
-          $scope.tableData = data.flows;
+          console.log("init");
           $scope.selectedMinDate = 1600;                   
-          $scope.selectedMaxDate = 2000;                   
+          $scope.selectedMaxDate = 2000;
+
+          $scope.tableData = data.flows;
 
           if (cfSource.size() > 0) {
             cfSource.year().filterAll();
@@ -320,7 +322,6 @@ angular.module('ricardo.controllers.country', [])
     /*
      * Triggers entity selected and dates
      */
-
     $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newValue, oldValue) {
       if (newValue !== oldValue && newValue[0] != newValue[1]) {
         // update date selected
@@ -336,11 +337,12 @@ angular.module('ricardo.controllers.country', [])
         updateDateRange();
         initLinechart($scope.reporting, $scope.linechartFlow.type.value, 
           $scope.linechartCurrency.type.value);
-        initPartnerHisto($scope.tableData)
+        initPartnerHisto($scope.tableData);
       }
     })
 
     $scope.$watch("entities.sourceEntity.selected", function (newValue, oldValue){
+      console.log("watch entity");
       if(newValue !== oldValue && newValue){
         // update local storage
         localStorage.removeItem('sourceEntitySelected');
@@ -350,7 +352,6 @@ angular.module('ricardo.controllers.country', [])
         updateDateRange()
       }
     })
-
 
     /*
      * Update data table
@@ -453,7 +454,6 @@ angular.module('ricardo.controllers.country', [])
 
     function initPartnerHisto(data) {
       var data = [];
-
       var temp = $scope.tableData;
 
       // Select data between date selected

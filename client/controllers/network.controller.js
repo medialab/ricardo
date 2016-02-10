@@ -10,6 +10,44 @@ angular.module('ricardo.controllers.network', [])
     $scope.allYears = d3.range( 1789, 1940 );
     $scope.selectedDate;
 
+    $scope.colored = {};
+    $scope.colors = [
+    {type: {value: "community",writable: true},
+     name: {value: "community",writable: true}
+     },
+    {type: {value: "continent",writable: true},
+     name: {value: "continent",writable: true}
+    },
+     {type: {value: "type",writable: true},
+      name: {value: "type",writable: true}
+     }]
+
+    $scope.changeColor = function(color) {
+      if (color.name.value === "community") {
+        // var max_community = d3.max($scope.sigma.graph.nodes()
+        //   .map(function (n) { 
+        //     return n.community
+        //   })
+        // )
+
+        $scope.sigma.graph.nodes().forEach(function (n) {
+          // var color = d3.scale.category20().domain(d3.range([0, max_community]));
+          n.color = n.originalColor;
+        })
+      }
+      else if (color.name.value === "continent") {
+        $scope.sigma.graph.nodes().forEach(function (n) {
+          n.color = colorByContinent(n);
+        })
+      }
+      else {
+        $scope.sigma.graph.nodes().forEach(function (n) {
+          n.color = colorByType(n)
+        })
+      }
+      $scope.sigma.refresh();
+    }
+
     sigma.classes.graph.addMethod('neighbors', function(nodeId) {
         var k,
             neighbors = {},
@@ -44,7 +82,7 @@ angular.module('ricardo.controllers.network', [])
           var node_community = [];
 
           node_data.forEach( function (n) {
-              listNationsByKey[n].attributes["Modularity Class"] = community_assignment_result[n]
+              listNationsByKey[n].attributes["ModularityClass"] = community_assignment_result[n]
           })
 
           var max_community_number = 0;
@@ -63,34 +101,26 @@ angular.module('ricardo.controllers.network', [])
     }
 
     function colorByContinent(nodes) {
-      var colors = { "Europe":"#7ED27C",
-                     "Asia":"#FC9FEB" ,
-                     "Africa":"#F6B42C",
-                     "America":"#BFFA27",
-                     "World":"#B1BCF5",
-                     "Oceania":"#36E120"
-                    }
+      var continentColors = { "Europe":"#7ED27C",
+                               "Asia":"#FC9FEB" ,
+                               "Africa":"#F6B42C",
+                               "America":"#BFFA27",
+                               "World":"#B1BCF5",
+                               "Oceania":"#36E120"
+                              }
 
-      nodes.forEach( function (d) {
-        d.color = colors[d.attributes.continent];
-      })
-          
-      return nodes         
+      return continentColors[nodes.attributes.continent]     
     }
 
     function colorByType(nodes) {
-      var colors = { "country":"#A561C7",
+      var typeColors = { "country":"#A561C7",
                      "city/part_of":"#669746" ,
                      "group":"#B86634",
                      "geographical_area":"#6481A2",
                      "colonial_area":"#B74F74"
                     }
-
-      nodes.forEach( function (d) {
-        d.color = colors[d.attributes.type];
-      })
           
-      return nodes         
+      return typeColors[nodes.attributes.type];
     }
 
     function initGraph (trades) {
@@ -173,9 +203,9 @@ angular.module('ricardo.controllers.network', [])
             listNationsByKey[nodes[i].id] = obj[nodes[i].id]
         }
 
-        //nodes = communityDetection(nodes, node_data, edge_data, listNationsByKey);
+        nodes = communityDetection(nodes, node_data, edge_data, listNationsByKey);
 
-        nodes = colorByContinent(nodes);
+        //nodes = colorByType(nodes);
 
         // Create Graph
         var data = {};
@@ -347,10 +377,6 @@ angular.module('ricardo.controllers.network', [])
         categories[n.attributes] = true;
       })
 
-      console.log("categories", categories);
-
-      console.log("_.$('min-degree')", _.$('min-degree'));
-
       // min degree
       if (_.$('min-degree') != null)
         _.$('min-degree').max = maxDegree;
@@ -360,7 +386,6 @@ angular.module('ricardo.controllers.network', [])
       // node category
       var nodecategoryElt = _.$('node-category');
       Object.keys(categories).forEach(function(c) {
-        console.log("c --> ", c);
         var optionElt = document.createElement("option");
         optionElt.text = c;
         if (nodecategoryElt != null)
