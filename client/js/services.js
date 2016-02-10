@@ -127,8 +127,7 @@ angular.module('ricardo.services', [])
        $http({
           method: 'GET',
           url : BASE_API_URL + serviceUrl,
-          params : params,
-          cache: true
+          params : params
         }).success(function(data){
          deferred.resolve(data);
        }).error(function(){
@@ -143,8 +142,7 @@ angular.module('ricardo.services', [])
        $http({
           method: 'GET',
           url : BASE_API_URL + serviceUrl,
-          params : params,
-          cache: true
+          params : params
         }).success(function(data){
          deferred.resolve(data);
        }).error(function (err){
@@ -159,8 +157,7 @@ angular.module('ricardo.services', [])
        $http({
           method: 'GET',
           url : BASE_API_URL + serviceUrl,
-          params : params,
-          cache: true
+          params : params
         }).success(function(data){
          deferred.resolve(data);
        }).error(function(){
@@ -175,8 +172,7 @@ angular.module('ricardo.services', [])
        $http({
           method: 'GET',
           url : BASE_API_URL + serviceUrl,
-          params : params,
-          cache: true
+          params : params
         }).success(function(data){
          deferred.resolve(data);
        }).error(function(){
@@ -202,8 +198,7 @@ angular.module('ricardo.services', [])
        $http({
           method: 'GET',
           url : BASE_API_URL + serviceUrl,
-          params : params,
-          cache: true
+          params : params
         }).success(function(data){
          deferred.resolve(data);
        }).error(function(){
@@ -218,8 +213,7 @@ angular.module('ricardo.services', [])
        $http({
           method: 'GET',
           url : BASE_API_URL + serviceUrl,
-          params : params,
-          cache: true
+          params : params
         }).success(function(data){
          deferred.resolve(data);
        }).error(function(){
@@ -234,8 +228,7 @@ angular.module('ricardo.services', [])
        $http({
           method: 'GET',
           url : BASE_API_URL + serviceUrl,
-          params : params,
-          cache: true
+          params : params
         }).success(function(data){
          deferred.resolve(data);
        }).error(function(){
