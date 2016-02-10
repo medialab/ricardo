@@ -36,20 +36,6 @@ angular.module('ricardo.directives.partnersHistogram', [])
           }
         }, true);
 
-        scope.$watch("startDate", function (newValue, oldValue){
-          if(newValue !== oldValue){
-            removeSvgElements(chart)          
-            partnersHistogram(scope.ngData, scope.orderData, scope.indexYears, newValue, scope.endDate);
-          }
-        }, true);
-
-        scope.$watch("endDate", function (newValue, oldValue){
-          if(newValue !== oldValue){
-            removeSvgElements(chart)          
-            partnersHistogram(scope.ngData, scope.orderData, scope.indexYears, scope.startDate, newValue);
-          }
-        }, true);
-
         /*
          * Displaying functionx
          */
