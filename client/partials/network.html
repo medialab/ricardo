@@ -4,6 +4,16 @@
 			<h2>
 				Trade network of nations in 
 				<inline-select-year ng-model="selectedDate" list="allYears"></inline-select-year>
+				colored by
+				<div class="inline-select">   
+			      <ui-select ng-model="colored" theme="bootstrap" ng-change="changeColor(colored)">
+			        <match placeholder="Color by ...">{{$select.selected.name.value}}</match>
+			        <choices repeat="item in colors | filter: $select.search">
+			          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+			        </choices>
+			      </ui-select>
+			  </div>
+
 			</h2>
 			<p>
 				Choose a year to display a network of trade between nations.

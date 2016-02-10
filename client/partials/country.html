@@ -28,11 +28,11 @@
     <div class="col-md-12">
         <h4 class="titleDualTL">
         {{ 'COUNTRY_TITLE_1' | translate }}
-        <inline-select-country ng-model="entities.sourceEntity.selected" list="reportingEntities"></inline-select-country>
+        <inline-select-country ng-model="entities.sourceEntity.selected" list="reportingEntities" ng-change="changeData()" ></inline-select-country>
         {{ 'FROM' | translate }}
-        <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf"></inline-select-year>
+        <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf" ng-change="changeData()"></inline-select-year>
         {{ 'TO' | translate}}
-        <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup"></inline-select-year>
+        <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup" ng-change="changeData()" ></inline-select-year>
       </h4>
         <p class="paragraphViz">
             {{ 'COUNTRY_VIEW_DUAL_LEGEND' | translate }} 
@@ -210,12 +210,12 @@
         </div>
       </div>
       <partners-histogram 
-      ng-data="partnersData" 
-      start-date="selectedMinDate"
-      end-date="selectedMaxDate"
-      index-years="indexYears"
-      country-data="entities.sourceEntity.selected"
-      order-data="ordered.type.value"
+        ng-data="partnersData" 
+        start-date="selectedMinDate"
+        end-date="selectedMaxDate"
+        index-years="indexYears"
+        country-data="entities.sourceEntity.selected"
+        order-data="ordered.type.value"
       ></partners-histogram>
     </div>
   </div>
