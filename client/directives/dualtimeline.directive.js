@@ -15,20 +15,22 @@ angular.module('ricardo.directives.dualTimeline', [])
         ,endDate: '='
       }
       ,link: function(scope, element, attrs){
-        
         scope.$watch('ngData', function(newValue, oldValue) {
+          console.log("DT")
           if ( newValue ) {
             draw(scope.ngData)
           }
         })
 
         scope.$watch('endDate', function(newValue, oldValue) {
+          console.log("DT end")
           if ( newValue && scope.ngData) {
             draw(scope.ngData)
           }
         })
 
         scope.$watch('startDate', function(newValue, oldValue) {
+          console.log("DT start")
           if ( newValue && scope.ngData) {
             draw(scope.ngData)
           }

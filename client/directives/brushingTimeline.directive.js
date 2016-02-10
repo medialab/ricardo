@@ -23,18 +23,21 @@ angular.module('ricardo.directives.brushingTimeline', [])
         scope.mirrorLines = !!scope.mirrorLines;
 
         scope.$watch('ngData', function(newValue, oldValue) {
+          console.log("B")
           if ( newValue ) {
             draw(scope.ngData)
           }
         })
 
         scope.$watch('endDate', function(newValue, oldValue) {
+          console.log("B end")
           if ( newValue && scope.ngData ) {
             updateBrush()
           }
         })
 
         scope.$watch('startDate', function(newValue, oldValue) {
+          console.log("B start")
           if ( newValue && scope.ngData ) {
             updateBrush()
           }
