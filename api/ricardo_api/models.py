@@ -186,7 +186,7 @@ def get_world_flows(from_year,to_year):
 
 def get_nations_network_by_year(year):
   cursor = get_db().cursor()
-  cursor.execute("""SELECT reporting, reporting_id, partner, partner_id, Flow, expimp, RIC_reporting.continent as reporting_continent, RIC_partner.continent as partner_continent
+  cursor.execute("""SELECT reporting, reporting_id, partner, partner_id, Flow, expimp, RIC_reporting.continent as reporting_continent, RIC_partner.continent as partner_continent, RIC_reporting.type as reporting_type, RIC_partner.type as partner_type
                     FROM flow_joined
                     INNER JOIN RICentities as RIC_reporting 
                       on flow_joined.reporting_id = RIC_reporting.id 
@@ -201,7 +201,7 @@ def get_nations_network_by_year(year):
 
 
   json_sql_response=[]
-  for (reporting, reporting_id, partner, partner_id, Flow, expimp, reporting_continent, partner_continent) in cursor:
+  for (reporting, reporting_id, partner, partner_id, Flow, expimp, reporting_continent, partner_continent, reporting_type, partner_type) in cursor:
     json_sql_response.append({
       "reporting": reporting,
       "reporting_id": reporting_id,
@@ -210,7 +210,9 @@ def get_nations_network_by_year(year):
       "flow": Flow,
       "expimp": expimp,
       "reporting_continent": reporting_continent,
-      "partner_continent": partner_continent
+      "partner_continent": partner_continent,
+      "reporting_type": reporting_type,
+      "partner_type": partner_type
       })
 
   return json.dumps(json_sql_response,encoding="UTF8")
