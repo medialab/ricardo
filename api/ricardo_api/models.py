@@ -186,8 +186,12 @@ def get_world_flows(from_year,to_year):
 
 def get_nations_network_by_year(year):
   cursor = get_db().cursor()
-  cursor.execute("""SELECT reporting, reporting_id, partner, partner_id, Flow, expimp
+  cursor.execute("""SELECT reporting, reporting_id, partner, partner_id, Flow, expimp, RIC_reporting.continent as reporting_continent, RIC_partner.continent as partner_continent
                     FROM flow_joined
+                    INNER JOIN RICentities as RIC_reporting 
+                      on flow_joined.reporting_id = RIC_reporting.id 
+                    INNER JOIN RICentities as RIC_partner 
+                      on flow_joined.partner_id = RIC_partner.id
                     WHERE reporting NOT LIKE "Worl%%"
                     AND partner NOT LIKE "Worl%%"
                     AND Flow != "null"
@@ -197,14 +201,16 @@ def get_nations_network_by_year(year):
 
 
   json_sql_response=[]
-  for (reporting, reporting_id, partner, partner_id, Flow, expimp) in cursor:
+  for (reporting, reporting_id, partner, partner_id, Flow, expimp, reporting_continent, partner_continent) in cursor:
     json_sql_response.append({
       "reporting": reporting,
       "reporting_id": reporting_id,
       "partner": partner,
       "partner_id": partner_id,
       "flow": Flow,
-      "expimp": expimp
+      "expimp": expimp,
+      "reporting_continent": reporting_continent,
+      "partner_continent": partner_continent
       })
 
   return json.dumps(json_sql_response,encoding="UTF8")
