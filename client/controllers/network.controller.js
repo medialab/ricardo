@@ -188,7 +188,8 @@ angular.module('ricardo.controllers.network', [])
                 attributes: {
                     "Modularity Class": null,
                     "continent": n.continent,
-                    "type": n.type
+                    "type": n.type,
+                    "expimp": n.expimp
                 },
                 color: "rgb(0,199,255)",
                 size: 3
@@ -369,8 +370,15 @@ angular.module('ricardo.controllers.network', [])
     function updatePane (graph, filter) {
       // get max degree
       var maxDegree = 0,
+          maxFlow = 0,
           categories = {};
-      
+
+      var maxFlow = d3.max($scope.sigma.graph.edges()
+          .map(function (n) { 
+            return n.flow
+          })
+        )
+
       // read nodes
       graph.nodes().forEach(function(n) {
         maxDegree = Math.max(maxDegree, graph.degree(n.id));
@@ -382,6 +390,12 @@ angular.module('ricardo.controllers.network', [])
         _.$('min-degree').max = maxDegree;
       if (_.$('max-degree-value') != null)
         _.$('max-degree-value').textContent = maxDegree;
+      
+      // min flow
+      if (_.$('min-flow') != null)
+        _.$('min-flow').max = maxFlow;
+      if (_.$('max-flow-value') != null)
+        _.$('max-flow-value').textContent = maxFlow;
       
       // node category
       var nodecategoryElt = _.$('node-category');
@@ -424,6 +438,18 @@ angular.module('ricardo.controllers.network', [])
         .nodesBy(function(n) {
           return this.degree(n.id) >= v;
         }, 'min-degree')
+        .apply();
+    }
+
+    function applyMinFlowFilter(e) {
+      var v = e.target.value;
+      _.$('min-flow-val').textContent = v;
+
+      filter
+        .undo('min-flow')
+        .edgesBy(function(e) {
+          return e.flow >= v;
+        }, 'min-flow')
         .apply();
     }
 
@@ -497,8 +523,14 @@ angular.module('ricardo.controllers.network', [])
 
                     $scope.listNations = []
                     $scope.sigma.graph.nodes().forEach(function(n) {
+                      console.log("n", n);
                       if (toKeep[n.id]) { 
-                        $scope.listNations.push({id: n.id, color: n.color, community: n.community})
+                        $scope.listNations.push({
+                          id: n.id, 
+                          color: n.color, 
+                          community: n.community,
+                          expimp: n.attributes.expimp
+                        })
                         n.color = n.originalColor;
                       }
                       else
@@ -604,12 +636,13 @@ angular.module('ricardo.controllers.network', [])
                     );
                 }
 
+                $scope.showNodeOnGraph = function(node) {
+                    console.log("test show")
+                }
 
-
-                // $scope.showNodeOnGraph = function(node) {
-                //     //lightening node on graph
-
-                // }
+                $scope.hoverOnNodeList = function () {
+                  console.log("test");
+                }
 
                 // $scope.exp = function () {
                 //     var expTrades = trades.filter(function (t) {return t.expimp === 'Exp'})
@@ -628,11 +661,14 @@ angular.module('ricardo.controllers.network', [])
                 // }
 
                  _.$('min-degree').addEventListener("input", applyMinDegreeFilter);  // for Chrome and FF
+                 _.$('min-flow').addEventListener("input", applyMinFlowFilter);  // for Chrome and FF
                  _.$('min-degree').addEventListener("change", applyMinDegreeFilter); // for IE10+, that sucks
-                 _.$('node-category').addEventListener("change", applyCategoryFilter);
+                 //_.$('node-category').addEventListener("change", applyCategoryFilter);
             }
         })
       }
+
+      
 
       $scope.$watch('selectedDate', function (newVal, oldVal) {
         if (newVal !== oldVal ) {

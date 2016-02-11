@@ -56,18 +56,22 @@
 			</center> 
 			<div class="col-md-12">
 				<div class="row">
-					<div id="control-pane">
-					    <h2 class="underline">Filters node to show on the graph</h2>
-					    <div class="col-md-6">
-					      <h3>min degree <span id="min-degree-val">0</span></h3>
-					      0 <input id="min-degree" type="range" min="0" max="0" value="0"> <span id="max-degree-value">0</span><br>
+					    <div class="col-md-4">
+					    <h5 class="underline">Filters node with degree</h5>
+					      <h6>min degree <span id="min-degree-val">0</span></h6>
+					      0 <input id="min-degree" type="range" min="0" max="0" value="0"> <span id="max-degree-value">0</span>
 					    </div>
-					    <div class="col-md-6">
-					      <h3>node category</h3>
+					    <div class="col-md-4">
+					    <h5 class="underline">Filters node on flows</h5>
+					      <h6>min flow <span id="min-flow-val">0</span></h6>
+					      0 <input id="min-flow" type="range" min="0" max="0" value="0"> <span id="max-flow-value">0</span>
+					    </div>
+					    <!-- <div class="col-md-4">
+					      <h6>node category</h6>
 					      <select id="node-category">
 					        <option value="" selected>All categories</option>
 					      </select>
-					    </div>
+					    </div> -->
 					    <span class="line"></span>
 					    <div>
 					      <button id="reset-btn">Reset filters</button>
@@ -79,8 +83,8 @@
 				<h2>List of neighboors of node selected : </h2>
 				<div class="col-md-12">
 					<ul>
-						<li class="col-md-4" ng-repeat="item in listNations" ng-click="showNodeOnGraph(item)" ng-mouseover="">
-						    {{item.community}} : {{item.id}}
+						<li class="col-md-6" ng-repeat="item in listNations" ng-click="showNodeOnGraph(item)" ng-mouseover="hoverOnNodeList()">
+						    {{item.community}} : {{item.id}} - {{item.attributes.expimp}} - {{item.attributes.flow}} 
 						</li>
 					</ul>
 				</div>
