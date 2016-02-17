@@ -202,9 +202,9 @@ with open('in_data/ricardo_flow_sources_final.csv', 'r') as sources:
 	for row in reader:
 		if row[0]!="":
 			c.execute("""INSERT INTO sources (id,source_name,country, volume, dates, shelf_number, url)
-				VALUES (?, ?, ?, ?, ?, ?, ?)""",(row[0], row[1].strip(),row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(), row[7].strip()))
+				VALUES (?, ?, ?, ?, ?, ?, ?)""",(row[0], row[2].strip(),row[3].strip(), row[4].strip(), row[5].strip(), row[6].strip(), row[8].strip()))
 
-c.execute("""UPDATE old_flow SET Source = Source || `Source suite`""")
+c.execute("""UPDATE old_flow SET Source = Source || `Source suite` WHERE `Source suite`is not null""")
 
 
 with open('in_data/ricardo_flow_sources_final_merge_duplicate.csv', 'r') as sources:
@@ -216,7 +216,7 @@ with open('in_data/ricardo_flow_sources_final_merge_duplicate.csv', 'r') as sour
 		c.execute("""DELETE FROM sources WHERE id in (%s)"""%old_ids)
 		c.execute("""UPDATE  old_flow SET source=? WHERE source in (%s)"""%old_ids,(new_id,))
 
-## let's transform empty string value in flow to NULL
+# let's transform empty string value in flow to NULL
 c.execute("""UPDATE old_flow SET source=NULL WHERE source="" """)
 
 
@@ -362,7 +362,7 @@ print "-------------------------------------------------------------------------
 c.execute("""DROP TABLE IF EXISTS old_currency;""")
 print "drop old_currency"
 print "-------------------------------------------------------------------------"
-c.execute("""DROP TABLE IF EXISTS old_flow;""")
+#c.execute("""DROP TABLE IF EXISTS old_flow;""")
 print "drop old_flow"
 print "-------------------------------------------------------------------------"
 c.execute("""DROP TABLE IF EXISTS old_RICentities_groups;""")
