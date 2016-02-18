@@ -44,6 +44,7 @@ class UnicodeWriter:
         self.encoder = codecs.getincrementalencoder(encoding)()
 
     def writerow(self, row):
+        # delete cell if cell falsy (none or empty string)
         self.writer.writerow([s.encode("utf-8") if isinstance(s, unicode) else s for s in row if s ])
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()

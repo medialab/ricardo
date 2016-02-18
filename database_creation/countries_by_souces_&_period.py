@@ -5,7 +5,8 @@ import sqlite3
 import os
 import json
 import itertools
-import csv
+#import csv
+import csvkit
 from csv_unicode import UnicodeReader
 from csv_unicode import UnicodeWriter
 
@@ -23,7 +24,7 @@ c=conn.cursor()
 # Select all source in flows
 
 
-c.execute("""SELECT RICname, sources.*, group_concat(distinct (year)) as years
+c.execute("""SELECT RICname, sources.id as source, group_concat(distinct (year)) as years
 			from flows
 			left join entity_names on reporting = original_name COLLATE NOCASE
 			left join sources on source = sources.id
@@ -38,7 +39,7 @@ def dateByReportingBySource(c):
 
 	for row in table:
 
-		dates = [int(d) for d in row[10].split(',')]
+		dates = [int(d) for d in row[2].split(',')]
 
 		periods=[dates[0]]
 
@@ -56,8 +57,10 @@ def dateByReportingBySource(c):
 				# fin 2 : fin de la liste
 				periods[-1]="%s-%s"%(periods[-1],current_date) if periods[-1]!=current_date else str(current_date)
 
-		row[10] =  ",".join(periods)
-		# print row[10]
+
+		row[2] =  ",".join(periods)
+		if row[1] == None:
+			row[1] = "champs vide"
 
 	return table
 
@@ -66,6 +69,6 @@ writer.writerow([description[0] for description in c.description])
 
 data = dateByReportingBySource(c.fetchall())
 for d in data:
-	print d[10] 
+	print d[2] 
 writer.writerows(data)
 
