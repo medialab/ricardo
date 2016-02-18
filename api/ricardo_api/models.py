@@ -110,7 +110,7 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
             imp=max(imports) if len(imports)>0 else None
             exp=max(exports) if len(exports)>0 else None
         else:
-            #when grouping we sum exp imp
+            # when grouping we sum exp imp
             imp=sum(imports)
             exp=sum(exports)
         total = (imp if imp else 0) + (exp if exp else 0)
