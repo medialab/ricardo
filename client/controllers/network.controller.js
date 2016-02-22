@@ -4,7 +4,7 @@
 
 angular.module('ricardo.controllers.network', [])
 
-  .controller('network', [ "$scope", "$location", "apiService", "utils", 
+  .controller('network', [ "$scope", "$location", "apiService", "utils",
     function ($scope, $location, apiService, utils) {
 
     $scope.allYears = d3.range( 1789, 1940 );
@@ -25,7 +25,7 @@ angular.module('ricardo.controllers.network', [])
     $scope.changeColor = function(color) {
       if (color.name.value === "community") {
         // var max_community = d3.max($scope.sigma.graph.nodes()
-        //   .map(function (n) { 
+        //   .map(function (n) {
         //     return n.community
         //   })
         // )
@@ -109,7 +109,7 @@ angular.module('ricardo.controllers.network', [])
                                "Oceania":"#36E120"
                               }
 
-      return continentColors[nodes.attributes.continent]     
+      return continentColors[nodes.attributes.continent]
     }
 
     function colorByType(nodes) {
@@ -119,7 +119,7 @@ angular.module('ricardo.controllers.network', [])
                      "geographical_area":"#6481A2",
                      "colonial_area":"#B74F74"
                     }
-          
+
       return typeColors[nodes.attributes.type];
     }
 
@@ -130,14 +130,14 @@ angular.module('ricardo.controllers.network', [])
             if (listNations.indexOf(t.reporting_id) === -1) {
                 listNations.push(t.reporting_id)
                 listOfNations.push({
-                  id: t.reporting_id, 
+                  id: t.reporting_id,
                   continent: t.reporting_continent,
                   type: t.reporting_type})
             }
             if (listNations.indexOf(t.partner_id) === -1) {
                 listNations.push(t.partner_id)
                 listOfNations.push({
-                  id: t.partner_id, 
+                  id: t.partner_id,
                   continent: t.partner_continent,
                   type: t.partner_type})
             }
@@ -173,9 +173,9 @@ angular.module('ricardo.controllers.network', [])
                 color: '#D1D1D1'
             })
         })
-        
+
         var node_data = listNations;
-         
+
         // nodes & edges for sigma
         var nodes = [];
         var i = 0;
@@ -216,6 +216,15 @@ angular.module('ricardo.controllers.network', [])
         return data;
     }
 
+    var LAYOUT_SETTINGS = {
+        worker: true,
+        barnesHutOptimize: false,
+        strongGravityMode: true,
+        gravity: 0.05,
+        scalingRatio: 10,
+        slowDown: 2
+    }
+
     function drawGraph (s, data) {
         var PARAMS = {
             graph: data,
@@ -236,6 +245,11 @@ angular.module('ricardo.controllers.network', [])
             },
             type: 'webgl'
         }
+
+
+        // delete graph if exist
+        if (s)
+            s.kill()
         // instantiate graph
         s  = new sigma(PARAMS);
 
@@ -287,15 +301,6 @@ angular.module('ricardo.controllers.network', [])
         for(var i = 0; i < nodes.length; i++) {
           var degree = s.graph.degree(nodes[i].id);
           nodes[i].size = degree;
-        }
-
-        var LAYOUT_SETTINGS = {
-            worker: true, 
-            barnesHutOptimize: false,
-            strongGravityMode: true,
-            gravity: 0.05,
-            scalingRatio: 10,
-            slowDown: 2
         }
 
         // Start the ForceAtlas2 algorithm:
@@ -374,7 +379,7 @@ angular.module('ricardo.controllers.network', [])
           categories = {};
 
       var maxFlow = d3.max($scope.sigma.graph.edges()
-          .map(function (n) { 
+          .map(function (n) {
             return n.flow
           })
         )
@@ -390,13 +395,13 @@ angular.module('ricardo.controllers.network', [])
         _.$('min-degree').max = maxDegree;
       if (_.$('max-degree-value') != null)
         _.$('max-degree-value').textContent = maxDegree;
-      
+
       // min flow
       if (_.$('min-flow') != null)
         _.$('min-flow').max = maxFlow;
       if (_.$('max-flow-value') != null)
         _.$('max-flow-value').textContent = maxFlow;
-      
+
       // node category
       var nodecategoryElt = _.$('node-category');
       Object.keys(categories).forEach(function(c) {
@@ -415,7 +420,7 @@ angular.module('ricardo.controllers.network', [])
             filter.undo().apply();
             _.$('dump').textContent = '';
             _.hide('#dump');
-          });    
+          });
       }
 
       // export button
@@ -425,7 +430,7 @@ angular.module('ricardo.controllers.network', [])
             console.log(chain);
             _.$('dump').textContent = JSON.stringify(chain);
             _.show('#dump');
-          }); 
+          });
       }
     }
 
@@ -456,19 +461,39 @@ angular.module('ricardo.controllers.network', [])
     function applyCategoryFilter(e) {
       var c = e.target[e.target.selectedIndex].value;
 
-      console.log("c", c);
-
       filter
         .undo('node-category')
         .nodesBy(function(n) {
-          console.log("n", n);
           return !c.length || n.attributes === c;
         }, 'node-category')
         .apply();
     }
 
+    function indexNodes(nodes) {
+      var indexNodes = {};
+
+      nodes.forEach(function (d) {
+        indexNodes[d.id] = true;
+      })
+
+      console.log(Object.keys(indexNodes))
+
+      return indexNodes
+    }
+
+    function filterOnEdges(nodes, edges) {
+      var newNodesList = [];
+
+      edges.forEach(function (e) {
+        if (nodes[e.source] && nodes[e.target])
+          newNodesList.push(e)
+      })
+
+      return newNodesList;
+    }
+
     $scope.sigma;
-    /* 
+    /*
      * Calling the API to init country selection
      */
     function init(year) {
@@ -502,7 +527,7 @@ angular.module('ricardo.controllers.network', [])
     			    }
 
                 // delete graph if exist
-                if ($scope.sigma) 
+                if ($scope.sigma)
                     $scope.sigma.kill()
 
                 // instantiate graph
@@ -516,45 +541,44 @@ angular.module('ricardo.controllers.network', [])
                 saveOriginalColor($scope.sigma);
 
                 $scope.sigma.bind('clickNode', function(e) {
-                    
-                    var nodeId = e.data.node.id,
-                        toKeep = $scope.sigma.graph.neighbors(nodeId);
-                    toKeep[nodeId] = e.data.node;
+                  var nodeId = e.data.node.id,
+                      toKeep = $scope.sigma.graph.neighbors(nodeId);
+                  toKeep[nodeId] = e.data.node;
 
-                    $scope.listNations = []
-                    $scope.sigma.graph.nodes().forEach(function(n) {
-                      console.log("n", n);
-                      if (toKeep[n.id]) { 
-                        $scope.listNations.push({
-                          id: n.id, 
-                          color: n.color, 
-                          community: n.community,
-                          expimp: n.attributes.expimp
-                        })
-                        n.color = n.originalColor;
-                      }
-                      else
-                        n.color = '#eee';
-                    });
+                  $scope.listNations = []
+                  $scope.sigma.graph.nodes().forEach(function(n) {
+                    // console.log("n", n);
+                    if (toKeep[n.id]) {
+                      $scope.listNations.push({
+                        id: n.id,
+                        color: n.color,
+                        community: n.community,
+                        expimp: n.attributes.expimp
+                      })
+                      n.color = n.originalColor;
+                    }
+                    else
+                      n.color = '#eee';
+                  });
 
 
-                    $scope.sigma.graph.edges().forEach(function(e) {
+                  $scope.sigma.graph.edges().forEach(function(e) {
 
-                      if (toKeep[e.source] && toKeep[e.target])
-                        e.color = e.originalColor;
-                      else
-                        e.color = '#eee';
-                    });
+                    if (toKeep[e.source] && toKeep[e.target])
+                      e.color = e.originalColor;
+                    else
+                      e.color = '#eee';
+                  });
 
-                    // Since the data has been modified, we need to
-                    // call the refresh method to make the colors
-                    // update effective.
-                    $scope.sigma.refresh();
-                    $scope.$apply();
+                  // Since the data has been modified, we need to
+                  // call the refresh method to make the colors
+                  // update effective.
+                  $scope.sigma.refresh();
+                  $scope.$apply();
                 });
 
-                  // When the stage is clicked, we just color each
-                  // node and edge with its original color.
+                // When the stage is clicked, we just color each
+                // node and edge with its original color.
                 $scope.sigma.bind('clickStage', function(e) {
                     $scope.sigma.graph.nodes().forEach(function(n) {
                       n.color = n.originalColor;
@@ -565,7 +589,7 @@ angular.module('ricardo.controllers.network', [])
                     });
 
                     $scope.sigma.refresh();
-                  });
+                });
 
                 // change size with degree
                 var nodes = $scope.sigma.graph.nodes();
@@ -575,90 +599,33 @@ angular.module('ricardo.controllers.network', [])
                   nodes[i].size = degree;
                 }
 
-                var LAYOUT_SETTINGS = {
-                    worker: true, 
-                    barnesHutOptimize: false,
-                    strongGravityMode: true,
-                    gravity: 0.05,
-                    scalingRatio: 10,
-                    slowDown: 2
-                }
-
                 // Start the ForceAtlas2 algorithm:
                 $scope.sigma.startForceAtlas2(LAYOUT_SETTINGS);
 
-                $scope.stopLayout = function () {
-                    $scope.sigma.stopForceAtlas2();
-                }
+                // Relaunch function with
+                $scope.relaunch = function() {
+                  var listNationsIndexed = indexNodes($scope.listNations);
+                  var listOfEdges = filterOnEdges(listNationsIndexed, data.edges)
 
-                $scope.startLayout = function () {
-                    $scope.sigma.startForceAtlas2(LAYOUT_SETTINGS)
-                }
+                  data = {}
+                  $scope.listNations.forEach(function (d) {
+                    d.x = Math.random()
+                    d.y = Math.random()
+                  })
+                  data.nodes = $scope.listNations
+                  data.edges = listOfEdges
 
-                var filename = "RICardo - Networt Trade Nations in " + $scope.selectedDate;
-                $scope.snapshot = function () {
-                    $scope.sigma.renderers[0].snapshot({
-                      format: 'png',
-                      background: 'white',
-                      labels: true,
-                      download: true,
-                      filename: filename
-                    });
-                }
+                  console.log("data", data)
 
-                $scope.zoom = function () {
-                   var camera = $scope.sigma.cameras[0];
-
-                    sigma.misc.animation.camera(
-                      camera,
-                      {ratio: camera.ratio / 1.5},
-                      {duration: 150}
-                    );
-                }
-
-                $scope.unzoom = function () {
-                   var camera = $scope.sigma.cameras[0];
-
-                    sigma.misc.animation.camera(
-                      camera,
-                      {ratio: camera.ratio * 1.5},
-                      {duration: 150}
-                    );
-                }
-
-                $scope.rescale = function () {
-                   var camera = $scope.sigma.cameras[0];
-
-                    sigma.misc.animation.camera(
-                      camera,
-                      {x: 0, y: 0, angle: 0, ratio: 1},
-                      {duration: 150}
-                    );
-                }
-
-                $scope.showNodeOnGraph = function(node) {
-                    console.log("test show")
-                }
-
-                $scope.hoverOnNodeList = function () {
-                  console.log("test");
-                }
-
-                // $scope.exp = function () {
-                //     var expTrades = trades.filter(function (t) {return t.expimp === 'Exp'})
-                //     $scope.sigma.stopForceAtlas2();
-                //     $scope.sigma.kill();
-                //     var data = initGraph(expTrades);
-                //     drawGraph($scope.sigma, data);
-                // }
-
-                // $scope.imp = function () {
-                //     var expTrades = trades.filter(function (t) {return t.expimp === 'Imp'})
-                //     $scope.sigma.stopForceAtlas2();
-                //     $scope.sigma.kill();
-                //     var data = initGraph(expTrades);
-                //     drawGraph($scope.sigma, data);
-                // }
+                  $scope.sigma.killForceAtlas2();
+                          // delete graph if exist
+                  $scope.sigma.graph.clear()
+                  // $scope.sigma.graph.read(data)
+                  // $scope.sigma.refresh();
+                  // $scope.sigma.startForceAtlas2(LAYOUT_SETTINGS);
+                  // console.log("$scope.sigma", $scope.sigma);
+                    drawGraph($scope.sigma, data);
+                  }
 
                  _.$('min-degree').addEventListener("input", applyMinDegreeFilter);  // for Chrome and FF
                  _.$('min-flow').addEventListener("input", applyMinFlowFilter);  // for Chrome and FF
@@ -668,11 +635,83 @@ angular.module('ricardo.controllers.network', [])
         })
       }
 
-      
+      $scope.stopLayout = function () {
+        $scope.sigma.stopForceAtlas2();
+      }
+
+      $scope.startLayout = function () {
+        $scope.sigma.startForceAtlas2(LAYOUT_SETTINGS)
+      }
+
+      var filename = "RICardo - Networt Trade Nations in " + $scope.selectedDate;
+      $scope.snapshot = function () {
+          $scope.sigma.renderers[0].snapshot({
+            format: 'png',
+            background: 'white',
+            labels: true,
+            download: true,
+            filename: filename
+          });
+      }
+
+      $scope.zoom = function () {
+         var camera = $scope.sigma.cameras[0];
+
+          sigma.misc.animation.camera(
+            camera,
+            {ratio: camera.ratio / 1.5},
+            {duration: 150}
+          );
+      }
+
+      $scope.unzoom = function () {
+         var camera = $scope.sigma.cameras[0];
+
+          sigma.misc.animation.camera(
+            camera,
+            {ratio: camera.ratio * 1.5},
+            {duration: 150}
+          );
+      }
+
+      $scope.rescale = function () {
+         var camera = $scope.sigma.cameras[0];
+
+          sigma.misc.animation.camera(
+            camera,
+            {x: 0, y: 0, angle: 0, ratio: 1},
+            {duration: 150}
+          );
+      }
+
+      $scope.showNodeOnGraph = function(node) {
+          console.log("test show")
+      }
+
+      $scope.hoverOnNodeList = function () {
+        console.log("test");
+      }
+
+      // $scope.exp = function () {
+      //     var expTrades = trades.filter(function (t) {return t.expimp === 'Exp'})
+      //     $scope.sigma.stopForceAtlas2();
+      //     $scope.sigma.kill();
+      //     var data = initGraph(expTrades);
+      //     drawGraph($scope.sigma, data);
+      // }
+
+      // $scope.imp = function () {
+      //     var expTrades = trades.filter(function (t) {return t.expimp === 'Imp'})
+      //     $scope.sigma.stopForceAtlas2();
+      //     $scope.sigma.kill();
+      //     var data = initGraph(expTrades);
+      //     drawGraph($scope.sigma, data);
+      // }
+
 
       $scope.$watch('selectedDate', function (newVal, oldVal) {
         if (newVal !== oldVal ) {
-            init(newVal); 
+            init(newVal);
         }
     }, true);
 
