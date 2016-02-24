@@ -321,6 +321,7 @@ angular.module('ricardo.controllers.country', [])
       });
     }
 
+
     /*
      * Triggers entity selected and dates
      */
