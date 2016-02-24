@@ -2,10 +2,10 @@
 	<div class="row">
 		<div class="col-md-12">
 			<h2>
-				Trade network of nations in 
+				Trade network of nations in
 				<inline-select-year ng-model="selectedDate" list="allYears"></inline-select-year>
 				colored by
-				<div class="inline-select">   
+				<div class="inline-select">
 			      <ui-select ng-model="colored" theme="bootstrap" ng-change="changeColor(colored)">
 			        <match placeholder="Color by ...">{{$select.selected.name.value}}</match>
 			        <choices repeat="item in colors | filter: $select.search">
@@ -19,41 +19,37 @@
 				Choose a year to display a network of trade between nations.
 				Size of network depends of reportings number for the year. For more information see world view.
 			</p>
-			 <button type="button" class="btn" ng-click="startLayout()">
-			 	<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Start Layout
-			 </button>
-			 <button type="button" class="btn" ng-click="stopLayout()">
-			 	<span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop Layout
-			 </button>
 			 <!-- <button type="button" class="btn" ng-click="exp()">
 			 	Show export trade values
 			 </button>
 			 <button type="button" class="btn" ng-click="exp()">
 			 	Show import trade values
 			 </button> -->
-			 <button type="button" class="btn" ng-click="snapshot()" style="float:right;">
-			 	<span class="glyphicon glyphicon-picture" aria-hidden="true"></span> Snapshot
-			 </button>
 			<div id="network">
-				
+				<div id="controls">
+					<button type="button" class="btn" ng-click="unzoom()">
+						<span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span>
+					</button>
+					 <button type="button" class="btn" ng-click="rescale()">
+					 	<span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+					 </button>
+					 <button type="button" class="btn" ng-click="zoom()">
+					 	<span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>
+					 </button>
+					 <button type="button" class="btn" ng-click="startLayout()">
+					 	<span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+					 </button>
+					 <button type="button" class="btn" ng-click="stopLayout()">
+					 	<span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+					 </button>
+					 <button type="button" class="btn" ng-click="snapshot()">
+					 	<span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
+					 </button>
+					 <button type="button" class="btn" ng-click="relaunch()" ng-show="nodeSelected">
+					 	<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+					 </button>
+				</div>
 			</div>
-			<center style="margin-top:20px;">
-			 <button type="button" class="btn" ng-click="unzoom()">
-			 	<span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span>
-			 	<br/>
-			 	Unzoom
-			 </button>
-			 <button type="button" class="btn" ng-click="rescale()">
-			 	<span class="glyphicon glyphicon-off" aria-hidden="true"></span>
-			 	<br/>
-			 	Rescale
-			 </button>
-			 <button type="button" class="btn" ng-click="zoom()">
-			 	<span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>
-			 	<br/>
-			 	Zoom
-			 </button>
-			</center> 
 			<div class="col-md-12">
 				<div class="row">
 					    <div class="col-md-4">
@@ -66,28 +62,22 @@
 					      <h6>min flow <span id="min-flow-val">0</span></h6>
 					      0 <input id="min-flow" type="range" min="0" max="0" value="0"> <span id="max-flow-value">0</span>
 					    </div>
-					    <!-- <div class="col-md-4">
-					      <h6>node category</h6>
-					      <select id="node-category">
-					        <option value="" selected>All categories</option>
-					      </select>
-					    </div> -->
 					    <span class="line"></span>
 					    <div>
-					      <button id="reset-btn">Reset filters</button>
-					      <button id="export-btn">Export</button>
+					      <button id="reset-btn" class="btn">Reset filters</button>
+					      <button id="export-btn" class="btn" ng-click="export()">Export network data</button>
 					    </div>
 					    <div id="dump" class="hidden"></div>
 					</div>
 				</div>
-				<h2>List of neighboors of node selected : </h2>
+				<!-- <h2>List of neighboors of node selected : </h2>
 				<div class="col-md-12">
 					<ul>
 						<li class="col-md-6" ng-repeat="item in listNations" ng-click="showNodeOnGraph(item)" ng-mouseover="hoverOnNodeList()">
-						    {{item.community}} : {{item.id}} - {{item.attributes.expimp}} - {{item.attributes.flow}} 
+						    {{item.community}} : {{item.id}} - {{item.attributes.expimp}} - {{item.attributes.flow}}
 						</li>
 					</ul>
-				</div>
+				</div> -->
 			</div>
 		</div>
 	</div>
