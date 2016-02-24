@@ -225,6 +225,88 @@ angular.module('ricardo.controllers.network', [])
         slowDown: 2
     }
 
+    // function drawGraph (s, data) {
+    //     var PARAMS = {
+    //         graph: data,
+    //         container: 'network',
+    //         settings: {
+    //             minNodeSize: 4,
+    //             maxNodeSize: 8,
+    //             maxEdgeSize: 5,
+    //             defaultNodeColor: '#ec5148',
+    //             edgeColor: 'default',
+    //             defaultEdgeColor: '#d1d1d1',
+    //             labelSize: 'fixed',
+    //             labelSizeRatio: 1,
+    //             labelThreshold: 5,
+    //             enableCamera: true,
+    //             enableHovering: true,
+    //             minArrowSize: 3
+    //         },
+    //         type: 'webgl'
+    //     }
+
+
+    //     // delete graph if exist
+    //     if (s)
+    //         s.kill()
+    //     // instantiate graph
+    //     s  = new sigma(PARAMS);
+
+    //     saveOriginalColor(s);
+
+    //     s.bind('clickNode', function(e) {
+    //         console.log("e", e);
+    //         var nodeId = e.data.node.id,
+    //             toKeep = s.graph.neighbors(nodeId);
+    //         toKeep[nodeId] = e.data.node;
+
+    //         s.graph.nodes().forEach(function(n) {
+    //           if (toKeep[n.id])
+    //             n.color = n.originalColor;
+    //           else
+    //             n.color = '#eee';
+    //         });
+
+    //         s.graph.edges().forEach(function(e) {
+    //           if (toKeep[e.source] && toKeep[e.target])
+    //             e.color = e.originalColor;
+    //           else
+    //             e.color = '#eee';
+    //         });
+
+    //         // Since the data has been modified, we need to
+    //         // call the refresh method to make the colors
+    //         // update effective.
+    //         s.refresh();
+    //     });
+
+    //       // When the stage is clicked, we just color each
+    //       // node and edge with its original color.
+    //     s.bind('clickStage', function(e) {
+    //         s.graph.nodes().forEach(function(n) {
+    //           n.color = n.originalColor;
+    //         });
+
+    //         s.graph.edges().forEach(function(e) {
+    //           e.color = e.originalColor;
+    //         });
+
+    //         s.refresh();
+    //       });
+
+    //     // change size with degree
+    //     var nodes = s.graph.nodes();
+    //     // second create size for every node
+    //     for(var i = 0; i < nodes.length; i++) {
+    //       var degree = s.graph.degree(nodes[i].id);
+    //       nodes[i].size = degree;
+    //     }
+
+    //     // Start the ForceAtlas2 algorithm:
+    //     s.startForceAtlas2(LAYOUT_SETTINGS);
+    // }
+
     function drawGraph (s, data) {
         var PARAMS = {
             graph: data,
@@ -251,22 +333,33 @@ angular.module('ricardo.controllers.network', [])
         if (s)
             s.kill()
         // instantiate graph
-        s  = new sigma(PARAMS);
+        s = new sigma(PARAMS);
+
+        filter = new sigma.plugins.filter(s);
+        console.log("s", s.graph);
+        updatePane(s.graph, filter);
 
         saveOriginalColor(s);
 
         s.bind('clickNode', function(e) {
-            console.log("e", e);
             var nodeId = e.data.node.id,
                 toKeep = s.graph.neighbors(nodeId);
             toKeep[nodeId] = e.data.node;
 
+            $scope.listNations = []
             s.graph.nodes().forEach(function(n) {
-              if (toKeep[n.id])
-                n.color = n.originalColor;
-              else
-                n.color = '#eee';
-            });
+                if (toKeep[n.id]) {
+                  $scope.listNations.push({
+                    id: n.id,
+                    color: n.color,
+                    community: n.community
+                    // expimp: n.attributes.expimp
+                  })
+                  n.color = n.originalColor;
+                }
+                else
+                  n.color = '#eee';
+              });
 
             s.graph.edges().forEach(function(e) {
               if (toKeep[e.source] && toKeep[e.target])
@@ -279,6 +372,7 @@ angular.module('ricardo.controllers.network', [])
             // call the refresh method to make the colors
             // update effective.
             s.refresh();
+            $scope.$apply();
         });
 
           // When the stage is clicked, we just color each
@@ -327,7 +421,7 @@ angular.module('ricardo.controllers.network', [])
       removeClass: function(selectors, cssClass) {
         var nodes = document.querySelectorAll(selectors);
         var l = nodes.length;
-        for ( i = 0 ; i < l; i++ ) {
+        for ( var i = 0 ; i < l; i++ ) {
           var el = nodes[i];
           // Bootstrap compatibility
           el.className = el.className.replace(cssClass, '');
@@ -358,7 +452,7 @@ angular.module('ricardo.controllers.network', [])
         var cssClass = cssClass || "hidden";
         var nodes = document.querySelectorAll(selectors);
         var l = nodes.length;
-        for ( i = 0 ; i < l; i++ ) {
+        for ( var i = 0 ; i < l; i++ ) {
           var el = nodes[i];
           //el.style.display = (el.style.display != 'none' ? 'none' : '' );
           // Bootstrap compatibility
@@ -373,12 +467,14 @@ angular.module('ricardo.controllers.network', [])
 
 
     function updatePane (graph, filter) {
+
+
       // get max degree
       var maxDegree = 0,
           maxFlow = 0,
           categories = {};
 
-      var maxFlow = d3.max($scope.sigma.graph.edges()
+      var maxFlow = d3.max(graph.edges()
           .map(function (n) {
             return n.flow
           })
@@ -413,10 +509,13 @@ angular.module('ricardo.controllers.network', [])
 
       // reset button
       if (_.$('reset-btn') != null) {
+        console.log("reset")
           _.$('reset-btn').addEventListener("click", function(e) {
             _.$('min-degree').value = 0;
             _.$('min-degree-val').textContent = '0';
-            _.$('node-category').selectedIndex = 0;
+            _.$('min-flow').value = 0;
+            _.$('min-flow-val').textContent = '0';
+            // _.$('node-category').selectedIndex = 0;
             filter.undo().apply();
             _.$('dump').textContent = '';
             _.hide('#dump');
@@ -424,14 +523,15 @@ angular.module('ricardo.controllers.network', [])
       }
 
       // export button
-      if (_.$('export-btn') != null) {
-          _.$('export-btn').addEventListener("click", function(e) {
-            var chain = filter.export();
-            console.log(chain);
-            _.$('dump').textContent = JSON.stringify(chain);
-            _.show('#dump');
-          });
-      }
+      // if (_.$('export-btn') != null) {
+      //   console.log("export", $scope.sigma)
+      //     _.$('export-btn').addEventListener("click", function(e) {
+      //       var chain = filter.export();
+      //       console.log(chain);
+      //       _.$('dump').textContent = JSON.stringify(chain);
+      //       _.show('#dump');
+      //     });
+      // }
     }
 
     function applyMinDegreeFilter(e) {
@@ -506,6 +606,7 @@ angular.module('ricardo.controllers.network', [])
                 alert("There is no value for this year")
             else {
                 var data = initGraph(trades);
+                //drawGraph($scope.sigma, data);
                 // params to sigma
             	var PARAMS = {
             		graph: data,
@@ -574,6 +675,7 @@ angular.module('ricardo.controllers.network', [])
                   // call the refresh method to make the colors
                   // update effective.
                   $scope.sigma.refresh();
+                  $scope.nodeSelected = true;
                   $scope.$apply();
                 });
 
@@ -589,6 +691,8 @@ angular.module('ricardo.controllers.network', [])
                     });
 
                     $scope.sigma.refresh();
+                    $scope.nodeSelected = false;
+                    $scope.$apply();
                 });
 
                 // change size with degree
@@ -690,6 +794,18 @@ angular.module('ricardo.controllers.network', [])
 
       $scope.hoverOnNodeList = function () {
         console.log("test");
+      }
+
+      $scope.export = function () {
+        var dataExported = [];
+        $scope.sigma.graph.edges().forEach(function (e) {
+          dataExported.push({source:e.source, target:e.target, flow:e.flow})
+        });
+
+        var headers = ["source", "target", "flow"],
+            order = "",
+            filename = "RICardo - Network " + $scope.year;
+        utils.downloadCSV(dataExported, headers, order, filename);
       }
 
       // $scope.exp = function () {
