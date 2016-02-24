@@ -1,12 +1,12 @@
 <div class="container">
 
-  <div ng-show="missing" class="alert"> 
+  <div ng-show="missing" class="alert">
     <div class="modal-body" >
      <p>
         There is <strong>no data available</strong> in the database for {{entities.sourceEntity.selected.RICname}}
      </p>
      <p>
-     between {{selectedMinDate}} and {{selectedMaxDate}}  
+     between {{selectedMinDate}} and {{selectedMaxDate}}
      </p>
       <p>
         Choose another one or change date selection, thank you !
@@ -18,7 +18,7 @@
   </div>
 </div>
 
-<div class="container">  
+<div class="container">
   </br>
   </br>
   <p class="paragraphPage">
@@ -30,19 +30,19 @@
         {{ 'COUNTRY_TITLE_1' | translate }}
         <inline-select-country ng-model="entities.sourceEntity.selected" list="reportingEntities" ng-change="changeData()" ></inline-select-country>
         {{ 'FROM' | translate }}
-        <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf" ng-change="changeData()"></inline-select-year>
+        <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf"></inline-select-year>
         {{ 'TO' | translate}}
-        <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup" ng-change="changeData()" ></inline-select-year>
+        <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup"></inline-select-year>
       </h4>
         <p class="paragraphViz">
-            {{ 'COUNTRY_VIEW_DUAL_LEGEND' | translate }} 
+            {{ 'COUNTRY_VIEW_DUAL_LEGEND' | translate }}
         </p>
-        <dual-timeline 
-          ng-data="timelineData" 
-          start-date="selectedMinDate" 
-          end-date="selectedMaxDate" 
+        <dual-timeline
+          ng-data="timelineData"
+          start-date="selectedMinDate"
+          end-date="selectedMaxDate"
         ></dual-timeline>
-          
+
         <div class="legend">
         <div class="legend-item">
           <div class="square import"></div> Import
@@ -57,10 +57,10 @@
           <div class="line unavailable"></div> {{ 'UNAVAILABLE' | translate }}
         </div>
         <div class="legend-item">
-          {{ 'CURRENCY' | translate }} <strong>{{actualCurrency}}</strong> 
+          {{ 'CURRENCY' | translate }} <strong>{{actualCurrency}}</strong>
         </div>
       </div>
-    </div>   
+    </div>
   </div>
 </div>
 
@@ -95,7 +95,7 @@
         </div>
       </div>
     </div>
-         
+
   </div>
 </div>
 
@@ -103,7 +103,7 @@
   <br>
   <br>
   <h4>  {{ 'PARTNER_HISTO_1' | translate }}
-  <div class="inline-select">   
+  <div class="inline-select">
       <ui-select ng-model="grouped" theme="bootstrap" ng-change="changeGroup(grouped)">
         <match placeholder="Group by...">{{$select.selected.name.value}}</match>
         <choices repeat="item in groups | filter: $select.search">
@@ -138,12 +138,12 @@
       </choices>
     </ui-select>
   </div>
-   
+
   </h4>
   <div class="row">
     <div class="col-md-12">
       <p class="paragraphViz">
-          {{ 'COUNTRY_PARTNER_HISTO' | translate }} 
+          {{ 'COUNTRY_PARTNER_HISTO' | translate }}
           <ul>
             <li class="paragraphViz">
               {{ 'COUNTRY_PARTNER_HISTO_1' | translate }}
@@ -161,7 +161,7 @@
       </div>
       <div class="legend-item">
         ExpA = total exports A
-      </div> 
+      </div>
       </br>
       <div class="legend-item">
         {{ 'PARTNER_HISTO_LEG_1' | translate }} = Exp A->B / ExpA * 100
@@ -175,15 +175,15 @@
             <circle cx="25" cy="18" r="12" stroke="black" stroke-width="1" fill="transparent" />
             <circle cx="25" cy="18" r="3" stroke="black" stroke-width="1" fill="black" />
             <text x="45" y="20" fill="black">{{ 'PARTNER_HISTO_LEG_1' | translate }}</text>
-          </svg> 
-        </div> 
+          </svg>
+        </div>
         <div class="legend-item">
           <svg height="35" width="300">
             <rect x="15" y="0" width="10" height="15" style="fill:#cc6666" />
             <rect x="25" y="15" width="10" height="15" style="fill:#663333" />
             <text x="40" y="20" fill="black">{{ 'PARTNER_HISTO_LEG_2' | translate }}</text>
-          </svg> 
-        </div>  
+          </svg>
+        </div>
       </div>
     </div>
   </div>
@@ -193,13 +193,13 @@
 <div id="select-doubleChart">
   <div class="row">
     <div  class="col-sm-12">
-      <div ng-show="missingPartner" class="alert"> 
+      <div ng-show="missingPartner" class="alert">
         <div class="modal-body" >
          <p>
             There is <strong>no data available</strong> in the database for this filter
          </p>
          <p>
-            between {{selectedMinDate}} and {{selectedMaxDate}}  
+            between {{selectedMinDate}} and {{selectedMaxDate}}
          </p>
           <p>
             Choose another one or change date selection, thank you !
@@ -209,8 +209,8 @@
             <button class="btn btn-default" ng-click="okPartner()">OK</button>
         </div>
       </div>
-      <partners-histogram 
-        ng-data="partnersData" 
+      <partners-histogram
+        ng-data="partnersData"
         start-date="selectedMinDate"
         end-date="selectedMaxDate"
         index-years="indexYears"
@@ -223,16 +223,16 @@
     <div class="col-md-12">
       <br/>
       <br/>
-      <h4 class="titleDualTL">{{ 'LINE_CHART_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'LINE_CHART_2' | translate }} 
+      <h4 class="titleDualTL">{{ 'LINE_CHART_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'LINE_CHART_2' | translate }}
       <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
-      
+
       <span class="close-btn">
        <i class="fa fa-times-circle"></i>
       </span>
       <span ng-if="!$last">, </span>
-      </span>, 
+      </span>,
       <br/>
-      {{selectedMinDate}} – {{selectedMaxDate}}, in   
+      {{selectedMinDate}} – {{selectedMaxDate}}, in
       <div class="inline-select">
         <ui-select ng-model="linechartCurrency" theme="bootstrap" ng-change="changeCurrency(linechartCurrency)">
           <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
@@ -240,7 +240,7 @@
             <div ng-bind-html="item.name.value | highlight: $select.search"></div>
           </choices>
         </ui-select>
-    </div> 
+    </div>
     for
     <div class="inline-select">
       <ui-select ng-model="linechartFlow" theme="bootstrap" ng-change="changeFlow(linechartFlow)">
@@ -251,9 +251,9 @@
       </ui-select>
     </div>
       </h4>
-        <div ng-show="messagePercent"> 
+        <div ng-show="messagePercent">
          <p>
-             <a href="/#worldTrade">world sum partners</a> 
+             <a href="/#worldTrade">world sum partners</a>
              {{entities.sourceEntity.selected.RICname}}
          </p>
         </div>
@@ -264,7 +264,7 @@
       <h4 class="subtitle col-md-2" style="width:190px;">{{ 'LINE_CHART_SELECT' | translate }}</h4>
     </div>
   <div class="col-md-9">
-    
+
     <div class="inline-select" >
       <ui-select   ng-model="entities.sourceCountryEntity.selected" theme="bootstrap"  ng-change="changeCountry(entities.sourceCountryEntity.selected)">
         <match placeholder="Country"></match>
@@ -311,7 +311,7 @@
     </div>
 
   </div>
-    
+
   <div class="row">
     <div class="col-sm-12">
       <linechart-world ng-data="linechartData">
