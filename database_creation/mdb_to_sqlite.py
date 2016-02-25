@@ -47,7 +47,7 @@ with open(conf["sqlite_schema"],"r") as schema:
 	c.executescript(schema.read())
 
 ################################################################################
-##          Schema SQLite with good tables 
+##          Schema SQLite with good tables
 ################################################################################
 print "-------------------------------------------------------------------------"
 print "Read the schema of the new data base"
@@ -94,10 +94,10 @@ print "-------------------------------------------------------------------------
 # cleaning dups in to-be-joined tables
 
 # duplicates in currency
-c.execute(""" DELETE FROM old_currency 
-	WHERE id_Curr_Yr_RepEntity 
-	IN (SELECT id_Curr_Yr_RepEntity 
-		from old_currency 
+c.execute(""" DELETE FROM old_currency
+	WHERE id_Curr_Yr_RepEntity
+	IN (SELECT id_Curr_Yr_RepEntity
+		from old_currency
 		GROUP BY `Original Currency`,`Reporting Entity (Original Name)`,Yr HAVING count(*)>1)""")
 
 # duplicates in exp-imp
@@ -112,34 +112,34 @@ c.execute(""" CREATE UNIQUE INDEX unique_rate ON old_rate (Yr,`Modified Currency
 ################################################################################
 ##          clean data - trim and lower
 ################################################################################
-c.execute("""UPDATE old_flow SET `Exp / Imp`=trim(lower(`Exp / Imp`)), 
+c.execute("""UPDATE old_flow SET `Exp / Imp`=trim(lower(`Exp / Imp`)),
 	`Spe/Gen/Tot`=trim(lower(`Spe/Gen/Tot`)) WHERE 1""")
-c.execute("""UPDATE `old_Exp-Imp-Standard` SET `Exp / Imp`=trim(lower(`Exp / Imp`)), 
+c.execute("""UPDATE `old_Exp-Imp-Standard` SET `Exp / Imp`=trim(lower(`Exp / Imp`)),
 	`Spe/Gen/Tot`=trim(lower(`Spe/Gen/Tot`)) WHERE 1""")
 c.execute("""UPDATE old_flow SET `Initial Currency`=trim(lower(`Initial Currency`)),
-	`Reporting Entity_Original Name`=trim(lower(`Reporting Entity_Original Name`)) 
+	`Reporting Entity_Original Name`=trim(lower(`Reporting Entity_Original Name`))
 	WHERE 1""")
 c.execute("""UPDATE `old_currency` SET `Original Currency`=trim(lower(`Original Currency`)),
 	`Modified Currency`=trim(lower(`Modified Currency`)),
-	`Reporting Entity (Original Name)`=trim(lower(`Reporting Entity (Original Name)`)) 
+	`Reporting Entity (Original Name)`=trim(lower(`Reporting Entity (Original Name)`))
 	WHERE 1""")
-c.execute("""UPDATE `old_rate` SET `Modified Currency`=trim(lower(`Modified Currency`)) 
+c.execute("""UPDATE `old_rate` SET `Modified Currency`=trim(lower(`Modified Currency`))
 	WHERE 1""")
-c.execute("""UPDATE `old_rate` SET `FX rate (NCU/£)`=replace(`FX rate (NCU/£)`,",",".") 
+c.execute("""UPDATE `old_rate` SET `FX rate (NCU/£)`=replace(`FX rate (NCU/£)`,",",".")
 	WHERE 1""")
-c.execute("""UPDATE old_RICentities SET type=lower(replace(trim(type)," ","_")) 
+c.execute("""UPDATE old_RICentities SET type=lower(replace(trim(type)," ","_"))
 	WHERE 1""")
 
-# DELETE unused spe/gen cleaning rows id=13 
+# DELETE unused spe/gen cleaning rows id=13
 
-# one lower on reporting 
-#c.execute("""UPDATE flow SET `Reporting Entity_Original Name`="espagne (îles baléares)" 
+# one lower on reporting
+#c.execute("""UPDATE flow SET `Reporting Entity_Original Name`="espagne (îles baléares)"
 # WHERE `Reporting Entity_Original Name`="espagne (Îles baléares)";""")
 
 # clean Land/Sea
 c.execute("UPDATE `old_flow` SET `Land/Sea` = null WHERE `Land/Sea` = ' '")
 #clean total type
-c.execute("""UPDATE `old_flow` SET `Total_type` = lower(`Total_type`) 
+c.execute("""UPDATE `old_flow` SET `Total_type` = lower(`Total_type`)
 	WHERE `Total_type` is not null""")
 
 # RICENTITIES
@@ -153,7 +153,7 @@ c.execute("""UPDATE old_RICentities SET id=REPLACE(id,")","") WHERE 1""")
 c.execute("""UPDATE old_RICentities SET id=REPLACE(id,"***","") WHERE 1""")
 
 
-# remove 770 'Pas de données' : a priori on tente de les garder 
+# remove 770 'Pas de données' : a priori on tente de les garder
 # c.execute("SELECT count(*) from flow where notes='Pas de données' and Flow is null")
 # print "removing %s flows with Notes='Pas de données'"%c.fetchone()[0]
 # c.execute("DELETE FROM flow WHERE notes ='Pas de données' and Flow is null")
@@ -170,7 +170,7 @@ c.execute("""UPDATE old_RICentities SET id=REPLACE(id,"***","") WHERE 1""")
 #  depecrated since RICnames were included into mdb file by Karine
 
 # add the missing Haïti
-c.execute("""INSERT INTO `old_entity_names_cleaning` (`original_name`, `name`, `RICname`) 
+c.execute("""INSERT INTO `old_entity_names_cleaning` (`original_name`, `name`, `RICname`)
 	VALUES ("Haïti","Haïti","Haiti");""")
 
 
@@ -183,8 +183,8 @@ print "-------------------------------------------------------------------------
 ################################################################################
 # print "Create currency_sources"
 # c.execute("""DROP TABLE IF EXISTS currency_sources;""")
-# c.execute("""CREATE TABLE IF NOT EXISTS currency_sources AS 
-# 	SELECT `Source Currency` as currency, `Note Currency`as notes 
+# c.execute("""CREATE TABLE IF NOT EXISTS currency_sources AS
+# 	SELECT `Source Currency` as currency, `Note Currency`as notes
 # 	FROM old_rate
 # 	""")
 # print "currency_sources created"
@@ -194,7 +194,7 @@ print "-------------------------------------------------------------------------
 ##			Create table sources
 ################################################################################
 print "create flow_sources"
-c.execute("""CREATE TABLE IF NOT EXISTS flow_sources (source, 
+c.execute("""CREATE TABLE IF NOT EXISTS flow_sources (source,
 	transcript_filename, country, volume, date, cote, url)""")
 with open('in_data/ricardo_flow_sources_final.csv', 'r') as sources:
 	reader=UnicodeReader(sources)
@@ -231,8 +231,8 @@ print "-------------------------------------------------------------------------
 ################################################################################
 
 print "Insert currency_sources into sources"
-c.execute("""INSERT into sources(id,source_name, notes) 
-	SELECT 'currency_' || `Source Currency` as id,`Source Currency` as source_name, group_concat(`Note Currency`) as notes 
+c.execute("""INSERT into sources(id,source_name, notes)
+	SELECT 'currency_' || `Source Currency` as id,`Source Currency` as source_name, group_concat(`Note Currency`) as notes
 	FROM old_rate
 	group by `Source Currency`
 	""")
@@ -243,7 +243,7 @@ print "-------------------------------------------------------------------------
 ##			Create table exchanges_rates
 ################################################################################
 print "Create exchanges_rates"
-c.execute("""INSERT INTO exchange_rates(year, modified_currency, 
+c.execute("""INSERT INTO exchange_rates(year, modified_currency,
 	rate_to_pounds, source)
 	SELECT Yr as year, `Modified currency` as modified_currency,
 	`FX rate (NCU/£)` as rate_to_pounds, 'currency_' || `Source Currency` as source
@@ -258,7 +258,7 @@ print "-------------------------------------------------------------------------
 print "Create expimp_spegen"
 c.execute("""INSERT INTO expimp_spegen
 	SELECT `Exp / Imp` as export_import, `Spe/Gen/Tot` as special_general,
-	`Exp / Imp (standard)` as modified_export_import, 
+	`Exp / Imp (standard)` as modified_export_import,
 	`Spe/Gen/Tot (standard)` as modified_special_general
 	FROM `old_Exp-Imp-Standard`
 	""")
@@ -270,8 +270,8 @@ print "-------------------------------------------------------------------------
 ################################################################################
 print "Create currencies"
 c.execute("""INSERT INTO currencies
-	SELECT `Original Currency` as currency, Yr as year, 
-	`reporting entity (Original name)` as reporting, 
+	SELECT `Original Currency` as currency, Yr as year,
+	`reporting entity (Original name)` as reporting,
 	`Modified Currency` as modified_currency
 	FROM old_currency
 	""")
@@ -285,7 +285,7 @@ print "-------------------------------------------------------------------------
 
 # create new table RICentities
 print "Create RICentities"
-c.execute("""INSERT INTO RICentities 
+c.execute("""INSERT INTO RICentities
 	SELECT RICname, type, continent, COW_code, id as slug
 	FROM old_RICentities
 	""")
@@ -297,7 +297,7 @@ print "-------------------------------------------------------------------------
 ################################################################################
 #create temp table to save RICentities
 print "Create entity_names"
-c.execute("""INSERT INTO entity_names 
+c.execute("""INSERT INTO entity_names
 	SELECT original_name, name as french_name, RICname
 	FROM old_entity_names_cleaning
 	""")
@@ -310,7 +310,7 @@ print "-------------------------------------------------------------------------
 ################################################################################
 #create temp table to save RICentities
 print "Create RICentities_groups"
-c.execute("""INSERT INTO RICentities_groups 
+c.execute("""INSERT INTO RICentities_groups
 	SELECT id, RICname_group, RICname_part
 	FROM old_RICentities_groups
 	""")
@@ -318,18 +318,18 @@ print "RICentities_groups created"
 print "-------------------------------------------------------------------------"
 
 ################################################################################
-##			Create table flows : TO BE UPDATED 
+##			Create table flows : TO BE UPDATED
 ################################################################################
 
 print "Create flows"
-c.execute("""INSERT INTO flows(id,	source, flow, unit, currency, year, reporting, 
-	partner, export_import, special_general, species_bullions, transport_type, 
+c.execute("""INSERT INTO flows(id, source, flow, unit, currency, year, reporting,
+	partner, export_import, special_general, species_bullions, transport_type,
 	statistical_period, partner_sum, world_trade_type)
-	SELECT ID, Source, Flow, Unit, `Initial Currency`, Yr, 
-	`Reporting Entity_Original Name`, `Partner Entity_Original Name`, 
-	`Exp / Imp`, `Spe/Gen/Tot`, 
-	`Species and Bullions`, `Land/Sea`, 
-	`Statistical Period`, `Partner Entity_Sum`, 
+	SELECT ID, Source, Flow, Unit, `Initial Currency`, Yr,
+	`Reporting Entity_Original Name`, `Partner Entity_Original Name`,
+	`Exp / Imp`, `Spe/Gen/Tot`,
+	`Species and Bullions`, `Land/Sea`,
+	`Statistical Period`, `Partner Entity_Sum`,
 	Total_Type
 	FROM old_flow
 
