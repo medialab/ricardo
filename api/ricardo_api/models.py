@@ -6,6 +6,8 @@ from ricardo_api import get_db
 import sqlite3
 import json
 import codecs
+import networkx as nx
+import operator
 
 
 def ric_entities_data(ids=[]):
@@ -178,19 +180,39 @@ def get_world_flows(from_year,to_year):
       "year":year,
       "flows":flow,
       "nb_reporting": nb_reporting,
-      "type":type, 
+      "type":type,
       "sources": sources
       })
 
     return json.dumps(json_response,encoding="UTF8")
 
+def get_reportings_available_by_year():
+  cursor = get_db().cursor()
+  cursor.execute("""SELECT reporting_id, group_concat(DISTINCT Yr) as years
+                FROM flow_joined
+                group by reporting_id """
+                )
+
+  json_response=[]
+  for (reporting_id, years) in cursor:
+    json_response.append({
+    "reporting_id": reporting_id,
+    "years":years
+    })
+
+  return json.dumps(json_response,encoding="UTF8")
+
 def get_nations_network_by_year(year):
   cursor = get_db().cursor()
-  cursor.execute("""SELECT reporting, reporting_id, partner, partner_id, Flow, expimp, RIC_reporting.continent as reporting_continent, RIC_partner.continent as partner_continent, RIC_reporting.type as reporting_type, RIC_partner.type as partner_type
+  cursor.execute("""SELECT reporting, reporting_id, partner, partner_id, Flow, expimp,
+                    RIC_reporting.continent as reporting_continent,
+                    RIC_partner.continent as partner_continent,
+                    RIC_reporting.type as reporting_type,
+                    RIC_partner.type as partner_type
                     FROM flow_joined
-                    INNER JOIN RICentities as RIC_reporting 
-                      on flow_joined.reporting_id = RIC_reporting.id 
-                    INNER JOIN RICentities as RIC_partner 
+                    INNER JOIN RICentities as RIC_reporting
+                      on flow_joined.reporting_id = RIC_reporting.id
+                    INNER JOIN RICentities as RIC_partner
                       on flow_joined.partner_id = RIC_partner.id
                     WHERE reporting NOT LIKE "Worl%%"
                     AND partner NOT LIKE "Worl%%"
@@ -199,36 +221,66 @@ def get_nations_network_by_year(year):
                     """%(year)
               )
 
+  table = [list(r) for r in cursor]
 
   json_sql_response=[]
-  for (reporting, reporting_id, partner, partner_id, Flow, expimp, reporting_continent, partner_continent, reporting_type, partner_type) in cursor:
+
+  for row in table:
     json_sql_response.append({
-      "reporting": reporting,
-      "reporting_id": reporting_id,
-      "partner": partner,
-      "partner_id": partner_id,
-      "flow": Flow,
-      "expimp": expimp,
-      "reporting_continent": reporting_continent,
-      "partner_continent": partner_continent,
-      "reporting_type": reporting_type,
-      "partner_type": partner_type
+      "reporting": row[0],
+      "reporting_id": row[1],
+      "partner": row[2],
+      "partner_id": row[3],
+      "flow": row[4],
+      "expimp": row[5],
+      "reporting_continent": row[6],
+      "partner_continent": row[7],
+      "reporting_type": row[8],
+      "partner_type": row[9]
       })
 
-  return json.dumps(json_sql_response,encoding="UTF8")
+
+  # Create a graph instance
+  G=nx.Graph()
+
+  nodes = []
+  for row in table:
+    nodes.append(row[1])
+    nodes.append(row[3])
+    # add edge to the graph
+    G.add_edge(row[1], row[3])
+
+  nodes = set(nodes)
+
+  # add nodes to graph
+  G.add_nodes_from(nodes)
+
+  stats = {
+    "average_clustering": nx.average_clustering(G),
+    "center": nx.center(G),
+    "diameter": nx.diameter(G),
+    "eccentricity": nx.eccentricity(G)
+  }
+
+  json_response = {}
+  json_response["stats"] = stats
+  json_response["network"] = json_sql_response
+
+  return json.dumps(json_response,encoding="UTF8")
 
 def get_continent_nb_partners(from_year, to_year):
   cursor = get_db().cursor()
   from_year_clause = """ AND Yr>%s"""%from_year if from_year!="" else ""
   to_year_clause = """ AND Yr<%s"""%to_year if to_year!="" else ""
   print from_year_clause, to_year_clause
-  cursor.execute("""SELECT RIC_reporting.continent as reporting_continent, RIC_partner.continent as partner_continent,
+  cursor.execute("""SELECT RIC_reporting.continent as reporting_continent,
+                    RIC_partner.continent as partner_continent,
                     Yr, COUNT(distinct(RIC_partner.id)) as nb_partners
                     FROM flow_joined
                     %s
-                    INNER JOIN RICentities as RIC_reporting 
-                      on flow_joined.reporting_id = RIC_reporting.id 
-                    INNER JOIN RICentities as RIC_partner 
+                    INNER JOIN RICentities as RIC_reporting
+                      on flow_joined.reporting_id = RIC_reporting.id
+                    INNER JOIN RICentities as RIC_partner
                       on flow_joined.partner_id = RIC_partner.id
                     GROUP BY Yr, reporting_continent, partner_continent
                     """%(from_year_clause+to_year_clause)
@@ -293,8 +345,8 @@ def get_mirror_entities(reporting_id):
                           FROM flow_joined f
                           LEFT OUTER JOIN RICentities rci ON rci.id=f.reporting_id
                           LEFT OUTER JOIN (
-                                SELECT partner_id,group_concat(Yr) as years_from_reporting 
-                                from flow_joined where reporting_id='%s' 
+                                SELECT partner_id,group_concat(Yr) as years_from_reporting
+                                from flow_joined where reporting_id='%s'
                                 group by partner_id)
                                 rpp
                                 on rpp.partner_id=f.reporting_id
