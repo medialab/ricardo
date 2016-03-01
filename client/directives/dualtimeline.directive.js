@@ -35,7 +35,7 @@ angular.module('ricardo.directives.dualTimeline', [])
             draw(scope.ngData)
           }
         })
-       
+
         var x
           , y
           , xAxis
@@ -44,7 +44,7 @@ angular.module('ricardo.directives.dualTimeline', [])
           , areaExp
           , lineImp
           , lineExp
-          
+
         function draw(data){
           document.querySelector('#dual-timeline-container').innerHTML = null;
 
@@ -52,8 +52,8 @@ angular.module('ricardo.directives.dualTimeline', [])
               width = document.querySelector('#dual-timeline-container').offsetWidth - margin.left - margin.right,
               height = 180 - margin.top - margin.bottom;
 
-          /* 
-           * Config axis 
+          /*
+           * Config axis
            */
           x = d3.time.scale()
               .range([0, width]);
@@ -87,15 +87,15 @@ angular.module('ricardo.directives.dualTimeline', [])
                     symbol = ""
                   }
                   return prefix.scale(d) + " " + symbol
-                } 
+                }
               })
 
            x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
-           y.domain([0, d3.max( data.filter(function(d){ return d.year >= scope.startDate 
+           y.domain([0, d3.max( data.filter(function(d){ return d.year >= scope.startDate
             && d.year <= scope.endDate}), function(d) { return Math.max( d.imp, d.exp ); })]);
 
-          /* 
-           * Draw areas & lines 
+          /*
+           * Draw areas & lines
            */
 
           areaImp = d3.svg.area()
@@ -113,9 +113,9 @@ angular.module('ricardo.directives.dualTimeline', [])
               .defined(function(d) { return d.exp !== null; })
               .x(function(d) { return x(d.date); })
               .y0(height)
-              .y1(function(d) { 
+              .y1(function(d) {
                 if (d.exp !== null)
-                  return y(d.exp); 
+                  return y(d.exp);
               });
 
           lineExp = d3.svg.line()
@@ -150,7 +150,7 @@ angular.module('ricardo.directives.dualTimeline', [])
               .datum(data)
               .attr("class", "line-imp")
               .attr("d", lineImp)
-          
+
           svg.append("path")
               .datum(data)
               .attr("class", "area-exp")
@@ -161,8 +161,8 @@ angular.module('ricardo.directives.dualTimeline', [])
               .attr("class", "line-exp")
               .attr("d", lineExp)
 
-          /* 
-           * Add axis to svg 
+          /*
+           * Add axis to svg
            */
           var gy = svg.select("g.y.axis"),
               gx = svg.select("g.x.axis");
@@ -178,7 +178,7 @@ angular.module('ricardo.directives.dualTimeline', [])
                 .attr("class", "y axis")
                 .call(yAxis)
                 .call(customAxis);
-                
+
             gy.selectAll("g").filter(function(d) { return d; })
                 .classed("minor", true);
 
@@ -192,7 +192,7 @@ angular.module('ricardo.directives.dualTimeline', [])
               .call(customAxis);
 
             gy.selectAll("g").filter(function(d) { return d; })
-                .classed("minor", true);      
+                .classed("minor", true);
           }
 
           function customAxis(g) {
@@ -202,8 +202,8 @@ angular.module('ricardo.directives.dualTimeline', [])
               .attr("font-size", "0.85em");
             }
 
-          /* 
-           * Select only imp & exp data from country selected 
+          /*
+           * Select only imp & exp data from country selected
            */
           var ImpExp = [];
           data.forEach(function (data) {
@@ -214,10 +214,10 @@ angular.module('ricardo.directives.dualTimeline', [])
           })
 
           voronoi(ImpExp, "points", svg, margin, height, width);
-          
+
         }
-          /* 
-           * Voronoi fonction 
+          /*
+           * Voronoi fonction
            */
 
           function voronoi(data, yValue, svg, margin, height, width) {
@@ -225,7 +225,7 @@ angular.module('ricardo.directives.dualTimeline', [])
             .x(function(d) { return x(new Date(d.year, 0, 1)); })
             .y(function(d) { return y(d[yValue]); })
             .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]]);
-        
+
             var voronoiGroup = svg.select(".voronoi")
 
             if(voronoiGroup.empty()){
@@ -248,7 +248,7 @@ angular.module('ricardo.directives.dualTimeline', [])
             voronoiGraph.exit().remove()
 
             var focus = svg.select(".focus")
-                      
+
             if(focus.empty()){
                 focus = svg.append("g")
                     .attr("transform", "translate(-100,-100)")
@@ -274,9 +274,9 @@ angular.module('ricardo.directives.dualTimeline', [])
                 focus.select("text")
                   .attr("fill", colorPoint)
                   .text(format(Math.round(d[yValue])) + ' £');
-                  
-                /* 
-                 * Vertical line 
+
+                /*
+                 * Vertical line
                  */
                 svg.append("line")
                      .attr("class", "lineDate")
@@ -287,7 +287,7 @@ angular.module('ricardo.directives.dualTimeline', [])
                      .attr("stroke-width", 1)
                      .attr("stroke", "grey");
 
-                /* 
+                /*
                  * Add date
                  */
                 var text = svg.append("text")
@@ -328,7 +328,7 @@ angular.module('ricardo.directives.dualTimeline', [])
                     .attr("stop-opacity", 0.1);
 
                 /*
-                 *  Add rect as background to hide date display in 
+                 *  Add rect as background to hide date display in
                  */
                 var bbox = text.node().getBBox();
                 var rect = svg.append("svg:rect")

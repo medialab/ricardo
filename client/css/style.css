@@ -64,8 +64,8 @@
     font-style: normal;
 }
 
-/* 
- * Alert 
+/*
+ * Alert
  */
 
 .alert{
@@ -81,8 +81,8 @@
   color:#555;
 }
 
-/* 
- * Modal 
+/*
+ * Modal
  */
 
 .modal-content{
@@ -94,8 +94,8 @@
   text-align: center;
 }
 
-/* 
- * Global style 
+/*
+ * Global style
  */
 html {
   position: relative;
@@ -147,8 +147,8 @@ body > .container {
   padding-left: 15px;
 }
 
-/* 
- * Home 
+/*
+ * Home
  */
 
 #homeImage {
@@ -167,17 +167,17 @@ body > .container {
 }
 
 #imgTitle {
-   position: absolute; 
-   top: 200px; 
-   left: 0; 
+   position: absolute;
+   top: 200px;
+   left: 0;
    width: 100%;
    font-size: 80px;
 }
 
 #imgSubtitle {
-  position: absolute; 
-   top: 370px; 
-   left: 0; 
+  position: absolute;
+   top: 370px;
+   left: 0;
    width: 100%;
    font-size: 30px;
 }
@@ -354,8 +354,8 @@ li.storyline {
   padding-bottom: 30px;
 }
 
-/* 
- * Navbar 
+/*
+ * Navbar
  */
 
 #nav .navbar{
@@ -410,8 +410,8 @@ li.storyline {
   cursor:pointer;
 }
 
-/* 
- * Text presentation and definition 
+/*
+ * Text presentation and definition
  */
 .paragraphPage {
   width:66%;
@@ -432,8 +432,8 @@ li.storyline {
   font-size: 11px;
 }
 
-/* 
- * Select geo-entities dropdown 
+/*
+ * Select geo-entities dropdown
  */
 
 #select{
@@ -479,7 +479,7 @@ li.storyline {
   border-color:#e7e7e7;
   border-radius: 0;
   border-width: 0 1px 1px 1px;
-  font-size: 13px; 
+  font-size: 13px;
   -webkit-box-shadow: none;
   box-shadow: none;
   min-width: 294px;
@@ -495,8 +495,8 @@ li.storyline {
   padding: 10px 20px;
 }
 
-/* 
- * Inline selector 
+/*
+ * Inline selector
  */
 
 .filterSelection {
@@ -547,7 +547,7 @@ li.storyline {
 
 .selectFilters .dropdown-menu, #select-doubleChart select{
   font-size: 16px;
-  font-weight: 600; 
+  font-weight: 600;
   color: #633;
 }
 
@@ -578,8 +578,8 @@ li.storyline {
   color:#999;
 }
 
-/* 
- * Timeline 
+/*
+ * Timeline
  */
 
 #dual-timeline-container>svg, #comparison-timeline-container>svg{
@@ -679,8 +679,8 @@ h4 {
   padding-bottom: 0px;
 }
 
-/* 
- * Legend 
+/*
+ * Legend
  */
 
 .legend {
@@ -724,8 +724,8 @@ h4 {
   color: #dbb994;
 }
 
-/* 
- * Stream 
+/*
+ * Stream
  */
 
 .stream-legend h4{
@@ -742,8 +742,8 @@ h4 {
 .stream-legend .pat{
   text-align: right;
 }
-/* 
- * Grid 
+/*
+ * Grid
  */
 
 .grid-overlay-msg {
@@ -756,7 +756,7 @@ h4 {
 .table-cont{
   margin-bottom: 20px;
   background-color: white;
-  border-top: 3px solid #222;  
+  border-top: 3px solid #222;
   height: 500px;
   overflow: hidden;
 }
@@ -770,7 +770,7 @@ h4 {
 }
 
 .gridStyle {
-    width: 100%; 
+    width: 100%;
     height: 500px
 }
 
@@ -798,8 +798,8 @@ font-size: 1.1em;
   padding: 20px;
 }
 
-/* 
- * Country 
+/*
+ * Country
  */
 
 .filter-group {
@@ -982,7 +982,7 @@ path.lineTrajectory {
   stroke-width: 4;
 }
 
-.close-btn { 
+.close-btn {
     position: relative;
     padding: 1px 5px;
 }
@@ -1039,8 +1039,28 @@ path.lineTrajectory {
 /* Network viz */
 
 #network {
-  height: 750px;
+  position: relative;
+  height: 700px;
+  width:100%;
   border: solid black 1px;
-  margin-top: 20px;
+  margin-top: 30px;
+}
+
+#controls {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 45px;
+    z-index: 1;
+}
+
+#controls > .btn {
+   margin: 2px 1px 1px 1px;
+}
+
+#positionControls {
+  position: absolute;
+  bottom: 0;
+  margin: 0 auto;
 }
 
