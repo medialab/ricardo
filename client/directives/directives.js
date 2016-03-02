@@ -13,5 +13,6 @@ angular.module('ricardo.directives', [
 	'ricardo.directives.brushingTimeline',
 	'ricardo.directives.partnersHistogram',
 	'ricardo.directives.barChart',
-	'ricardo.directives.linechartWorld'
+	'ricardo.directives.linechartWorld',
+	'ricardo.directives.reportingsAvailable'
 ])

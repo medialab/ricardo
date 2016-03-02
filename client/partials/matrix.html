@@ -1,9 +1,34 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<div id="matrix">
-
+			<h2>
+				Reportings available sort by
+				<div class="inline-select">
+			      <ui-select ng-model="sorted" theme="bootstrap" ng-change="sort(sorted)">
+			        <match placeholder="sort by ...">{{$select.selected.name}}</match>
+			        <choices repeat="item in sort | filter: $select.search">
+			          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+			        </choices>
+			      </ui-select>
+			  	</div>
+			</h2>
+			<p>
+				This viz shows the data available by reportings. You can sort this list by name or coverage on period (1787-1938).
+				</br>
+				Each reporting is colored by his continent appartenance.
+			</p>
+		</div>
+		<div class="col-md-12">
+			<div class="row">
+				<p class="col-md-2" ng-repeat="item in continentsColors" style="heigth:10pwx; background-color:{{item.color}}">
+					{{item.name}}
+				</p>
 			</div>
+		</div>
+		<div class="col-md-12">
+		<reportings-available
+	        ng-data="matrix"
+	      ></reportings-available>
 		</div>
 	</div>
 </div>
