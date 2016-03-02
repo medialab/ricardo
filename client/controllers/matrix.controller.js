@@ -53,7 +53,7 @@ angular.module('ricardo.controllers.matrix', [])
             })
 
 
-            $scope.matrix = reportingsmatrix
+            $scope.matrix = reportings
 
           })
       }
@@ -62,7 +62,8 @@ angular.module('ricardo.controllers.matrix', [])
 
 
 
-      $scope.sort = function(value) {
+      $scope.sortReportings = function(value) {
+        console.log("value", value);
 
       }
 

@@ -4,7 +4,7 @@
 			<h2>
 				Reportings available sort by
 				<div class="inline-select">
-			      <ui-select ng-model="sorted" theme="bootstrap" ng-change="sort(sorted)">
+			      <ui-select ng-model="sorted" theme="bootstrap" ng-change="sortReportings(sorted)">
 			        <match placeholder="sort by ...">{{$select.selected.name}}</match>
 			        <choices repeat="item in sort | filter: $select.search">
 			          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
