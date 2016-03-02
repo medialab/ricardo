@@ -188,15 +188,17 @@ def get_world_flows(from_year,to_year):
 
 def get_reportings_available_by_year():
   cursor = get_db().cursor()
-  cursor.execute("""SELECT reporting_id, group_concat(DISTINCT Yr) as years
-                FROM flow_joined
-                group by reporting_id """
+  cursor.execute("""SELECT reporting_id, continent, group_concat(DISTINCT Yr) as years
+                    FROM flow_joined
+                    left join RICentities on reporting_id = RICentities.id
+                    group by reporting_id"""
                 )
 
   json_response=[]
-  for (reporting_id, years) in cursor:
+  for (reporting_id, continent, years) in cursor:
     json_response.append({
     "reporting_id": reporting_id,
+    "continent": continent,
     "years":years
     })
 
