@@ -598,7 +598,7 @@ angular.module('ricardo.controllers.network', [])
      */
     function init(year) {
       apiService
-        .getNationsNetwork({
+        .getReportingsNetwork({
           year: year
         })
         .then(function (trades) {
