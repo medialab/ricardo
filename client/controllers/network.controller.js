@@ -598,10 +598,11 @@ angular.module('ricardo.controllers.network', [])
      */
     function init(year) {
       apiService
-        .getNationsNetwork({
+        .getReportingsNetwork({
           year: year
         })
         .then(function (trades) {
+            trades = trades.network;
             if (trades.length === 0)
                 alert("There is no value for this year")
             else {

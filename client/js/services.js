@@ -33,10 +33,10 @@ angular.module('ricardo.services', [])
             } else {
               return a[field]> b[field]? -1 : 1;
             }
-          })  
+          })
         }
       }
-      
+
       }
   })
   .factory('lineChartService', function(){
@@ -51,37 +51,37 @@ angular.module('ricardo.services', [])
           var maxDate = d3.max(years, function (years) {return years.key})
 
           if (minDate > min) {
-            for (var i = min; i < minDate; i++) 
+            for (var i = min; i < minDate; i++)
             {
               linechart_flows.push({
                 reporting_id: linechart_flows[0].reporting_id,
                 type: linechart_flows[0].reporting_id,
-                partner_id: linechart_flows[0].partner_id, 
-                year: i, 
+                partner_id: linechart_flows[0].partner_id,
+                year: i,
                 imp:null,
-                exp:null, 
-                tot: null , 
+                exp:null,
+                tot: null ,
                 currency: null,
                 sources: null
               })
-            }   
+            }
           }
 
           if ( maxDate < max ) {
-            for (var i = maxDate; i < max; i++) 
+            for (var i = maxDate; i < max; i++)
             {
               linechart_flows.push({
                 reporting_id: linechart_flows[0].reporting_id,
                 type: linechart_flows[0].reporting_id,
-                partner_id: linechart_flows[0].partner_id, 
-                year: i, 
+                partner_id: linechart_flows[0].partner_id,
+                year: i,
                 imp:null,
-                exp:null, 
-                tot: null , 
+                exp:null,
+                tot: null ,
                 currency: null,
                 sources: null
               })
-            }  
+            }
           }
           return linechart_flows;
       },
@@ -91,19 +91,19 @@ angular.module('ricardo.services', [])
           reporting_id: ric,
           type: type,
           partner_id:"Worldbestguess",
-          year: i, 
+          year: i,
           imp: null,
-          exp: null, 
-          total: null, 
+          exp: null,
+          total: null,
           currency:null,
           sources:null
-          });                      
+          });
       }
 
         yearSelected.forEach( function (d) {
           result.flows.forEach( function (e) {
             if (d.year === e.year && d.year >= dateMin && d.year <= dateMax) {
-              d.exp = e.exp; 
+              d.exp = e.exp;
               d.imp = e.imp;
               d.currency = e.currency,
               d.sources = e.sources
@@ -114,7 +114,7 @@ angular.module('ricardo.services', [])
           })
         })
         return yearSelected;
-      }   
+      }
     }
   })
   .factory('apiService', ['$http', '$q', '$rootScope', 'BASE_API_URL', function($http, $q, $rootScope, BASE_API_URL) {
@@ -222,13 +222,29 @@ angular.module('ricardo.services', [])
 
        return deferred.promise;
      },
-     getNationsNetwork: function(params){
+     getReportingsNetwork: function(params){
        var deferred = $q.defer();
        var serviceUrl = '/nations_network'
        $http({
           method: 'GET',
-          url : BASE_API_URL + serviceUrl,
-          params : params
+          url: BASE_API_URL + serviceUrl,
+          params: params
+        }).success(function(data){
+         deferred.resolve(data);
+       }).error(function(){
+         deferred.reject("An error occured while fetching data");
+       });
+
+       return deferred.promise;
+     },
+     getReportingsAvailableByYear: function(params){
+       var deferred = $q.defer();
+       var serviceUrl = '/reportings_available_by_years'
+       $http({
+          method: 'GET',
+          url: BASE_API_URL + serviceUrl,
+          params: params,
+          timeout: 10000
         }).success(function(data){
          deferred.resolve(data);
        }).error(function(){

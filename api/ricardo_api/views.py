@@ -11,7 +11,7 @@ import ricardo_api.models as models
 
 @app.route('/')
 def index():
-    return 'Welcome to RICardo API. </br>You could find more informations in the Github repository of <a href="https://github.com/medialab/ricardo">RICardo Medialab project</a>' 
+    return 'Welcome to RICardo API. </br>You could find more informations in the Github repository of <a href="https://github.com/medialab/ricardo">RICardo Medialab project</a>'
 
 @app.route('/flows')
 def flows():
@@ -141,4 +141,14 @@ def nations_network():
         app.logger.exception("exception in flow source")
         abort(500)
     return Response(json_data, status=200, mimetype='application/json')
+
+@app.route('/reportings_available_by_years')
+def reportings_available_by_years():
+    try:
+        json_data=models.get_reportings_available_by_year()
+    except:
+        app.logger.exception("exception in nations available")
+        abort(500)
+    return Response(json_data, status=200, mimetype='application/json')
+
 

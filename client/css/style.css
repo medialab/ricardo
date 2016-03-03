@@ -849,6 +849,7 @@ font-size: 1.1em;
   margin-top: -130px;
   pointer-events: none;
 }
+
 .partners-tooltip h3 {
   margin: 3px 5px;
   font-size: 14px;
@@ -1062,5 +1063,18 @@ path.lineTrajectory {
   position: absolute;
   bottom: 0;
   margin: 0 auto;
+}
+
+.matrix-tooltip {
+  position: absolute;
+  background: #333;
+  color: #ddd;
+  padding: 2px;
+  border: 0px;
+  border-radius: 5px;
+  opacity: 0;
+  text-align: center;
+  margin-top: -40px;
+  pointer-events: none;
 }
 

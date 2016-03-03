@@ -3,7 +3,7 @@
 
 /*
  * Declare app level module which depends on filters, and services
- */ 
+ */
 angular.module('ricardo', [
   'ngRoute',
   'ngAnimate',
@@ -24,7 +24,8 @@ angular.module('ricardo', [
   'ricardo.controllers.bilateral',
   'ricardo.controllers.country',
   'ricardo.controllers.world',
-  'ricardo.controllers.network'
+  'ricardo.controllers.network',
+  'ricardo.controllers.matrix'
   ]).
 config(['$routeProvider', function($routeProvider) {
 
@@ -63,7 +64,11 @@ config(['$routeProvider', function($routeProvider) {
   });
   $routeProvider.when('/network', {
     templateUrl: 'partials/network.html',
-    controller: 'network',
+    controller: 'network'
+  });
+  $routeProvider.when('/reportings_by_year', {
+    templateUrl: 'partials/matrix.html',
+    controller: 'matrix'
   });
   $routeProvider.otherwise({redirectTo: '/'});
 }])
@@ -77,4 +82,4 @@ config(['$routeProvider', function($routeProvider) {
     });
     $translateProvider.use('en_EN');
   });
-  
+

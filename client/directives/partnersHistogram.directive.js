@@ -1,6 +1,6 @@
 'use strict';
 
-/* 
+/*
  * Partners Histogram directive displays a visualisation about each partner
  * of the reporting selected. Each partner has a circle with the % of total trade
  * and a line with bars which represent the commercial balance.
@@ -31,7 +31,7 @@ angular.module('ricardo.directives.partnersHistogram', [])
 
         scope.$watch("ngData", function (newValue, oldValue){
           if(newValue !== oldValue){
-            removeSvgElements(chart)    
+            removeSvgElements(chart)
             partnersHistogram(newValue, scope.orderData, scope.indexYears, scope.startDate, scope.endDate);
           }
         }, true);
@@ -47,8 +47,8 @@ angular.module('ricardo.directives.partnersHistogram', [])
         }
 
         /*
-         * Partner Histo tools functions 
-         */ 
+         * Partner Histo tools functions
+         */
 
         function cleanids(str){
           return str.replace(/\W/g, '');
@@ -56,7 +56,7 @@ angular.module('ricardo.directives.partnersHistogram', [])
         function shorten(str){
           return (str.length < 24 ? str : str.slice(0, 22).replace(/\s+$/, '') + "…");
         }
-        
+
         var format = d3.format("0,000");
 
         function formatAmount(line, field){
@@ -65,19 +65,19 @@ angular.module('ricardo.directives.partnersHistogram', [])
           return (res ? res : 0) + "&nbsp;" + currency.replace(/\s+/, '&nbsp;');
         }
         function formatPercent(val){
-          var res = parseInt(val);     
+          var res = parseInt(val);
           if (!res) res = Math.round(parseFloat(val * 10)) / 10;
            return (res ? res : "0.0") + "%";
         }
 
         function formatPercent2(val){
-          var res = parseInt(val);     
+          var res = parseInt(val);
           if (!res) res = Math.round(parseFloat(val * 10)) / 10;
            return (res ? res : "0.0");
         }
 
         function formatPercent3(val){
-          var res = parseInt(val);     
+          var res = parseInt(val);
           if (!res) res = Math.round(parseFloat(val * 10)) / 10;
            return (res ? res : "0.00");
         }
@@ -121,6 +121,7 @@ angular.module('ricardo.directives.partnersHistogram', [])
          */
 
         function partnersHistogram(data, order, indexYears, minDate, maxDate){
+          console.log("data", data);
 
           var partners = data;
           height = (partners.length + 1) * (barMaxHeigth + barGap);
@@ -143,11 +144,14 @@ angular.module('ricardo.directives.partnersHistogram', [])
 
           var x = d3.scale.linear()
               .domain([minDate, maxDate])
-              .range([0, width]), 
+              .range([0, width]),
               y = d3.scale.linear()
               .range([0, barMaxHeigth/2]);
 
-          
+          var tooltip = d3.select("body")
+              .append("div")
+              .attr("class", "partners-tooltip");
+
           partners.forEach(function(p, i) {
             var entity = RICentities[""+p.key],
                 name = (entity ? entity.RICname : p.key);
@@ -183,18 +187,16 @@ angular.module('ricardo.directives.partnersHistogram', [])
               .attr("width", barWidth)
               .attr("height", function(d) { return (
                 d.balance ? Math.max(barMinHeigth, y(Math.abs(d.balance))) : 0
-                ); 
+                );
               })
               .attr("fill", function(d){ return barColors[+(d.balance >=0)] })
               .attr("opacity", function(d){ return (
                 d.imp !== null && d.exp !== null ? 1 : 0.3
-                ) 
+                )
               })
               .style("border-left", "solid 1px white");
 
-            var tooltip = d3.select("body")
-              .append("div")
-              .attr("class", "partners-tooltip");
+
 
             histo.selectAll(".tooltipBar")
               .data(p.years)
@@ -240,15 +242,15 @@ angular.module('ricardo.directives.partnersHistogram', [])
                 .attr("cx", 25)
                 .attr("cy", -40)
                 .attr("r", rBigCircle)
-                .style("stroke", "#777") 
-                .style("fill", "transparent")   
- 
+                .style("stroke", "#777")
+                .style("fill", "transparent")
+
               var rLittleCircle = formatPercent2(p["avg_" + order]) / 100 * rBigCircle;
               histo.append("circle")
                 .attr("cx", 25)
                 .attr("cy", -40)
                 .attr("r", rLittleCircle)
-                .style("stroke", "#333")  
+                .style("stroke", "#333")
                 .style("fill", "#333")
 
               histo.append("text")
@@ -256,7 +258,7 @@ angular.module('ricardo.directives.partnersHistogram', [])
                 .attr("x", 18)
                 .attr("y", -17)
                 .attr("font-size", "0.8em")
-                .text(function(d){ return formatPercent(p["avg_" + order]) }) // display number under circles 
+                .text(function(d){ return formatPercent(p["avg_" + order]) }) // display number under circles
               }
           });
         }
