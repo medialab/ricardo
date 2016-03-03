@@ -1,4 +1,4 @@
-##Installation
+##App Installation
 If you want to run your instance of RICardo locally on your machine, be sure you have the following requirements installed.
 
 ###Requirements
