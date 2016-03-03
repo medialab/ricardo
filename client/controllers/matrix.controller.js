@@ -53,20 +53,23 @@ angular.module('ricardo.controllers.matrix', [])
 
         init()
 
+        $scope.changed = false;
+
         $scope.sortReportings = function(newVal) {
-          $scope.sorted = newVal;
-          if (newVal.type.value === "coverage")
-          {
-            $scope.matrix.sort(function(a,b) {
-              return b.years.length - a.years.length
-            })
-          }
-          else {
-            $scope.matrix.sort(function(a,b) {
-              return b.reporting_id < a.reporting_id ? 1:-1;
-            })
-          }
-          return $scope.matrix
+          // $scope.sorted = newVal;
+          // if (newVal.type.value === "coverage")
+          // {
+          //   $scope.matrix.sort(function(a,b) {
+          //     return b.years.length - a.years.length
+          //   })
+          // }
+          // else {
+          //   $scope.matrix.sort(function(a,b) {
+          //     return b.reporting_id < a.reporting_id ? 1:-1;
+          //   })
+          // }
+          // return $scope.matrix
+          $scope.changed = true;
         }
 
 

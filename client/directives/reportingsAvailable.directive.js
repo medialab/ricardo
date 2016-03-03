@@ -18,14 +18,26 @@ angular.module('ricardo.directives.reportingsAvailable', [])
         scope.$watch("ngData", function (newValue, oldValue){
 
           if(newValue !== oldValue){
-          	var selection = d3.select("#reportings-available-container")
-          	if (selection.select('svg').empty())
+
             	draw(newValue)
-            else {
-            	d3.select("svg").remove();
-            	draw(newValue)
+
             }
-          }
+        }, true);
+
+        scope.$watch("ngSort", function (newValue, oldValue){
+
+          if(newValue !== oldValue){
+          	console.log("newValue", newValue);
+
+            	d3.selectAll(".hist").sort(function(a, b){
+
+            		return d3.descending(a.years.length, b.years.length)
+
+            	}).attr("transform", function(d, i) {
+					var y0 = 3*lineheigth + i * lineheigth;
+					return "translate(" + marginLeft + "," + y0 + ")";
+				})
+            }
         }, true);
 
         var continentColors = { "Europe":"#F4463C",
@@ -35,6 +47,10 @@ angular.module('ricardo.directives.reportingsAvailable', [])
                      "World":"#976909",
                      "Oceania":"#C3BF4E"
                     }
+
+        function update() {
+
+        }
 
         function colorByContinent(reporting) {
           return continentColors[reporting]
@@ -47,12 +63,14 @@ angular.module('ricardo.directives.reportingsAvailable', [])
         var margin = {top: 20, right: 200, bottom: 0, left: 20},
 	            width = document.querySelector('#reportings-available-container').offsetWidth,
 	            vizWidth = 800,
-	            height = 10500,
+	            lineheigth = 15,
 	            marginLeft = 300,
 	            marginRight = 0,
 	            marginTop = 15;
 
         function draw(data) {
+
+	          var height = data.length * lineheigth;
 	          var start_year = 1787,
 	              end_year = 1940;
 
@@ -78,8 +96,8 @@ angular.module('ricardo.directives.reportingsAvailable', [])
 	            .domain([start_year, end_year])
 	            .range([0, vizWidth]);
 
-	          var barWidth = Math.floor(vizWidth / 150);
-	          var barHeigth = 5;
+	          var barWidth = Math.floor(vizWidth/ (end_year - start_year));
+	          var barHeigth = 14;
 
 	          var axis = svg.append("g")
 	              .attr("class", "x axis")
@@ -90,45 +108,27 @@ angular.module('ricardo.directives.reportingsAvailable', [])
 	              .append("div")
 	              .attr("class", "matrix-tooltip");
 
-	          var reportings = data
 
-	          reportings.forEach(function (r, i) {
-				var y0 = marginTop + 30 + i * 30;
-
-				var histo = svg.append("g")
+				var histo = svg.selectAll(".hist")
+					.data(data).enter()
+					.append("g")
 					.attr("class", "hist")
-					.attr("transform", function(d) { return "translate(" + marginLeft + "," + y0 + ")"; })
-					.attr("class", "svgElement")
+					.attr("transform", function(d, i) {
+						var y0 = 3*lineheigth + i * lineheigth;
+						return "translate(" + marginLeft + "," + y0 + ")";
+					})
+					//.attr("class", "svgElement")
 
 				histo.selectAll(".bar")
-					.data(r.years)
+					.data(function(d) {return d.years})
 					.enter().append("rect")
 					.attr("class", "bar")
 					.attr("x", function(d){ return x(d) })
 					.attr("width", barWidth)
 					.attr("height", barHeigth)
-					.attr("fill", function () { return colorByContinent(r.continent)})
-					.style("border-left", "solid 1px white");
-
-
-				histo.append("text")
-					.attr("class", "legend")
-					.attr("x", -300)
-					.attr("y", 10)
-					.attr("text-anchor", "start")
-					.attr("font-size", "0.9em")
-					.text(function (){ return shorten(r.reporting_id) })
-					.attr("fill", function () { return colorByContinent(r.continent)})
-
-				histo.selectAll(".tooltipBar")
-					.data(r.years)
-					.enter().append("rect")
-					.attr("class", "bar")
-					.attr("x", function(d){ return x(d)})
-					.attr("y", 0)
-					.attr("width", barWidth)
-					.attr("height", barHeigth)
-					.attr("opacity", 0)
+					.attr("fill", function (d) { return colorByContinent(d.continent)})
+					.style("shape-rendering", "crispEdges")
+					.style("border-left", "solid 1px white")
 					.on('mouseover', function(d) {
 					  return tooltip.html(
 					    "<p>" + d + "</p>"
@@ -148,7 +148,45 @@ angular.module('ricardo.directives.reportingsAvailable', [])
 					    .style("width", wid + "px");
 					});
 
-          		})
+
+				histo.append("text")
+					.attr("class", "legend")
+					.attr("x", -300)
+					.attr("y", 10)
+					.attr("text-anchor", "start")
+					.attr("font-size", "11px")
+					.text(function (d){ return shorten(d.reporting_id) })
+					.attr("fill", function (d) { return colorByContinent(d.continent)})
+
+				// histo.selectAll(".tooltipBar")
+				// 	.data(function(d) {return d.years})
+				// 	.enter().append("rect")
+				// 	.attr("class", "bar")
+				// 	.attr("x", function(d){ return x(d)})
+				// 	.attr("y", 0)
+				// 	.attr("width", barWidth)
+				// 	.attr("height", barHeigth)
+				// 	.attr("opacity", 0)
+				// 	.on('mouseover', function(d) {
+				// 	  return tooltip.html(
+				// 	    "<p>" + d + "</p>"
+				// 	    ).transition().style("opacity", .9);
+				// 	})
+				// 	//.on('mouseenter', this.onmouseover)
+				// 	.on('mouseout', function(d) {
+				// 	  return tooltip.transition().style("opacity", 0);
+				// 	})
+				// 	.on('mousemove', function(d) {
+				// 	  tooltip.style("opacity", .9);
+				// 	  var wid = tooltip.style("width").replace("px", "");
+				// 	  return tooltip
+				// 	    .style("left", Math.min(window.innerWidth - wid - 20,
+				// 	      Math.max(0, (d3.event.pageX - wid/2))) + "px")
+				// 	    .style("top", (d3.event.pageY + 40) + "px")
+				// 	    .style("width", wid + "px");
+				// 	});
+
+
 
         }
       }
