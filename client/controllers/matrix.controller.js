@@ -18,54 +18,56 @@ angular.module('ricardo.controllers.matrix', [])
        name: {value: "coverage",writable: true}
       }]
 
+    	var continentColors2 = [
+    			{"name" :"Europe",
+    			"color": "#F4463C"},
+    			{"name" :"Asia",
+    			"color": "#44CC51" },
+    			{"name" :"Africa",
+    			"color": "#9980FC"},
+    			{"name" :"America",
+    			"color": "#30361C"},
+    			{"name" :"World",
+    			"color": "#976909"},
+    			{"name" :"Oceania",
+    			"color": "#C3BF4E"}
+    			]
 
+  	  $scope.continentsColors = continentColors2;
 
-	var continentColors2 = [
-			{"name" :"Europe",
-			"color": "#F4463C"},
-			{"name" :"Asia",
-			"color": "#44CC51" },
-			{"name" :"Africa",
-			"color": "#9980FC"},
-			{"name" :"America",
-			"color": "#30361C"},
-			{"name" :"World",
-			"color": "#976909"},
-			{"name" :"Oceania",
-			"color": "#C3BF4E"}
-			]
+        function init() {
+          apiService
+            .getReportingsAvailableByYear()
+            .then(function (reportings){
+              // transform array of string in array of int
+              reportings.forEach(function (r) {
+                r.years = r.years.split(',')
+                                   .map(function (e) {
+                                  return e = parseInt(e)
+                                })
+              })
 
-	  $scope.continentsColors = continentColors2;
-
-
-
-      function init() {
-        apiService
-          .getReportingsAvailableByYear()
-          .then(function (reportings){
-
-            // transform array of string in array of int
-            reportings.forEach(function (r) {
-              r.years = r.years.split(',')
-                                 .map(function (e) {
-                                return e = parseInt(e)
-                              })
+              $scope.matrix = reportings
             })
+        }
 
+        init()
 
-            $scope.matrix = reportings
-
-          })
-      }
-
-      init()
-
-
-
-      $scope.sortReportings = function(value) {
-        console.log("value", value);
-
-      }
+        $scope.sortReportings = function(newVal) {
+          $scope.sorted = newVal;
+          if (newVal.type.value === "coverage")
+          {
+            $scope.matrix.sort(function(a,b) {
+              return b.years.length - a.years.length
+            })
+          }
+          else {
+            $scope.matrix.sort(function(a,b) {
+              return b.reporting_id < a.reporting_id ? 1:-1;
+            })
+          }
+          return $scope.matrix
+        }
 
 
     }])
