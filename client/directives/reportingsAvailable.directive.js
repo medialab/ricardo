@@ -68,12 +68,12 @@ angular.module('ricardo.directives.reportingsAvailable', [])
         }
 
         var margin = {top: 20, right: 200, bottom: 0, left: 20},
-	            width = document.querySelector('#reportings-available-container').offsetWidth,
-	            vizWidth = 800,
-	            lineheigth = 15,
-	            marginLeft = 300,
-	            marginRight = 0,
-	            marginTop = 15;
+            width = document.querySelector('#reportings-available-container').offsetWidth,
+            vizWidth = 800,
+            lineheigth = 15,
+            marginLeft = 300,
+            marginRight = 0,
+            marginTop = 15;
 
         function draw(data) {
 
