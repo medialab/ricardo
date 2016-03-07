@@ -218,14 +218,27 @@ angular.module('ricardo.directives.linechartWorld', [])
 
           var point=entities.selectAll(".point")
                           .data(function(d){ 
-                                return d.values.filter(function(e) { return e[yValue]; }) //filter out null data
+                                return d.values.filter(function(e,i) { 
+                                  // return e[yValue]; 
+                                  if(e[yValue]!==null){
+                                    if (i===0) {
+                                      if (d.values[i+1][yValue]===null) return e;
+                                    }
+                                    else if(i===d.values.length-1){
+                                      if (d.values[i-1][yValue]===null) return e;
+                                    } 
+                                    else{
+                                      if (d.values[i-1][yValue]===null && d.values[i+1][yValue]===null) return e;
+                                    } 
+                                  }
+                                }) //filter out null data
                            })
                           .enter()
                           .append("circle")
                           .attr("class", "point")
                           .attr("cx", line.x())
                           .attr("cy", line.y())
-                          .attr("r", 2)
+                          .attr("r", 1)
                           .attr("fill", function() {return d3.select(this.parentNode).datum().color;})
                           .attr("stroke", function() {return d3.select(this.parentNode).datum().color;});
 
