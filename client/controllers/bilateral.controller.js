@@ -156,6 +156,10 @@ angular.module('ricardo.controllers.bilateral', [])
              */
             mergeMirrorInFlows(data)
 
+            /* 
+             * save data to scope
+             */
+            $scope.allData=data;
             /*
              * Send data to timeline directive
              */
@@ -170,7 +174,7 @@ angular.module('ricardo.controllers.bilateral', [])
             localStorage.targetEntitySelected = JSON.stringify($scope.entities.targetEntity.selected);
           
             // call function to send data to tableData
-            updateDateRange(data)
+            updateDateRange();
 
           },function (res){
             if (res[1] === 500)
@@ -224,23 +228,24 @@ angular.module('ricardo.controllers.bilateral', [])
     /* 
      * Update Range from date on flows array 
      */
-    function updateDateRange(data){
+    function updateDateRange(){
         $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
         $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
         $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
-      if (data !== undefined) {
+      if ($scope.allData !== undefined) {
+        console.log($scope.allData);
         cfSource.clear()
-        cfSource.add(data.flows.filter(function(d){
+        cfSource.add($scope.allData.flows.filter(function(d){
           return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
         }));
 
         cfTarget.clear()
-        cfTarget.add(data.mirror_flows.filter(function(d){
+        cfTarget.add($scope.allData.mirror_flows.filter(function(d){
           return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
         }));
 
         $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
-    
+        console.log($scope.tableData);
         // Select data to check if there are and if not, display message no data
         var dataFilterBySource = d3.nest()
           .key(function (d) {return d.reporting_id})
