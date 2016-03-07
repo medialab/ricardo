@@ -185,23 +185,51 @@ angular.module('ricardo.directives.linechartWorld', [])
               .x(function(d) { return x(new Date(d.year, 0, 1)); })
               .y(function(d) { return y(d[yValue]); });
 
-          var entities = chart.selectAll(".line")
-              .data(data, function(d){return d.key});
+          // var entities = chart.selectAll(".line")
+          //                     .data(data, function(d){return d.key});
 
-          var enter = entities.enter()
-                .append("path")
-                  .attr("class", "line")
+          // entities.enter()
+          //         .append("path")
+          //         .attr("class", "line")
+          //         .attr("stroke", function(d,i) { return d["color"]; })
+          //         .attr("fill", "none")
+          //         .attr("stroke-width", "2px")
+          
+          // entities
+          //   .attr("d", function(d) { return line(d.values); })
+          //   // .attr("stroke", function(d,i) { return d["color"]; })
+          //   // .attr("fill", "none")
+
+          // entities.exit().remove()
+          chart.selectAll(".country").remove();
+
+          var entities=chart.selectAll(".country")
+                            .data(data)
+                            .enter()
+                            .append("g")
+                            .attr("class","country")
+          
+          entities.append("path")
+                  .attr("class","line")
+                  .attr("d", function(d) { return line(d.values); })
                   .attr("stroke", function(d,i) { return d["color"]; })
                   .attr("fill", "none")
                   .attr("stroke-width", "2px")
-            
-          entities
-            .attr("d", function(d) { return line(d.values); })
-            .attr("stroke", function(d,i) { return d["color"]; })
-            .attr("fill", "none")
 
-          entities.exit().remove()
+          var point=entities.selectAll(".point")
+                          .data(function(d){ 
+                                return d.values.filter(function(e) { return e[yValue]; }) //filter out null data
+                           })
+                          .enter()
+                          .append("circle")
+                          .attr("class", "point")
+                          .attr("cx", line.x())
+                          .attr("cy", line.y())
+                          .attr("r", 2)
+                          .attr("fill", function() {return d3.select(this.parentNode).datum().color;})
+                          .attr("stroke", function() {return d3.select(this.parentNode).datum().color;});
 
+          
           /*
            * Voronoi
            */

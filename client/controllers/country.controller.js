@@ -356,6 +356,7 @@ angular.module('ricardo.controllers.country', [])
       }
     })
 
+
     /*
      * Update data table
      */
@@ -371,12 +372,17 @@ angular.module('ricardo.controllers.country', [])
     }
 
     function updateTableData(){
+      //filter tableData by date
+      $scope.tableDataSources=$scope.tableData.filter(function(d){
+         return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
+      });
+      
       var missing;
-      var allExpNull = $scope.tableData.every(function (d) {
+      var allExpNull = $scope.tableDataSources.every(function (d) {
         return d.exp === null;
       })
 
-      var allImpNull = $scope.tableData.every(function (d) {
+      var allImpNull = $scope.tableDataSources.every(function (d) {
         return d.imp === null;
       })
 
@@ -387,13 +393,23 @@ angular.module('ricardo.controllers.country', [])
         missing = "0";
       }
 
-      var onlyWorld = $scope.tableData.every(function (d) {
+      var onlyWorld = $scope.tableDataSources.every(function (d) {
         return d.continent === "World";
       })
 
       if (onlyWorld)
         missing = "1";
       $scope.missing = missing;
+
+      // if ($scope.linechartData) {
+      //   console.log($scope.linechartData);
+      //   $scope.tableDataSources=[];
+      //   var len = $scope.linechartData.length;
+      //   for (var i = 0; i < len; i++) {
+      //     $scope.tableDataSources = $scope.tableDataSources.concat($scope.linechartData[i].values);
+      //   }
+      // }
+
     }
 
     /*
@@ -678,6 +694,11 @@ angular.module('ricardo.controllers.country', [])
       }
     }, true)
 
+    // $scope.$watch('linechartData', function (newValue, oldValue){
+    //    if(newValue !== oldValue){
+    //       updateTableData();
+    //   }
+    // }, true)
 
     $scope.changeCountry = function (country) {
       $scope.pushReporting(country)
@@ -904,17 +925,17 @@ angular.module('ricardo.controllers.country', [])
     /*
      * Api call to take data with sources for dataTable
      */
-
-    $scope.takeData = function (){
-      apiService
-        .getFlows({
-          reporting_ids: $scope.entities.sourceEntity.selected.RICid,
-          with_sources:1
-        })
-        .then(function (data) {
-          $scope.tableDataSources = data.flows;
-        })
-    }
+    //disable takeData function for viewTable model in country.html
+    // $scope.takeData = function (){
+      // apiService
+      //   .getFlows({
+      //     reporting_ids: $scope.entities.sourceEntity.selected.RICid,
+      //     with_sources:1
+      //   })
+      //   .then(function (data) {
+      //     $scope.tableDataSources = data.flows;
+      //   })
+    // }
 
     /*
      * Display and sort table data
@@ -959,6 +980,7 @@ angular.module('ricardo.controllers.country', [])
     /*
      * First load data
      */
+    //replace all tableDataSources with tableData
     $scope.$watch('tableDataSources', function (newVal, oldVal) {
         if (newVal !== oldVal) {
           setPagingData($scope.tableDataSources, $scope.pagingOptions.pageSize,

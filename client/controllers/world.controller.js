@@ -30,16 +30,17 @@ angular.module('ricardo.controllers.world', [])
           sources: d.values[0].sources
         });
     })
-
-    $scope.dualtimeline = [];
-    worldFlowsYears.forEach( function (d) {
-      if (d.key)
-        $scope.dualtimeline.push({
-          year: d.key, 
-          imp:d.values[1].flows,
-          exp:d.values[0].flows, 
-        });
-    })
+    
+    //duplication??
+    // $scope.dualtimeline = [];
+    // worldFlowsYears.forEach( function (d) {
+    //   if (d.key)
+    //     $scope.dualtimeline.push({
+    //       year: d.key, 
+    //       imp:d.values[1].flows,
+    //       exp:d.values[0].flows, 
+    //     });
+    // })
 
     $scope.entities = {
       sourceEntity : {}, 
@@ -161,7 +162,7 @@ angular.module('ricardo.controllers.world', [])
       // $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
       // $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
 
-      // $scope.timelineData = worldFlowsYearsFormat;
+      $scope.timelineData = worldFlowsYearsFormat;
       $scope.tableData = worldFlowsYearsFormat;  
       if ($scope.tableData)
         $scope.$apply();
@@ -235,8 +236,7 @@ angular.module('ricardo.controllers.world', [])
                   $scope.linechartData = [];
                   initLineChart2(linechart_flows, yearSelected, $scope.linechartData, 
                     d.RICid, yValue, d.color)
-
-               }); 
+              }); 
               $scope.yValue = yValue;
               $scope.conversion = "sterling";
               $scope.actualCurrency = "sterling pound";
@@ -381,10 +381,14 @@ angular.module('ricardo.controllers.world', [])
 
 
     function updateTableData(){
-      $scope.tableData = [];
-      $scope.tableData = worldFlowsYearsFormat;
-      $scope.tableData.concat(worldFlowsYearsFormat);
+      // $scope.tableData = [];
+      // $scope.tableData = worldFlowsYearsFormat;
+      // $scope.tableData.concat(worldFlowsYearsFormat);
 
+      $scope.tableData = worldFlowsYearsFormat.filter(function(d){
+         return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
+      });
+      
       if ($scope.linechartData) {
         var len = $scope.linechartData.length;
         for (var i = 0; i < len; i++) {
@@ -425,6 +429,12 @@ angular.module('ricardo.controllers.world', [])
       }
     }, true)
 
+    $scope.$watch('linechartData', function (newValue, oldValue){
+       if(newValue !== oldValue){
+        updateTableData();
+      }
+    }, true)
+
     /*
      * Linechart functions
      */ 
@@ -446,8 +456,10 @@ angular.module('ricardo.controllers.world', [])
       var i = $scope.reporting.map(function(d){return d.RICid}).indexOf(elm.RICid)
       $scope.lineColors.push(elm["color"])
       $scope.reporting.splice(i, 1);
-      if ($scope.reporting.length === 0)
+      if ($scope.reporting.length === 0){
         d3.select("#linechart-world-container>svg").remove();
+        $scope.linechartData=[];
+      }
       initLinechart($scope.reporting, $scope.linechartFlow.type.value, 
         $scope.linechartCurrency.type.value);
     }
