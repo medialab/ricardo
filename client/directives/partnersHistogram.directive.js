@@ -121,10 +121,8 @@ angular.module('ricardo.directives.partnersHistogram', [])
          */
 
         function partnersHistogram(data, order, indexYears, minDate, maxDate){
-          console.log("data", data);
 
-          var partners = data;
-          height = (partners.length + 1) * (barMaxHeigth + barGap);
+          height = (data.length + 1) * (barMaxHeigth + barGap);
           var selection = d3.select("#partners-histogram-container");
 
           if (selection.select('svg').empty()){
@@ -152,7 +150,7 @@ angular.module('ricardo.directives.partnersHistogram', [])
               .append("div")
               .attr("class", "partners-tooltip");
 
-          partners.forEach(function(p, i) {
+          data.forEach(function(p, i) {
             var entity = RICentities[""+p.key],
                 name = (entity ? entity.RICname : p.key);
 
@@ -194,19 +192,7 @@ angular.module('ricardo.directives.partnersHistogram', [])
                 d.imp !== null && d.exp !== null ? 1 : 0.3
                 )
               })
-              .style("border-left", "solid 1px white");
-
-
-
-            histo.selectAll(".tooltipBar")
-              .data(p.years)
-              .enter().append("rect")
-              .attr("class", "bar")
-              .attr("x", function(d){ return x(d.key)})
-              .attr("y", -barMaxHeigth/2 )
-              .attr("width", barWidth)
-              .attr("height", barMaxHeigth)
-              .attr("opacity", 0)
+              .style("border-left", "solid 1px white")
               .on('mouseover', function(d) {
                 return tooltip.html(
                   "<h3>"+ name + " in " + d.key + "</h3>" +

@@ -182,6 +182,7 @@ angular.module('ricardo.controllers.country', [])
           $scope.selectedMinDate = d3.min(dates);
           $scope.selectedMaxDate = d3.max(dates);
 
+          data.flows = data.flows.filter(function (d) { if (d.imp || d.exp !== 0) return d})
           $scope.tableData = data.flows;
 
           if (cfSource.size() > 0) {
@@ -376,7 +377,7 @@ angular.module('ricardo.controllers.country', [])
       $scope.tableDataSources=$scope.tableData.filter(function(d){
          return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
       });
-      
+
       var missing;
       var allExpNull = $scope.tableDataSources.every(function (d) {
         return d.exp === null;
