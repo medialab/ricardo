@@ -233,7 +233,6 @@ angular.module('ricardo.controllers.bilateral', [])
         $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
         $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
       if ($scope.allData !== undefined) {
-        console.log($scope.allData);
         cfSource.clear()
         cfSource.add($scope.allData.flows.filter(function(d){
           return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
@@ -245,7 +244,7 @@ angular.module('ricardo.controllers.bilateral', [])
         }));
 
         $scope.tableData = cfSource.year().top(Infinity).concat(cfTarget.year().top(Infinity));
-        console.log($scope.tableData);
+
         // Select data to check if there are and if not, display message no data
         var dataFilterBySource = d3.nest()
           .key(function (d) {return d.reporting_id})
