@@ -160,6 +160,50 @@ angular.module('ricardo.directives.brushingTimeline', [])
                 .datum(data)
                 .attr("class", "line-exp")
                 .attr("d", availExpMirror)
+
+            svg.selectAll(".ipoint_mirror")
+              .data(data.filter(function(d,i) {
+                if(d.imp_mirror!==null){
+                  if (i===0) {
+                    if (data[i+1].imp_mirror===null) return d;
+                  }
+                  else if(i===data.length-1){
+                    if (data[i-1].imp_mirror===null) return d;
+                  } 
+                  else{
+                    if (data[i-1].imp_mirror===null && data[i+1].imp_mirror===null) return d;
+                  } 
+                }
+              }))
+              .enter()
+              .append("circle")
+              .attr("class", "ipoint_mirror")
+              .attr("cx", availImpMirror.x())
+              .attr("cy", availImpMirror.y())
+              .attr("r", 1.5)
+              .attr("fill","#cc6666");
+
+          svg.selectAll(".epoint_mirror")
+              .data(data.filter(function(d,i) {
+                if(d.exp_mirror!==null){
+                  if (i===0) {
+                    if (data[i+1].exp_mirror===null) return d;
+                  }
+                  else if(i===data.length-1){
+                    if (data[i-1].exp_mirror===null) return d;
+                  } 
+                  else{
+                    if (data[i-1].exp_mirror===null && data[i+1].exp_mirror===null) return d;
+                  } 
+                }
+              }))
+              .enter()
+              .append("circle")
+              .attr("class", "epoint")
+              .attr("cx", availExpMirror.x())
+              .attr("cy", availExpMirror.y())
+              .attr("r", 1.5)
+              .attr("fill","#663333");
           }
 
           svg.append("path")
@@ -171,7 +215,7 @@ angular.module('ricardo.directives.brushingTimeline', [])
               .datum(data)
               .attr("class", "line-exp")
               .attr("d", availExp)
-              
+
           // add discrete points 
           svg.selectAll(".ipoint")
               .data(data.filter(function(d,i) {
