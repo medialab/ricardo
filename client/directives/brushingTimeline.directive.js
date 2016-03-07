@@ -171,6 +171,51 @@ angular.module('ricardo.directives.brushingTimeline', [])
               .datum(data)
               .attr("class", "line-exp")
               .attr("d", availExp)
+              
+          // add discrete points 
+          svg.selectAll(".ipoint")
+              .data(data.filter(function(d,i) {
+                if(d.imp!==null){
+                  if (i===0) {
+                    if (data[i+1].imp===null) return d;
+                  }
+                  else if(i===data.length-1){
+                    if (data[i-1].imp===null) return d;
+                  } 
+                  else{
+                    if (data[i-1].imp===null && data[i+1].imp===null) return d;
+                  } 
+                }
+              }))
+              .enter()
+              .append("circle")
+              .attr("class", "ipoint")
+              .attr("cx", availImp.x())
+              .attr("cy", availImp.y())
+              .attr("r", 1.5)
+              .attr("fill","#cc6666");
+
+          svg.selectAll(".epoint")
+              .data(data.filter(function(d,i) {
+                if(d.exp!==null){
+                  if (i===0) {
+                    if (data[i+1].exp===null) return d;
+                  }
+                  else if(i===data.length-1){
+                    if (data[i-1].exp===null) return d;
+                  } 
+                  else{
+                    if (data[i-1].exp===null && data[i+1].exp===null) return d;
+                  } 
+                }
+              }))
+              .enter()
+              .append("circle")
+              .attr("class", "epoint")
+              .attr("cx", availExp.x())
+              .attr("cy", availExp.y())
+              .attr("r", 1.5)
+              .attr("fill","#663333");
 
           /* axis */
 

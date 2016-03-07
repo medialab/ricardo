@@ -161,6 +161,70 @@ angular.module('ricardo.directives.dualTimeline', [])
               .attr("class", "line-exp")
               .attr("d", lineExp)
 
+          // add discrete points 
+          var ipoint_g=svg.selectAll(".ipoint")
+                        .data(data.filter(function(d,i) {
+                          if(d.imp!==null){
+                            if (i===0) {
+                              if (data[i+1].imp===null) return d;
+                            }
+                            else if(i===data.length-1){
+                              if (data[i-1].imp===null) return d;
+                            } 
+                            else{
+                              if (data[i-1].imp===null && data[i+1].imp===null) return d;
+                            } 
+                          }
+                        }))
+                        .enter()
+                        .append("g")
+                        .attr("class", "ipoint")
+            ipoint_g.append("circle")
+            .attr("cx", lineImp.x())
+            .attr("cy", lineImp.y())
+            .attr("r", 1.5)
+            .attr("fill","#cc6666");
+
+            ipoint_g.append("line")
+                     .attr("x1",lineImp.x())
+                     .attr("y1",areaImp.y0())
+                     .attr("x2",lineImp.x())
+                     .attr("y2",areaImp.y1())
+                     .attr("stroke-width",1)
+                     .attr("stroke","rgba(230, 230, 230, 0.4)");
+
+            var epoint_g=svg.selectAll(".epoint")
+            .data(data.filter(function(d,i) {
+              if(d.exp!==null){
+                if (i===0) {
+                  if (data[i+1].exp===null) return d;
+                }
+                else if(i===data.length-1){
+                  if (data[i-1].exp===null) return d;
+                } 
+                else{
+                  if (data[i-1].exp===null && data[i+1].exp===null) return d;
+                } 
+              }
+            }))
+            .enter()
+            .append("g")
+            .attr("class", "epoint")
+
+            epoint_g.append("circle")
+            .attr("class", "epoint")
+            .attr("cx", lineExp.x())
+            .attr("cy", lineExp.y())
+            .attr("r", 1.5)
+            .attr("fill","#663333");
+
+            epoint_g.append("line")
+                     .attr("x1",lineExp.x())
+                     .attr("y1",areaExp.y0())
+                     .attr("x2",lineExp.x())
+                     .attr("y2",areaExp.y1())
+                     .attr("stroke-width",1)
+                     .attr("stroke","rgba(230, 230, 230, 0.4)");
           /*
            * Add axis to svg
            */
