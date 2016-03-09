@@ -20,18 +20,22 @@ angular.module('ricardo.controllers.matrix', [])
 
     	var continentColors2 = [
     			{"name" :"Europe",
-    			"color": "#F4463C"},
+    			"color": "#DADB63"},
     			{"name" :"Asia",
-    			"color": "#44CC51" },
+    			"color": "#E3B1D2" },
     			{"name" :"Africa",
-    			"color": "#9980FC"},
+    			"color": "#77E0B6"},
     			{"name" :"America",
-    			"color": "#30361C"},
+    			"color": "#96D2DF"},
     			{"name" :"World",
-    			"color": "#976909"},
+    			"color": "#E3B171"},
     			{"name" :"Oceania",
-    			"color": "#C3BF4E"}
+    			"color": "#AEDF8A"}
     			]
+
+
+
+
 
   	  $scope.continentsColors = continentColors2;
 

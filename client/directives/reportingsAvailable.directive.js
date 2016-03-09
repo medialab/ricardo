@@ -51,12 +51,12 @@ angular.module('ricardo.directives.reportingsAvailable', [])
         }, true);
 
         var continentColors = {
-                    "Europe":"#F4463C",
-                     "Asia":"#44CC51" ,
-                     "Africa":"#9980FC",
-                     "America":"#30361C",
-                     "World":"#976909",
-                     "Oceania":"#C3BF4E"
+                    "Europe":"#DADB63",
+                     "Asia":"#E3B1D2" ,
+                     "Africa":"#77E0B6",
+                     "America":"#96D2DF",
+                     "World":"#E3B171",
+                     "Oceania":"#AEDF8A"
                     }
 
         function colorByContinent(continent) {
