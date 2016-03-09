@@ -11,7 +11,8 @@ angular.module('ricardo.directives.linechartWorld', [])
       restrict: 'E',
       template: '<div id="linechart-world-container"></div>',
       scope: {
-        ngData: '='
+        ngData: '=',
+        currency: '=',
       },
       link: function(scope, element, attrs) {
 
@@ -29,7 +30,6 @@ angular.module('ricardo.directives.linechartWorld', [])
         var chart = d3.select(element[0])
 
         scope.$watch("ngData", function(newValue, oldValue){
-
           if(newValue && newValue !== oldValue && newValue.length > 0){     
 
             newValue.forEach(function (e) {
@@ -53,7 +53,7 @@ angular.module('ricardo.directives.linechartWorld', [])
             // if (allExpNull && allImpNull)
             //   noData(newValue[i].values[0].reporting_id) //problem
             
-            linechart(newValue, yValueSelect);
+            linechart(newValue, yValueSelect,scope.currency.name.value);
           }
         })
 
@@ -67,7 +67,7 @@ angular.module('ricardo.directives.linechartWorld', [])
 
         var selection = d3.select("#linechart-world-container");
 
-        function linechart(data, yValue){
+        function linechart(data, yValue,currency){
           var chart;
           var margin = {top: 20, right: 0, bottom: 30, left: 0},
               chartWidth = width - margin.left - margin.right,
@@ -101,11 +101,11 @@ angular.module('ricardo.directives.linechartWorld', [])
 
           x.domain([xMin,xMax])
           y.domain([0,yMax])
-
+          
          /* 
           * Axis config 
           */
-
+          
           var xAxis = d3.svg.axis()
             .scale(x)
             .orient("bottom");
@@ -123,19 +123,23 @@ angular.module('ricardo.directives.linechartWorld', [])
                 }
                 else{
                   var symbol;
-                  if(prefix.symbol === "G"){
-                    symbol = "billion"
-                  }else if(prefix.symbol === "M"){
-                    symbol = "million"
-                  }else if(prefix.symbol === "k"){
-                    symbol = "thousand"
-                  }else{
-                    symbol = ""
+                  if(currency==="Sterling"){
+                    if(prefix.symbol === "G"){
+                      symbol = "billion"
+                    }else if(prefix.symbol === "M"){
+                      symbol = "million"
+                    }else if(prefix.symbol === "k"){
+                      symbol = "thousand"
+                    }else{
+                      symbol = "";
+                    }
+                    return prefix.scale(d) + " " + symbol
+                  }else if(currency==="Percent"){
+                    symbol = "%";
+                    return d+" "+symbol;
                   }
-                  return prefix.scale(d) + " " + symbol
                 }
-                
-                })
+              })
 
           var gy = chart.select("g.y.axis"),
               gx = chart.select("g.x.axis");
