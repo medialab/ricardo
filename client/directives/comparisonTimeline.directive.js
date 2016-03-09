@@ -49,7 +49,6 @@ angular.module('ricardo.directives.comparisonTimeline', [])
         
 
         function draw(data){
-
           diffSource = function(d){
             if (!isNaN(d.exp) && !isNaN(d.imp) && d.imp !== null && d.exp !== null ) {
               return ( d.imp_mirror - d.exp ) / d.exp ;
@@ -220,15 +219,13 @@ angular.module('ricardo.directives.comparisonTimeline', [])
          */
           var ComparisonTabData = [];
 
-          data.forEach(function (data) {
-            if (data.year >= scope.startDate && data.year <= scope.endDate) {
-              var source = diffSource(data);
-              var target = diffTarget(data);
-              if ( source !== undefined && source !== null) {
-                ComparisonTabData.push({type: "source", points: source, year: data.year}); 
+          data.forEach(function (d) {
+            if (d.year >= scope.startDate && d.year <= scope.endDate) {
+              if (diffSourceDefined(d)) {
+                ComparisonTabData.push({type: "source", points: diffSource(d), year: d.year}); 
               }
-              if (target !== undefined && target !== null) {
-                ComparisonTabData.push({type: "target", points: target, year: data.year});
+              if (diffTargetDefined(d)) {
+                ComparisonTabData.push({type: "target", points: diffTarget(d), year: d.year});
               }
             }
           })
@@ -240,7 +237,6 @@ angular.module('ricardo.directives.comparisonTimeline', [])
            * Voronoi fonction 
            */
           function voronoi(data, yValue, svg, margin, height, width) {
-            
             var voronoi = d3.geom.voronoi()
             .x(function(d) { return x(new Date(d.year, 0, 1)); })
             .y(function(d) { return y(d[yValue]); })
