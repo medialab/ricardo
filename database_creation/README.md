@@ -17,9 +17,21 @@ brew install mdbtools
 ```
 
 # Scripts to export csv files
+```
 * mdb_to_sqlite.py creates a csv file by database table
-* csv_sources.py creates a csv file by source
+* csv_sources.py creates a csv file by source with stats and erros files
 * countries_by_sources_&_period.py creates a csv file as file title describe
+```
+
+#Script to build sqlite from csv files
+```
+csv_to_sqlite.py
+```
+
+#Script to build a specific table for datavizs in website
+```
+sqlite_viz_creation.py
+```
 
 # Tests
 The tests check data integrity and delete duplicates information

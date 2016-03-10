@@ -204,20 +204,25 @@ with open('in_data/ricardo_flow_sources_final.csv', 'r') as sources:
 			c.execute("""INSERT INTO sources (id,source_name,country, volume, dates, shelf_number, url)
 				VALUES (?, ?, ?, ?, ?, ?, ?)""",(row[0], row[2].strip(),row[3].strip(), row[4].strip(), row[5].strip(), row[6].strip(), row[8].strip()))
 
-c.execute("""UPDATE old_flow SET Source = Source || `Source suite` WHERE `Source suite`is not null""")
 
+c.execute("""UPDATE old_flow SET Source = Source || `Source suite` WHERE `Source suite`is not null""")
+c.execute("""UPDATE old_flow SET Source=trim(source) WHERE 1 """)
 
 with open('in_data/ricardo_flow_sources_final_merge_duplicate.csv', 'r') as sources:
 	reader=UnicodeReader(sources)
 	reader.next()
 	for row in reader:
-		new_id=row[0]
-		old_ids='"'+'","'.join(oi for oi in row[1].split("|") if oi != new_id)+'"'
+		new_id=row[0].strip()
+		old_ids='"'+'","'.join(oi.strip() for oi in row[1].split("|") if oi != new_id)+'"'
 		c.execute("""DELETE FROM sources WHERE id in (%s)"""%old_ids)
 		c.execute("""UPDATE  old_flow SET source=? WHERE source in (%s)"""%old_ids,(new_id,))
 
+
+c.execute("""UPDATE sources SET id=trim(id) WHERE 1 """)
+
 # let's transform empty string value in flow to NULL
-c.execute("""UPDATE old_flow SET source=NULL WHERE source="" """)
+c.execute("""UPDATE old_flow SET Source=NULL WHERE Source="" """)
+
 
 
 
