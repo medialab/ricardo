@@ -256,14 +256,16 @@ def get_nations_network_by_year(year):
 
   # add nodes to graph
   G.add_nodes_from(nodes)
-
-  stats = {
-    "average_clustering": nx.average_clustering(G),
-    "center": nx.center(G),
-    "diameter": nx.diameter(G),
-    "eccentricity": nx.eccentricity(G)
-  }
-
+  print json_sql_response
+  if len(G.nodes())>0:
+    stats = {
+      "average_clustering": nx.average_clustering(G),
+      "center": nx.center(G),
+      "diameter": nx.diameter(G),
+      "eccentricity": nx.eccentricity(G)
+    }
+  else:
+    stats=[]
   json_response = {}
   json_response["stats"] = stats
   json_response["network"] = json_sql_response

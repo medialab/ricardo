@@ -1042,9 +1042,14 @@ path.lineTrajectory {
 #network {
   position: relative;
   height: 700px;
-  width:100%;
+  /*width:100%;*/
   border: solid black 1px;
   margin-top: 30px;
+  padding:0;
+}
+#network_legend {
+  margin-top: 30px;
+
 }
 
 #controls {
