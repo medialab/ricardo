@@ -164,7 +164,7 @@ def get_world_flows(from_year,to_year):
     cursor = get_db().cursor()
     from_year_clause = """ AND Yr>%s"""%from_year if from_year!="" else ""
     to_year_clause = """ AND Yr<%s"""%to_year if to_year!="" else ""
-    print from_year_clause, to_year_clause
+    # print from_year_clause, to_year_clause
     cursor.execute("""SELECT SUM(flow*Unit/rate), Yr, COUNT(*), expimp, Source
                       FROM flow_joined
                       WHERE partner_id = "Worldbestguess"
@@ -256,7 +256,6 @@ def get_nations_network_by_year(year):
 
   # add nodes to graph
   G.add_nodes_from(nodes)
-  print json_sql_response
   if len(G.nodes())>0:
     stats = {
       "average_clustering": nx.average_clustering(G),

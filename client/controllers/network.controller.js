@@ -10,7 +10,7 @@ angular.module('ricardo.controllers.network', [])
     $scope.allYears = d3.range( 1789, 1940 );
     $scope.selectedDate;
 
-    $scope.colored = {};
+   
     $scope.colors = [
     {type: {value: "community",writable: true},
      name: {value: "community",writable: true}
@@ -21,8 +21,26 @@ angular.module('ricardo.controllers.network', [])
      {type: {value: "type",writable: true},
       name: {value: "type",writable: true}
      }]
+    
+    $scope.colored;
+
+    var communityColors;
+    var continentColors = { "Europe":"#7ED27C",
+                               "Asia":"#FC9FEB" ,
+                               "Africa":"#F6B42C",
+                               "America":"#BFFA27",
+                               "World":"#B1BCF5",
+                               "Oceania":"#36E120"
+                            }
+    var typeColors = { "country":"#A561C7",
+                     "city/part_of":"#669746" ,
+                     "group":"#B86634",
+                     "geographical_area":"#6481A2",
+                     "colonial_area":"#B74F74"
+                    }
 
     $scope.changeColor = function(color) {
+      $scope.colored = color;
       if (color.name.value === "community") {
         // var max_community = d3.max($scope.sigma.graph.nodes()
         //   .map(function (n) {
@@ -32,17 +50,17 @@ angular.module('ricardo.controllers.network', [])
 
         $scope.sigma.graph.nodes().forEach(function (n) {
           // var color = d3.scale.category20().domain(d3.range([0, max_community]));
-          n.color = n.originalColor;
+          n.color = communityColors(n.community);
         })
       }
       else if (color.name.value === "continent") {
         $scope.sigma.graph.nodes().forEach(function (n) {
-          n.color = colorByContinent(n);
+          n.color = continentColors[n.attributes.continent];
         })
       }
       else {
         $scope.sigma.graph.nodes().forEach(function (n) {
-          n.color = colorByType(n)
+          n.color = typeColors[n.attributes.type];
         })
       }
       $scope.sigma.refresh();
@@ -58,17 +76,7 @@ angular.module('ricardo.controllers.network', [])
 
         return neighbors;
     });
-
-    function saveOriginalColor(s) {
-      // We first need to save the original colors of our
-      // nodes and edges, like this:
-      s.graph.nodes().forEach(function(n) {
-        n.originalColor = n.color;
-      });
-      s.graph.edges().forEach(function(e) {
-        e.originalColor = e.color;
-      });
-    }
+    
 
     function stopLayout () {
       $scope.sigma.stopForceAtlas2();
@@ -91,36 +99,8 @@ angular.module('ricardo.controllers.network', [])
 
             max_community_number = max_community_number < community_assignment_result[d] ? community_assignment_result[d]: max_community_number;
           });
-
-          var color = d3.scale.category20().domain(d3.range([0, max_community_number]));
-
-          nodes.forEach( function (d) {
-              d.color = color(d.community);
-          })
+          communityColors = d3.scale.category20().domain(d3.range([0, max_community_number]));
           return nodes;
-    }
-
-    function colorByContinent(nodes) {
-      var continentColors = { "Europe":"#7ED27C",
-                               "Asia":"#FC9FEB" ,
-                               "Africa":"#F6B42C",
-                               "America":"#BFFA27",
-                               "World":"#B1BCF5",
-                               "Oceania":"#36E120"
-                              }
-
-      return continentColors[nodes.attributes.continent]
-    }
-
-    function colorByType(nodes) {
-      var typeColors = { "country":"#A561C7",
-                     "city/part_of":"#669746" ,
-                     "group":"#B86634",
-                     "geographical_area":"#6481A2",
-                     "colonial_area":"#B74F74"
-                    }
-
-      return typeColors[nodes.attributes.type];
     }
 
     function initGraph (trades) {
@@ -158,7 +138,8 @@ angular.module('ricardo.controllers.network', [])
                 size: size(t.flow),
                 flow: t.flow,
                 source: t.reporting_id,
-                target: t.partner_id
+                target: t.partner_id,
+                hover_color: '#000'
             })
             j++;
         })
@@ -170,7 +151,7 @@ angular.module('ricardo.controllers.network', [])
                 source: t.reporting_id,
                 target: t.partner_id,
                 weigth: 1,
-                color: '#D1D1D1'
+                // color: '#D1D1D1'
             })
         })
 
@@ -191,7 +172,7 @@ angular.module('ricardo.controllers.network', [])
                     "type": n.type,
                     "expimp": n.expimp
                 },
-                color: "rgb(0,199,255)",
+                // color: "rgb(0,199,255)",
                 size: 3
             })
             i++;
@@ -236,6 +217,7 @@ angular.module('ricardo.controllers.network', [])
     //             defaultNodeColor: '#ec5148',
     //             edgeColor: 'default',
     //             defaultEdgeColor: '#d1d1d1',
+    //             defaultEdgeType: "curve",
     //             labelSize: 'fixed',
     //             labelSizeRatio: 1,
     //             labelThreshold: 5,
@@ -251,26 +233,38 @@ angular.module('ricardo.controllers.network', [])
     //     if (s)
     //         s.kill()
     //     // instantiate graph
-    //     s  = new sigma(PARAMS);
+    //     s = new sigma(PARAMS);
 
-    //     saveOriginalColor(s);
+    //     filter = new sigma.plugins.filter(s);
+    //     console.log("s", s.graph);
+    //     updatePane(s.graph, filter);
+
+    //     s.bind('overEdge outEdge');
 
     //     s.bind('clickNode', function(e) {
-    //         console.log("e", e);
     //         var nodeId = e.data.node.id,
     //             toKeep = s.graph.neighbors(nodeId);
     //         toKeep[nodeId] = e.data.node;
 
+    //         $scope.listNations = []
     //         s.graph.nodes().forEach(function(n) {
-    //           if (toKeep[n.id])
-    //             n.color = n.originalColor;
-    //           else
-    //             n.color = '#eee';
-    //         });
+    //             if (toKeep[n.id]) {
+    //               $scope.listNations.push({
+    //                 id: n.id,
+    //                 color: n.color,
+    //                 community: n.community
+    //                 // expimp: n.attributes.expimp
+    //               })
+    //               // n.color = n.originalColor;
+    //             }
+    //             else
+    //               n.color = '#eee';
+    //           });
 
     //         s.graph.edges().forEach(function(e) {
     //           if (toKeep[e.source] && toKeep[e.target])
-    //             e.color = e.originalColor;
+    //             // e.color = e.originalColor;
+    //             e.color=e.color;
     //           else
     //             e.color = '#eee';
     //         });
@@ -279,18 +273,19 @@ angular.module('ricardo.controllers.network', [])
     //         // call the refresh method to make the colors
     //         // update effective.
     //         s.refresh();
+    //         $scope.$apply();
     //     });
 
     //       // When the stage is clicked, we just color each
     //       // node and edge with its original color.
     //     s.bind('clickStage', function(e) {
-    //         s.graph.nodes().forEach(function(n) {
-    //           n.color = n.originalColor;
-    //         });
+    //         // s.graph.nodes().forEach(function(n) {
+    //         //   n.color = n.originalColor;
+    //         // });
 
-    //         s.graph.edges().forEach(function(e) {
-    //           e.color = e.originalColor;
-    //         });
+    //         // s.graph.edges().forEach(function(e) {
+    //         //   e.color = e.originalColor;
+    //         // });
 
     //         s.refresh();
     //       });
@@ -306,100 +301,6 @@ angular.module('ricardo.controllers.network', [])
     //     // Start the ForceAtlas2 algorithm:
     //     s.startForceAtlas2(LAYOUT_SETTINGS);
     // }
-
-    function drawGraph (s, data) {
-        var PARAMS = {
-            graph: data,
-            container: 'network',
-            settings: {
-                minNodeSize: 4,
-                maxNodeSize: 8,
-                maxEdgeSize: 5,
-                defaultNodeColor: '#ec5148',
-                edgeColor: 'default',
-                defaultEdgeColor: '#d1d1d1',
-                labelSize: 'fixed',
-                labelSizeRatio: 1,
-                labelThreshold: 5,
-                enableCamera: true,
-                enableHovering: true,
-                minArrowSize: 3
-            },
-            type: 'webgl'
-        }
-
-
-        // delete graph if exist
-        if (s)
-            s.kill()
-        // instantiate graph
-        s = new sigma(PARAMS);
-
-        filter = new sigma.plugins.filter(s);
-        console.log("s", s.graph);
-        updatePane(s.graph, filter);
-
-        saveOriginalColor(s);
-
-        s.bind('clickNode', function(e) {
-            var nodeId = e.data.node.id,
-                toKeep = s.graph.neighbors(nodeId);
-            toKeep[nodeId] = e.data.node;
-
-            $scope.listNations = []
-            s.graph.nodes().forEach(function(n) {
-                if (toKeep[n.id]) {
-                  $scope.listNations.push({
-                    id: n.id,
-                    color: n.color,
-                    community: n.community
-                    // expimp: n.attributes.expimp
-                  })
-                  n.color = n.originalColor;
-                }
-                else
-                  n.color = '#eee';
-              });
-
-            s.graph.edges().forEach(function(e) {
-              if (toKeep[e.source] && toKeep[e.target])
-                e.color = e.originalColor;
-              else
-                e.color = '#eee';
-            });
-
-            // Since the data has been modified, we need to
-            // call the refresh method to make the colors
-            // update effective.
-            s.refresh();
-            $scope.$apply();
-        });
-
-          // When the stage is clicked, we just color each
-          // node and edge with its original color.
-        s.bind('clickStage', function(e) {
-            s.graph.nodes().forEach(function(n) {
-              n.color = n.originalColor;
-            });
-
-            s.graph.edges().forEach(function(e) {
-              e.color = e.originalColor;
-            });
-
-            s.refresh();
-          });
-
-        // change size with degree
-        var nodes = s.graph.nodes();
-        // second create size for every node
-        for(var i = 0; i < nodes.length; i++) {
-          var degree = s.graph.degree(nodes[i].id);
-          nodes[i].size = degree;
-        }
-
-        // Start the ForceAtlas2 algorithm:
-        s.startForceAtlas2(LAYOUT_SETTINGS);
-    }
 
     /**
      * This is an example on how to use sigma filters plugin on a real-world graph.
@@ -431,7 +332,7 @@ angular.module('ricardo.controllers.network', [])
       addClass: function (selectors, cssClass) {
         var nodes = document.querySelectorAll(selectors);
         var l = nodes.length;
-        for ( i = 0 ; i < l; i++ ) {
+        for ( var i = 0 ; i < l; i++ ) {
           var el = nodes[i];
           // Bootstrap compatibility
           if (-1 == el.className.indexOf(cssClass)) {
@@ -611,7 +512,11 @@ angular.module('ricardo.controllers.network', [])
                 // params to sigma
             	var PARAMS = {
             		graph: data,
-    			      container: 'network',
+    			      container: 'network', 
+                renderer: {
+                  container: document.getElementById('network'),
+                  type: 'canvas'
+                },
                 settings: {
                     minNodeSize: 4,
                     maxNodeSize: 8,
@@ -619,63 +524,62 @@ angular.module('ricardo.controllers.network', [])
                     defaultNodeColor: '#ec5148',
                     edgeColor: 'default',
                     defaultEdgeColor: '#d1d1d1',
+                    // defaultEdgeType: "curve",
                     labelSize: 'fixed',
                     labelSizeRatio: 1,
                     labelThreshold: 5,
                     enableCamera: true,
-                    enableHovering: true
+                    enableHovering: true,
+                    enableEdgeHovering: true,
+                    edgeHoverColor: 'edge',
+                    defaultEdgeHoverColor: '#000',
+                    edgeHoverSizeRatio: 1,
+                    edgeHoverExtremities: true,
                 },
-                type: 'webgl'
     			    }
 
                 // delete graph if exist
-                if ($scope.sigma)
-                    $scope.sigma.kill()
+                if ($scope.sigma) $scope.sigma.kill()
 
                 // instantiate graph
-            	$scope.sigma  = new sigma(PARAMS);
+            	  $scope.sigma  = new sigma(PARAMS);
 
                 // Initialize the Filter API
                 filter = new sigma.plugins.filter($scope.sigma);
                 updatePane($scope.sigma.graph, filter);
-
-                //
-                saveOriginalColor($scope.sigma);
+                console.log($scope.sigma.graph.nodes())
+                $scope.changeColor($scope.colored);
 
                 $scope.sigma.bind('clickNode', function(e) {
+
                   var nodeId = e.data.node.id,
                       toKeep = $scope.sigma.graph.neighbors(nodeId);
                   toKeep[nodeId] = e.data.node;
 
-                  $scope.listNations = []
-                  $scope.sigma.graph.nodes().forEach(function(n) {
-                    // console.log("n", n);
-                    if (toKeep[n.id]) {
-                      $scope.listNations.push({
-                        id: n.id,
-                        color: n.color,
-                        community: n.community,
-                        expimp: n.attributes.expimp
-                      })
-                      n.color = n.originalColor;
-                    }
-                    else
-                      n.color = '#eee';
-                  });
+                  filter.undo("neighbors")
+                        .neighborsOf(nodeId,"neighbors")
+                        .apply();
+                  // $scope.listNations = []
+                  // $scope.sigma.graph.nodes().forEach(function(n) {
+                  //   // console.log("n", n);
+                  //   if (toKeep[n.id]) {
+                  //     $scope.listNations.push({
+                  //       id: n.id,
+                  //       color: n.color,
+                  //       community: n.community,
+                  //       expimp: n.attributes.expimp
+                  //     })
+                  //     // n.color = n.originalColor;
+                  //   }
+                  //   else
+                  //     n.color = '#eee';
+                  // });
 
 
-                  $scope.sigma.graph.edges().forEach(function(e) {
-
-                    if (toKeep[e.source] && toKeep[e.target])
-                      e.color = e.originalColor;
-                    else
-                      e.color = '#eee';
-                  });
-
-                  // Since the data has been modified, we need to
-                  // call the refresh method to make the colors
-                  // update effective.
-                  $scope.sigma.refresh();
+                  // // Since the data has been modified, we need to
+                  // // call the refresh method to make the colors
+                  // // update effective.
+                  // $scope.sigma.refresh();
                   $scope.nodeSelected = true;
                   $scope.$apply();
                 });
@@ -683,15 +587,8 @@ angular.module('ricardo.controllers.network', [])
                 // When the stage is clicked, we just color each
                 // node and edge with its original color.
                 $scope.sigma.bind('clickStage', function(e) {
-                    $scope.sigma.graph.nodes().forEach(function(n) {
-                      n.color = n.originalColor;
-                    });
-
-                    $scope.sigma.graph.edges().forEach(function(e) {
-                      e.color = e.originalColor;
-                    });
-
-                    $scope.sigma.refresh();
+                    filter.undo("neighbors")
+                          .apply();
                     $scope.nodeSelected = false;
                     $scope.$apply();
                 });
@@ -707,7 +604,7 @@ angular.module('ricardo.controllers.network', [])
                 // Start the ForceAtlas2 algorithm:
                 $scope.sigma.startForceAtlas2(LAYOUT_SETTINGS);
 
-                // Relaunch function with
+                // Relaunch function with (issue)
                 $scope.relaunch = function() {
                   var listNationsIndexed = indexNodes($scope.listNations);
                   var listOfEdges = filterOnEdges(listNationsIndexed, data.edges)
@@ -724,7 +621,7 @@ angular.module('ricardo.controllers.network', [])
 
                   $scope.sigma.killForceAtlas2();
                           // delete graph if exist
-                  $scope.sigma.graph.clear()
+                  $scope.sigma.graph.clear()//(issue)
                   // $scope.sigma.graph.read(data)
                   // $scope.sigma.refresh();
                   // $scope.sigma.startForceAtlas2(LAYOUT_SETTINGS);
@@ -828,6 +725,7 @@ angular.module('ricardo.controllers.network', [])
 
       $scope.$watch('selectedDate', function (newVal, oldVal) {
         if (newVal !== oldVal ) {
+            if($scope.colored===undefined) $scope.colored=$scope.colors[0];
             init(newVal);
         }
     }, true);

@@ -114,7 +114,6 @@
         neighbors = _g.adjacentNodes(id),
         nn = neighbors.length,
         no = {};
-
     while(nn--)
       no[neighbors[nn].id] = true;
 
@@ -495,9 +494,10 @@
    */
   sigma.plugins.filter = function(s) {
     // Create filter if undefined
-    if (!filter) {
-      filter = new Filter(s);
-    }
+    // if (!filter) {
+    //   filter = new Filter(s);
+    // }
+    filter = new Filter(s);
     return filter;
   };
 
