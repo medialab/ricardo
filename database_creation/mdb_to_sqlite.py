@@ -405,6 +405,7 @@ for item in tables:
 	c.execute("select * from " + item)
 	writer = UnicodeWriter(open(os.path.join("out_data", item + ".csv"), "wb"))
 	writer.writerow([description[0] for description in c.description])
+	# c.fetchall()
 	writer.writerows(c)
 	print "export " + item + ".csv done"
 	print "-------------------------------------------------------------------------"

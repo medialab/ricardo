@@ -45,7 +45,8 @@ class UnicodeWriter:
 
     def writerow(self, row):
         # delete cell if cell falsy (none or empty string)
-        self.writer.writerow([s.encode("utf-8") if isinstance(s, unicode) else s for s in row if s ])
+        # self.writer.writerow([s.encode("utf-8") if isinstance(s, unicode) else s for s in row if s ])
+        self.writer.writerow([s.encode("utf-8") if isinstance(s, unicode) else s for s in row ])
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
         data = data.decode("utf-8")
