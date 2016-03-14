@@ -7,9 +7,10 @@ angular.module('ricardo.controllers.network', [])
   .controller('network', [ "$scope", "$location", "apiService", "utils",
     function ($scope, $location, apiService, utils) {
 
+    $scope.showlegend=false;
+
     $scope.allYears = d3.range( 1789, 1940 );
     $scope.selectedDate;
-
    
     $scope.colors = [
     {type: {value: "community",writable: true},
@@ -25,42 +26,46 @@ angular.module('ricardo.controllers.network', [])
     $scope.colored;
 
     var communityColors;
-    var continentColors = { "Europe":"#7ED27C",
-                               "Asia":"#FC9FEB" ,
-                               "Africa":"#F6B42C",
-                               "America":"#BFFA27",
-                               "World":"#B1BCF5",
-                               "Oceania":"#36E120"
-                            }
-    var typeColors = { "country":"#A561C7",
-                     "city/part_of":"#669746" ,
-                     "group":"#B86634",
-                     "geographical_area":"#6481A2",
-                     "colonial_area":"#B74F74"
-                    }
+    // var continentColors = { "Europe":"#7ED27C",
+    //                          "Asia":"#FC9FEB" ,
+    //                          "Africa":"#F6B42C",
+    //                          "America":"#BFFA27",
+    //                          "World":"#B1BCF5",
+    //                          "Oceania":"#36E120"
+    //                       }
+    // var typeColors = { "country":"#A561C7",
+    //                  "city/part_of":"#669746" ,
+    //                  "group":"#B86634",
+    //                  "geographical_area":"#6481A2",
+    //                  "colonial_area":"#B74F74"
+    //                 }
+    var continents=["Europe","Asia","Africa","America","World","Oceania"]
+    var types=["country","city/part_of","group","geographical_area","colonial_area"]
+    var continentColors=d3.scale.category10().domain(continents);
+    var typeColors=d3.scale.category10().domain(types);
+
+    var impexpColor={"Imp":"#9ecae1",
+                      "Exp":"#fdae6b"}             
 
     $scope.changeColor = function(color) {
       $scope.colored = color;
       if (color.name.value === "community") {
-        // var max_community = d3.max($scope.sigma.graph.nodes()
-        //   .map(function (n) {
-        //     return n.community
-        //   })
-        // )
-
+        $scope.colored["color_domain"]=communityColors;
         $scope.sigma.graph.nodes().forEach(function (n) {
           // var color = d3.scale.category20().domain(d3.range([0, max_community]));
-          n.color = communityColors(n.community);
+          n.color = communityColors(n.attributes.community);
         })
       }
       else if (color.name.value === "continent") {
+        $scope.colored["color_domain"]=continentColors;
         $scope.sigma.graph.nodes().forEach(function (n) {
-          n.color = continentColors[n.attributes.continent];
+          n.color = continentColors(n.attributes.continent);
         })
       }
       else {
+        $scope.colored["color_domain"]=typeColors;
         $scope.sigma.graph.nodes().forEach(function (n) {
-          n.color = typeColors[n.attributes.type];
+          n.color = typeColors(n.attributes.type);
         })
       }
       $scope.sigma.refresh();
@@ -90,7 +95,7 @@ angular.module('ricardo.controllers.network', [])
           var node_community = [];
 
           node_data.forEach( function (n) {
-              listNationsByKey[n].attributes["ModularityClass"] = community_assignment_result[n]
+              listNationsByKey[n].attributes["community"] = community_assignment_result[n]
           })
 
           var max_community_number = 0;
@@ -106,6 +111,7 @@ angular.module('ricardo.controllers.network', [])
     function initGraph (trades) {
         var listNations = [];
         var listOfNations = [];
+
         trades.forEach(function (t) {
             if (listNations.indexOf(t.reporting_id) === -1) {
                 listNations.push(t.reporting_id)
@@ -139,7 +145,9 @@ angular.module('ricardo.controllers.network', [])
                 flow: t.flow,
                 source: t.reporting_id,
                 target: t.partner_id,
-                hover_color: '#000'
+                expimp: t.expimp,
+                hover_color: '#000',
+                // color: impexpColor[t.expimp]
             })
             j++;
         })
@@ -167,7 +175,7 @@ angular.module('ricardo.controllers.network', [])
                 x: Math.random(),
                 y: Math.random(),
                 attributes: {
-                    "Modularity Class": null,
+                    "community": null,
                     "continent": n.continent,
                     "type": n.type,
                     "expimp": n.expimp
@@ -186,8 +194,6 @@ angular.module('ricardo.controllers.network', [])
         }
 
         nodes = communityDetection(nodes, node_data, edge_data, listNationsByKey);
-
-        //nodes = colorByType(nodes);
 
         // Create Graph
         var data = {};
@@ -305,7 +311,7 @@ angular.module('ricardo.controllers.network', [])
     /**
      * This is an example on how to use sigma filters plugin on a real-world graph.
      */
-    var filter;
+    // var filter;
 
     /**
      * DOM utility functions
@@ -439,8 +445,7 @@ angular.module('ricardo.controllers.network', [])
       var v = e.target.value;
       _.$('min-degree-val').textContent = v;
 
-      filter
-        .undo('min-degree')
+      $scope.filter.undo('min-degree')
         .nodesBy(function(n) {
           return this.degree(n.id) >= v;
         }, 'min-degree')
@@ -451,8 +456,7 @@ angular.module('ricardo.controllers.network', [])
       var v = e.target.value;
       _.$('min-flow-val').textContent = v;
 
-      filter
-        .undo('min-flow')
+      $scope.filter.undo('min-flow')
         .edgesBy(function(e) {
           return e.flow >= v;
         }, 'min-flow')
@@ -462,8 +466,7 @@ angular.module('ricardo.controllers.network', [])
     function applyCategoryFilter(e) {
       var c = e.target[e.target.selectedIndex].value;
 
-      filter
-        .undo('node-category')
+      $scope.filter.undo('node-category')
         .nodesBy(function(n) {
           return !c.length || n.attributes === c;
         }, 'node-category')
@@ -477,7 +480,7 @@ angular.module('ricardo.controllers.network', [])
         indexNodes[d.id] = true;
       })
 
-      console.log(Object.keys(indexNodes))
+      // console.log(Object.keys(indexNodes))
 
       return indexNodes
     }
@@ -545,9 +548,9 @@ angular.module('ricardo.controllers.network', [])
             	  $scope.sigma  = new sigma(PARAMS);
 
                 // Initialize the Filter API
-                filter = new sigma.plugins.filter($scope.sigma);
-                updatePane($scope.sigma.graph, filter);
-                console.log($scope.sigma.graph.nodes())
+                $scope.filter = new sigma.plugins.filter($scope.sigma);
+                updatePane($scope.sigma.graph, $scope.filter);
+                // console.log($scope.sigma.graph.nodes())
                 $scope.changeColor($scope.colored);
 
                 $scope.sigma.bind('clickNode', function(e) {
@@ -556,7 +559,7 @@ angular.module('ricardo.controllers.network', [])
                       toKeep = $scope.sigma.graph.neighbors(nodeId);
                   toKeep[nodeId] = e.data.node;
 
-                  filter.undo("neighbors")
+                  $scope.filter.undo("neighbors","legend")
                         .neighborsOf(nodeId,"neighbors")
                         .apply();
                   // $scope.listNations = []
@@ -587,12 +590,14 @@ angular.module('ricardo.controllers.network', [])
                 // When the stage is clicked, we just color each
                 // node and edge with its original color.
                 $scope.sigma.bind('clickStage', function(e) {
-                    filter.undo("neighbors")
+                    $scope.filter.undo("neighbors","legend")
                           .apply();
                     $scope.nodeSelected = false;
                     $scope.$apply();
                 });
-
+                // $scope.sigma.bind("overEdge",function(e){
+                //     console.log(e.data.edge);
+                // })
                 // change size with degree
                 var nodes = $scope.sigma.graph.nodes();
                 // second create size for every node
@@ -725,7 +730,8 @@ angular.module('ricardo.controllers.network', [])
 
       $scope.$watch('selectedDate', function (newVal, oldVal) {
         if (newVal !== oldVal ) {
-            if($scope.colored===undefined) $scope.colored=$scope.colors[0];
+            if(!$scope.showlegend) $scope.showlegend=true;
+            if($scope.colored===undefined) $scope.colored=$scope.colors[1];
             init(newVal);
         }
     }, true);

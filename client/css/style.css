@@ -1051,6 +1051,10 @@ path.lineTrajectory {
   margin-top: 30px;
 
 }
+.legend_text{
+  font-size: 12px;
+  font-family:'montserrat', Arial, sans-serif;
+}
 
 #controls {
     position: absolute;

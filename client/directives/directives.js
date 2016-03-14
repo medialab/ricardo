@@ -14,5 +14,6 @@ angular.module('ricardo.directives', [
 	'ricardo.directives.partnersHistogram',
 	'ricardo.directives.barChart',
 	'ricardo.directives.linechartWorld',
-	'ricardo.directives.reportingsAvailable'
+	'ricardo.directives.reportingsAvailable',
+	'ricardo.directives.collapseLegend'
 ])

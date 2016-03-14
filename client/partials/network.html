@@ -50,9 +50,9 @@
 					 </button>
 				</div>
 			</div>
-			<div id="network_legend" class="col-md-4">
-				<!-- <div class="row"> -->
-					    <div>
+			<div id="network_legend" class="col-md-4" ng-show="showlegend">
+				<div>
+					<div>
 					    <h5 class="underline">Filters node with degree</h5>
 					      <h6>min degree <span id="min-degree-val">0</span></h6>
 					      0 <input id="min-degree" type="range" min="0" max="0" value="0"> <span id="max-degree-value">0</span>
@@ -68,7 +68,9 @@
 					      <button id="export-btn" class="btn" ng-click="export()">Export network data</button>
 					    </div>
 					    <div id="dump" class="hidden"></div>
-					<!-- </div> -->
+					</div>
+
+					<collapse-legend ng-data="sigma" legend="colored" filter="filter"></collapse-legend>
 				</div>
 				<!-- <h2>List of neighboors of node selected : </h2>
 				<div class="col-md-12">
