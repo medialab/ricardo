@@ -303,7 +303,7 @@ print "-------------------------------------------------------------------------
 #create temp table to save RICentities
 print "Create entity_names"
 c.execute("""INSERT INTO entity_names
-	SELECT original_name, name as french_name, RICname
+	SELECT trim(original_name), name as french_name, RICname
 	FROM old_entity_names_cleaning
 	""")
 print "entity_names created"
@@ -329,13 +329,14 @@ print "-------------------------------------------------------------------------
 print "Create flows"
 c.execute("""INSERT INTO flows(id, source, flow, unit, currency, year, reporting,
 	partner, export_import, special_general, species_bullions, transport_type,
-	statistical_period, partner_sum, world_trade_type)
+	statistical_period, partner_sum, world_trade_type, notes)
 	SELECT ID, Source, Flow, Unit, `Initial Currency`, Yr,
-	`Reporting Entity_Original Name`, `Partner Entity_Original Name`,
+	trim(`Reporting Entity_Original Name`),
+	trim(`Partner Entity_Original Name`),
 	`Exp / Imp`, `Spe/Gen/Tot`,
 	`Species and Bullions`, `Land/Sea`,
 	`Statistical Period`, `Partner Entity_Sum`,
-	Total_Type
+	Total_Type, Notes
 	FROM old_flow
 
 	""")
