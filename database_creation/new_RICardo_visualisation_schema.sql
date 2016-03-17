@@ -66,7 +66,7 @@ CREATE TABLE `entity_names`
 
 CREATE TABLE `RICentities_groups`
 (
-	`id`						INTEGER PRIMARY KEY AUTOINCREMENT, 
+	`id`						INTEGER PRIMARY KEY AUTOINCREMENT,
 	`RICname_group`				TEXT,
 	`RICname_part`				TEXT,
 	FOREIGN KEY (RICname_part) 	REFERENCES RICentities(RICname),
@@ -76,23 +76,22 @@ CREATE TABLE `RICentities_groups`
 --flows data
 CREATE TABLE `flows`
 (
-	`id`							INTEGER  PRIMARY KEY AUTOINCREMENT, 
+	`id`							INTEGER  PRIMARY KEY AUTOINCREMENT,
 	`source`		 				TEXT,
-	`pages`							TEXT, 
-	`notes`							TEXT, 
 	`flow`							REAL,
-	`unit`							INTEGER, 
-	`currency`						TEXT, 
+	`unit`							INTEGER,
+	`currency`						TEXT,
 	`year`							INTEGER,
 	`reporting`						TEXT,
-	`partner`						TEXT,	 
-	`export_import`					TEXT, 
-	`special_general`				TEXT, 
-	`species_bullions`				TEXT, 
-	`transport_type`				TEXT, 
-	`statistical_period`			TEXT, 
-	`partner_sum`					TEXT, 
+	`partner`						TEXT,
+	`export_import`					TEXT,
+	`special_general`				TEXT,
+	`species_bullions`				TEXT,
+	`transport_type`				TEXT,
+	`statistical_period`			TEXT,
+	`partner_sum`					TEXT,
 	`world_trade_type`				TEXT,
+	`notes`							TEXT,
 	FOREIGN KEY (source) 			REFERENCES sources(id),
 	FOREIGN KEY (currency,year,reporting) 			REFERENCES currencies(currency,year,reporting),
 	FOREIGN KEY (partner) 			REFERENCES entity_names(original_name),
