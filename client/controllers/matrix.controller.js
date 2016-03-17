@@ -33,25 +33,31 @@ angular.module('ricardo.controllers.matrix', [])
     			"color": "#AEDF8A"}
     			]
 
-
-
-
-
   	  $scope.continentsColors = continentColors2;
 
         function init() {
           apiService
             .getReportingsAvailableByYear()
-            .then(function (reportings){
-              // transform array of string in array of int
-              reportings.forEach(function (r) {
-                r.years = r.years.split(',')
-                                   .map(function (e) {
-                                  return e = parseInt(e)
-                                })
-              })
+            .then(function (data){
+              //data manipulation
 
-              $scope.matrix = reportings
+              var data_nest=d3.nest()
+                              .key(function(d){return d.reporting_id})
+                              .entries(data)
+              data_nest.forEach(function(d){
+                d["reporting"]=d.values[0]["reporting"];
+                d["continent"]=d.values[0]["continent"];
+              })
+              console.log(data_nest);
+              // transform array of string in array of int
+            //   data.forEach(function (r) {
+            //     r.years = r.years.split(',')
+            //                        .map(function (e) {
+            //                       return e = parseInt(e)
+            //                     })
+            //   })
+
+            //   $scope.matrix = data
             })
         }
 
@@ -60,6 +66,4 @@ angular.module('ricardo.controllers.matrix', [])
         $scope.sortReportings = function(newVal) {
           $scope.changed = newVal.type.value;
         }
-
-
-    }])
+ }])

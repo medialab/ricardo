@@ -145,7 +145,8 @@ def nations_network():
 @app.route('/reportings_available_by_years')
 def reportings_available_by_years():
     try:
-        json_data=models.get_reportings_available_by_year()
+        json_data=models.get_reportings_overview()
+        # json_data=models.get_reportings_available_by_year()
     except:
         app.logger.exception("exception in nations available")
         abort(500)

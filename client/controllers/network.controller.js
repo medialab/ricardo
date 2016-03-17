@@ -25,6 +25,15 @@ angular.module('ricardo.controllers.network', [])
     
     $scope.colored;
 
+    $scope.networkFlow = {}
+    $scope.networkFlowChoices = [
+      {type: {value: "total",writable: true},
+       name: {value: "Total",writable: true}},
+      {type: {value: "exp",writable: true},
+       name: {value: "Exports",writable: true}},
+      {type: {value: "imp",writable: true},
+       name: {value: "Imports",writable: true}
+    }];
     var communityColors;
     // var continentColors = { "Europe":"#7ED27C",
     //                          "Asia":"#FC9FEB" ,
@@ -111,7 +120,7 @@ angular.module('ricardo.controllers.network', [])
     function initGraph (trades) {
         var listNations = [];
         var listOfNations = [];
-
+        var pairs=[]
         trades.forEach(function (t) {
             if (listNations.indexOf(t.reporting_id) === -1) {
                 listNations.push(t.reporting_id)
@@ -147,6 +156,7 @@ angular.module('ricardo.controllers.network', [])
                 target: t.partner_id,
                 expimp: t.expimp,
                 hover_color: '#000',
+                type: "arrow",
                 // color: impexpColor[t.expimp]
             })
             j++;
@@ -194,7 +204,6 @@ angular.module('ricardo.controllers.network', [])
         }
 
         nodes = communityDetection(nodes, node_data, edge_data, listNationsByKey);
-
         // Create Graph
         var data = {};
         data.nodes = nodes;
@@ -590,11 +599,14 @@ angular.module('ricardo.controllers.network', [])
                 // When the stage is clicked, we just color each
                 // node and edge with its original color.
                 $scope.sigma.bind('clickStage', function(e) {
+                    // $scope.reset();
+                });
+                $scope.reset=function(){
                     $scope.filter.undo("neighbors","legend")
                           .apply();
                     $scope.nodeSelected = false;
                     $scope.$apply();
-                });
+                }
                 // $scope.sigma.bind("overEdge",function(e){
                 //     console.log(e.data.edge);
                 // })

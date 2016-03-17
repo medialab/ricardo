@@ -13,7 +13,15 @@
 			        </choices>
 			      </ui-select>
 			  </div>
-
+			  	for
+				<div class="inline-select">
+			      <ui-select ng-model="networkFlow" theme="bootstrap">
+			        <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
+			        <choices repeat="item in networkFlowChoices | filter: $select.search">
+			          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+			        </choices>
+			      </ui-select>
+			    </div>
 			</h2>
 			<p>
 				Choose a year to display a network of trade between nations.
@@ -45,7 +53,7 @@
 					 <button type="button" class="btn" ng-click="snapshot()">
 					 	<span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
 					 </button>
-					 <button type="button" class="btn" ng-click="relaunch()" ng-show="nodeSelected">
+					 <button type="button" class="btn" ng-click="reset()" ng-show="nodeSelected">
 					 	<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
 					 </button>
 				</div>

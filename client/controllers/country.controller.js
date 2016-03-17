@@ -173,7 +173,8 @@ angular.module('ricardo.controllers.country', [])
     function init(sourceID, currency) {
       apiService
         .getFlows({
-          reporting_ids: sourceID
+          reporting_ids: sourceID,
+          with_sources:1
         })
         .then(function (data) {
 

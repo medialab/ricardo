@@ -252,7 +252,7 @@ angular.module('ricardo.services', [])
           url: BASE_API_URL + serviceUrl,
           params: params,
           cache: true,
-          timeout: 10000
+          timeout: 100000
         }).success(function(data){
          deferred.resolve(data);
        }).error(function(){

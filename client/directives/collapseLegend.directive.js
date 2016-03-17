@@ -64,7 +64,8 @@ angular.module('ricardo.directives.collapseLegend', [])
             moveChildren(d);
           });
           update(root = flare);
-
+          
+          //regular legend
           // var svg_height=legend_data.length*20;
           // legend_svg.attr("height",svg_height);
 
@@ -97,12 +98,10 @@ angular.module('ricardo.directives.collapseLegend', [])
           flare.label="Color by "+colorBy;
           flare.color="#636363"
           flare.children=[];
-          flare.type="colorBy";
           category.forEach(function(d){
             flare.children.push({
               label:d,
               color:scope.legend.color_domain(d),
-              type:"category",
               children:nodes.filter(function(node){ return node.attributes[colorBy].toString()===d})
             })
           })
@@ -138,7 +137,9 @@ angular.module('ricardo.directives.collapseLegend', [])
               .attr("class", "node")
               .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
               .style("opacity", 1e-6)
-              .on("click", click);
+              .on("click", click)
+              // .on("mouseover",highlightNode)
+              // .on("mouseout",highlightNull);
 
           // Enter any new nodes at the parent's previous position.
           nodeEnter.append("circle")
@@ -212,6 +213,13 @@ angular.module('ricardo.directives.collapseLegend', [])
           });
         }
 
+        function collapse(d) {
+          if (d.children) {
+            d._children = d.children;
+            d._children.forEach(collapse);
+            d.children = null;
+          }
+        }
         // Toggle children on click.
         function click(d) {
           if (d.children) {
@@ -221,21 +229,66 @@ angular.module('ricardo.directives.collapseLegend', [])
             d.children = d._children;
             d._children = null;
           }
+          if(d.parent){
+              d.parent.children.forEach(function(element) {
+                if (d !== element) {
+                  collapse(element);
+                }
+              });
+            }
           update(d);
-          // if(d.type==="category") highlightNode(d);
+          if(d.depth===1) {
+            if(d.children) filterNode(d);
+            if(d._children) {
+              scope.filter.undo("neighbors","legend")
+                    .apply();
+              scope.$apply();
+            }
+          }
         }
+        
 
         function color(d) {
           return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
         }
-
-        function highlightNode(d){
+        function filterNode(legend){
           scope.filter.undo("neighbors","legend")
                .nodesBy(function(n){
-                return n.attributes[colorBy].toString()===d.label;
+                  return n.attributes[colorBy].toString()===legend.label;
                },"legend")
                .apply();
           scope.$apply();
+        }
+        function highlightNode(legend){
+          if(legend.depth===1) {
+            var filterNode=scope.ngData.graph.nodes().filter(function(d){return d.attributes[colorBy].toString()!==legend.label});
+            filterNode.forEach(function(d){
+              d.color="#eee";
+            });
+           
+          }
+          if(legend.depth===2) {
+            var filterNode=scope.ngData.graph.nodes().filter(function(d){return d.label!==legend.label});
+            filterNode.forEach(function(d){
+              d.color="#eee";
+            });
+          }
+          // scope.filter.undo("neighbors","legend")
+          //      .nodesBy(function(n){
+          //       data.forEach(function(d){
+          //         if(d.children && n.attributes[colorBy].toString()===d.label) filterNode.push(n);  
+          //       })
+          //       if (filterNode.length>0) return filterNode;
+          //      },"legend")
+          //      .apply();
+          scope.$apply();
+        }
+        function highlightNull(legend){
+            scope.ngData.graph.nodes().forEach(function(d){
+              d.color=scope.legend.color_domain(d.attributes[colorBy].toString());
+            });
+            scope.$apply();
+          
         }
 
         function elbow(d, i) {

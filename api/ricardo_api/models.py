@@ -8,7 +8,7 @@ import json
 import codecs
 import networkx as nx
 import operator
-
+from difflib import SequenceMatcher
 
 def ric_entities_data(ids=[]):
     cursor = get_db().cursor()
@@ -200,6 +200,73 @@ def get_reportings_available_by_year():
     "reporting_id": reporting_id,
     "continent": continent,
     "years":years
+    })
+
+  return json.dumps(json_response,encoding="UTF8")
+
+def get_reportings_overview():
+  cursor = get_db().cursor()
+  cursor.execute("""SELECT t3.*, continent
+                    FROM
+                    (SELECT t1.reporting as reporting, t1.reporting_id as reporting_id, ifnull(SUM(t1.exports),0) as exports,ifnull(SUM(t2.imports),0) as imports, ifnull(SUM(t1.exports),0)+ifnull(SUM(t2.imports),0) as total, group_concat(t1.partner_id) as exp_partners, group_concat(t2.partner_id) as imp_partners, t1.Yr as year, group_concat (DISTINCT t1.Source) as exp_sources, group_concat(DISTINCT t2.Source) as imp_sources
+                    FROM
+                    (SELECT reporting, reporting_id , partner_id, Flow as exports, expimp, Yr, Source
+                    FROM flow_joined
+                    WHERE expimp = "Exp"
+                    AND partner_id NOT LIKE "World%"
+                    AND Flow is not NULL
+                    AND Flow is not "0.0") t1
+                    LEFT JOIN 
+                      (SELECT reporting_id ,partner_id, Flow as imports, expimp, Yr, Source
+                    FROM flow_joined
+                    WHERE expimp = "Imp" 
+                    AND partner_id NOT LIKE "World%"
+                    AND Flow is not NULL
+                    AND Flow is not "0.0") t2
+                    ON  t1.Yr = t2.Yr AND  t1.reporting_id = t2.reporting_id AND t1.partner_id = t2.partner_id
+                    GROUP BY  t1.reporting_id, t1.Yr) t3
+                    LEFT JOIN RICentities ON t3.reporting_id = RICentities.id"""
+                )
+  json_response=[]
+  table = [list(r) for r in cursor]
+  for row in table:
+
+    exp_partners=row[5].split(",") if row[5] is not None else []
+    imp_partners=row[6].split(",") if row[6] is not None else []
+
+    # exp_sources=list(set(row[8].split("|"))) if row[4] is not None else []
+    # imp_sources=list(set(row[9].split("|"))) if row[4] is not None else []
+
+    # exp_sources_cls=[]
+    # imp_sources_cls=[]
+
+    # if len(exp_sources)>0:
+    #   exp_sources_cls.append(exp_sources[0])
+    #   for i in exp_sources:
+    #     s=SequenceMatcher(None,exp_sources[0],i)
+    #     if s.ratio()<0.5:
+    #       exp_sources_cls.append(i)
+    # if len(imp_sources)>0:
+    #   imp_sources_cls.append(imp_sources[0])
+    #   for i in imp_sources:
+    #     s=SequenceMatcher(None,imp_sources[0],i)
+    #     if s.ratio()<0.5:
+    #       imp_sources_cls.append(i)
+
+    json_response.append({
+    "reporting": row[0],
+    "reporting_id": row[1],
+    "export": row[2],
+    "import": row[3],
+    "total":row[4],
+    "exp_partners": exp_partners,
+    "imp_partners": imp_partners,
+    "total_partners":list(set(exp_partners)|set(imp_partners)),
+    "year": row[7],
+    "exp_sources": row[8].split(",")[0] if row[8] is not None else None,
+    "imp_sources": row[9].split(",")[0] if row[9] is not None else None,
+    "total_sources": row[8].split(",")[0] if row[8] is not None else None,
+    "continent": row[10]
     })
 
   return json.dumps(json_response,encoding="UTF8")
