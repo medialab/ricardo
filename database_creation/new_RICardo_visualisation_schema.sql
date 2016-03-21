@@ -1,15 +1,20 @@
 	--sources
 CREATE TABLE `sources`
 (
-	`id`			TEXT  PRIMARY KEY,
-	`source_name`	TEXT,
-	`shelf_number`	TEXT,
-	`volume`		TEXT,
-	`pages`			TEXT,
+	`slug`			TEXT  PRIMARY KEY,
+	`acronym`		TEXT,
+	`family`		TEXT,
+	`type`			TEXT,
+	`author`		TEXT,
+	`name`			TEXT,
+	`edition`		TEXT,
+	`country`		TEXT,
 	`URL`			TEXT,
+	`pages`			TEXT,
+	`volume`		TEXT,
+	`shelf_number`	TEXT,
 	`dates`			TEXT,
-	`notes`			TEXT,
-	`country`		TEXT
+	`notes`			TEXT
 );
 
 CREATE TABLE `exchange_rates`

@@ -100,11 +100,11 @@ c.execute(""" DELETE FROM old_currency
 		from old_currency
 		GROUP BY `Original Currency`,`Reporting Entity (Original Name)`,Yr HAVING count(*)>1)""")
 
-# duplicates in exp-imp
+# # duplicates in exp-imp
 c.execute("DELETE FROM `old_Exp-Imp-Standard` WHERE `id_Exp_spe` in (7,16,25)")
 
-# checking unique on to-be-joined tables
-c.execute(""" CREATE UNIQUE INDEX unique_currency ON  old_currency (`Original Currency`,
+# # checking unique on to-be-joined tables
+c.execute(""" CREATE UNIQUE INDEX unique_currency ON old_currency (`Original Currency`,
 	`Reporting Entity (Original Name)`,Yr); """)
 c.execute(""" CREATE UNIQUE INDEX unique_expimp ON `old_Exp-Imp-Standard` (`Exp / Imp`,`Spe/Gen/Tot`)""")
 c.execute(""" CREATE UNIQUE INDEX unique_rate ON old_rate (Yr,`Modified Currency`)""")
@@ -133,12 +133,12 @@ c.execute("""UPDATE old_RICentities SET type=lower(replace(trim(type)," ","_"))
 # DELETE unused spe/gen cleaning rows id=13
 
 # one lower on reporting
-#c.execute("""UPDATE flow SET `Reporting Entity_Original Name`="espagne (îles baléares)"
+# c.execute("""UPDATE flow SET `Reporting Entity_Original Name`="espagne (îles baléares)"
 # WHERE `Reporting Entity_Original Name`="espagne (Îles baléares)";""")
 
 # clean Land/Sea
 c.execute("UPDATE `old_flow` SET `Land/Sea` = null WHERE `Land/Sea` = ' '")
-#clean total type
+# #clean total type
 c.execute("""UPDATE `old_flow` SET `Total_type` = lower(`Total_type`)
 	WHERE `Total_type` is not null""")
 
@@ -159,7 +159,7 @@ c.execute("""UPDATE old_RICentities SET id=REPLACE(id,"***","") WHERE 1""")
 # c.execute("DELETE FROM flow WHERE notes ='Pas de données' and Flow is null")
 
 # remove Null rates from rate : normalement on devrait avoir des taux pour tout
-#c.execute("DELETE FROM rate WHERE `FX rate (NCU/£)` is null")
+# c.execute("DELETE FROM rate WHERE `FX rate (NCU/£)` is null")
 
 
 ################################################################################
@@ -171,7 +171,7 @@ c.execute("""UPDATE old_RICentities SET id=REPLACE(id,"***","") WHERE 1""")
 
 # add the missing Haïti
 c.execute("""INSERT INTO `old_entity_names_cleaning` (`original_name`, `name`, `RICname`)
-	VALUES ("Haïti","Haïti","Haiti");""")
+VALUES ("Haïti","Haïti","Haiti");""")
 
 
 print "-------------------------------------------------------------------------"
@@ -181,19 +181,19 @@ print "-------------------------------------------------------------------------
 ################################################################################
 ##			Create table currency_sources
 ################################################################################
-# print "Create currency_sources"
-# c.execute("""DROP TABLE IF EXISTS currency_sources;""")
-# c.execute("""CREATE TABLE IF NOT EXISTS currency_sources AS
-# 	SELECT `Source Currency` as currency, `Note Currency`as notes
-# 	FROM old_rate
-# 	""")
-# print "currency_sources created"
+print "Create currency_sources"
+c.execute("""DROP TABLE IF EXISTS currency_sources;""")
+c.execute("""CREATE TABLE IF NOT EXISTS currency_sources AS
+	SELECT `Source Currency` as currency, `Note Currency`as notes
+	FROM old_rate
+	""")
+print "currency_sources created"
 
 
 ################################################################################
 ##			Create table sources
 ################################################################################
-print "create flow_sources"
+print "create flow_sources from in_data/ricardo_flow_sources_final.csv"
 c.execute("""CREATE TABLE IF NOT EXISTS flow_sources (source,
 	transcript_filename, country, volume, date, cote, url)""")
 with open('in_data/ricardo_flow_sources_final.csv', 'r') as sources:
@@ -201,43 +201,73 @@ with open('in_data/ricardo_flow_sources_final.csv', 'r') as sources:
 	reader.next()
 	for row in reader:
 		if row[0]!="":
-			c.execute("""INSERT INTO sources (id,source_name,country, volume, dates, shelf_number, url)
+			c.execute("""INSERT INTO sources (slug,name,country, volume, dates, shelf_number, url)
 				VALUES (?, ?, ?, ?, ?, ?, ?)""",(row[0], row[2].strip(),row[3].strip(), row[4].strip(), row[5].strip(), row[6].strip(), row[8].strip()))
 
 
 c.execute("""UPDATE old_flow SET Source = Source || `Source suite` WHERE `Source suite`is not null""")
 c.execute("""UPDATE old_flow SET Source=trim(source) WHERE 1 """)
 
+print "update flow_sources with in_data/ricardo_flow_sources_final_merge_duplicate.csv"
 with open('in_data/ricardo_flow_sources_final_merge_duplicate.csv', 'r') as sources:
 	reader=UnicodeReader(sources)
 	reader.next()
 	for row in reader:
 		new_id=row[0].strip()
 		old_ids='"'+'","'.join(oi.strip() for oi in row[1].split("|") if oi != new_id)+'"'
-		c.execute("""DELETE FROM sources WHERE id in (%s)"""%old_ids)
-		c.execute("""UPDATE  old_flow SET source=? WHERE source in (%s)"""%old_ids,(new_id,))
+		c.execute("""DELETE FROM sources WHERE slug in (%s)"""%old_ids)
+		c.execute("""UPDATE old_flow SET source=? WHERE source in (%s)"""%old_ids,(new_id,))
 
 
-c.execute("""UPDATE sources SET id=trim(id) WHERE 1 """)
+c.execute("""UPDATE sources SET slug=trim(slug) WHERE 1 """)
 
 # let's transform empty string value in flow to NULL
 c.execute("""UPDATE old_flow SET Source=NULL WHERE Source="" """)
 
+print "update flow_sources with in_data/sources_slug.csv"
+with open('in_data/sources_slug.csv', 'r') as sources:
+	reader=UnicodeReader(sources)
+	reader.next()
+	i = 0
+	for row in reader:
+		i +=1
+		family=row[0].strip()
+		acronym=row[1].strip()
+		source_name=row[2].strip()
+		s_type=row[3].strip()
+		# print i, row
+		c.execute("""UPDATE sources SET family=?, acronym=?, type=? WHERE name=?""",[family, acronym, s_type, source_name])
 
+print "update flow_sources with in_data/Sources_trade.csv"
+with open('in_data/Sources_trade.csv', 'r') as sources:
+	reader=UnicodeReader(sources)
+	reader.next()
+	for row in reader:
+		source_slug=row[0].strip()
+		author=row[1].strip()
+		# print author
+		c.execute("""UPDATE sources SET author=? WHERE slug=?""",[author, source_slug])
 
+print "update flow_sources with in_data/Sources_currency.csv"
+with open('in_data/Sources_currency.csv', 'r') as sources:
+	reader=UnicodeReader(sources)
+	reader.next()
+	for row in reader:
+		source_slug=row[0].strip()
+		author=row[1].strip()
+		# print author
+		c.execute("""UPDATE sources SET author=? WHERE slug=?""",[author, source_slug])
 
 print "flow_sources create"
 print "-------------------------------------------------------------------------"
-
-
 
 ################################################################################
 ##			add curency source to table sources
 ################################################################################
 
 print "Insert currency_sources into sources"
-c.execute("""INSERT into sources(id,source_name, notes)
-	SELECT 'currency_' || `Source Currency` as id,`Source Currency` as source_name, group_concat(`Note Currency`) as notes
+c.execute("""INSERT into sources(slug,name, notes)
+	SELECT 'currency_' || `Source Currency` as slug,`Source Currency` as name, group_concat(`Note Currency`) as notes
 	FROM old_rate
 	group by `Source Currency`
 	""")
