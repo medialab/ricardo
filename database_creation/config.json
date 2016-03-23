@@ -1,10 +1,11 @@
 {
-	"mdb_filename":"RICardo_v1_032015.mdb",
-	"sqlite_filename":"RICardo_visualisation.sqlite",
-	"sqlite_schema":"RICardo_visualisation_schema.sql",
-	"new_sqlite_schema":"new_RICardo_visualisation_schema.sql",
-	"name_cleaning_csv":"entity_names_cleaning.csv",
-	"RICnames_csv":"entity_RICnames.csv",
-	"RICnames_aggregation_csv":"RICnames_aggregation.csv",
-	"RICardo_flow_sources":"ricardo_flow_sources.csv"
+	"mdb_filename": "RICardo_v1_032015.mdb",
+	"sqlite_filename": "RICardo_visualisation.sqlite",
+	"sqlite_schema": "RICardo_visualisation_schema.sql",
+	"new_sqlite_schema": "new_RICardo_visualisation_schema.sql",
+	"sqlite_viz": "sqlite_viz.sqlite ",
+	"name_cleaning_csv": "entity_names_cleaning.csv",
+	"RICnames_csv": "entity_RICnames.csv",
+	"RICnames_aggregation_csv": "RICnames_aggregation.csv",
+	"RICardo_flow_sources": "ricardo_flow_sources.csv"
 }

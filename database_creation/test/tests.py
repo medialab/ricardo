@@ -14,15 +14,16 @@ except :
 mdb_sqlite_filename=os.path.join("..","out_data",conf["sqlite_filename"])
 
 conn=sqlite3.connect(mdb_sqlite_filename)
-cursor=conn.cursor()
 
-import RICnames
-RICnames_status="OK" if RICnames.test(cursor) else "FAILED"
-print "CURRENCY TEST : %s"%RICnames_status
-import expimp
+cursor=conn.cursor()
 import currency
 currency_status="OK" if currency.test(cursor) else "FAILED"
 print "CURRENCY TEST : %s"%currency_status
+
+import RICnames
+RICnames_status="OK" if RICnames.test(cursor) else "FAILED"
+print "RICnames TEST : %s"%RICnames_status
+
 import expimp
 expimp_status="OK" if expimp.test(cursor) else "FAILED"
 print "EXP IMP TEST : %s"%expimp_status
@@ -49,7 +50,7 @@ print "TOTAL_TYPE TEST : %s"%total_type_status
 # 		print (",".join(l)).encode("UTF8")
 
 # c.execute("""SELECT count(*),trim(`Partner Entity_Original Name`)
-# 	FROM flow 
+# 	FROM flow
 # 	LEFT OUTER JOIN entity_names_cleaning ON trim(`Partner Entity_Original Name`) = original_name COLLATE NOCASE
 # 	WHERE RICname is Null
 # 	group by trim(`Partner Entity_Original Name`)
@@ -61,9 +62,9 @@ print "TOTAL_TYPE TEST : %s"%total_type_status
 # 		print ("%s,'%s'"%l).encode("UTF8")
 
 
-# # tests 
+# # tests
 # 	c.execute("""SELECT original_name,name,RICname,type,central_state,continent,RICname_part
-# 		FROM entity_names_cleaning 
+# 		FROM entity_names_cleaning
 # 		LEFT OUTER JOIN RICentities USING (RICname)
 # 	    LEFT OUTER JOIN RICentities_groups ON RICname = RICname_group
 # 		WHERE original_name='Azores, Madeira, and Cap de Verde Islands' OR original_name like 'British Possessions in America'""")

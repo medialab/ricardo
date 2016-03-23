@@ -3,20 +3,31 @@ import codecs
 import os
 
 def test(cursor):
-	 
+
 	# and `Partner Entity_Sum` is not null
 	# cursor.execute("UPDATE flow SET `Exp / Imp`=trim(lower(`Exp / Imp`)), `Spe/Gen/Tot`=trim(lower(`Spe/Gen/Tot`))")
 	# cursor.execute("UPDATE `Exp-Imp-Standard` SET `Exp / Imp`=trim(lower(`Exp / Imp`)), `Spe/Gen/Tot`=trim(lower(`Spe/Gen/Tot`))")
 
 	for flow in ("flow_joined",) :
-		cursor.execute("""SELECT group_concat(`ID`,';'),group_concat(`Flow`,';'),count(*),group_concat(`spegen`,';'),group_concat(`Reporting Entity_Original Name`,';'),reporting,group_concat(`Partner Entity_Original Name`,';'),partner,Yr,`expimp`,group_concat(`Source`,'|') 				
-							from %s 
-							GROUP BY Yr,expimp,reporting,partner HAVING count(*)>1
-				
-							"""%flow)#WHERE Flow is not null
+		cursor.execute("""SELECT group_concat(id,';'),
+							group_concat(`flow`,';'),
+							count(*),
+							group_concat(spegen,';'),
+							group_concat(reporting,';'),
+							reporting,
+							group_concat(partner,';'),
+							partner,
+							year,
+							expimp,
+							group_concat(source,'|')
+							from %s
+							GROUP BY year,expimp,reporting,partner HAVING count(*)>1
+
+							"""%flow)#WHERE flow is not null
 		lines=list(cursor)
 		print len(lines)
 		nb_spe_gen=0
+
 		nb_dups=0
 		reporting_spegen={}
 		reporting_dups={}
@@ -45,23 +56,23 @@ def test(cursor):
 		for k,v in reporting_dups.iteritems():
 			print ("   %s: %s flows"%(k,v)).encode("UTF8")
 		with codecs.open(os.path.join("..","out_data","duplicates_in_%s.csv"%flow),"w",encoding="UTF8") as csv:
-			csv.write(log) 
+			csv.write(log)
 	return True
 	# cursor.execute("""SELECT distinct(Source) from flow""")
 	# for s in cursor:
 	# 	print s[0].encode("UTF8")
 
-	# SELECT part_dup,group_concat(Yr)
+	# SELECT part_dup,group_concat(year)
 	# 	FROM (
 		# )
 		# GROUP BY part_dup
 		# 				ORDER BY count(*)
 
-	# cursor.execute("""SELECT max(`Flow`),group_concat(`Reporting Entity_Original Name`,';'),reporting,group_concat(`Partner Entity_Original Name`,';') as part_dup,partner,Yr
-	# 					from flow_impexp_bilateral 
+	# cursor.execute("""SELECT max(`flow`),group_concat(reporting,';'),reporting,group_concat(partner,';') as part_dup,partner,year
+	# 					from flow_impexp_bilateral
 	# 					WHERE reporting = "France"
-	# 					GROUP BY Yr,`Exp / Imp (standard)`,reporting,partner HAVING count(*)>1
-						
+	# 					GROUP BY year,`Exp / Imp (standard)`,reporting,partner HAVING count(*)>1
+
 	# 					""")
 	# for l in cursor:
 	# 	print l
