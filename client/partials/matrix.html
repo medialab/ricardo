@@ -19,17 +19,82 @@
 			</p>
 		</div>
 		<div class="col-md-12">
-			<div class="row">
+			<!-- <div class="row">
 				<p class="col-md-2" ng-repeat="item in continentsColors" style="heigth:10pwx; background-color:{{item.color}}">
 					{{item.name}}
 				</p>
-			</div>
+			</div> -->
+			<h4> Number of Reporting Entities by year</h4>
+			<bar-chart
+			          ng-data="nbReportings"
+			          start-date="selectedMinDate"
+			          end-date="selectedMaxDate"
+			          raw-start-date="rawMinDate"
+			          raw-end-date="rawMaxDate">
+			</bar-chart>
 		</div>
 		<div class="col-md-12">
-		<reportings-available
+		<!-- <reportings-available
 	        ng-data="matrix"
 	        ng-sort="changed"
-	      ></reportings-available>
+	    ></reportings-available> -->
+	    <h4>Flow by Continents for
+	    	<div class="inline-select">
+		      <ui-select ng-model="stackchartFlow" theme="bootstrap" ng-change="changeStackFlow(stackchartFlow)">
+		        <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
+		        <choices repeat="item in stackflowChoices | filter: $select.search">
+		          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+		        </choices>
+		      </ui-select>
+	   		</div>
+	   		in
+	   		<div class="inline-select">
+		        <ui-select ng-model="stackchartLayout" theme="bootstrap" ng-change="changeStackLayout(stackchartLayout)">
+		          <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
+		          <choices repeat="item in stackchartLayoutChoices | filter: $select.search">
+		            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+		          </choices>
+		        </ui-select>
+		    </div>
+	    </h4>
+	    <reporting-continent
+	    			ng-data="flatContinent"
+	    			start-date="selectedMinDate"
+			        end-date="selectedMaxDate"
+			        flow-type="stackchartFlow"
+			        layout="stackchartLayout">
+		</reporting-continent>
 		</div>
+
+		<div class="col-md-12">
+			<h4>Flow by Reporting Entities for
+	    	<div class="inline-select">
+		      <ui-select ng-model="matrixFlow" theme="bootstrap" ng-change="changeMatrixFlow(matrixFlow)">
+		        <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
+		        <choices repeat="item in matrixflowChoices | filter: $select.search">
+		          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+		        </choices>
+		      </ui-select>
+	   		</div>
+	   		sorted by
+	   		<div class="inline-select">
+		        <ui-select ng-model="matrixLayout" theme="bootstrap" ng-change="changeMatrixLayout(matrixLayout)">
+		          <match placeholder="sort by">{{$select.selected.name.value}}</match>
+		          <choices repeat="item in matrixLayoutChoices | filter: $select.search">
+		            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+		          </choices>
+		        </ui-select>
+		    </div>
+			</h4>
+			<reporting-entities ng-data="flowEntities"
+			start-date="selectedMinDate"
+			end-date="selectedMaxDate"
+			flow-type="matrixFlow"
+			layout="matrixLayout">
+			</reporting-entities>
+		</div>
+	</div>
+	<div>
+		<button id="export-btn" class="btn" ng-click="export()">Export Data Summary</button>
 	</div>
 </div>

@@ -10,7 +10,8 @@ angular.module('ricardo.controllers.navbar', [])
     $scope.views = [
       {slug: "world", label: "World view"},
       {slug: "country", label: "Country view"},
-      {slug: "bilateral", label: "Bilateral view"}
+      {slug: "bilateral", label: "Bilateral view"},
+      {slug: "reportings_by_year", label: "Metadata view"}
       //{slug:"RICentities", label:"RICentities view"}
     ]
   }])

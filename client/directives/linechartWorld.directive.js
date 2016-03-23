@@ -1,7 +1,7 @@
 'use strict';
 
-/* 
- * Linechart directive displays line of entities selected 
+/*
+ * Linechart directive displays line of entities selected
  */
 
 angular.module('ricardo.directives.linechartWorld', [])
@@ -30,20 +30,20 @@ angular.module('ricardo.directives.linechartWorld', [])
         var chart = d3.select(element[0])
 
         scope.$watch("ngData", function(newValue, oldValue){
-          if(newValue && newValue !== oldValue && newValue.length > 0){     
+          if(newValue && newValue !== oldValue && newValue.length > 0){
 
             newValue.forEach(function (e) {
               if (e.color === undefined)
                 e.color=scope.reporting.filter(function(r){return r.RICid===e.key})[0]["color"]
             })
-             
+
             var yValueSterling;
             var yValueSelect;
 
             if (newValue.flowType)
               yValueSelect = newValue.flowType
             else
-              yValueSelect = newValue[0].type ? newValue[0].type : newValue[0].flowType;           
+              yValueSelect = newValue[0].type ? newValue[0].type : newValue[0].flowType;
 
             for (var i = 0, len = newValue.length; i < len ; i++)
             {
@@ -52,12 +52,12 @@ angular.module('ricardo.directives.linechartWorld', [])
             }
             // if (allExpNull && allImpNull)
             //   noData(newValue[i].values[0].reporting_id) //problem
-            
+
             linechart(newValue, yValueSelect,scope.currency.name.value);
           }
         })
 
-        
+
 
         var height = 400,
             width = document.querySelector('#linechart-world-container').offsetWidth,
@@ -101,11 +101,11 @@ angular.module('ricardo.directives.linechartWorld', [])
 
           x.domain([xMin,xMax])
           y.domain([0,yMax])
-          
-         /* 
-          * Axis config 
+
+         /*
+          * Axis config
           */
-          
+
           var xAxis = d3.svg.axis()
             .scale(x)
             .orient("bottom");
@@ -155,7 +155,7 @@ angular.module('ricardo.directives.linechartWorld', [])
                 .attr("class", "y axis")
                 .call(yAxis)
                 .call(customAxis);
-                
+
             gy.selectAll("g").filter(function(d) { return d; })
                 .classed("minor", true);
             }
@@ -170,7 +170,7 @@ angular.module('ricardo.directives.linechartWorld', [])
 
               gy.selectAll("g").filter(function(d) { return d; })
                   .classed("minor", true);
-              
+
             }
 
           function customAxis(g) {
@@ -180,8 +180,8 @@ angular.module('ricardo.directives.linechartWorld', [])
               .attr("font-size", "0.85em");
             }
 
-         /* 
-          * Lines 
+         /*
+          * Lines
           */
 
           var line = d3.svg.line()
@@ -198,7 +198,7 @@ angular.module('ricardo.directives.linechartWorld', [])
           //         .attr("stroke", function(d,i) { return d["color"]; })
           //         .attr("fill", "none")
           //         .attr("stroke-width", "2px")
-          
+
           // entities
           //   .attr("d", function(d) { return line(d.values); })
           //   // .attr("stroke", function(d,i) { return d["color"]; })
@@ -212,7 +212,7 @@ angular.module('ricardo.directives.linechartWorld', [])
                             .enter()
                             .append("g")
                             .attr("class","country")
-          
+
           entities.append("path")
                   .attr("class","line")
                   .attr("d", function(d) { return line(d.values); })
@@ -221,19 +221,19 @@ angular.module('ricardo.directives.linechartWorld', [])
                   .attr("stroke-width", "2px")
 
           var point=entities.selectAll(".point")
-                          .data(function(d){ 
-                                return d.values.filter(function(e,i) { 
-                                  // return e[yValue]; 
+                          .data(function(d){
+                                return d.values.filter(function(e,i) {
+                                  // return e[yValue];
                                   if(e[yValue]!==null){
                                     if (i===0) {
                                       if (d.values[i+1][yValue]===null) return e;
                                     }
                                     else if(i===d.values.length-1){
                                       if (d.values[i-1][yValue]===null) return e;
-                                    } 
+                                    }
                                     else{
                                       if (d.values[i-1][yValue]===null && d.values[i+1][yValue]===null) return e;
-                                    } 
+                                    }
                                   }
                                 }) //filter out null data
                            })
@@ -246,7 +246,7 @@ angular.module('ricardo.directives.linechartWorld', [])
                           .attr("fill", function() {return d3.select(this.parentNode).datum().color;})
                           .attr("stroke", function() {return d3.select(this.parentNode).datum().color;});
 
-          
+
           /*
            * Voronoi
            */
@@ -255,7 +255,7 @@ angular.module('ricardo.directives.linechartWorld', [])
             .x(function(d) { return x(new Date(d.year, 0, 1)); })
             .y(function(d) { return y(d[yValue]); })
             .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]]);
-          
+
           var voronoiGroup = chart.select(".voronoi")
 
           if(voronoiGroup.empty()){
@@ -267,7 +267,7 @@ angular.module('ricardo.directives.linechartWorld', [])
 
           var voronoiGraph = voronoiGroup.selectAll("path")
             .data(voronoi(d3.merge(data.map(function(d) { return d.values.filter(function(d){return d[yValue]}); }))))
-              
+
           voronoiGraph
             .attr("d", function(d) { if(d!==undefined) return "M" + d.join("L") + "Z"; })
             .datum(function(d) { if(d!==undefined) return d.point; })
@@ -277,7 +277,7 @@ angular.module('ricardo.directives.linechartWorld', [])
 
           voronoiGraph
             .enter().append("path")
-            .attr("d", function(d) { 
+            .attr("d", function(d) {
               if (d !== null) return "M" + d.join("L") + "Z"; })
             .datum(function(d) {return d.point ; })
             .on("mouseover", mouseover)
@@ -290,7 +290,7 @@ angular.module('ricardo.directives.linechartWorld', [])
            */
 
           var focus = chart.select(".focus")
-                    
+
           if(focus.empty()){
             focus = chart.append("g")
                 .attr("transform", "translate(-100,-100)")
@@ -367,7 +367,7 @@ angular.module('ricardo.directives.linechartWorld', [])
                       .attr("stop-color", "white")
                       .attr("stop-opacity", 0.1);
 
-                  // add rect as background to hide date display in 
+                  // add rect as background to hide date display in
                   var bbox = text.node().getBBox();
                   var rect = chart.append("chart:rect")
                       .attr("class", "lineDateText")
@@ -386,7 +386,7 @@ angular.module('ricardo.directives.linechartWorld', [])
                        .attr("font-size", "0.85em")
                        .text(d.year);
               }
-              
+
             }
           }
 
@@ -396,7 +396,7 @@ angular.module('ricardo.directives.linechartWorld', [])
             chart.selectAll("text.lineDateText").remove();
             chart.selectAll("rect.lineDateText").remove();
             focus.attr("transform", "translate(-100,-100)");
-          }     
+          }
         } // end linechart
       }
     }

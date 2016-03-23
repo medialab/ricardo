@@ -161,7 +161,7 @@ angular.module('ricardo.directives.dualTimeline', [])
               .attr("class", "line-exp")
               .attr("d", lineExp)
 
-          // add discrete points 
+          // add discrete points
           var ipoint_g=svg.selectAll(".ipoint")
                         .data(data.filter(function(d,i) {
                           if(d.imp!==null){
@@ -170,10 +170,10 @@ angular.module('ricardo.directives.dualTimeline', [])
                             }
                             else if(i===data.length-1){
                               if (data[i-1].imp===null) return d;
-                            } 
+                            }
                             else{
                               if (data[i-1].imp===null && data[i+1].imp===null) return d;
-                            } 
+                            }
                           }
                         }))
                         .enter()
@@ -201,10 +201,10 @@ angular.module('ricardo.directives.dualTimeline', [])
                 }
                 else if(i===data.length-1){
                   if (data[i-1].exp===null) return d;
-                } 
+                }
                 else{
                   if (data[i-1].exp===null && data[i+1].exp===null) return d;
-                } 
+                }
               }
             }))
             .enter()

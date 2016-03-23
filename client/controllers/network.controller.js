@@ -11,7 +11,7 @@ angular.module('ricardo.controllers.network', [])
 
     $scope.allYears = d3.range( 1789, 1940 );
     $scope.selectedDate;
-   
+
     $scope.colors = [
     {type: {value: "community",writable: true},
      name: {value: "community",writable: true}
@@ -22,7 +22,7 @@ angular.module('ricardo.controllers.network', [])
      {type: {value: "type",writable: true},
       name: {value: "type",writable: true}
      }]
-    
+
     $scope.colored;
 
     $scope.networkFlow = {}
@@ -54,7 +54,7 @@ angular.module('ricardo.controllers.network', [])
     var typeColors=d3.scale.category10().domain(types);
 
     var impexpColor={"Imp":"#9ecae1",
-                      "Exp":"#fdae6b"}             
+                      "Exp":"#fdae6b"}
 
     $scope.changeColor = function(color) {
       $scope.colored = color;
@@ -90,7 +90,7 @@ angular.module('ricardo.controllers.network', [])
 
         return neighbors;
     });
-    
+
 
     function stopLayout () {
       $scope.sigma.stopForceAtlas2();
@@ -178,12 +178,14 @@ angular.module('ricardo.controllers.network', [])
         // nodes & edges for sigma
         var nodes = [];
         var i = 0;
+
         listOfNations.forEach(function (n) {
             nodes.push({
                 id: n.id,
                 label: n.id,
                 x: Math.random(),
                 y: Math.random(),
+                // type: 'hoveredNode',
                 attributes: {
                     "community": null,
                     "continent": n.continent,
@@ -524,7 +526,7 @@ angular.module('ricardo.controllers.network', [])
                 // params to sigma
             	var PARAMS = {
             		graph: data,
-    			      container: 'network', 
+    			      container: 'network',
                 renderer: {
                   container: document.getElementById('network'),
                   type: 'canvas'

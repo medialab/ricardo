@@ -18,6 +18,7 @@ angular.module('ricardo.directives.barChart', [])
       }
       ,link: function(scope, element, attrs){
         scope.$watch('ngData', function(newValue, oldValue) {
+          // console.log(scope.ngData)
           if ( newValue && scope.ngData) {
               barChart(scope.ngData, 1787, 1938);
           }
@@ -42,11 +43,11 @@ angular.module('ricardo.directives.barChart', [])
         var brush
 
         function barChart(data, start, end) {
-            
+
           var margin = {top: 20, right: 0, bottom: 40, left: 0},
-              width = document.querySelector('#dual-timeline-container').offsetWidth,
+              width = document.querySelector('#bar-chart-container').offsetWidth,
               height = 60;
-          
+
           var x = d3.time.scale()
               .range([0, width]);
 
@@ -90,15 +91,15 @@ angular.module('ricardo.directives.barChart', [])
               }
 
           // var expNbReportings = data.filter(function (d) { return d.type === "Exp"});
-          var impNbReportings = data.filter(function (d) { return d.type === "Imp"});
-          
+          // var impNbReportings = data.filter(function (d) { return d.type === "Imp"});
+
           var endStart = (end-start);
           var barWidth = Math.floor(width / endStart);
 
 
           svg.selectAll(".bar")
-              .data(impNbReportings)
-            .enter().append("rect")
+              .data(data)
+              .enter().append("rect")
               .attr("class", "bar")
               .attr("x", function(d) { return x(new Date(d.year, 0, 1)) })
               .attr("width", barWidth)
@@ -124,7 +125,7 @@ angular.module('ricardo.directives.barChart', [])
                .attr("y2", y(100))
                .attr("stroke-width", 1)
                .attr("stroke", "grey");
-                   
+
           function type(d) {
             d.nb_reporting = +d.nb_reporting;
             return d;
@@ -148,14 +149,14 @@ angular.module('ricardo.directives.barChart', [])
 
           function brushended() {
             if (!d3.event.sourceEvent) return; // only transition after input
-            
+
             var extent0 = brush.extent(),
                 extent1 = extent0.map(function(d){return d3.time.year(new Date(d))});
 
             d3.select(this).transition()
                 .call(brush.extent(extent1))
                 .call(brush.event);
-            
+
             if(brush.empty()){
               brush.extent(x.domain())
               // dispatch.brushed(x.domain())
@@ -165,7 +166,7 @@ angular.module('ricardo.directives.barChart', [])
               // dispatch.brushed(brush.extent())
               // dispatch.brushing(brush.extent())
             }
-            applyBrush()       
+            applyBrush()
           }
           //selection.selectAll("g.brush").remove();
           var gBrush = svg.select(".brush");
@@ -204,7 +205,7 @@ angular.module('ricardo.directives.barChart', [])
       }
     }
   }
-         
+
 }])
 
 
