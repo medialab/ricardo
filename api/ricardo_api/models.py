@@ -216,10 +216,10 @@ def get_reportings_overview():
                     AND partner_id NOT LIKE "World%"
                     AND Flow is not NULL
                     AND Flow is not "0.0") t1
-                    LEFT JOIN 
+                    LEFT JOIN
                       (SELECT reporting_id ,partner_id, Flow as imports, expimp, Yr, Source
                     FROM flow_joined
-                    WHERE expimp = "Imp" 
+                    WHERE expimp = "Imp"
                     AND partner_id NOT LIKE "World%"
                     AND Flow is not NULL
                     AND Flow is not "0.0") t2
@@ -256,12 +256,12 @@ def get_reportings_overview():
     json_response.append({
     "reporting": row[0],
     "reporting_id": row[1],
-    "export": row[2],
-    "import": row[3],
-    "total":row[4],
-    "exp_partners": exp_partners,
-    "imp_partners": imp_partners,
-    "total_partners":list(set(exp_partners)|set(imp_partners)),
+    "exp_flow": round(row[2],2),
+    "imp_flow": round(row[3],2),
+    "total_flow":round(row[4],2),
+    "exp_partner": "|".join(exp_partners),
+    "imp_partner": "|".join(imp_partners),
+    "total_partner": "|".join(list(set(exp_partners)|set(imp_partners))),
     "year": row[7],
     "exp_sources": row[8].split(",")[0] if row[8] is not None else None,
     "imp_sources": row[9].split(",")[0] if row[9] is not None else None,

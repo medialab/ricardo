@@ -83,11 +83,11 @@ angular.module('ricardo.controllers.matrix', [])
   	  $scope.continentsColors = continentColors2;
 
         function init() {
-          // apiService
-          //   .getReportingsAvailableByYear()
-          //   .then(function (data){
-          //     //data manipulation
-          //     $scope.data=data;
+          apiService
+            .getReportingsAvailableByYear()
+            .then(function (data){
+              //data manipulation
+              $scope.data=data;
           //     var data_nest=d3.nest()
           //                     .key(function(d){return d.reporting_id})
           //                     .entries(data)
@@ -139,9 +139,9 @@ angular.module('ricardo.controllers.matrix', [])
               ;
             }
 
-            d3.csv("../overview.csv",function(data){
+            // d3.csv("../overview.csv",function(data){
 
-                $scope.data=data;
+                // $scope.data=data;
                 var data_nest=d3.nest()
                                 .key(function(d){return d.reporting})
                                 .entries(data)
@@ -183,7 +183,7 @@ angular.module('ricardo.controllers.matrix', [])
                 $scope.selectedMaxDate = maxDate ?
                   maxDate : Math.min( $scope.selectedMaxDate, $scope.rawMaxDate );
 
-
+                console.log(data);
                 var flowContinent=d3.nest()
                                         .key(function(d) { return d.continent; })
                                         .key(function(d) { return d.year; })
@@ -247,13 +247,12 @@ angular.module('ricardo.controllers.matrix', [])
                     v.total_partner=v.total_partner.split("|").length;
                   })
                 })
-            })
+          })
         }
 
         init()
 
         $scope.export = function () {
-          console.log($scope.data);
           var dataExported = [];
           $scope.data.forEach(function (d) {
             dataExported.push({
