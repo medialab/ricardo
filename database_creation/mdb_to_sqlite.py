@@ -130,6 +130,9 @@ c.execute("""UPDATE `old_rate` SET `FX rate (NCU/£)`=replace(`FX rate (NCU/£)`
 c.execute("""UPDATE old_RICentities SET type=lower(replace(trim(type)," ","_"))
 	WHERE 1""")
 
+# Cleaning old_rate
+c.execute("""DELETE from old_rate WHERE  `FX rate (NCU/£)` is null""")
+
 # DELETE unused spe/gen cleaning rows id=13
 
 # one lower on reporting
