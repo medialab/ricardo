@@ -191,40 +191,41 @@ print "currency_sources created"
 
 
 ################################################################################
-##			Create table sources
+##			Create tempoary table sources
 ################################################################################
 print "create flow_sources from in_data/ricardo_flow_sources_final.csv"
 c.execute("""CREATE TABLE IF NOT EXISTS flow_sources (source,
 	transcript_filename, country, volume, date, cote, url)""")
+c.execute("""CREATE TABLE IF NOT EXISTS temp_sources (slug, acronym, family, type, author, name, edition, country, url, pages, volume, shelf_number, dates, notes)""")
 with open('in_data/ricardo_flow_sources_final.csv', 'r') as sources:
 	reader=UnicodeReader(sources)
 	reader.next()
 	for row in reader:
 		if row[0]!="":
-			c.execute("""INSERT INTO sources (slug,name,country, volume, dates, shelf_number, url)
+			c.execute("""INSERT INTO temp_sources (slug,name,country, volume, dates, shelf_number, url)
 				VALUES (?, ?, ?, ?, ?, ?, ?)""",(row[0], row[2].strip(),row[3].strip(), row[4].strip(), row[5].strip(), row[6].strip(), row[8].strip()))
 
 
 c.execute("""UPDATE old_flow SET Source = Source || `Source suite` WHERE `Source suite`is not null""")
 c.execute("""UPDATE old_flow SET Source=trim(source) WHERE 1 """)
 
-print "update flow_sources with in_data/ricardo_flow_sources_final_merge_duplicate.csv"
+print "update temp_sources with in_data/ricardo_flow_sources_final_merge_duplicate.csv"
 with open('in_data/ricardo_flow_sources_final_merge_duplicate.csv', 'r') as sources:
 	reader=UnicodeReader(sources)
 	reader.next()
 	for row in reader:
 		new_id=row[0].strip()
 		old_ids='"'+'","'.join(oi.strip() for oi in row[1].split("|") if oi != new_id)+'"'
-		c.execute("""DELETE FROM sources WHERE slug in (%s)"""%old_ids)
+		c.execute("""DELETE FROM temp_sources WHERE slug in (%s)"""%old_ids)
 		c.execute("""UPDATE old_flow SET source=? WHERE source in (%s)"""%old_ids,(new_id,))
 
 
-c.execute("""UPDATE sources SET slug=trim(slug) WHERE 1 """)
+c.execute("""UPDATE temp_sources SET slug=trim(slug) WHERE 1 """)
 
 # let's transform empty string value in flow to NULL
 c.execute("""UPDATE old_flow SET Source=NULL WHERE Source="" """)
 
-print "update flow_sources with in_data/sources_slug.csv"
+print "update temp_sources with in_data/sources_slug.csv"
 with open('in_data/sources_slug.csv', 'r') as sources:
 	reader=UnicodeReader(sources)
 	reader.next()
@@ -236,9 +237,9 @@ with open('in_data/sources_slug.csv', 'r') as sources:
 		source_name=row[2].strip()
 		s_type=row[3].strip()
 		# print i, row
-		c.execute("""UPDATE sources SET family=?, acronym=?, type=? WHERE name=?""",[family, acronym, s_type, source_name])
+		c.execute("""UPDATE temp_sources SET family=?, acronym=?, type=? WHERE name=?""",[family, acronym, s_type, source_name])
 
-print "update flow_sources with in_data/Sources_trade.csv"
+print "update sources with in_data/Sources_trade.csv"
 with open('in_data/Sources_trade.csv', 'r') as sources:
 	reader=UnicodeReader(sources)
 	reader.next()
@@ -246,9 +247,9 @@ with open('in_data/Sources_trade.csv', 'r') as sources:
 		source_slug=row[0].strip()
 		author=row[1].strip()
 		# print author
-		c.execute("""UPDATE sources SET author=? WHERE slug=?""",[author, source_slug])
+		c.execute("""UPDATE temp_sources SET author=? WHERE slug=?""",[author, source_slug])
 
-print "update flow_sources with in_data/Sources_currency.csv"
+print "update sources with in_data/Sources_currency.csv"
 with open('in_data/Sources_currency.csv', 'r') as sources:
 	reader=UnicodeReader(sources)
 	reader.next()
@@ -258,8 +259,46 @@ with open('in_data/Sources_currency.csv', 'r') as sources:
 		# print author
 		c.execute("""UPDATE sources SET author=? WHERE slug=?""",[author, source_slug])
 
-print "flow_sources create"
+print "Sources create"
 print "-------------------------------------------------------------------------"
+
+
+################################################################################
+##			Create table sources
+################################################################################
+
+print "Create the slug in source table"
+c.execute("""SELECT * from temp_sources """)
+table = [list(r) for r in  c]
+with_slug = 0
+without_slug = 0
+nb_errors = 0
+for row in table:
+	# print row
+	if row[1] != None and row[3] != None:
+		acronym = row[1]
+		s_type = row[3]
+		volume = row[10]
+		shelf_number = row[11]
+		print volume
+		slug = acronym + '_' +  s_type + '_' + volume + '_' + shelf_number
+		with_slug += 1
+	else:
+		slug=row[0]
+		without_slug += 1
+	try:
+		c.execute("""INSERT INTO sources (slug, acronym, family, type, author, name, edition, country, url, pages, volume, shelf_number, dates, notes)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",(slug, row[1], row[2],row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13]))
+	except sqlite3.Error as e:
+		nb_errors += 1
+		print "An error occurred:", e.args[0]
+print "-------------------------Erros Log on Sources----------------------------"
+print "nb_errors", nb_errors
+print "with_slug", with_slug
+print "without_slug", without_slug
+print "-------------------------------------------------------------------------"
+		# print slug
+		# c.execute("""UPDATE sources SET slug=? where acronym=? and type=? and volume=?""",[slug, acronym, s_type, volume])
 
 ################################################################################
 ##			add curency source to table sources
