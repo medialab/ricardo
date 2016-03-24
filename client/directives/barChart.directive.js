@@ -42,9 +42,7 @@ angular.module('ricardo.directives.barChart', [])
 
         var brush
 
-        function barChart(data, start, end) {
-
-          var margin = {top: 20, right: 0, bottom: 40, left: 0},
+        var margin = {top: 20, right: 0, bottom: 40, left: 0},
               width = document.querySelector('#bar-chart-container').offsetWidth,
               height = 60;
 
@@ -67,37 +65,39 @@ angular.module('ricardo.directives.barChart', [])
           var svg = d3.select("#bar-chart-container").append("svg")
               .attr("width", width )
               .attr("height", height + margin.top + margin.bottom)
-            .append("g")
+              .append("g")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-          x.domain([new Date(start, 0, 1), new Date(end, 0, 1)]);
-          y.domain([0, d3.max(data, function(d) { return d.nb_reporting; })]);
-
-          svg.append("g")
-              .attr("class", "x axis")
-              .attr("transform", "translate(0," + height + ")")
-              .call(xAxis);
-
-          svg.append("g")
-              .attr("class", "y axis")
-              .call(yAxis)
-              .call(customAxis);
-
-            function customAxis(g) {
+          function customAxis(g) {
               g.selectAll("text")
                 .attr("x", 4)
                 .attr("dy", -4)
                 .attr("font-size", "0.85em");
-              }
+            }
 
-          // var expNbReportings = data.filter(function (d) { return d.type === "Exp"});
-          // var impNbReportings = data.filter(function (d) { return d.type === "Imp"});
+        function barChart(data, start, end) {
+
+          x.domain([new Date(start, 0, 1), new Date(end, 0, 1)]);
+          y.domain([0, d3.max(data, function(d) { return d.nb_reporting; })]);
 
           var endStart = (end-start);
           var barWidth = Math.floor(width / endStart);
 
+          // var expNbReportings = data.filter(function (d) { return d.type === "Exp"});
+          // var impNbReportings = data.filter(function (d) { return d.type === "Imp"});
 
-          svg.selectAll(".bar")
+          if (svg.select('g').empty()){
+            svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + height + ")")
+              .call(xAxis);
+
+            svg.append("g")
+              .attr("class", "y axis")
+              .call(yAxis)
+              .call(customAxis);
+
+            svg.selectAll(".bar")
               .data(data)
               .enter().append("rect")
               .attr("class", "bar")
@@ -107,24 +107,50 @@ angular.module('ricardo.directives.barChart', [])
               .attr("height", function(d) { return height - y(d.nb_reporting); })
               .style({fill: "#cc6666"})
 
-
               /* 50 line */
-          svg.append("line")
-               .attr("x1", 0)
-               .attr("y1", y(50))
-               .attr("x2", width)
-               .attr("y2", y(50))
-               .attr("stroke-width", 1)
-               .attr("stroke", "grey");
+              svg.append("line")
+                   .attr("class","line50")
+                   .attr("x1", 0)
+                   .attr("y1", y(50))
+                   .attr("x2", width)
+                   .attr("y2", y(50))
+                   .attr("stroke-width", 1)
+                   .attr("stroke", "grey");
 
               /* 100 line */
-          svg.append("line")
-               .attr("x1", 0)
-               .attr("y1", y(100))
-               .attr("x2", width)
-               .attr("y2", y(100))
-               .attr("stroke-width", 1)
-               .attr("stroke", "grey");
+              svg.append("line")
+                   .attr("class","line100")
+                   .attr("x1", 0)
+                   .attr("y1", y(100))
+                   .attr("x2", width)
+                   .attr("y2", y(100))
+                   .attr("stroke-width", 1)
+                   .attr("stroke", "grey");
+          }
+          else{
+             svg.selectAll(".bar")
+                .data(data)
+                .transition().duration(500)
+                // .attr("x", function(d) { return x(new Date(d.year, 0, 1)) })
+                // .attr("width", barWidth)
+                .attr("y", function(d) { return y(d.nb_reporting); })
+                .attr("height", function(d) { return height - y(d.nb_reporting); })
+
+            svg.select(".x.axis")
+                .transition().duration(500)
+                .call(xAxis)
+            svg.select(".y.axis")
+                .transition().duration(500)
+                .call(yAxis)
+                .call(customAxis);
+            svg.select(".line50")
+                .attr("y1", y(50))
+                .attr("y2", y(50))
+            svg.select(".line100")
+                .attr("y1", y(100))
+                .attr("y2", y(100))
+          }
+
 
           function type(d) {
             d.nb_reporting = +d.nb_reporting;
@@ -132,18 +158,17 @@ angular.module('ricardo.directives.barChart', [])
           }
 
           // Brush
-
           brush = d3.svg.brush()
             .x(x)
-            .extent([new Date(scope.startDate), new Date(scope.endDate)])
+            .extent([new Date(scope.startDate,0,1), new Date(scope.endDate,0,1)])
             .on("brush", function(){
-              if(brush.empty()){
-                brush.clear()
-                // dispatch.brushing(x.domain())
-              }
-              else{
-                // dispatch.brushing(brush.extent())
-              }
+              // if(brush.empty()){
+              //   brush.clear()
+              //   dispatch.brushing(x.domain())
+              // }
+              // else{
+              //   dispatch.brushing(brush.extent())
+              // }
             })
             .on("brushend", brushended);
 
@@ -180,6 +205,7 @@ angular.module('ricardo.directives.barChart', [])
             gBrush.selectAll("rect")
                 .attr("height", height);
           }else{
+            console.log([scope.startDate,scope.endDate])
             gBrush
               .call(brush)
               .call(brush.event);

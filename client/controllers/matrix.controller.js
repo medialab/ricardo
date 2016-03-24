@@ -9,14 +9,29 @@ angular.module('ricardo.controllers.matrix', [])
 
       var yearsDelta = d3.range(1787, 1940)
 
-      $scope.sorted = {};
-      $scope.sort = [
-      {type: {value: "name",writable: true},
-       name: {value: "name",writable: true}
+
+      $scope.partnersChoices = [
+      {type: {value: "",writable: true},
+       name: {value: "Actual Reported",writable: true}
        },
-      {type: {value: "coverage",writable: true},
-       name: {value: "coverage",writable: true}
-      }]
+      {type: {value: "Worldbestguess",writable: true},
+       name: {value: "World Best Guess",writable: true}
+      },
+      {type: {value: "Worldasreported",writable: true},
+       name: {value: "World Reported",writable: true}
+      },
+      {type: {value: "Worldsumpartners",writable: true},
+       name: {value: "World Sum Partners",writable: true}
+      },
+      {type: {value: "Worldasreported2",writable: true},
+       name: {value: "World Sub-Reporting",writable: true}
+      },
+      {type: {value: "Worldestimated",writable: true},
+       name: {value: "World Estimated",writable: true}
+      },
+      ]
+      $scope.partners= $scope.partnersChoices[0]
+
 
       $scope.stackflowChoices = [
       {type: {value: "total_flow",writable: true},
@@ -55,7 +70,7 @@ angular.module('ricardo.controllers.matrix', [])
         {type: {value: "multiple",writable: true},
          name: {value: "Multiple",writable: true}}
         ];
-      $scope.stackchartLayout = $scope.stackchartLayoutChoices[2]
+      $scope.stackchartLayout = $scope.stackchartLayoutChoices[0]
 
       $scope.matrixLayoutChoices = [
         {type: {value: "coverage",writable: true},
@@ -81,32 +96,7 @@ angular.module('ricardo.controllers.matrix', [])
     			]
 
   	  $scope.continentsColors = continentColors2;
-
-        function init() {
-          apiService
-            .getReportingsAvailableByYear()
-            .then(function (data){
-              //data manipulation
-              $scope.data=data;
-          //     var data_nest=d3.nest()
-          //                     .key(function(d){return d.reporting_id})
-          //                     .entries(data)
-          //     data_nest.forEach(function(d){
-          //       d["reporting"]=d.values[0]["reporting"];
-          //       d["continent"]=d.values[0]["continent"];
-          //     })
-
-              // transform array of string in array of int
-            //   data.forEach(function (r) {
-            //     r.years = r.years.split(',')
-            //                        .map(function (e) {
-            //                       return e = parseInt(e)
-            //                     })
-            //   })
-
-            //   $scope.matrix = data
-            // })
-            $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {
+      $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {
               if (newVal !== undefined && newVal !== oldVal && newVal[0] != newVal[1]) {
                 $scope.selectedMinDate = newVal[0];
                 $scope.selectedMaxDate = newVal[1];
@@ -119,29 +109,35 @@ angular.module('ricardo.controllers.matrix', [])
               }
             })
 
+      $scope.changePartner = function (partners) {
+          $scope.partners=partners;
+          init();
+      }
 
-            // $scope.$watch("stackchartFlow", function (newVal,oldVal){
+      $scope.changeStackFlow = function (flow) {
+          $scope.stackchartFlow=flow;
+      }
+      $scope.changeMatrixFlow = function (flow) {
+          $scope.matrixFlow=flow;
+      }
+      $scope.changeStackLayout = function (layout) {
+        $scope.stackchartLayout = layout;
+        ;
+      }
+      $scope.changeMatrixLayout = function (layout) {
+        $scope.matrixLayout = layout;
+        ;
+      }
 
-            // })//not trigered when change...
+      function init() {
+          apiService
+            .getReportingsAvailableByYear(
+              {partner_ids:$scope.partners.type.value
+              })
+            .then(function (data){
+              //data manipulation
+              $scope.data=data;
 
-            $scope.changeStackFlow = function (flow) {
-                $scope.stackchartFlow=flow;
-            }
-            $scope.changeMatrixFlow = function (flow) {
-                $scope.matrixFlow=flow;
-            }
-            $scope.changeStackLayout = function (layout) {
-              $scope.stackchartLayout = layout;
-              ;
-            }
-            $scope.changeMatrixLayout = function (layout) {
-              $scope.matrixLayout = layout;
-              ;
-            }
-
-            // d3.csv("../overview.csv",function(data){
-
-                // $scope.data=data;
                 var data_nest=d3.nest()
                                 .key(function(d){return d.reporting})
                                 .entries(data)
@@ -183,7 +179,7 @@ angular.module('ricardo.controllers.matrix', [])
                 $scope.selectedMaxDate = maxDate ?
                   maxDate : Math.min( $scope.selectedMaxDate, $scope.rawMaxDate );
 
-                console.log(data);
+
                 var flowContinent=d3.nest()
                                         .key(function(d) { return d.continent; })
                                         .key(function(d) { return d.year; })
@@ -236,7 +232,6 @@ angular.module('ricardo.controllers.matrix', [])
                     )
                   })
                 })
-
                 $scope.flowEntities=d3.nest()
                       .key(function(d) { return d.reporting; })
                       .entries(data);

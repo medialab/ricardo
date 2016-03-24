@@ -204,7 +204,9 @@ def get_reportings_available_by_year():
 
   return json.dumps(json_response,encoding="UTF8")
 
-def get_reportings_overview():
+def get_reportings_overview(partner_ids):
+  partners_clause = "NOT LIKE 'World%'"if partner_ids=="" else "LIKE '%s'"%partner_ids
+
   cursor = get_db().cursor()
   cursor.execute("""SELECT t3.*, continent
                     FROM
@@ -213,19 +215,17 @@ def get_reportings_overview():
                     (SELECT reporting, reporting_id , partner_id, Flow as exports, expimp, Yr, Source
                     FROM flow_joined
                     WHERE expimp = "Exp"
-                    AND partner_id NOT LIKE "World%"
-                    AND Flow is not NULL
-                    AND Flow is not "0.0") t1
+                    AND partner_id %s
+                    AND Flow is not NULL) t1
                     LEFT JOIN
                       (SELECT reporting_id ,partner_id, Flow as imports, expimp, Yr, Source
                     FROM flow_joined
                     WHERE expimp = "Imp"
-                    AND partner_id NOT LIKE "World%"
-                    AND Flow is not NULL
-                    AND Flow is not "0.0") t2
+                    AND partner_id %s
+                    AND Flow is not NULL) t2
                     ON  t1.Yr = t2.Yr AND  t1.reporting_id = t2.reporting_id AND t1.partner_id = t2.partner_id
                     GROUP BY  t1.reporting_id, t1.Yr) t3
-                    LEFT JOIN RICentities ON t3.reporting_id = RICentities.id"""
+                    LEFT JOIN RICentities ON t3.reporting_id = RICentities.id"""%(partners_clause,partners_clause)
                 )
   json_response=[]
   table = [list(r) for r in cursor]

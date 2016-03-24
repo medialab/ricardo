@@ -45,7 +45,7 @@ angular.module('ricardo.directives.reportingEntities', [])
         scope.$watch('layout', function(newValue, oldValue) {
           if ( newValue!==oldValue && scope.ngData ) {
             layout=newValue.type.value;
-            console.log(layout)
+            // console.log(layout)
             draw(scope.ngData);
           }
         })
@@ -119,13 +119,13 @@ angular.module('ricardo.directives.reportingEntities', [])
           var reportings=gridData.map(function(d){
             return d.reporting;
           })
-          // var years=gridData.map(function(d){
-          //   return d.year;
-          // })
-          var years=d3.range(1786,1938)
+          var years=gridData.map(function(d){
+            return d.year;
+          })
+          // var years=d3.range(1786,1938)
 
           reportings=d3.set(reportings).values();
-          // years=d3.set(years).values();
+          years=d3.set(years).values();
 
           var emptyMatrix=[]
           reportings.forEach(function(d){
@@ -148,8 +148,8 @@ angular.module('ricardo.directives.reportingEntities', [])
                     .attr("height",height+margin.top+margin.bottom)
                     .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-          // console.log(maxVal)
 
+          // console.log(d3.extent(gridData,function(d){ return  +d.values[yValue];}))
           var color = d3.scale.linear()
                         .domain(d3.extent(gridData,function(d){ return  +d.values[yValue];}))
                         .range(["#9e9ac8","#54278f"])
@@ -166,7 +166,7 @@ angular.module('ricardo.directives.reportingEntities', [])
 
           var value_range=(color.domain()[1]-color.domain()[0])/5;
           var legend_sample=d3.range(color.domain()[0],color.domain()[1],value_range)
-          console.log(legend_sample)
+          // console.log(legend_sample)
           var legend=svg.append("g")
                      .attr("class",legend)
                      .attr("transform", "translate(" +(width-margin.right-100) + ","+(0-margin.top)+")");

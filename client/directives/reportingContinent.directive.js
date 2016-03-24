@@ -20,7 +20,7 @@ angular.module('ricardo.directives.reportingContinent', [])
 
         scope.$watch("ngData", function (newValue, oldValue){
             if(newValue && scope.ngData){
-            	draw(newValue)
+            	draw(newValue);
             }
         });
 
@@ -151,7 +151,6 @@ angular.module('ricardo.directives.reportingContinent', [])
             area.y0(height/6)
                 .y1(function(d) { return y(d.values[yValue]); });
 
-
             if (svg.select('g').empty()){
                   var multi_g=svg.selectAll(".multiple")
                       .data(nested)
@@ -197,6 +196,7 @@ angular.module('ricardo.directives.reportingContinent', [])
             //y domain not updated
             else{
                   svg.selectAll(".multiple")
+                      .data(nested)
                       .transition().duration(500)
                       .attr("transform", function(d, i) { return "translate(0," + ((5-i) * height/6) + ")"; })
                   svg.selectAll(".area")
@@ -301,6 +301,7 @@ angular.module('ricardo.directives.reportingContinent', [])
             }
             else{
                   svg.selectAll(".multiple")
+                      .data(layers)
                       .transition().duration(500)
                       .attr("transform", "translate(0,0)")
                   svg.selectAll(".area")

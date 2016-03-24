@@ -2,11 +2,11 @@
 	<div class="row">
 		<div class="col-md-12">
 			<h2>
-				Reportings available sort by
+				Reportings available by partners
 				<div class="inline-select">
-			      <ui-select ng-model="sorted" theme="bootstrap" ng-change="sortReportings(sorted)">
+			      <ui-select ng-model="partners" theme="bootstrap" ng-change="changePartner(partners)">
 			        <match placeholder="sort by ...">{{$select.selected.name.value}}</match>
-			        <choices repeat="item in sort | filter: $select.search">
+			        <choices repeat="item in partnersChoices | filter: $select.search">
 			          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
 			        </choices>
 			      </ui-select>

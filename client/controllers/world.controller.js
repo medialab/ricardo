@@ -19,13 +19,13 @@ angular.module('ricardo.controllers.world', [])
     worldFlowsYears.forEach( function (d) {
       if (d.key)
         worldFlowsYearsFormat.push({
-          reporting_id: "Worldbestguess",
+          reporting_id: null,
           type: null,
-          partner_id: null,
+          partner_id: "Worldbestguess",
           year: d.key,
           imp:d.values[1].flows,
           exp:d.values[0].flows,
-          tot: d.values[1].flows + d.values[0].flows,
+          total: d.values[1].flows + d.values[0].flows,
           currency: "sterling",
           sources: d.values[0].sources
         });
@@ -321,9 +321,9 @@ angular.module('ricardo.controllers.world', [])
       worldFlowsYears.forEach( function (d) {
         if (d.key)
           worldFlowsYearsFormat.push({
-            reporting_id: "Worldbestguess",
+            reporting_id: null,
             type: null,
-            partner_id: null,
+            partner_id:  "Worldbestguess",
             year: d.key,
             imp:d.values[1].flows,
             exp:d.values[0].flows,
