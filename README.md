@@ -16,10 +16,14 @@ Python 2.7, pip, node, npm, and [bower](http://bower.io/).
 
 To install bower:
 
-```
+```bash
 (sudo) npm install -g bower
 ```
 
+To install pip
+```bash
+sudo easy_install pip
+```
 ### Database
 
 Move the `RICardo_visualisation.sqlite` database file to `api/ricardo_api` (you can change the path of the database by editing the `api/ricardo_api/config.py` if needed.
