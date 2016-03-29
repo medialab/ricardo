@@ -9,8 +9,6 @@ angular.module('ricardo.directives.reportingEntities', [])
       template: '<div id="reporting-entities-container"></div>',
       scope: {
           ngData: '=',
-          startDate: '=',
-          endDate: '=',
           flowType: "=",
           layout: "="
       },
@@ -21,18 +19,6 @@ angular.module('ricardo.directives.reportingEntities', [])
               draw(newValue);
             }
         });
-
-        scope.$watchCollection('endDate', function(newValue, oldValue) {
-          if ( newValue && scope.ngData ) {
-            // draw(scope.ngData)
-          }
-        })
-
-        scope.$watch('startDate', function(newValue, oldValue) {
-          if ( newValue && scope.ngData ) {
-            // draw(scope.ngData)
-          }
-        })
 
         scope.$watch('flowType', function(newValue, oldValue) {
           if ( newValue!==oldValue && scope.ngData ) {
@@ -46,7 +32,8 @@ angular.module('ricardo.directives.reportingEntities', [])
           if ( newValue!==oldValue && scope.ngData ) {
             layout=newValue.type.value;
             // console.log(layout)
-            draw(scope.ngData);
+            var data=order(layout,scope.ngData);
+            reorder(data);
           }
         })
 
@@ -70,7 +57,8 @@ angular.module('ricardo.directives.reportingEntities', [])
 
         var margin = {top: 50, right: 0, bottom: 40, left: 200},
             width = document.querySelector('#reporting-entities-container').offsetWidth-margin.left-margin.right,
-            height
+            height,
+            orders
 
         var gridHeight=10,
             gridGap=1
@@ -78,7 +66,7 @@ angular.module('ricardo.directives.reportingEntities', [])
         var x = d3.scale.linear()
               .range([0, width]);
 
-        var y = d3.scale.linear()
+        var y = d3.scale.ordinal()
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -88,20 +76,33 @@ angular.module('ricardo.directives.reportingEntities', [])
         var tooltip = d3.select("body")
                       .append("div")
                       .attr("class", "matrix-tooltip");
+
+        // Precompute the orders.
+
+
+        function order(layout,data){
+          switch(layout){
+            case "coverage": data.sort(function(a, b){ return d3.descending(a.values.length, b.values.length)})
+            break;
+            case "alphabet":  data.sort(function(a, b){ return d3.ascending(a.key, b.key)})
+            break;
+            case "continent": data.sort(function(a, b) { return d3.ascending(a.values[0].continent, b.values[0].continent) })
+            break;
+          }
+          return data;
+        }
+        function reorder(data){
+          var reportings=data.map(function(d){ return d.key; })
+          y.domain(reportings);
+          d3.select("#reporting-entities-container").selectAll(".entities")
+            .transition().duration(250)
+            .attr("transform", function(d){ return "translate(0 ,"+ y(d.key) + ")"});
+        }
         function draw(data){
+          data=order(layout,data);
 
           d3.select("#reporting-entities-container").select("svg").remove();
 
-          if(layout==="coverage"){
-              data.sort(function(a, b){
-                  return d3.descending(a.values.length, b.values.length)
-              })
-          }
-          else{
-            data.sort(function(a, b){
-                  return d3.ascending(a.key, b.key)
-            })
-          }
           var gridData=[]
 
           data.forEach(function(d){
@@ -116,15 +117,13 @@ angular.module('ricardo.directives.reportingEntities', [])
             })
           })
 
-          var reportings=gridData.map(function(d){
-            return d.reporting;
+          var reportings=data.map(function(d){
+            return d.key;
           })
           var years=gridData.map(function(d){
             return d.year;
           })
           // var years=d3.range(1786,1938)
-
-          reportings=d3.set(reportings).values();
           years=d3.set(years).values();
 
           var emptyMatrix=[]
@@ -138,8 +137,8 @@ angular.module('ricardo.directives.reportingEntities', [])
           })
 
           //map reportings array to object
-          var reporting_map={}
-          reportings.forEach(function(d,i){ reporting_map[d]=i });
+          // var reporting_map={}
+          // reportings.forEach(function(d,i){ reporting_map[d]=i });
 
           height=gridHeight*reportings.length;
 
@@ -158,8 +157,8 @@ angular.module('ricardo.directives.reportingEntities', [])
           x.domain([1786,1938]);
 
 
-          y.domain([0,reportings.length-1])
-            .range([0, height]);
+          y.domain(reportings)
+            .rangeRoundBands([0, height])
 
 
           var gridWidth=width/(1938-1786);
@@ -188,11 +187,15 @@ angular.module('ricardo.directives.reportingEntities', [])
           //         .attr("y", 6)
           //         .attr("font-size",11)
 
-
-
           svg.append("g")
                 .attr("class", "x axis")
                 .call(xAxis);
+
+          // var vis=document.querySelector("#reporting-entities-container");
+          // vis.addEventListener('scroll', function(evt) {
+          //     svg.select(".x.axis")
+          //         .attr('transform', "translate(0,"+(this.scrollTop-margin.top+10)+")");
+          // }, false)
 
           var matrix=svg.append("g")
                      .attr("class", "matrix")
@@ -204,20 +207,31 @@ angular.module('ricardo.directives.reportingEntities', [])
                         .data(emptyMatrix)
                         .enter().append("rect")
                         .attr("x", function(d) { return x(d.year);})
-                        .attr("y", function(d) { return y(reporting_map[d.reporting]);})
+                        .attr("y", function(d) { return y(d.reporting);})
                         .attr("class", "emptycell")
                         .attr("width", gridWidth-gridGap)
-                        .attr("height", gridHeight-gridGap )
+                        .attr("height", y.rangeBand()-gridGap)
                         .style("fill", "lightgrey")
 
-          var tile=matrix.append("g")
+          var entity=matrix.append("g")
                       .selectAll(".entities")
                       .data(data)
                       .enter().append("g")
                       .attr("class","entities")
-                      .attr("transform", function(d){ return "translate(0 ,"+ y(reporting_map[d.key]) + ")"});
-
-          tile.each(function(d){
+                      .attr("transform", function(d){ return "translate(0 ,"+ y(d.key) + ")"});
+           entity.append("rect")
+                .attr("class","overlay")
+                .attr("width",width)
+                .attr("height",gridHeight-gridGap)
+                .style("fill","none")
+                .style("pointer-events","all")
+                .on("mouseover",function(d){
+                  d3.select(this).style("stroke","black")
+                })
+                .on("mouseout",function(d){
+                  d3.select(this).style("stroke","none")
+                })
+          entity.each(function(d){
               var e = d3.select(this);
               e.selectAll("rect")
                .data(d.values)
@@ -226,6 +240,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                .attr("width", gridWidth-gridGap)
                .attr("height", gridHeight-gridGap )
                .style("fill", function(v) {return continentColors[v.continent];})
+               .style("pointer-events","all")
                .on('mouseover', function(v) {
                   d3.select(this).style("stroke","black");
                   d3.select(this.parentNode).select("text").style("stroke","black");
@@ -252,11 +267,12 @@ angular.module('ricardo.directives.reportingEntities', [])
                 });
 
                e.append("text")
-                .text(function(d){ return d.key})
+                .text(function(d){ return d.key.split("(")[0]})
                 .attr("text-anchor","end")
                 .attr("x",-2)
                 .attr("y",6)
                 .attr("font-size",11)
+
 
             })
 

@@ -30,7 +30,7 @@ angular.module('ricardo.controllers.matrix', [])
        name: {value: "World Estimated",writable: true}
       },
       ]
-      $scope.partners= $scope.partnersChoices[0]
+      $scope.partners= $scope.partnersChoices[1]
 
 
       $scope.stackflowChoices = [
@@ -70,13 +70,15 @@ angular.module('ricardo.controllers.matrix', [])
         {type: {value: "multiple",writable: true},
          name: {value: "Multiple",writable: true}}
         ];
-      $scope.stackchartLayout = $scope.stackchartLayoutChoices[0]
+      $scope.stackchartLayout = $scope.stackchartLayoutChoices[2]
 
       $scope.matrixLayoutChoices = [
         {type: {value: "coverage",writable: true},
          name: {value: "Coverage",writable: true}},
-        {type: {value: "alphabet",writable: true},
-         name: {value: "Alphabet",writable: true}}
+         {type: {value: "continent",writable: true},
+         name: {value: "Continent",writable: true}},
+         {type: {value: "alphabet",writable: true},
+         name: {value: "Alphabet",writable: true}},
         ];
       $scope.matrixLayout = $scope.matrixLayoutChoices[0]
 
@@ -137,8 +139,8 @@ angular.module('ricardo.controllers.matrix', [])
             .then(function (data){
               //data manipulation
               $scope.data=data;
-
-                var data_nest=d3.nest()
+          // d3.csv("../overview.csv",function(data){
+            var data_nest=d3.nest()
                                 .key(function(d){return d.reporting})
                                 .entries(data)
 
@@ -243,6 +245,8 @@ angular.module('ricardo.controllers.matrix', [])
                   })
                 })
           })
+
+          // })
         }
 
         init()

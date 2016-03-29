@@ -18,21 +18,7 @@
 				Each reporting is colored by his continent appartenance.
 			</p>
 		</div>
-		<div class="col-md-12">
-			<!-- <div class="row">
-				<p class="col-md-2" ng-repeat="item in continentsColors" style="heigth:10pwx; background-color:{{item.color}}">
-					{{item.name}}
-				</p>
-			</div> -->
-			<h4> Number of Reporting Entities by year</h4>
-			<bar-chart
-			          ng-data="nbReportings"
-			          start-date="selectedMinDate"
-			          end-date="selectedMaxDate"
-			          raw-start-date="rawMinDate"
-			          raw-end-date="rawMaxDate">
-			</bar-chart>
-		</div>
+
 		<div class="col-md-12">
 		<!-- <reportings-available
 	        ng-data="matrix"
@@ -65,7 +51,21 @@
 			        layout="stackchartLayout">
 		</reporting-continent>
 		</div>
-
+		<div class="col-md-12">
+			<!-- <div class="row">
+				<p class="col-md-2" ng-repeat="item in continentsColors" style="heigth:10pwx; background-color:{{item.color}}">
+					{{item.name}}
+				</p>
+			</div> -->
+			<h4> Number of Reporting Entities by year</h4>
+			<bar-chart
+			          ng-data="nbReportings"
+			          start-date="selectedMinDate"
+			          end-date="selectedMaxDate"
+			          raw-start-date="rawMinDate"
+			          raw-end-date="rawMaxDate">
+			</bar-chart>
+		</div>
 		<div class="col-md-12">
 			<h4>Flow by Reporting Entities for
 	    	<div class="inline-select">
@@ -87,8 +87,6 @@
 		    </div>
 			</h4>
 			<reporting-entities ng-data="flowEntities"
-			start-date="selectedMinDate"
-			end-date="selectedMaxDate"
 			flow-type="matrixFlow"
 			layout="matrixLayout">
 			</reporting-entities>

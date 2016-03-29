@@ -1074,7 +1074,7 @@ path.lineTrajectory {
   margin: 0 auto;
 }
 
-.matrix-tooltip {
+.matrix-tooltip, .continent-tooltip{
   position: absolute;
   background: #333;
   color: #ddd;
@@ -1086,4 +1086,6 @@ path.lineTrajectory {
   margin-top: -40px;
   pointer-events: none;
 }
+
+
 

@@ -162,10 +162,10 @@ angular.module('ricardo.directives.barChart', [])
             .x(x)
             .extent([new Date(scope.startDate,0,1), new Date(scope.endDate,0,1)])
             .on("brush", function(){
-              // if(brush.empty()){
-              //   brush.clear()
-              //   dispatch.brushing(x.domain())
-              // }
+              if(brush.empty()){
+                brush.clear()
+                // dispatch.brushing(x.domain())
+              }
               // else{
               //   dispatch.brushing(brush.extent())
               // }
@@ -205,7 +205,6 @@ angular.module('ricardo.directives.barChart', [])
             gBrush.selectAll("rect")
                 .attr("height", height);
           }else{
-            console.log([scope.startDate,scope.endDate])
             gBrush
               .call(brush)
               .call(brush.event);

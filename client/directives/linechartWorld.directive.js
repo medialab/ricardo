@@ -342,7 +342,7 @@ angular.module('ricardo.directives.linechartWorld', [])
                        .text(d.year);
 
                 // Define the gradient
-                  var gradient = chart.append("chart:defs")
+                var gradient = chart.append("chart:defs")
                       .append("chart:linearGradient")
                       .attr("id", "gradient")
                       .attr("x1", "0%")
