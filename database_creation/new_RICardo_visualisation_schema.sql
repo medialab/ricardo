@@ -23,6 +23,7 @@ CREATE TABLE `exchange_rates`
 	`modified_currency`		TEXT,
 	`rate_to_pounds`		REAL,
 	`source`			 	INTEGER,
+	`notes`					TEXT,
 	PRIMARY KEY (`year`,`modified_currency`),
 	FOREIGN KEY (source) 	REFERENCES sources(id)
 );
