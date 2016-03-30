@@ -183,170 +183,42 @@ print "Transfert old sqlite into the new sqlite database"
 print "-------------------------------------------------------------------------"
 
 ################################################################################
-##			Create table currency_sources
-################################################################################
-# print "Create currency_sources"
-# c.execute("""DROP TABLE IF EXISTS currency_sources;""")
-# c.execute("""CREATE TABLE IF NOT EXISTS currency_sources AS
-# 	SELECT `Source Currency` as currency, `Note Currency`as notes
-# 	FROM old_rate
-# 	""")
-# print "currency_sources created"
-
-
-################################################################################
 ##			Create table sources
 ################################################################################
-# print "create sources from in_data/source_trade_final.csv"
 
-# c.execute("""CREATE TABLE IF NOT EXISTS sources (slug, acronym, family, type, author, name, edition, country, url, pages, volume, shelf_number, dates, notes)""")
-
-# c.execute("""CREATE TABLE IF NOT EXISTS sources (slug, acronym, reference, type, author, name, edition_date, country, url, pages, volume, shelf_number, dates, notes)""")
+with open('in_data/oups_fixed.csv', 'r') as oups_sources:
+	oups=UnicodeReader(oups_sources)
+	oups.next()
+	# oups = [list(r) for r in oups]
+	oups = {row[0]:row for row in oups}
 
 with open('in_data/refine_source_merge.csv', 'r') as sources:
 	reader=UnicodeReader(sources)
 	reader.next()
 	uniqueId = []
+	# uniqueId = set()
 	for row in reader:
-		if row[0]!="" and row[0] != "OUPS":
-			# if "New series of the Spanish foreign sector 1850-2000" == row[2].strip():
-			# 	print "found in sources %s"%row[2].strip()
-			_id = row[7]
-			if _id in uniqueId:
-				pass
-			else:
+		_id = row[7]
+		if _id in uniqueId:
+			print row
+			pass
+		else:
+			if row[0]!="" and row[0] != "OUPS":
+				# if "New series of the Spanish foreign sector 1850-2000" == row[2].strip():
+				# 	print "found in sources %s"%row[2].strip()
 				uniqueId.append(_id)
 				c.execute("""INSERT INTO sources (
 					slug, acronym, family, type, author, name, edition, country, url, pages, volume, shelf_number, dates, notes)
-					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",( row[7].strip(), row[0].strip(), row[12].strip(), 
+					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",(row[7].strip(), row[0].strip(), row[12].strip(), 
 						row[13].strip(), row[8].strip(), row[2].strip(), row[4].strip(),row[9].strip(),
 						row[10].strip(),row[6].strip(),row[1].strip(),row[3].strip(),row[5].strip(),row[11].strip())
 					)
 
-
-# # c.execute("""UPDATE old_flow SET Source = Source || `Source suite` WHERE `Source suite`is not null""")
-# # c.execute("""UPDATE old_flow SET Source=trim(source) WHERE 1 """)
-
-# # print "update temp_sources with in_data/ricardo_flow_sources_final_merge_duplicate.csv"
-# # with open('in_data/ricardo_flow_sources_final_merge_duplicate.csv', 'r') as sources:
-# # 	reader=UnicodeReader(sources)
-# # 	reader.next()
-# # 	for row in reader:
-# # 		new_id=row[0].strip()
-# # 		old_ids='"'+'","'.join(oi.strip() for oi in row[1].split("|") if oi != new_id)+'"'
-# # 		c.execute("""DELETE FROM temp_sources WHERE slug in (%s)"""%old_ids)
-# # 		c.execute("""UPDATE old_flow SET source=? WHERE source in (%s)"""%old_ids,(new_id,))
-
-
-# c.execute("""UPDATE temp_sources SET slug=trim(slug) WHERE 1 """)
-
-# # let's transform empty string value in flow to NULL
-# c.execute("""UPDATE old_flow SET Source=NULL WHERE Source="" """)
-
-# print "update temp_sources with in_data/sources_slug_final.csv"
-# with open('in_data/source_slug_final.csv', 'r') as sources:
-# 	reader=UnicodeReader(sources)
-# 	reader.next()
-# 	i = 0
-# 	for row in reader:
-# 		i +=1
-# 		family=row[0].strip()
-# 		acronym=row[1].strip()
-# 		source_name=row[2].strip()
-# 		if source_name == "New series of the Spanish foreign sector 1850-2000":
-# 			print "found in slug %s"%source_name
-# 		s_type=row[3].strip()
-# 		# print i, row
-# 		c.execute("""UPDATE temp_sources SET family=?, acronym=?, type=? WHERE name=?""",[family, acronym, s_type, source_name])
-
-# print "update sources with in_data/Sources_trade.csv"
-# with open('in_data/source_trade_final.csv', 'r') as sources:
-# 	reader=UnicodeReader(sources)
-# 	reader.next()
-# 	for row in reader:
-# 		source_slug=row[0].strip()
-# 		author=row[1].strip()
-# 		# print author
-# 		c.execute("""UPDATE temp_sources SET author=? WHERE slug=?""",[author, source_slug])
-
-# print "Export sources with trade and slug"
-# c.execute("""SELECT * from temp_sources """)
-# sources = [list(r) for r in  c]
-# sourcesCSV = []
-# for row in sources:
-# 	sourcesCSV.append(row)
-# # csvTitle = unicodedata.normalize('NFD', "source_trade_slug").encode('ascii', 'ignore')
-# writer = UnicodeWriter(open(os.path.join("./out_data/", 'source_trade_slug' + '.csv'), "w"))
-# writer.writerow([description[0] for description in c.description])
-# writer.writerows(sourcesCSV)
-
-# print "update sources with in_data/Sources_currency.csv"
-# with open('in_data/source_currency_final.csv', 'r') as sources:
-# 	reader=UnicodeReader(sources)
-# 	reader.next()
-# 	for row in reader:
-# 		source_slug=row[0].strip()
-# 		author=row[1].strip()
-# 		# print author
-# 		c.execute("""UPDATE sources SET author=? WHERE slug=?""",[author, source_slug])
-
-# print "Sources create"
-# print "-------------------------------------------------------------------------"
-
-
-# ################################################################################
-# ##			Create table sources
-# ################################################################################
-
-# print "Create the slug in source table"
-# c.execute("""SELECT * from temp_sources """)
-# table = [list(r) for r in  c]
-# with_slug = 0
-# without_slug = 0
-# nb_errors = 0
-# for row in table:
-# 	# print row
-# 	if row[1] != None and row[3] != None:
-# 		acronym = row[1]
-# 		s_type = row[3]
-# 		volume = row[10]
-# 		shelf_number = row[11]
-# 		print volume
-# 		slug = acronym + '_' +  s_type + '_' + volume + '_' + shelf_number
-# 		with_slug += 1
-# 	else:
-# 		slug=row[0]
-# 		without_slug += 1
-# 	try:
-# 		c.execute("""INSERT INTO sources (slug, acronym, family, type, author, name, edition, country, url, pages, volume, shelf_number, dates, notes)
-# 				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",(slug, row[1], row[2],row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13]))
-# 	except sqlite3.Error as e:
-# 		nb_errors += 1
-# 		print "An error occurred:", e.args[0]
-# print "-------------------------Erros Log on Sources----------------------------"
-# print "nb_errors", nb_errors
-# print "with_slug", with_slug
-# print "without_slug", without_slug
-# print "-------------------------------------------------------------------------"
-# 		# print slug
-# 		# c.execute("""UPDATE sources SET slug=? where acronym=? and type=? and volume=?""",[slug, acronym, s_type, volume])
-
-# ################################################################################
-# ##			add curency source to table sources
-# ################################################################################
-
-# print "Insert currency_sources into sources"
-# c.execute("""INSERT into sources(slug, name, notes)
-# 	SELECT 'currency_' || `Source Currency` as slug,`Source Currency` as name, group_concat(`Note Currency`) as notes
-# 	FROM old_rate
-# 	group by `Source Currency`
-# 	""")
-# print "currency_sources added into source"
-# print "-------------------------------------------------------------------------"
-
 ################################################################################
 ##			Create table exchanges_rates
 ################################################################################
+c.execute("""CREATE TABLE IF NOT EXISTS exchange_rates(year, modified_currency,
+	rate_to_pounds, source, notes) """)
 print "Create exchanges_rates"
 c.execute("""INSERT INTO exchange_rates(year, modified_currency,
 	rate_to_pounds, source)
@@ -356,6 +228,25 @@ c.execute("""INSERT INTO exchange_rates(year, modified_currency,
 	""")
 print "exchanges_rates created"
 print "-------------------------------------------------------------------------"
+print "update exchange_rates"
+c.execute("""SELECT * from exchange_rates""")
+exchange_rates = [list(r) for r in c]
+with open('in_data/oups_fixed.csv', 'r') as oups_sources:
+	oups=UnicodeReader(oups_sources)
+	oups.next()
+	oups = [list(r) for r in oups]
+	oups = {row[0]:row for row in oups}
+	
+	# create_note=lambda oldid: oldid[9:]
+	# for row in oups:
+	# 	c.execute("""UPDATE exchange_rates set source=?, notes=? WHERE source=?""",[row[1], create_note(row[0]), row[0]])
+
+	sub_c=conn.cursor()
+	for row in exchange_rates:
+		if row[3] in oups.keys():
+			if oups[row[3]][1] != "SOURCES TO BE FIXED":
+				print oups[row[3]][1], "\n", oups[row[3]][0],"\n", row[3], "\n", "\n"
+				sub_c.execute("""UPDATE exchange_rates set source=?, notes=? WHERE source=?""",[oups[row[3]][1], oups[row[3]][0], row[3]])
 
 ################################################################################
 ##			Create table expimp_spegen
@@ -383,7 +274,6 @@ c.execute("""INSERT INTO currencies
 print "currencies created"
 print "-------------------------------------------------------------------------"
 
-
 ################################################################################
 ##			Create table RICentities
 ################################################################################
@@ -408,7 +298,6 @@ c.execute("""INSERT INTO entity_names
 	""")
 print "entity_names created"
 print "-------------------------------------------------------------------------"
-
 
 ################################################################################
 ##			Create table RICentities_groups
@@ -480,7 +369,6 @@ print "-------------------------------------------------------------------------
 c.execute("""DROP TABLE IF EXISTS 'old_Exp-Imp-Standard';""")
 print "drop old_Exp-Imp-Standard"
 print "-------------------------------------------------------------------------"
-
 
 print "cleaning done"
 conn.commit()
