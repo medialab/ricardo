@@ -27,7 +27,7 @@ print "-------------------------------------------------------------------------
 
 c.execute("""DROP TABLE IF EXISTS flow_joined;""")
 c.execute("""CREATE TABLE IF NOT EXISTS flow_joined AS
-	 SELECT f.id, f.source, f.flow, f.year,
+	 SELECT f.id, f.source, s.type, f.flow, f.year,
 	 	f.unit as unit,
 		eisg.modified_export_import as expimp,
 		eisg.modified_special_general as spegen,
@@ -54,7 +54,7 @@ c.execute("""CREATE TABLE IF NOT EXISTS flow_joined AS
 		p2.type as partner_type,
 		p2.continent as partner_continent,
 		transport_type,
-		notes,
+		f.notes,
 		species_bullions
 		from flows as f
 		LEFT OUTER JOIN currencies as c
@@ -74,9 +74,12 @@ c.execute("""CREATE TABLE IF NOT EXISTS flow_joined AS
 			 	ON r2.RICname=r1.RICname COLLATE NOCASE
 		LEFT OUTER JOIN expimp_spegen as eisg
 			 	USING (export_import, special_general)
+		LEFT OUTER JOIN sources as s
+				ON s.slug=f.source
 		WHERE expimp != "Re-exp"
 			and partner is not null
 			and partner_sum is null
+			and s.type != "OUPS"
 	""")
 
 print "flow_joined created"
