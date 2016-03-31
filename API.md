@@ -18,6 +18,7 @@ All routes take only GET request parameters as URL query, no inputs
 * /reportings_available_by_years
 * /flows_sources
 * /mirror_entities
+* /RICentities
 
 
 #/flows
@@ -422,4 +423,13 @@ json
 	}...
 ]
 ```
+#/RICentities
+(NOT CALLED)
 
+Get the reporting entities information
+
+## inputs
+
+```
+reporting_ids=list of stings
+```
