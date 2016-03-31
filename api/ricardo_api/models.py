@@ -13,19 +13,18 @@ from difflib import SequenceMatcher
 def ric_entities_data(ids=[]):
     cursor = get_db().cursor()
 
-    where_clause="""WHERE id in ("%s")"""%("\",\"".join(ids)) if len(ids)>0 else ""
+    where_clause="""WHERE slug in ("%s")"""%("\",\"".join(ids)) if len(ids)>0 else ""
 
-    cursor.execute("""SELECT id,RICname,type,central_state,continent
+    cursor.execute("""SELECT slug,RICname,type,continent
                       FROM  RICentities
                       %s"""%where_clause)
 
     rics=[]
-    for (id,r,t,central,continent) in cursor:
+    for (id,r,t,continent) in cursor:
         rics.append({
             "RICid":id,
             "RICname":r,
             "type":t,
-            "central_state":central,
             "continent":continent
             })
     return rics
@@ -33,47 +32,49 @@ def ric_entities_data(ids=[]):
 
 def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources,group_reporting_by="", search_by_reporting=False):
     cursor = get_db().cursor()
-    partners_clause =""" AND partner_id IN ("%s")"""%'","'.join(partner_ids) if len(partner_ids)>0 else ""
-    from_year_clause = """ AND Yr>%s"""%from_year if from_year!="" else ""
-    to_year_clause = """ AND Yr<%s"""%to_year if to_year!="" else ""
+    partners_clause =""" AND partner_slug IN ("%s")"""%'","'.join(partner_ids) if len(partner_ids)>0 else ""
+    from_year_clause = """ AND year>%s"""%from_year if from_year!="" else ""
+    to_year_clause = """ AND year<%s"""%to_year if to_year!="" else ""
 
 
     flow_field = "Flow*Unit/rate" if not original_currency else "Flow*Unit"
     source_field = """,group_concat(Source,"|")""" if with_sources else ""
 
     if group_reporting_by=="":
-        cursor.execute("""SELECT reporting_id,partner_id,Yr,group_concat(expimp,"|"),group_concat(%s,"|"),currency%s
+        cursor.execute("""SELECT reporting_slug,partner_slug,year,group_concat(expimp,"|"),group_concat(%s,"|"),currency%s
                       FROM flow_joined
-                      where reporting_id IN ("%s")
+                      where reporting_slug IN ("%s")
                       %s
                       and  %s is not null
-                      GROUP BY reporting,partner,Yr
-                      ORDER BY  Yr ASC
-                      """%(flow_field,source_field,'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause,flow_field)
+                      and partner_slug NOT LIKE "Worl%%"
+                      and partner_slug is not "NA"
+                      GROUP BY reporting,partner,year
+                      ORDER BY  year ASC
+                      """%(flow_field, source_field,'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause,flow_field)
                 )
     elif group_reporting_by=="continent": # in these 2 usecases, reporting_ids are continents
         if search_by_reporting:  # In this usecase, partner_ids are actually reporting_ids
-            cursor.execute("""SELECT reporting_id, p.continent, Yr, group_concat(expimp,"|"), group_concat(%s,"|"), currency%s
+            cursor.execute("""SELECT reporting_slug, partner_continent, year, group_concat(expimp,"|"), group_concat(%s,"|"), currency%s
                       FROM flow_joined
-                      LEFT OUTER JOIN RICentities r on reporting_id = r.id
-                      LEFT OUTER JOIN RICentities p on partner_id = p.id
-                      WHERE r.id IN ("%s") AND p.continent IN ("%s")
+                      WHERE reporting_slug IN ("%s") AND partner_continent IN ("%s")
                       %s
                       AND ( %s IS NOT null)
-                      GROUP BY p.continent, reporting_id, Yr
-                      ORDER BY Yr ASC
+                      and partner_slug NOT LIKE "Worl%%"
+                      and partner_slug is not "NA"
+                      GROUP BY partner_continent, reporting_slug, year
+                      ORDER BY year ASC
                       """%(flow_field,source_field,'","'.join(partner_ids),'","'.join(reporting_ids),from_year_clause+to_year_clause,flow_field)
                 )
         else:
-            cursor.execute("""SELECT r.continent,partner_id,Yr,group_concat(expimp,"|"),group_concat(%s,"|"),currency%s
+            cursor.execute("""SELECT reporting_continent,partner_slug,year,group_concat(expimp,"|"),group_concat(%s,"|"),currency%s
                       FROM flow_joined
-                      LEFT OUTER JOIN RICentities r on reporting_id = r.id
-                      LEFT OUTER JOIN RICentities p on partner_id = p.id
-                      where r.continent IN ("%s") AND p.continent NOT IN ("%s")
+                      where reporting_continent IN ("%s") AND partner_continent NOT IN ("%s")
                       %s
                       AND ( %s IS NOT null)
-                      GROUP BY r.continent, partner, Yr
-                      ORDER BY Yr ASC
+                      and partner_slug NOT LIKE "Worl%%"
+                      and partner_slug is not "NA"
+                      GROUP BY reporting_continentt, partner, year
+                      ORDER BY year ASC
                       """%(flow_field,source_field,'","'.join(reporting_ids),'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause,flow_field)
                 )
 
@@ -145,13 +146,13 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
 
 def get_flows_sources(reporting_ids,partner_ids,from_year,to_year):
     cursor = get_db().cursor()
-    partners_clause =""" AND partner_id IN ("%s")"""%'","'.join(partner_ids) if len(partner_ids)>0 else ""
-    from_year_clause = """ AND Yr>%s"""%from_year if from_year!="" else ""
-    to_year_clause = """ AND Yr<%s"""%to_year if to_year!="" else ""
+    partners_clause =""" AND partner_slug IN ("%s")"""%'","'.join(partner_ids) if len(partner_ids)>0 else ""
+    from_year_clause = """ AND year>%s"""%from_year if from_year!="" else ""
+    to_year_clause = """ AND year<%s"""%to_year if to_year!="" else ""
 
     cursor.execute("""SELECT distinct(Source)
                       FROM flow_joined
-                      where reporting_id IN ("%s")
+                      where reporting_slug IN ("%s")
                       %s
                       and rate is not null
                       and Flow is not null
@@ -162,15 +163,15 @@ def get_flows_sources(reporting_ids,partner_ids,from_year,to_year):
 
 def get_world_flows(from_year,to_year):
     cursor = get_db().cursor()
-    from_year_clause = """ AND Yr>%s"""%from_year if from_year!="" else ""
-    to_year_clause = """ AND Yr<%s"""%to_year if to_year!="" else ""
+    from_year_clause = """ AND year>%s"""%from_year if from_year!="" else ""
+    to_year_clause = """ AND year<%s"""%to_year if to_year!="" else ""
     # print from_year_clause, to_year_clause
-    cursor.execute("""SELECT SUM(flow*Unit/rate), Yr, COUNT(*), expimp, Source
+    cursor.execute("""SELECT SUM(flow*Unit/rate), year, COUNT(*), expimp, Source
                       FROM flow_joined
-                      WHERE partner_id = "Worldbestguess"
+                      WHERE partner_slug = "Worldbestguess"
                       %s
-                      GROUP BY Yr, expimp
-                      ORDER BY Yr ASC
+                      GROUP BY year, expimp
+                      ORDER BY year ASC
                       """%(from_year_clause+to_year_clause)
                 )
 
@@ -188,10 +189,9 @@ def get_world_flows(from_year,to_year):
 
 def get_reportings_available_by_year():
   cursor = get_db().cursor()
-  cursor.execute("""SELECT reporting_id, continent, group_concat(DISTINCT Yr) as years
+  cursor.execute("""SELECT reporting_slug, continent, group_concat(DISTINCT year) as years
                     FROM flow_joined
-                    left join RICentities on reporting_id = RICentities.id
-                    group by reporting_id"""
+                    group by reporting_slug"""
                 )
 
   json_response=[]
@@ -208,25 +208,31 @@ def get_reportings_overview(partner_ids):
   partners_clause = "NOT LIKE 'World%'"if partner_ids=="" else "LIKE '%s'"%partner_ids
 
   cursor = get_db().cursor()
-  cursor.execute("""SELECT t3.*, continent
-                    FROM
-                    (SELECT t1.reporting as reporting, t1.reporting_id as reporting_id, ifnull(SUM(t1.exports),0) as exports,ifnull(SUM(t2.imports),0) as imports, ifnull(SUM(t1.exports),0)+ifnull(SUM(t2.imports),0) as total, group_concat(t1.partner_id) as exp_partners, group_concat(t2.partner_id) as imp_partners, t1.Yr as year, group_concat (DISTINCT t1.Source) as exp_sources, group_concat(DISTINCT t2.Source) as imp_sources
-                    FROM
-                    (SELECT reporting, reporting_id , partner_id, Flow as exports, expimp, Yr, Source
-                    FROM flow_joined
-                    WHERE expimp = "Exp"
-                    AND partner_id %s
-                    AND Flow is not NULL) t1
-                    LEFT JOIN
-                      (SELECT reporting_id ,partner_id, Flow as imports, expimp, Yr, Source
-                    FROM flow_joined
-                    WHERE expimp = "Imp"
-                    AND partner_id %s
-                    AND Flow is not NULL) t2
-                    ON  t1.Yr = t2.Yr AND  t1.reporting_id = t2.reporting_id AND t1.partner_id = t2.partner_id
-                    GROUP BY  t1.reporting_id, t1.Yr) t3
-                    LEFT JOIN RICentities ON t3.reporting_id = RICentities.id"""%(partners_clause,partners_clause)
-                )
+  # cursor.execute("""SELECT t3.*, continent
+  #                   FROM
+  #                   (SELECT t1.reporting as reporting, t1.reporting_id as reporting_id,
+  #                    ifnull(SUM(t1.exports),0) as exports,ifnull(SUM(t2.imports),0) as imports,
+  #                     ifnull(SUM(t1.exports),0)+ifnull(SUM(t2.imports),0) as total,
+  #                      group_concat(t1.partner_id) as exp_partners, group_concat(t2.partner_id) as imp_partners,
+  #                       t1.year as year, group_concat (DISTINCT t1.Source) as exp_sources,
+  #                        group_concat(DISTINCT t2.Source) as imp_sources
+  #                   FROM
+  #                   (SELECT reporting, reporting_id , partner_id, Flow as exports, expimp, year, Source
+  #                   FROM flow_joined
+  #                   WHERE expimp = "Exp"
+  #                   AND partner_id %s
+  #                   AND Flow is not NULL) t1
+  #                   LEFT JOIN
+  #                     (SELECT reporting_id ,partner_id, Flow as imports, expimp, year, Source
+  #                   FROM flow_joined
+  #                   WHERE expimp = "Imp"
+  #                   AND partner_id %s
+  #                   AND Flow is not NULL) t2
+  #                   ON  t1.year = t2.year AND  t1.reporting_id = t2.reporting_id AND t1.partner_id = t2.partner_id
+  #                   GROUP BY  t1.reporting_id, t1.year) t3
+  #                   LEFT JOIN RICentities ON t3.reporting_id = RICentities.id
+  #                   WHERE continent is not "World" """%(partners_clause,partners_clause)
+  #               )
   json_response=[]
   table = [list(r) for r in cursor]
   for row in table:
@@ -273,20 +279,13 @@ def get_reportings_overview(partner_ids):
 
 def get_nations_network_by_year(year):
   cursor = get_db().cursor()
-  cursor.execute("""SELECT reporting, reporting_id, partner, partner_id, Flow, expimp,
-                    RIC_reporting.continent as reporting_continent,
-                    RIC_partner.continent as partner_continent,
-                    RIC_reporting.type as reporting_type,
-                    RIC_partner.type as partner_type
+  cursor.execute("""SELECT reporting, reporting_slug, partner, partner_slug, Flow, expimp,
+                    reporting_continent, partner_continent,reporting_type,partner_type
                     FROM flow_joined
-                    INNER JOIN RICentities as RIC_reporting
-                      on flow_joined.reporting_id = RIC_reporting.id
-                    INNER JOIN RICentities as RIC_partner
-                      on flow_joined.partner_id = RIC_partner.id
                     WHERE reporting NOT LIKE "Worl%%"
                     AND partner NOT LIKE "Worl%%"
                     AND Flow != "null"
-                    AND Yr = %s
+                    AND year = %s
                     """%(year)
               )
 
@@ -340,19 +339,14 @@ def get_nations_network_by_year(year):
 
 def get_continent_nb_partners(from_year, to_year):
   cursor = get_db().cursor()
-  from_year_clause = """ AND Yr>%s"""%from_year if from_year!="" else ""
-  to_year_clause = """ AND Yr<%s"""%to_year if to_year!="" else ""
+  from_year_clause = """ AND year>%s"""%from_year if from_year!="" else ""
+  to_year_clause = """ AND year<%s"""%to_year if to_year!="" else ""
   print from_year_clause, to_year_clause
-  cursor.execute("""SELECT RIC_reporting.continent as reporting_continent,
-                    RIC_partner.continent as partner_continent,
-                    Yr, COUNT(distinct(RIC_partner.id)) as nb_partners
+  cursor.execute("""SELECT reporting_continent, partner_continent,
+                    year, COUNT(distinct(partner_slug)) as nb_partners
                     FROM flow_joined
                     %s
-                    INNER JOIN RICentities as RIC_reporting
-                      on flow_joined.reporting_id = RIC_reporting.id
-                    INNER JOIN RICentities as RIC_partner
-                      on flow_joined.partner_id = RIC_partner.id
-                    GROUP BY Yr, reporting_continent, partner_continent
+                    GROUP BY year, reporting_continent, partner_continent
                     """%(from_year_clause+to_year_clause)
                 )
 
@@ -368,7 +362,6 @@ def get_continent_nb_partners(from_year, to_year):
     return json.dumps(json_response,encoding="UTF8")
 
 def get_flows(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources):
-
     json_response={}
     json_response["flows"]=flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources)
     if len(partner_ids)==0:
@@ -411,27 +404,25 @@ def get_continent_flows_for_reporting(continents, reporting_ids, from_year, to_y
 
 def get_mirror_entities(reporting_id):
     cursor = get_db().cursor()
-    cursor.execute("""SELECT f.reporting_id,f.reporting,rci.type,rci.central_state,rci.continent,group_concat(f.Yr),rpp.years_from_reporting
+    cursor.execute("""SELECT f.reporting_slug,f.reporting,f.reporting_type,f.continent,group_concat(f.year),rpp.years_from_reporting
                           FROM flow_joined f
-                          LEFT OUTER JOIN RICentities rci ON rci.id=f.reporting_id
                           LEFT OUTER JOIN (
-                                SELECT partner_id,group_concat(Yr) as years_from_reporting
-                                from flow_joined where reporting_id='%s'
-                                group by partner_id)
+                                SELECT partner_slug,group_concat(year) as years_from_reporting
+                                from flow_joined where reporting_slug='%s'
+                                group by partner_slug)
                                 rpp
-                                on rpp.partner_id=f.reporting_id
-                          WHERE f.partner_id='%s' and rpp.partner_id not null
-                          group by f.reporting_id
+                                on rpp.partner_slug=f.reporting_slug
+                          WHERE f.partner_slug='%s' and rpp.partner_slug not null
+                          group by f.reporting_slug
                           """%(reporting_id,reporting_id))
     json_response=[]
-    for (id,r,t,central,continent,years_from_partner,years_from_reporting) in cursor:
+    for (id,r,t,continent,years_from_partner,years_from_reporting) in cursor:
       # let's check if the mirror flows partner->reporting match the time span of the reporting->partner flows
       if len(set(years_from_partner.split(",")) & set(years_from_reporting.split(",")))>0:
         json_response.append({
             "RICid":id,
             "RICname":r,
             "type":t,
-            "central_state":central,
             "continent":continent
             })
     return json.dumps(json_response,encoding="UTF8")
@@ -441,10 +432,9 @@ def get_reporting_entities(types=[],to_partner_ids=[]):
     cursor = get_db().cursor()
     if "continent" in types:
         types.remove("continent")
-        cursor.execute("""SELECT continent
+        cursor.execute("""SELECT reporting_continent
                           FROM flow_joined
-                          LEFT OUTER JOIN RICentities ON RICname=reporting
-                          group by continent ORDER BY count(*) DESC""")
+                          group by reporting_continent ORDER BY count(*) DESC""")
         json_response=[]
         for (continent) in cursor:
             json_response.append({
@@ -457,29 +447,28 @@ def get_reporting_entities(types=[],to_partner_ids=[]):
             return json.dumps(json_response,encoding="UTF8")
     else:
         json_response=[]
-
-    type_clause='type IN ("%s")'%'","'.join(types) if len(types)>0 else ""
-    partner_clause=" partner_id IN ('%s') "%"','".join(to_partner_ids) if len(to_partner_ids)>0 else ""
+    print types
+    print to_partner_ids
+    type_clause='reporting_type IN ("%s")'%'","'.join(types) if len(types)>0 else ""
+    partner_clause=" partner_slug IN ('%s') "%"','".join(to_partner_ids) if len(to_partner_ids)>0 else ""
     if type_clause!="" or partner_clause!="":
         where_clause = " AND ".join(_ for _ in [type_clause,partner_clause] if _ != "")
         where_clause = "WHERE "+where_clause if where_clause!="" else ""
     else:
         where_clause =""
-    sql="""SELECT RICentities.id,reporting,type,central_state,continent
+    sql="""SELECT distinct reporting_slug,reporting,reporting_type,reporting_continent
                           FROM flow_joined
-                          LEFT OUTER JOIN RICentities ON RICname=reporting
-                          %s
-                          group by reporting"""%(where_clause)
+                          %s"""%(where_clause)
     cursor.execute(sql)
 
-    for (id,r,t,central,continent) in cursor:
+    for (id,r,t,continent) in cursor:
         json_response.append({
             "RICid":id,
             "RICname":r,
             "type":t,
-            "central_state":central,
             "continent":continent
             })
+    print json_response
     return json.dumps(json_response,encoding="UTF8")
 
 

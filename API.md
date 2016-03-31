@@ -3,13 +3,14 @@
 GET HTTP request
 
 ## Arguments norm
-All routes take only GET request parameters as URL query, no inputs
+All routes take only GET request parameters as URL query, no parameters
 
 
 ## API calls
 ### all routes
 
 * /flows
+* /RICentities
 * /reporting_entities
 * /world_flows
 * /continent_flows
@@ -18,7 +19,7 @@ All routes take only GET request parameters as URL query, no inputs
 * /reportings_available_by_years
 * /flows_sources
 * /mirror_entities
-* /RICentities
+
 
 
 #/flows
@@ -33,10 +34,10 @@ API root used in
 - world view : specifies many reporting and "WorldBestGuess" as partner.
 
 
-## inputs
+## parameters
 
 ```
-reporting_ids =string 
+reporting_ids = string 
 partner_ids = string - Optional
 original_currency = boolean - Optionnal
 with_sources = boolean - Optionnal
@@ -59,7 +60,6 @@ json
       {
         "RICid": "Italy",
         "type": "country",
-        "central_state": "Italy",
         "RICname": "Italy",
         "continent": "Europe"
       }
@@ -68,7 +68,6 @@ json
       {
         "RICid": "France",
         "type": "country",
-        "central_state": "France",
         "RICname": "France",
         "continent": "Europe"
       }
@@ -93,6 +92,34 @@ json
 }
 ```
 
+#/RICentities
+
+Get the entities information
+
+## views
+API root used in
+
+- country view
+
+## parameters
+
+```
+reporting_ids=list of strings
+```	
+## outputs
+
+```
+json
+[
+	{
+        "RICid": "Italy",
+        "type": "country",
+        "RICname": "Italy",
+        "continent": "Europe"
+      }...
+]
+```
+
 
 #/reporting_entities
 
@@ -105,10 +132,10 @@ API root used in
 - country view 
 - world view 
 
-## inputs
+## parameters
 
 ```
-type_filter = city/part_of,colonial_area,country,geographical_area,group,continent - Optional 
+type_filter = string("city/part_of","country","continent"...) - Optional 
 to_partner_id =string - Optional
 ```
 ## example
@@ -124,7 +151,6 @@ json
   {
     "RICid": "Bahamas",
     "type": "country",
-    "central_state": "Bahamas",
     "RICname": "Bahamas",
     "continent": "America",
    }...
@@ -140,7 +166,7 @@ API root used in
 
 - world view 
 
-## inputs
+## parameters
 
 ```
 from = integer(YYYY)- Optionnal
@@ -185,7 +211,7 @@ API root used in
 - continent view : in this case no reporting/partner should be specified.
 
 
-### inputs
+### parameters
 ```
 continents = string
 reporting_ids= string - Optional
@@ -209,7 +235,6 @@ json
       {
         "RICid": "Asia",
         "type": "geographical_area",
-        "central_state": null,
         "RICname": "Asia",
         "continent": "Asia"
       }
@@ -218,7 +243,6 @@ json
       {
         "RICid": "France",
         "type": "country",
-        "central_state": "France",
         "RICname": "France",
         "continent": "Europe"
       }
@@ -239,11 +263,14 @@ json
 ```
 
 #/continent_with_partners
-(NOT CALLED)
 
 Aggregate number of partners between continents by year
 
-## inputs
+## views
+NOT BE USED
+
+
+## parameters
 ```
 from = integer(YYYY)- Optionnal
 to = integer(YYYY) - Optionnal
@@ -276,7 +303,7 @@ API root used in
 
 - network view
 
-### inputs
+### parameters
 
 ```
 year = integer(YYYY)
@@ -344,7 +371,8 @@ Get aggregated flow/partners and by entity with whole time span(1787 to 1938)
 API root used in
 
 - metadata view: specify partner groups for query
-## inputs
+
+## parameters
 
 ```
 partner_ids= string(either World estimation or actual reporting entities)
@@ -375,12 +403,14 @@ json
 ```
 
 #/flows_sources
-(NOT CALLED)
 
 Provide a list of all sources used in a flow API call.
 Used to get them all at once without repeating them in flow.
 
-### inputs
+## views
+NOT BE USED
+
+## parameters
 
 ```
 reporting_ids = string 
@@ -389,7 +419,7 @@ from = integer(YYYY)- Optionnal
 to = integer(YYYY) - Optionnal
 ```
 
-### outputs
+## outputs
 ```
 json
 {
@@ -397,18 +427,20 @@ json
 }
 ```
 #/mirror_entities
-(NOT CALLED)
 
 Get all reporting entities by year which is a partner of the given reporting entitiy
 
-### inputs
+## views
+NOT BE USED
+
+## parameters
 
 
 ```
 reporting_ids = string 
 ```
 
-### outputs
+## outputs
 
 ```
 json
@@ -417,19 +449,8 @@ json
 	"RICid":"Austria",
     "RICname":"Austria",
     "type":"country",
-    "central_state":"Austria",
     "continent":"Europe",
     "year":1880
 	}...
 ]
-```
-#/RICentities
-(NOT CALLED)
-
-Get the reporting entities information
-
-## inputs
-
-```
-reporting_ids=list of stings
 ```

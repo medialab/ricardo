@@ -162,7 +162,7 @@ angular.module('ricardo.services', [])
           params : params,
           cache: true
         }).success(function(data){
-         deferred.resolve(data);
+          deferred.resolve(data);
        }).error(function(){
          deferred.reject("An error occured while fetching data");
        });
@@ -180,7 +180,7 @@ angular.module('ricardo.services', [])
         }).success(function(data){
           deferred.resolve(data);
        }).error(function(){
-          console.log("there is an error");
+         console.log("there is an error");
          deferred.reject("An error occured while fetching data");
        });
 
@@ -205,6 +205,7 @@ angular.module('ricardo.services', [])
           params : params,
           cache: true
         }).success(function(data){
+          console.log(data)
          deferred.resolve(data);
        }).error(function(){
          deferred.reject("An error occured while fetching data");
@@ -221,6 +222,7 @@ angular.module('ricardo.services', [])
           params : params,
           cache: true
         }).success(function(data){
+          console.log(data);
          deferred.resolve(data);
        }).error(function(){
          deferred.reject("An error occured while fetching data");
@@ -237,7 +239,8 @@ angular.module('ricardo.services', [])
           params: params,
           cache: true
         }).success(function(data){
-         deferred.resolve(data);
+          console.log(data)
+          deferred.resolve(data);
        }).error(function(){
          deferred.reject("An error occured while fetching data");
        });

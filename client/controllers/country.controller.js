@@ -347,7 +347,7 @@ angular.module('ricardo.controllers.country', [])
     })
 
     $scope.$watch("entities.sourceEntity.selected", function (newValue, oldValue){
-      console.log("watch entity");
+      // console.log("watch entity");
       if(newValue !== oldValue && newValue){
         // update local storage
         localStorage.removeItem('sourceEntitySelected');

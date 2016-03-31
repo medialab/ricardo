@@ -121,7 +121,6 @@ angular.module('ricardo.controllers.world', [])
     $scope.reportingCountryEntities1 = reportingEntities.filter(function (d) {
         return d.type === "country"
       });
-
     /*
      *  Init the timelines
      */
