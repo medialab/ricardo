@@ -194,9 +194,6 @@ from = integer(YYYY)- Optionnal
 to = integer(YYYY) - Optionnal
 ```
 
-not implemented yet :
-- null flows ?
-
 ### example
 
 ```
@@ -241,6 +238,7 @@ json
 ```
 
 #/continent_with_partners
+(NOT CALLED)
 
 Aggregate number of partners between continents by year
 
@@ -275,7 +273,7 @@ Create network graph of flows between entities by year, with an average clusteri
 ## views
 API root used in
 
--network view
+- network view
 
 ### inputs
 
@@ -344,7 +342,7 @@ Get aggregated flow/partners and by entity with whole time span(1787 to 1938)
 ## views
 API root used in
 
--metadata view: specify partner groups for query
+- metadata view: specify partner groups for query
 ## inputs
 
 ```
