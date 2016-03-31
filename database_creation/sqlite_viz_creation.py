@@ -349,9 +349,4 @@ for g,d in itertools.groupby(data,lambda _:(_[3],_[0],_[1])):
 print "World best guess added to flow_joined", world_best_guess_added
 print "-------------------------------------------------------------------------"
 
-# c.execute("""Select count(*) from flow_joined """)
-# print list(c), "lines in flow_joined"
-
-# conn.commit()
-
-
+conn.commit()

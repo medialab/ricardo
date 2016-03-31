@@ -196,10 +196,12 @@ with open('in_data/refine_source_merge.csv', 'r') as sources:
 	reader=UnicodeReader(sources)
 	reader.next()
 	uniqueId = []
+	duplicate = []
 	# uniqueId = set()
 	for row in reader:
 		_id = row[7]
 		if _id in uniqueId:
+			duplicate.append(row)
 			print row
 			pass
 		else:
@@ -223,7 +225,7 @@ print "Create exchanges_rates"
 c.execute("""INSERT INTO exchange_rates(year, modified_currency,
 	rate_to_pounds, source)
 	SELECT Yr as year, `Modified currency` as modified_currency,
-	`FX rate (NCU/£)` as rate_to_pounds, 'currency_' || `Source Currency` as source
+	`FX rate (NCU/£)` as rate_to_pounds, trim('currency_' || `Source Currency`) as source
 	FROM old_rate
 	""")
 print "exchanges_rates created"
@@ -236,8 +238,8 @@ with open('in_data/oups_fixed.csv', 'r') as oups_sources:
 	oups.next()
 	oups = [list(r) for r in oups]
 	oups = {row[0]:row for row in oups}
-	
-	# create_note=lambda oldid: oldid[9:]
+
+	create_note=lambda oldid: oldid[9:]
 	# for row in oups:
 	# 	c.execute("""UPDATE exchange_rates set source=?, notes=? WHERE source=?""",[row[1], create_note(row[0]), row[0]])
 
@@ -245,8 +247,8 @@ with open('in_data/oups_fixed.csv', 'r') as oups_sources:
 	for row in exchange_rates:
 		if row[3] in oups.keys():
 			if oups[row[3]][1] != "SOURCES TO BE FIXED":
-				print oups[row[3]][1], "\n", oups[row[3]][0],"\n", row[3], "\n", "\n"
-				sub_c.execute("""UPDATE exchange_rates set source=?, notes=? WHERE source=?""",[oups[row[3]][1], oups[row[3]][0], row[3]])
+				# print oups[row[3]][1], "\n", oups[row[3]][0],"\n", row[3], "\n", "\n"
+				sub_c.execute("""UPDATE exchange_rates set source=?, notes=? WHERE source=?""",[oups[row[3]][1], create_note(oups[row[3]][0]), row[3]])
 
 ################################################################################
 ##			Create table expimp_spegen
@@ -319,7 +321,7 @@ print "Create flows"
 c.execute("""INSERT INTO flows(id, source, flow, unit, currency, year, reporting,
 	partner, export_import, special_general, species_bullions, transport_type,
 	statistical_period, partner_sum, world_trade_type, notes)
-	SELECT ID, Source, Flow, Unit, `Initial Currency`, Yr,
+	SELECT ID, trim(Source), Flow, Unit, `Initial Currency`, Yr,
 	trim(`Reporting Entity_Original Name`),
 	trim(`Partner Entity_Original Name`),
 	`Exp / Imp`, `Spe/Gen/Tot`,
@@ -331,6 +333,13 @@ c.execute("""INSERT INTO flows(id, source, flow, unit, currency, year, reporting
 	""")
 print "flows created"
 print "-------------------------------------------------------------------------"
+print "update flows with patch"
+with open('in_data/patch_sources.csv', 'r') as patch:
+	patch=UnicodeReader(patch)
+	patch.next()
+	patch = [list(r) for r in patch]
+	for r in patch:
+		c.execute("""UPDATE flows set source=? WHERE source=?""",[r[1].strip(), r[0]])
 
 # INDEX
 

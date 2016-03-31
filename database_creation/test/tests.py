@@ -16,25 +16,30 @@ mdb_sqlite_filename=os.path.join("..","out_data",conf["sqlite_filename"])
 conn=sqlite3.connect(mdb_sqlite_filename)
 
 cursor=conn.cursor()
-import currency
-currency_status="OK" if currency.test(cursor) else "FAILED"
-print "CURRENCY TEST : %s"%currency_status
+import sources
+sources_status="OK" if sources.test(cursor) else "FAILED"
+print "SOURCES TEST : %s"%sources_status
 
-import RICnames
-RICnames_status="OK" if RICnames.test(cursor) else "FAILED"
-print "RICnames TEST : %s"%RICnames_status
+# import currency
+# currency_status="OK" if currency.test(cursor) else "FAILED"
+# print "CURRENCY TEST : %s"%currency_status
 
-import expimp
-expimp_status="OK" if expimp.test(cursor) else "FAILED"
-print "EXP IMP TEST : %s"%expimp_status
+# import RICnames
+# RICnames_status="OK" if RICnames.test(cursor) else "FAILED"
+# print "RICnames TEST : %s"%RICnames_status
 
-import flow
-flow_status="OK" if flow.test(cursor) else "FAILED"
-print "FLOW TEST : %s"%flow_status
+# import expimp
+# expimp_status="OK" if expimp.test(cursor) else "FAILED"
+# print "EXP IMP TEST : %s"%expimp_status
 
-import total_type
-total_type_status="OK" if total_type.test(cursor) else "FAILED"
-print "TOTAL_TYPE TEST : %s"%total_type_status
+# import flow
+# flow_status="OK" if flow.test(cursor) else "FAILED"
+# print "FLOW TEST : %s"%flow_status
+
+# import total_type
+# total_type_status="OK" if total_type.test(cursor) else "FAILED"
+# print "TOTAL_TYPE TEST : %s"%total_type_status
+
 
 
 # c.execute("""SELECT  `Reporting Entity_Original Name`
