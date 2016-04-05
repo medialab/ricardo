@@ -33,10 +33,11 @@ def ric_entities_data(ids=[]):
 def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources,group_reporting_by="", search_by_reporting=False):
     cursor = get_db().cursor()
     partners_clause =""" AND partner_slug IN ("%s")"""%'","'.join(partner_ids) if len(partner_ids)>0 else ""
+    # world_partner_clause = "AND partner_slug NOT LIKE 'Worl%%'" if "Worldbestguess" not in partner_ids else ""
     from_year_clause = """ AND year>%s"""%from_year if from_year!="" else ""
     to_year_clause = """ AND year<%s"""%to_year if to_year!="" else ""
 
-
+    print original_currency
     flow_field = "Flow*Unit/rate" if not original_currency else "Flow*Unit"
     source_field = """,group_concat(Source,"|")""" if with_sources else ""
 
@@ -46,7 +47,6 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
                       where reporting_slug IN ("%s")
                       %s
                       and  %s is not null
-                      and partner_slug NOT LIKE "Worl%%"
                       and partner_slug is not "NA"
                       GROUP BY reporting,partner,year
                       ORDER BY  year ASC
@@ -59,7 +59,6 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
                       WHERE reporting_slug IN ("%s") AND partner_continent IN ("%s")
                       %s
                       AND ( %s IS NOT null)
-                      and partner_slug NOT LIKE "Worl%%"
                       and partner_slug is not "NA"
                       GROUP BY partner_continent, reporting_slug, year
                       ORDER BY year ASC
@@ -71,7 +70,6 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
                       where reporting_continent IN ("%s") AND partner_continent NOT IN ("%s")
                       %s
                       AND ( %s IS NOT null)
-                      and partner_slug NOT LIKE "Worl%%"
                       and partner_slug is not "NA"
                       GROUP BY reporting_continentt, partner, year
                       ORDER BY year ASC
@@ -208,38 +206,36 @@ def get_reportings_overview(partner_ids):
   partners_clause = "NOT LIKE 'World%'"if partner_ids=="" else "LIKE '%s'"%partner_ids
 
   cursor = get_db().cursor()
-  # cursor.execute("""SELECT t3.*, continent
-  #                   FROM
-  #                   (SELECT t1.reporting as reporting, t1.reporting_id as reporting_id,
-  #                    ifnull(SUM(t1.exports),0) as exports,ifnull(SUM(t2.imports),0) as imports,
-  #                     ifnull(SUM(t1.exports),0)+ifnull(SUM(t2.imports),0) as total,
-  #                      group_concat(t1.partner_id) as exp_partners, group_concat(t2.partner_id) as imp_partners,
-  #                       t1.year as year, group_concat (DISTINCT t1.Source) as exp_sources,
-  #                        group_concat(DISTINCT t2.Source) as imp_sources
-  #                   FROM
-  #                   (SELECT reporting, reporting_id , partner_id, Flow as exports, expimp, year, Source
-  #                   FROM flow_joined
-  #                   WHERE expimp = "Exp"
-  #                   AND partner_id %s
-  #                   AND Flow is not NULL) t1
-  #                   LEFT JOIN
-  #                     (SELECT reporting_id ,partner_id, Flow as imports, expimp, year, Source
-  #                   FROM flow_joined
-  #                   WHERE expimp = "Imp"
-  #                   AND partner_id %s
-  #                   AND Flow is not NULL) t2
-  #                   ON  t1.year = t2.year AND  t1.reporting_id = t2.reporting_id AND t1.partner_id = t2.partner_id
-  #                   GROUP BY  t1.reporting_id, t1.year) t3
-  #                   LEFT JOIN RICentities ON t3.reporting_id = RICentities.id
-  #                   WHERE continent is not "World" """%(partners_clause,partners_clause)
-  #               )
+  cursor.execute("""SELECT t1.reporting_slug as reporting_id,t1.reporting as reporting,t1.reporting_continent  as continent, t1.reporting_type as type, t1.year as year,
+                    ifnull(SUM(t1.exports),0) as exports,ifnull(SUM(t2.imports),0) as imports,
+                    group_concat(t1.partner_slug,"|") as exp_partners, group_concat(t1.partner_continent,"|") as exp_continents,group_concat(t1.partner_type,"|") as exp_types,
+                    group_concat(t2.partner_slug,"|") as imp_partners, group_concat(t2.partner_continent,"|") as imp_continents,group_concat(t2.partner_type,"|") as imp_types,
+                    group_concat(t1.source,"|") as sources,
+                    group_concat (DISTINCT t1.type) as sourcetype
+                    FROM
+                    (SELECT reporting, reporting_slug , partner_slug, partner_continent,partner_type,(flow*Unit/rate) as exports, expimp, year, Source, type, reporting_continent,reporting_type
+                    FROM flow_joined
+                    WHERE expimp = "Exp"
+                    AND partner_slug %s
+                    AND Flow is not NULL
+                    AND reporting_continent is not "World") t1
+                    LEFT OUTER JOIN
+                      (SELECT reporting_slug,partner_slug, partner_continent,partner_type,(flow*Unit/rate) as imports, expimp, year, source,type
+                    FROM flow_joined
+                    WHERE expimp = "Imp"
+                    AND partner_slug %s
+                    AND Flow is not NULL) t2
+                    ON  t1.year = t2.year AND  t1.reporting_slug = t2.reporting_slug AND t1.partner_slug = t2.partner_slug
+                    GROUP BY  t1.reporting_slug, t1.year
+                     """%(partners_clause,partners_clause)
+                )
   json_response=[]
   table = [list(r) for r in cursor]
   for row in table:
 
-    exp_partners=row[5].split(",") if row[5] is not None else []
-    imp_partners=row[6].split(",") if row[6] is not None else []
-
+    exp_partners=row[7].split("|") if row[7] is not None else []
+    imp_partners=row[10].split("|") if row[10] is not None else []
+    sourcetype=row[14].split(",")[0]
     # exp_sources=list(set(row[8].split("|"))) if row[4] is not None else []
     # imp_sources=list(set(row[9].split("|"))) if row[4] is not None else []
 
@@ -260,19 +256,23 @@ def get_reportings_overview(partner_ids):
     #       imp_sources_cls.append(i)
 
     json_response.append({
-    "reporting": row[0],
-    "reporting_id": row[1],
-    "exp_flow": round(row[2],2),
-    "imp_flow": round(row[3],2),
-    "total_flow":round(row[4],2),
-    "exp_partner": "|".join(exp_partners),
-    "imp_partner": "|".join(imp_partners),
-    "total_partner": "|".join(list(set(exp_partners)|set(imp_partners))),
-    "year": row[7],
-    "exp_sources": row[8].split(",")[0] if row[8] is not None else None,
-    "imp_sources": row[9].split(",")[0] if row[9] is not None else None,
-    "total_sources": row[8].split(",")[0] if row[8] is not None else None,
-    "continent": row[10]
+    "reporting_id": row[0],
+    "reporting": row[1],
+    "continent": row[2],
+    "type": row[3],
+    "year": row[4],
+    "exp_flow": round(row[5],2),
+    "imp_flow": round(row[6],2),
+    "total_flow":round(row[5]+row[6],2),
+    "exp_partner": row[7],
+    "exp_continent": row[8],
+    "exp_type": row[9],
+    "imp_partner": row[10],
+    "imp_continent": row[11],
+    "imp_type": row[12],
+    "total_partner": ("|").join(list(set(exp_partners)|set(imp_partners))),
+    "source": row[13].split("|")[0],
+    "sourcetype": sourcetype
     })
 
   return json.dumps(json_response,encoding="UTF8")
@@ -447,8 +447,7 @@ def get_reporting_entities(types=[],to_partner_ids=[]):
             return json.dumps(json_response,encoding="UTF8")
     else:
         json_response=[]
-    print types
-    print to_partner_ids
+
     type_clause='reporting_type IN ("%s")'%'","'.join(types) if len(types)>0 else ""
     partner_clause=" partner_slug IN ('%s') "%"','".join(to_partner_ids) if len(to_partner_ids)>0 else ""
     if type_clause!="" or partner_clause!="":
@@ -468,7 +467,6 @@ def get_reporting_entities(types=[],to_partner_ids=[]):
             "type":t,
             "continent":continent
             })
-    print json_response
     return json.dumps(json_response,encoding="UTF8")
 
 
