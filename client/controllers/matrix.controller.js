@@ -30,7 +30,7 @@ angular.module('ricardo.controllers.matrix', [])
        name: {value: "World Estimated",writable: true}
       },
       ]
-      $scope.partners= $scope.partnersChoices[1]
+      $scope.partners= $scope.partnersChoices[0]
 
 
       $scope.stackflowChoices = [
@@ -70,15 +70,15 @@ angular.module('ricardo.controllers.matrix', [])
         {type: {value: "multiple",writable: true},
          name: {value: "Multiple",writable: true}}
         ];
-      $scope.stackchartLayout = $scope.stackchartLayoutChoices[2]
+      $scope.stackchartLayout = $scope.stackchartLayoutChoices[0]
 
       $scope.matrixLayoutChoices = [
         {type: {value: "coverage",writable: true},
          name: {value: "Coverage",writable: true}},
          {type: {value: "continent",writable: true},
          name: {value: "Continent",writable: true}},
-         {type: {value: "alphabet",writable: true},
-         name: {value: "Alphabet",writable: true}},
+         {type: {value: "type",writable: true},
+         name: {value: "Entity Type",writable: true}},
         ];
       $scope.matrixLayout = $scope.matrixLayoutChoices[0]
 
@@ -131,6 +131,13 @@ angular.module('ricardo.controllers.matrix', [])
         ;
       }
 
+      $scope.reporting;
+      $scope.search=0;
+      $scope.find= function(reporting){
+        $scope.reporting=reporting;
+        $scope.search+=1;
+      }
+
       function init() {
           apiService
             .getReportingsAvailableByYear(
@@ -139,7 +146,43 @@ angular.module('ricardo.controllers.matrix', [])
             .then(function (data){
               //data manipulation
               $scope.data=data;
+
           // d3.csv("../overview.csv",function(data){
+            //preprocess data
+            data.forEach(function(d){
+              d.exp_partner=d.exp_partner.split("|").length
+              // d.imp_partner=d.imp_partner.split("|").length
+              d.total_partner=d.total_partner.split("|").length
+              var exp_continent=d3.nest()
+                                .key(function(d){return d})
+                                .rollup(function(values) { return values.length; })
+                                .map(d.exp_continent.split("|"));
+
+              // var imp_continent=d3.nest()
+              //                   .key(function(d){return d})
+              //                   .rollup(function(values) { return values.length; })
+              //                   .map(d.imp_continent.split("|"));
+
+              var exp =[]
+              var imp =[]
+              var exp_keys= d3.keys(exp_continent);
+              // var imp_keys= d3.keys(imp_continent);
+              exp_keys.forEach(function(d){
+                exp.push({
+                  "continent":d,
+                  "number":exp_continent[d]
+                })
+              })
+              // imp_keys.forEach(function(d){
+              //   imp.push({
+              //     "continent":d,
+              //     "number":exp_continent[d]
+              //   })
+              // })
+              d.exp_continent=exp.sort(function(a,b){return b.number-a.number;});
+              // d.imp_continent=imp.sort(function(a,b){return b.number-a.number;});
+            });
+
             var data_nest=d3.nest()
                                 .key(function(d){return d.reporting})
                                 .entries(data)
@@ -189,9 +232,9 @@ angular.module('ricardo.controllers.matrix', [])
                                             exp_flow: d3.sum(v,function(d){return d.exp_flow}),
                                             imp_flow: d3.sum(v,function(d){return d.imp_flow}),
                                             total_flow: d3.sum(v,function(d){return d.total_flow}),
-                                            exp_partner:d3.sum(v,function(d){return d.exp_partner.split("|").length;}),
-                                            imp_partner:d3.sum(v,function(d){return d.imp_partner.split("|").length;}),
-                                            total_partner:d3.sum(v,function(d){return d.total_partner.split("|").length;}),
+                                            exp_partner:d3.sum(v,function(d){return d.exp_partner;}),
+                                            imp_partner:d3.sum(v,function(d){return d.imp_partner;}),
+                                            total_partner:d3.sum(v,function(d){return d.total_partner;}),
                                             reportings: v.length
                                           }
                                         })
@@ -237,38 +280,72 @@ angular.module('ricardo.controllers.matrix', [])
                 $scope.flowEntities=d3.nest()
                       .key(function(d) { return d.reporting; })
                       .entries(data);
-                $scope.flowEntities.forEach(function(d){
-                  d.values.forEach(function(v){
-                    v.exp_partner=v.exp_partner.split("|").length;
-                    v.imp_partner=v.imp_partner.split("|").length;
-                    v.total_partner=v.total_partner.split("|").length;
-                  })
-                })
-          })
 
-          // })
+                $scope.entities=$scope.flowEntities.map(function(d){return d.key;})
+
+                // $scope.flowEntities.forEach(function(d){
+                //   d.values.forEach(function(v){
+                //     v.exp_partner=v.exp_partner.split("|").length;
+                //     v.imp_partner=v.imp_partner.split("|").length;
+                //     v.total_partner=v.total_partner.split("|").length;
+                //   })
+                // })
+                // //extend missing points with 0 values
+                // $scope.flowEntities.forEach(function(d){
+                //     for (var i = $scope.rawMinDate; i<=$scope.rawMaxDate;i++){
+                //       var years=d.values.map(function(v){ return v.year});
+                //       if (years.indexOf(i.toString())=== -1){
+                //         d.values.push({
+                //             year:i,
+                //             exp_flow:null,
+                //             imp_flow:null,
+                //             total_flow: null,
+                //             total_partner:null,
+                //             exp_partner:null,
+                //             imp_partner:null,
+                //             source:null,
+                //             sourcetype:null,
+                //             reportings:d.key,
+                //             continent:d.values[0].continent
+                //         })
+                //       }
+                //     }
+                //   //sort by year ascending
+                //   d.values.sort(function(a,b){
+                //     return a.year-b.year;
+                //   });
+                // })//add missing with null
+
+            // })
+          })
         }
 
         init()
-
         $scope.export = function () {
           var dataExported = [];
           $scope.data.forEach(function (d) {
             dataExported.push({
+              reporting_id:d.reporting_id,
               reporting:d.reporting,
               year:d.year,
-              export:d.export,
-              import:d.import,
-              total:d.total,
-              exp_partner:d.exp_partners,
-              imp_partner:d.imp_partners,
-              total_partner:d.total_partners,
-              source:d.total_sources,
-              continent:d.continent
+              exp_flow:d.exp_flow,
+              imp_flow:d.imp_flow,
+              total_flow:d.total_flow,
+              exp_partner:d.exp_partner,
+              exp_continent:d.exp_continent,
+              exp_type:d.exp_type,
+              imp_partner:d.imp_partner,
+              imp_continent:d.imp_continent,
+              imp_type:d.imp_type,
+              total_partner:d.total_partner,
+              source:d.source,
+              sourcetype:d.sourcetype,
+              continent:d.continent,
+              type:d.type
             })
           });
 
-          var headers = ["reporting", "year", "export", "import", "total", "exp_partner","imp_partner","total_partner","source","continent"],
+          var headers = ["reporting_id","reporting", "year", "exp_flow", "imp_flow", "total_flow", "exp_partner","exp_continent","exp_type","imp_partner","imp_continent","imp_type","total_partner","source","sourcetype","continent","type"],
               order = "",
               filename = "Database_Overview";
           utils.downloadCSV(dataExported, headers, order, filename);

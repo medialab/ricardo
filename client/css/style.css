@@ -1073,8 +1073,7 @@ path.lineTrajectory {
   bottom: 0;
   margin: 0 auto;
 }
-
-.matrix-tooltip, .continent-tooltip{
+.continent-tooltip{
   position: absolute;
   background: #333;
   color: #ddd;
@@ -1087,5 +1086,35 @@ path.lineTrajectory {
   pointer-events: none;
 }
 
+div #reporting-entities-axis{
+  height: 50px;
 
+}
 
+div #reporting-entities-container{
+  height: 700px;
+  overflow: scroll;
+}
+.matrix-tooltip{
+  position: absolute;
+  background: #333;
+  color: #ddd;
+  padding: 2px;
+  border: 0px;
+  border-radius: 5px;
+  opacity: 0;
+  font-family: 'montserrat', 'Arial', safouns-serif;
+}
+.matrix-tooltip hr{
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+.matrix-tooltip .source{
+ font-family: 'merriweather', 'Georgia', serif;
+ font-size: 11px;
+ color:black;
+}
+
+.sideLabel{
+  font-family: 'montserrat', 'Arial', safouns-serif;
+}

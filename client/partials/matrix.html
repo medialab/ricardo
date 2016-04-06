@@ -36,7 +36,7 @@
 	   		in
 	   		<div class="inline-select">
 		        <ui-select ng-model="stackchartLayout" theme="bootstrap" ng-change="changeStackLayout(stackchartLayout)">
-		          <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
+		          <match placeholder="Select grouped or multiple layout">{{$select.selected.name.value}}</match>
 		          <choices repeat="item in stackchartLayoutChoices | filter: $select.search">
 		            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
 		          </choices>
@@ -67,16 +67,17 @@
 			</bar-chart>
 		</div>
 		<div class="col-md-12">
-			<h4>Flow by Reporting Entities for
-	    	<div class="inline-select">
+			<h4>
+			 Reporting Entities Overview
+	    	<!-- <div class="inline-select">
 		      <ui-select ng-model="matrixFlow" theme="bootstrap" ng-change="changeMatrixFlow(matrixFlow)">
 		        <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
 		        <choices repeat="item in matrixflowChoices | filter: $select.search">
 		          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
 		        </choices>
 		      </ui-select>
-	   		</div>
-	   		sorted by
+	   		</div> -->
+	   		Ordered by
 	   		<div class="inline-select">
 		        <ui-select ng-model="matrixLayout" theme="bootstrap" ng-change="changeMatrixLayout(matrixLayout)">
 		          <match placeholder="sort by">{{$select.selected.name.value}}</match>
@@ -85,10 +86,32 @@
 		          </choices>
 		        </ui-select>
 		    </div>
+		    <div class="inline-select pull-right">
+		        <ui-select ng-model="reporting" theme="bootstrap">
+		          <match placeholder="Find Reporting">{{$select.selected}}</match>
+		          <choices repeat="item in entities | filter: $select.search">
+		            <div ng-click="find(item)" ng-bind-html="item | highlight: $select.search"></div>
+		          </choices>
+		        </ui-select>
+		    </div>
 			</h4>
+
+
+
+			<!-- <div class="btn-group pull-right" data-toggle="buttons">
+		          <label class=" btn btn-default active" id="byValue">
+		            <input type="radio" name="options"> By Value
+		          </label>
+		          <label class="btn btn-default" id="byMajor">
+		            <input type="radio" name="options">By Source Type
+		          </label>
+		     </div> -->
 			<reporting-entities ng-data="flowEntities"
 			flow-type="matrixFlow"
-			layout="matrixLayout">
+			layout="matrixLayout"
+			reporting="reporting"
+			search="search"
+			>
 			</reporting-entities>
 		</div>
 	</div>

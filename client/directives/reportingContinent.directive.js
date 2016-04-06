@@ -24,7 +24,7 @@ angular.module('ricardo.directives.reportingContinent', [])
             }
         });
 
-        scope.$watchCollection('endDate', function(newValue, oldValue) {
+        scope.$watch('endDate', function(newValue, oldValue) {
           if ( newValue && scope.ngData ) {
             draw(scope.ngData)
           }
@@ -77,6 +77,8 @@ angular.module('ricardo.directives.reportingContinent', [])
         var format = d3.format("0,000");
         var duration=300;
 
+        // var domain = [0, 1000,1000000,1000000000,10000000000,100000000000];
+
         var x = d3.time.scale()
                   .range([0, width]);
 
@@ -124,8 +126,8 @@ angular.module('ricardo.directives.reportingContinent', [])
             .attr("x", width)
             .attr("dy", -4)
             .attr("font-size", "0.85em");
-          g.selectAll("path")
-           .style("stroke","white")
+          g.selectAll("line")
+           .style("stroke","grey")
         }
         var svg = d3.select("#reporting-continent-container").append("svg")
                     .attr("height", height + margin.top + margin.bottom)
@@ -186,7 +188,7 @@ angular.module('ricardo.directives.reportingContinent', [])
               return d.year>=x.domain()[0].getFullYear() && d.year<= x.domain()[1].getFullYear();
             })
             n.maxFlow = d3.max(nestedFiltered, function(d) { return d.values[yValue]; });
-            var index = d3.max(nestedFiltered, function(d,i) { return d.values[yValue]; });
+            n.minFlow = d3.max(nestedFiltered, function(d) { if(d.values[yValue]!==0) return d.values[yValue]; });
           });
 
 
@@ -216,7 +218,7 @@ angular.module('ricardo.directives.reportingContinent', [])
                     .style("opacity", function(e) {
                       return e.year != d.getFullYear() ? 0 : 1;
                     })
-                  //tick highlighting
+                //tick highlighting
                 svg.selectAll(".highlight").remove();
                 var text = svg.append("text")
                        .attr("class", "highlight")
@@ -278,10 +280,10 @@ angular.module('ricardo.directives.reportingContinent', [])
 
           if(layout==="multiple"){
 
-            y.range([height/6, margin.top]);
-
+            y.range([height/5, margin.top]);
+            yAxis.ticks(2);
             //relayout area
-            area.y0(height/6)
+            area.y0(height/5)
                 .y1(function(d) { return y(d.values[yValue]); });
 
             line.y(function(d) { return y(d.values[yValue]); });
@@ -291,15 +293,18 @@ angular.module('ricardo.directives.reportingContinent', [])
               var multi_g=svg.selectAll(".multiple")
                       .data(nested)
                       .enter().append("g")
-                      .attr("height", height/6)
+                      .attr("height", height/5)
                       .attr("width", width)
-                      .attr("transform", function(d, i) { return "translate(0," + ((5-i) * height/6) + ")"; })
+                      .attr("transform", function(d, i) { return "translate(0," + ((4-i) * height/5) + ")"; })
                       .attr("class", "multiple")
 
                   multi_g.each(function(d,i) {
                     var e = d3.select(this);
                     y.domain([0, d.maxFlow]);
-                    yAxis.tickValues(y.domain())
+                    // var prefix = d3.formatPrefix(y.domain()[1]/2);
+                    // var scale=y.domain()[1]/(prefix.scale(y.domain()[1]/2)*2)
+                    // console.log(d3.round(prefix.scale(y.domain()[1]/2))*scale)
+                    // yAxis.tickValues([0,d3.round(prefix.scale(y.domain()[1]/2))*scale])
                     e.append("path")
                         .attr("class", "area")
                         .attr("d", function(d) { return area(d.values); })
@@ -314,6 +319,7 @@ angular.module('ricardo.directives.reportingContinent', [])
                         .style("stroke-width", 1.5)
                         .style("pointer-events","none")
 
+                    e.select(".baselines").remove();
                     var baseline=e.append("g").attr("class","baselines")
                                   .selectAll("g")
                                   .data(d.values)
@@ -323,7 +329,7 @@ angular.module('ricardo.directives.reportingContinent', [])
 
                       baselineEnter.append("line")
                           .attr("x1", function(d){return x(new Date(d.year,0,1))})
-                          .attr("y1", height/6)
+                          .attr("y1", height/5)
                           .attr("x2", function(d){return x(new Date(d.year,0,1))})
                           .attr("y2", function(d){return y(d.values[yValue]);})
                           .attr("stroke","grey")
@@ -345,17 +351,17 @@ angular.module('ricardo.directives.reportingContinent', [])
                               .style("opacity",0)
                               .style("pointer-events","none")
                       baseline.exit().remove();
+
                     e.append("text")
                       .attr("class","continent")
                       .text(function(d){ return d.key})
                       .attr("text-anchor","end")
                       .attr("x",-20)
-                      .attr("y",height/6)
+                      .attr("y",height/5)
                       .attr("font-size",15)
-
                     // e.append("g")
                     //       .attr("class", "x axis")
-                    //       .attr("transform", "translate(0,"+height/6+")")
+                    //       .attr("transform", "translate(0,"+height/5+")")
                     //       .call(xAxis);
 
                     e.append("g")
@@ -375,10 +381,13 @@ angular.module('ricardo.directives.reportingContinent', [])
             else{
                   svg.selectAll(".multiple")
                       .data(nested)
-                      .attr("transform", function(d, i) { return "translate(0," + ((5-i) * height/6) + ")"; })
+                      .attr("transform", function(d, i) { return "translate(0," + ((4-i) * height/5) + ")"; })
                       .each(function(d) {
                         y.domain([0, d.maxFlow]);
-                        yAxis.tickValues(y.domain())
+                        // var prefix = d3.formatPrefix(y.domain()[1]/2);
+                        // var scale=y.domain()[1]/(prefix.scale(y.domain()[1]/2)*2)
+                        // console.log(d3.round(prefix.scale(y.domain()[1]/2)))
+                        // yAxis.tickValues([0,d3.round(prefix.scale(y.domain()[1]/2))*scale])
                         var e = d3.select(this);
                         e.select(".area")
                           .transition().duration(duration)
@@ -388,7 +397,7 @@ angular.module('ricardo.directives.reportingContinent', [])
                           .transition().duration(duration)
                           .attr("d", function(d) { return line(d.values); })
                           .style("opacity",1)
-                        svg.selectAll(".multiple").selectAll(".continent")
+                        e.select(".continent")
                             .style("opacity",1)
 
                     e.select(".baselines").remove();
@@ -401,7 +410,7 @@ angular.module('ricardo.directives.reportingContinent', [])
 
                       baselineEnter.append("line")
                           .attr("x1", function(d){return x(new Date(d.year,0,1))})
-                          .attr("y1", height/6)
+                          .attr("y1", height/5)
                           .attr("x2", function(d){return x(new Date(d.year,0,1))})
                           .attr("y2", function(d){return y(d.values[yValue]);})
                           .attr("stroke","grey")
@@ -426,7 +435,7 @@ angular.module('ricardo.directives.reportingContinent', [])
 
                         // e.select(".x.axis")
                         //     .transition().duration(duration)
-                        //     .attr("transform", "translate(0,"+height/6+")")
+                        //     .attr("transform", "translate(0,"+height/5+")")
                         //     .style("opacity",1)
                         //     .call(xAxis);
                         e.select(".y.axis")
@@ -443,14 +452,13 @@ angular.module('ricardo.directives.reportingContinent', [])
                 }
           }
           if(layout==="zero" || layout==="expand"){
-
             //update layout stacked area
             stack.offset(layout);
+
             var layers=stack(nested);
 
             y.range([height, 0])
-             .domain([0,d3.max(dataFiltered,function(d){
-                return d.y0 + d.y;})])
+             .domain([0,d3.max(dataFiltered,function(d){return d.y0 + d.y;})])
 
             yAxis.tickValues(null)
                  .ticks(4);
@@ -466,53 +474,64 @@ angular.module('ricardo.directives.reportingContinent', [])
             if (svg.select('g').empty()){
               var multi_g=svg.selectAll(".multiple")
                       .data(layers)
-                      .enter().append("g")
-                      .attr("class", "multiple")
 
-              multi_g.each(function(d) {
-                var e = d3.select(this);
-                e.append("path")
-                      .attr("class", "area")
-                      .attr("d", function(d) { return area(d.values); })
-                      .style("fill", function(d) { return continentColors[d.key]; })
-                e.append("path")
-                        .attr("class", "line")
-                        .attr("d", function(d) { return line(d.values); })
-                        .style("fill","none")
-                        .style("stroke", "black")
-                        .style("stroke-width", 1.5)
-                        .style("opacity",0)
-                        .style("pointer-events","none")
+              multi_g.enter()
+                    .append("g")
+                    .attr("class", "multiple")
+                    .each(function(d,i) {
+                    var e = d3.select(this);
+                    e.append("path")
+                          .attr("class", "area")
+                          .attr("d", function(d) { return area(d.values); })
+                          .style("fill", function(d) { return continentColors[d.key]; })
+                    e.append("path")
+                            .attr("class", "line")
+                            .attr("d", function(d) { return line(d.values); })
+                            .style("fill","none")
+                            .style("stroke", "black")
+                            .style("stroke-width", 1.5)
+                            .style("opacity",0)
+                            .style("pointer-events","none")
+                    e.append("text")
+                      .attr("class","continent")
+                      .text(function(d){ return d.key})
+                      .attr("text-anchor","end")
+                      .attr("x",-20)
+                      .attr("y",height/5)
+                      .attr("font-size",15)
 
-                var baseline=e.append("g")
-                      .selectAll(".baseline")
-                      .data(d.values).enter()
-                      .append("g")
-                      .attr("class","baseline")
+                    e.select(".baselines").remove();
+                    var baseline=e.append("g").attr("class","baselines")
+                                  .selectAll("g")
+                                  .data(d.values)
+                    var baselineEnter=baseline.enter()
+                                              .append("g")
+                                              .attr("class","baseline")
 
+                    baselineEnter.append("line")
+                         .attr("x1", function(d){return x(new Date(d.year,0,1))})
+                          .attr("y1", function(d){return y(d.y0);})
+                          .attr("x2", function(d){return x(new Date(d.year,0,1))})
+                          .attr("y2", function(d){return y(d.y0+d.y);})
+                          .attr("stroke","grey")
+                          .style("opacity",0)
+                          .style("pointer-events","none")
 
-                baseline.append("line")
-                  .attr("x1", function(d){return x(new Date(d.year,0,1))})
-                  .attr("y1", function(d){return y(d.y0);})
-                  .attr("x2", function(d){return x(new Date(d.year,0,1))})
-                  .attr("y2", function(d){return y(d.y0+d.y);})
-                  .attr("stroke","grey")
-                  .style("opacity",0)
-                  .style("pointer-events","none")
+                    baseline.exit().remove();
 
-                // e.append("g")
-                //   .attr("class", "x axis")
-                //   .attr("transform", "translate(0,"+height+")")
-                //   .style("opacity",function(d,i){return i!=5 ? 0:1 })
-                //   .call(xAxis)
-                e.append("g")
-                  .attr("class", "y axis")
-                  .style("opacity",function(d,i){return i!=5 ? 0:1 })
-                  .call(yAxis)
-                  .call(customAxis)
-                  .style("pointer-events","none")
+                    // e.append("g")
+                    //   .attr("class", "x axis")
+                    //   .attr("transform", "translate(0,"+height+")")
+                    //   .style("opacity",function(d,i){return i!=5 ? 0:1 })
+                    //   .call(xAxis)
+                    e.append("g")
+                      .attr("class", "y axis")
+                      .style("opacity", i!==0 ? 0:1)
+                      .call(yAxis)
+                      .call(customAxis)
+                      .style("pointer-events","none")
 
-              })
+                    })
               svg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0,"+height+")")
@@ -543,36 +562,49 @@ angular.module('ricardo.directives.reportingContinent', [])
             else{
                   svg.selectAll(".multiple")
                       .data(layers)
-                      .transition().duration(duration)
                       .attr("transform", "translate(0,0)")
+                      .each(function(d,i) {
+                        var e = d3.select(this);
+                        e.select(".area")
+                          .transition().duration(duration)
+                          .attr("d", function(d) { return area(d.values); })
+                        e.select(".line")
+                          .transition().duration(duration)
+                          .attr("d", function(d) { return line(d.values); })
+                          .style("opacity",0)
+                        e.select(".continent").style("opacity",0)
 
-                  svg.selectAll(".area")
-                      .transition().duration(duration)
-                      .attr("d", function(d) { return area(d.values); })
-                  svg.selectAll(".line")
-                      .transition().duration(duration)
-                      .attr("d", function(d) { return line(d.values); })
-                      .style("opacity",0)
-                  svg.selectAll(".multiple").selectAll(".continent")
-                      .style("opacity",0)
-                  svg.selectAll(".baseline").selectAll("line")
-                      .attr("x1", function(d){return x(new Date(d.year,0,1))})
-                      .attr("y1", function(d){return y(d.y0);})
-                      .attr("x2", function(d){return x(new Date(d.year,0,1))})
-                      .attr("y2", function(d){return y(d.y0+d.y);})
-                  svg.selectAll(".baseline").selectAll("text")
-                     .style("opacity",0)
+                        e.select(".baselines").remove();
+                        var baseline=e.append("g").attr("class","baselines")
+                                  .selectAll("g")
+                                  .data(d.values)
+                        var baselineEnter=baseline.enter()
+                                                  .append("g")
+                                                  .attr("class","baseline")
 
-                  svg.selectAll(".x.axis")
+                        baselineEnter.append("line")
+                            .attr("x1", function(d){return x(new Date(d.year,0,1))})
+                            .attr("y1", function(d){return y(d.y0);})
+                            .attr("x2", function(d){return x(new Date(d.year,0,1))})
+                            .attr("y2", function(d){return y(d.y0+d.y);})
+                            .attr("stroke","grey")
+                            .style("opacity",0)
+                            .style("pointer-events","none")
+
+                        baseline.exit().remove();
+
+                        e.select(".y.axis")
+                          .transition().duration(duration)
+                          .style("opacity", i!=0 ? 0:1)
+                          .call(yAxis)
+                          .call(customAxis)
+
+                      });
+
+                  svg.select(".x.axis")
                       .transition().duration(duration)
-                      // .attr("transform", "translate(0,"+height+")")
-                      // .style("opacity",function(d,i){return i!=5 ? 0:1 })
                       .call(xAxis);
-                  svg.selectAll(".y.axis")
-                      .transition().duration(duration)
-                      .style("opacity",function(d,i){return i!=5 ? 0:1 })
-                      .call(yAxis)
-                      .call(customAxis)
+
                 }
 
               /*
@@ -607,7 +639,12 @@ angular.module('ricardo.directives.reportingContinent', [])
                     .style("left", (d3.event.pageX-w/2) + "px")
                     .style("top", (d3.event.pageY+75) + "px")
                   }
-                });
+                })
+                // .on("click",function(d){
+                //   var data=scope.ngData.filter(function(e){return e.continent===d.continent})
+                //   svg.selectAll("g").remove();
+                //   draw(data);
+                // });
             }//if stacked layout
 
             svg.selectAll("path").attr("clip-path", "url(#clip)");
