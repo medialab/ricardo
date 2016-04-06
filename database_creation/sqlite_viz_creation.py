@@ -91,23 +91,23 @@ print "-------------------------------------------------------------------------
 # c.execute("""Select count(*) from flow_joined """)
 # print list(c), "lines in flow_joined"
 
-c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`)
-	VALUES ("World estimated","geographical_area","World")""")
+c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`, `slug`)
+	VALUES ("World estimated","geographical_area","World", "Worldestimated")""")
 
 print "World estimated added to RICentities"
 
-c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`)
-	VALUES ("World as reported","geographical_area","World")""")
+c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`, `slug`)
+	VALUES ("World as reported","geographical_area","World", "Worldasreported")""")
 
 print "World as reported added to RICentities"
 
-c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`)
-	VALUES ("World as reported2","geographical_area","World")""")
+c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`, `slug`)
+	VALUES ("World as reported2","geographical_area","World", "Worldasreported2")""")
 
 print "World as reported2 added to RICentities"
 
-c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`)
-	VALUES ("World undefined","geographical_area","World")""")
+c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`, `slug`)
+	VALUES ("World undefined","geographical_area","World", "Worldundefined")""")
 
 print "World undefined added to RICentities"
 print "-------------------------------------------------------------------------"
@@ -180,7 +180,7 @@ for n,notes,ids,sources in c :
 		i=notes.split("|").index("Valeur officielle")
 		id=ids.split("|")[i]
 		#print sources.split("|")[i].encode("UTF8")
-		if sources.split("|")[i] == u"Tableau décennal du commerce de la France avec ses colonies et les puissances étrangères, 1847-1856, vol. 1.":
+		if sources.split("|")[i] == u"""Tableau décennal du commerce de la France avec ses colonies et les puissances étrangères, 1847-1856, vol. 1.""":
 			ids_to_remove.append(id)
 		else:
 			raise
@@ -216,7 +216,8 @@ for n,sb,ids,r,p in c :
 rps=set(rps)
 
 if len(ids_to_remove)>0:
-	print "removing %s flows S duplicated with NS for reporting|partner couples %s"%(len(ids_to_remove),",".join(rps))
+	print """removing %s flows S duplicated with NS for reporting|partner 
+	couples %s"""%(len(ids_to_remove),",".join(rps))
 	c.execute("DELETE FROM flow_joined WHERE id IN (%s)"%",".join(ids_to_remove))
 
 print "-------------------------------------------------------------------------"
@@ -246,12 +247,14 @@ for n,spe_gens,sb,ids,reporting,partner,year,e_i,f in lines :
 			#if we have more than 1 NS in Spe dups
 				dup_found=False
 			elif len(ids.split("|"))==len(sb.split("|")):
-				#keep only the Spe & NS flow when duplicate and if no nulls in sb other wse we can't figure out which ID to remove
+				# keep only the Spe & NS flow when duplicate and if no nulls in sb 
+				# other wse we can't figure out which ID to remove
 				local_ids_to_remove=[v for k,v in enumerate(ids.split("|")) if k!=speNS_indeces[0]]
 			else:
 				dup_found=False
 		elif len(ids.split("|"))==len(spe_gens.split("|")):
-			#remove the Gen flows which dups with one Spe flow and if no nulls in spe_gens other wise we can't figure out which ID to remove
+			# remove the Gen flows which dups with one Spe flow and if no nulls in 
+			# spe_gens other wise we can't figure out which ID to remove
 			local_ids_to_remove=[v for k,v in enumerate(ids.split("|")) if k!=spe_indeces[0]]
 		else:
 			dup_found=False
@@ -282,12 +285,13 @@ print "-------------------------------------------------------------------------
 ################################################################################
 ##			Create the partner World as sum of partners
 ################################################################################
-c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`)
-	VALUES ("World sum partners","geographical_area","World")""")
+c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`, `slug`)
+	VALUES ("World sum partners","geographical_area","World", "Worldsumpartners")""")
 
 print "World sum partners added to RICentities"
 
-c.execute("""INSERT INTO flow_joined (flow, unit, reporting, reporting_slug, year, expimp, currency, partner, partner_slug, rate, source)
+c.execute("""INSERT INTO flow_joined (flow, unit, reporting, reporting_slug, year, 
+	expimp, currency, partner, partner_slug, rate, source)
 			SELECT sum(flow*unit) as flow,
 				1 as unit,
 				reporting,
@@ -310,15 +314,15 @@ print "-------------------------------------------------------------------------
 # ################################################################################
 # ##			Create the partner World as best guess
 # ################################################################################
-c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`)
-	VALUES ("World best guess","geographical_area","World")""")
+c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`, `slug`)
+	VALUES ("World best guess","geographical_area","World", "Worldbestguess")""")
 
 print "World as best guess added to RICentities"
 print "-------------------------------------------------------------------------"
 
 
-c.execute("""SELECT year, expimp, partner, reporting, partner_slug, reporting_slug, flow,
-	unit,currency,rate,source
+c.execute("""SELECT year, expimp, partner, reporting, partner_slug, reporting_slug, 
+	flow, unit, currency, rate, source, type, reporting_type, reporting_continent
 	from flow_joined
 	WHERE partner LIKE "World%"  """)
 data=list(c)
@@ -342,8 +346,10 @@ for g,d in itertools.groupby(data,lambda _:(_[3],_[0],_[1])):
 		world_best_guess=list(world_best_guess[0])
 		world_best_guess[2]=u"World_best_guess"
 		world_best_guess[4]=u"Worldbestguess"
-		c.execute("""INSERT INTO flow_joined (year,expimp,partner,reporting, partner_slug, reporting_slug, flow, unit,currency,rate,source)
-		VALUES (?,?,?,?,?,?,?,?,?,?,?)""",world_best_guess)
+		c.execute("""INSERT INTO flow_joined (year, expimp, partner, reporting, 
+			partner_slug, reporting_slug, flow, unit, currency, rate, source, type,
+			reporting_type, reporting_continent)
+		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""", world_best_guess)
 		world_best_guess_added += 1
 
 print "World best guess added to flow_joined", world_best_guess_added
