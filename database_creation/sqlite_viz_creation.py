@@ -14,7 +14,6 @@ except :
 	print "couldn't load config.json database"
 	exit(1)
 
-# sqlite_viz=os.path.join("out_data",conf["sqlite_viz"])
 conn=sqlite3.connect("out_data/RICardo_visualisation.sqlite")
 c=conn.cursor()
 
@@ -27,7 +26,7 @@ print "-------------------------------------------------------------------------
 
 c.execute("""DROP TABLE IF EXISTS flow_joined;""")
 c.execute("""CREATE TABLE IF NOT EXISTS flow_joined AS
-	 SELECT f.id, f.source, s.type, f.flow, f.year,
+	 SELECT f.id, f.source, st.type, f.flow, f.year,
 	 	f.unit as unit,
 		eisg.modified_export_import as expimp,
 		eisg.modified_special_general as spegen,
@@ -76,10 +75,13 @@ c.execute("""CREATE TABLE IF NOT EXISTS flow_joined AS
 			 	USING (export_import, special_general)
 		LEFT OUTER JOIN sources as s
 				ON s.slug=f.source
+		LEFT OUTER JOIN source_types as st
+				ON st.acronym=s.acronym
 		WHERE expimp != "Re-exp"
 			and partner is not null
 			and partner_sum is null
-			and s.type != "OUPS"
+			and s.acronym != "OUPS"
+			and f.flow is not null
 	""")
 
 print "flow_joined created"
@@ -87,9 +89,6 @@ print "-------------------------------------------------------------------------
 
 # taking care of Total_type flag to define the world partner
 # and ((`Total Trade Estimation` is null and partner != "World" )or(`Total Trade Estimation`=1 and partner = "World"))
-
-# c.execute("""Select count(*) from flow_joined """)
-# print list(c), "lines in flow_joined"
 
 c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`, `slug`)
 	VALUES ("World estimated","geographical_area","World", "Worldestimated")""")
@@ -112,26 +111,6 @@ c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`, `slug`)
 print "World undefined added to RICentities"
 print "-------------------------------------------------------------------------"
 
-#
-# Add World estimations to sq lite viz
-# MAJ it's ADD during first iteration on flow
-
-# c.execute("""UPDATE flow_joined SET partner="Worldestimated"
-# 	WHERE partner="World" and world_trade_type="total_estimated" """)
-# print "Worldestimated added to flow_joind"
-
-# c.execute("""UPDATE flow_joined SET partner="Worldasreported"
-# 	WHERE partner="World" and world_trade_type="total_reporting1" """)
-# print "Worldasreported added to flow_joind"
-
-# c.execute("""UPDATE flow_joined SET partner="Worldasreported2"
-# 	WHERE partner="World" and world_trade_type="total_reporting2" """)
-# print "Worldasreported2 added to flow_joind"
-
-# c.execute("""UPDATE flow_joined SET partner="Worldundefined"
-# 	WHERE partner="World" and world_trade_type is null """)
-# print "Worldundefined added to flow_joind"
-print "-------------------------------------------------------------------------"
 ################################################################################
 # merge duplicates from land and sea
 ################################################################################
@@ -157,10 +136,8 @@ for n,flows,ids,land_seas in c :
 if rows_grouped>0:
 	print "removing %s land/seas duplicates by suming them"%rows_grouped
 sub_c.close()
-
+print "merge duplicates from land and sea done"
 print "-------------------------------------------------------------------------"
-# c.execute("""Select count(*) from flow_joined """)
-# print list(c), "lines in flow_joined"
 ################################################################################
 # remove 'valeurs officielles' when duplicates with 'Valeurs actuelles'
 # for France between 1847 and 1856 both included
@@ -184,15 +161,14 @@ for n,notes,ids,sources in c :
 			ids_to_remove.append(id)
 		else:
 			raise
-	else:
-		raise
+	# else:
+	# 	raise Exception("exception --->  ", n)
 if len(ids_to_remove)>0:
 	print "removing %s 'Valeur officielle' noted duplicates for France between 1847 1856"%len(ids_to_remove)
 	c.execute("DELETE FROM flow_joined WHERE id IN (%s)"%",".join(ids_to_remove))
 
+print "remove 'valeurs officielles' when duplicates with 'Valeurs actuelles' done"
 print "-------------------------------------------------------------------------"
-# c.execute("""Select count(*) from flow_joined """)
-# print list(c), "lines in flow_joined"
 ################################################################################
 # remove "species and billions" remove species flows when exists
 ################################################################################
@@ -220,9 +196,8 @@ if len(ids_to_remove)>0:
 	couples %s"""%(len(ids_to_remove),",".join(rps))
 	c.execute("DELETE FROM flow_joined WHERE id IN (%s)"%",".join(ids_to_remove))
 
+print "remove species and billions remove species flows when exists"
 print "-------------------------------------------------------------------------"
-# c.execute("""Select count(*) from flow_joined """)
-# print list(c), "lines in flow_joined"
 ################################################################################
 # remove GEN flows when duplicates with SPE flows
 ################################################################################
@@ -235,12 +210,14 @@ c.execute("""SELECT count(*) as nb,group_concat(spegen,'|'),
 	""")
 lines=c.fetchall()
 ids_to_remove={}
-for n,spe_gens,sb,ids,reporting,partner,year,e_i,f in lines :
+gen_remove=0
+for n, spe_gens, sb, ids, reporting, partner, year, e_i, f in lines :
 	local_ids_to_remove=[]
 	dup_found=True
 	if spe_gens and "Gen" in spe_gens.split("|") and "Spe" in spe_gens.split("|") :
 		spe_indeces=[k for k,v in enumerate(spe_gens.split("|")) if v =="Spe"]
-		if len(spe_indeces)>1 :
+		print len(spe_indeces)
+		if len(spe_indeces)>1 and sb != None:
 			#if we have more than 1 Spe as dups
 			speNS_indeces=[k for k,v in enumerate(sb.split("|")) if v =="NS" and k in spe_indeces]
 			if len(speNS_indeces)>1:
@@ -249,7 +226,10 @@ for n,spe_gens,sb,ids,reporting,partner,year,e_i,f in lines :
 			elif len(ids.split("|"))==len(sb.split("|")):
 				# keep only the Spe & NS flow when duplicate and if no nulls in sb 
 				# other wse we can't figure out which ID to remove
-				local_ids_to_remove=[v for k,v in enumerate(ids.split("|")) if k!=speNS_indeces[0]]
+				try:
+					local_ids_to_remove=[v for k,v in enumerate(ids.split("|")) if k!=speNS_indeces[0]]
+				except:
+					print "Error"
 			else:
 				dup_found=False
 		elif len(ids.split("|"))==len(spe_gens.split("|")):
@@ -268,19 +248,17 @@ for n,spe_gens,sb,ids,reporting,partner,year,e_i,f in lines :
 
 	if not dup_found:
 		# flows are dups but not on GEN/SPE distinction or some null values in the groupings
-		print ("duplicate found :%s flows for %s,%s,%s,%s,%s,%s"%(n,year,reporting,
+		gen_remove +=1
+		print gen_remove, ("duplicate found :%s flows for %s,%s,%s,%s,%s,%s"%(n,year,reporting,
 			partner,e_i,spe_gens,sb)).encode("utf8")
 print "-------------------------------------------------------------------------"
-# c.execute("""Select count(*) from flow_joined """)
-# print list(c), "lines in flow_joined"
+
 if ids_to_remove:
-	for r,ids in ids_to_remove.iteritems():
+	for r, ids in ids_to_remove.iteritems():
 		print ("removing %s Gen or Species duplicates for %s"%(r,len(ids))).encode("utf8")
 		c.execute("DELETE FROM flow_joined WHERE id IN (%s)"%",".join(ids))
 
 print "-------------------------------------------------------------------------"
-# c.execute("""Select count(*) from flow_joined """)
-# print list(c), "lines in flow_joined"
 
 ################################################################################
 ##			Create the partner World as sum of partners
@@ -309,8 +287,7 @@ c.execute("""INSERT INTO flow_joined (flow, unit, reporting, reporting_slug, yea
 
 print "World sum partners added to flow_joined"
 print "-------------------------------------------------------------------------"
-# c.execute("""Select count(*) from flow_joined """)
-# print list(c), "lines in flow_joined"
+
 # ################################################################################
 # ##			Create the partner World as best guess
 # ################################################################################
@@ -319,7 +296,6 @@ c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`, `slug`)
 
 print "World as best guess added to RICentities"
 print "-------------------------------------------------------------------------"
-
 
 c.execute("""SELECT year, expimp, partner, reporting, partner_slug, reporting_slug, 
 	flow, unit, currency, rate, source, type, reporting_type, reporting_continent
@@ -338,8 +314,6 @@ for g,d in itertools.groupby(data,lambda _:(_[3],_[0],_[1])):
 	if len(world_best_guess)==0:
 		world_best_guess=[sd for sd in dd if sd[4]==u"Worldsumpartners"]
 	if len(world_best_guess)==0:
-		print g
-		print dd
 		print i, "ARG no best guess world flow found ?"
 		i += 1
 	else:

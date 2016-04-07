@@ -3,18 +3,24 @@ CREATE TABLE `sources`
 (
 	`slug`			TEXT  PRIMARY KEY,
 	`acronym`		TEXT,
-	`family`		TEXT,
-	`type`			TEXT,
-	`author`		TEXT,
 	`name`			TEXT,
-	`edition`		TEXT,
+	`edition_date`	TEXT,
 	`country`		TEXT,
-	`URL`			TEXT,
 	`pages`			TEXT,
 	`volume`		TEXT,
 	`shelf_number`	TEXT,
 	`dates`			TEXT,
 	`notes`			TEXT
+);
+
+CREATE TABLE `source_types`
+(
+	`acronym`		TEXT,
+	`reference`		TEXT,
+	`type`			TEXT,
+	`author`		TEXT,
+	`URL`			TEXT,
+	FOREIGN KEY (acronym) 	REFERENCES sources(acronym)
 );
 
 CREATE TABLE `exchange_rates`
@@ -25,7 +31,7 @@ CREATE TABLE `exchange_rates`
 	`source`			 	INTEGER,
 	`notes`					TEXT,
 	PRIMARY KEY (`year`,`modified_currency`),
-	FOREIGN KEY (source) 	REFERENCES sources(id)
+	FOREIGN KEY (source) 	REFERENCES sources(slug)
 );
 	-- PRIMARY KEY (`year`, `modified_currency`),
 

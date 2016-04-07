@@ -10,7 +10,6 @@ from csv_unicode import UnicodeWriter
 import unicodedata
 import re
 
-
 ################################################################################
 ##          MDB to SQLite
 ################################################################################
@@ -62,13 +61,8 @@ print "Copy access tables into sqlite"
 print "-------------------------------------------------------------------------"
 for table in ["Entity_Names v1","RawData v1","Currency Name v1","Exchange Rate v1",
 "Exp-Imp-Standard v1","RICentities v1","RICentities_groups v1"]:
- 	 	# new_table_name=table.lower().replace(" ","_").replace("-","_")
-	 	# print new_table_name
-		#c.executescript()
 		sql=subprocess.check_output("mdb-export -I sqlite %s '%s'"%(mdb_filename,table),shell=True)
 		print "%s: got %s lines of sql"%(table,len(sql.split(";\n")))
-		#c.execute("BEGIN TRANSACTION")
-		# insert access data in sqlite
 		for insert in sql.split(";\n"):
 			try :
 				c.execute(insert)
@@ -76,7 +70,6 @@ for table in ["Entity_Names v1","RawData v1","Currency Name v1","Exchange Rate v
 				print "'%s'"%insert
 				raise e
 		conn.commit()
-		#c.execute("END")
 
 print "-------------------------------------------------------------------------"
 print "inserts into sqlite done"
@@ -170,10 +163,6 @@ c.execute("""UPDATE old_RICentities SET id=REPLACE(id,"***","") WHERE 1""")
 ################################################################################
 ##          Import RICnames definition from CSV
 ################################################################################
-# import RICnames_from_csv
-# RICnames_from_csv.import_in_sqlite(conn, conf)
-#  depecrated since RICnames were included into mdb file by Karine
-
 # add the missing Haïti
 c.execute("""INSERT INTO `old_entity_names_cleaning` (`original_name`, `name`, `RICname`)
 VALUES ("Haïti","Haïti","Haiti");""")
@@ -187,10 +176,9 @@ print "-------------------------------------------------------------------------
 ##			Create table sources
 ################################################################################
 
-with open('in_data/oups_fixed.csv', 'r') as oups_sources:
+with open('in_data/patchs/oups_fixed.csv', 'r') as oups_sources:
 	oups=UnicodeReader(oups_sources)
 	oups.next()
-	# oups = [list(r) for r in oups]
 	oups = {row[0]:row for row in oups}
 
 with open('in_data/refine_source_merge.csv', 'r') as sources:
@@ -198,7 +186,6 @@ with open('in_data/refine_source_merge.csv', 'r') as sources:
 	reader.next()
 	uniqueId = []
 	duplicate = []
-	# uniqueId = set()
 	for row in reader:
 		_id = row[7]
 		if _id in uniqueId:
@@ -211,10 +198,15 @@ with open('in_data/refine_source_merge.csv', 'r') as sources:
 				# 	print "found in sources %s"%row[2].strip()
 				uniqueId.append(_id)
 				c.execute("""INSERT INTO sources (
-					slug, acronym, family, type, author, name, edition, country, url, pages, volume, shelf_number, dates, notes)
-					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",(row[7].strip(), row[0].strip(), row[12].strip(), 
-						row[13].strip(), row[8].strip(), row[2].strip(), row[4].strip(),row[9].strip(),
-						row[10].strip(),row[6].strip(),row[1].strip(),row[3].strip(),row[5].strip(),row[11].strip())
+					slug, acronym, name, edition_date, country, pages, volume, shelf_number, dates, notes)
+					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",(row[7].strip(), row[0].strip(), 
+						row[8].strip(), row[2].strip(),row[4].strip(),row[6].strip(),row[1].strip(),
+						row[3].strip(),row[5].strip(),row[11].strip())
+					)
+
+				c.execute("""INSERT INTO source_types (acronym, reference, type, author, url)
+					VALUES (?, ?, ?, ?, ?)""",(row[0].strip(), row[12].strip(), row[13].strip(), row[9].strip(), 
+						row[10].strip())
 					)
 
 ################################################################################
@@ -234,14 +226,16 @@ print "-------------------------------------------------------------------------
 print "update exchange_rates"
 c.execute("""SELECT * from exchange_rates""")
 exchange_rates = [list(r) for r in c]
-with open('in_data/oups_fixed.csv', 'r') as oups_sources:
+
+# resolve oups problem in refine source csv
+with open('in_data/patchs/oups_fixed.csv', 'r') as oups_sources:
 	oups=UnicodeReader(oups_sources)
 	oups.next()
 	oups = [list(r) for r in oups]
 	oups = {row[0]:row for row in oups}
 
+	# lambda function to delete currency_ prefix
 	create_note=lambda oldid: oldid[9:]
-
 
 	sub_c=conn.cursor()
 	for row in exchange_rates:
@@ -249,17 +243,20 @@ with open('in_data/oups_fixed.csv', 'r') as oups_sources:
 			if oups[row[3]][1] != "SOURCES TO BE FIXED":
 				if oups[row[3]][0] != None and " in " in oups[row[3]][0]:
 					try:
+						# catch date in source and add it to notes
 						date = re.search('\d\d\d\d', oups[row[3]][0]).group()
 						note = "missing rate for this year, used the referent value for " + str(date)
 					except:
-						print "ERROR", oups[row[3]][0]
-				sub_c.execute("""UPDATE exchange_rates set source=?, notes=? WHERE source=?""",[oups[row[3]][1], create_note(oups[row[3]][0]), row[3]])
+						print "ERROR -->", oups[row[3]][0]
+				sub_c.execute("""UPDATE exchange_rates set source=?, notes=? WHERE source=?""",
+					[oups[row[3]][1], create_note(oups[row[3]][0]), row[3]])
 		if row[3] != None and "\n" in row[3]:
+			# catch and remove \r\n
 			source = re.sub('\r\n', ' ', row[3])
 			c.execute("""UPDATE exchange_rates set source=? WHERE source=?""",[source, row[3]])
 
 
-with open('in_data/patch_ex.csv', 'r') as patch:	
+with open('in_data/patchs/patch_ex.csv', 'r') as patch:	
 	patch=UnicodeReader(patch)
 	patch.next()
 	patch = [list(r) for r in patch]
@@ -300,7 +297,6 @@ print "-------------------------------------------------------------------------
 ##			Create table RICentities
 ################################################################################
 
-# create new table RICentities
 print "Create RICentities"
 c.execute("""INSERT INTO RICentities
 	SELECT RICname, type, continent, COW_code, id as slug
@@ -312,7 +308,6 @@ print "-------------------------------------------------------------------------
 ################################################################################
 ##			Create table entity_names
 ################################################################################
-#create temp table to save RICentities
 print "Create entity_names"
 c.execute("""INSERT INTO entity_names
 	SELECT trim(original_name), name as french_name, RICname
@@ -354,7 +349,7 @@ c.execute("""INSERT INTO flows(id, source, flow, unit, currency, year, reporting
 print "flows created"
 print "-------------------------------------------------------------------------"
 print "update flows with patch"
-with open('in_data/patch_sources.csv', 'r') as patch:
+with open('in_data/patchs/patch_sources.csv', 'r') as patch:
 	patch=UnicodeReader(patch)
 	patch.next()
 	patch = [list(r) for r in patch]
@@ -364,6 +359,15 @@ with open('in_data/patch_sources.csv', 'r') as patch:
 		patch_number +=1
 		c.execute("""UPDATE flows set source=? WHERE source=?""",[r[1].strip(), r[0]])
 	print "patch : ", len(patch)
+
+c.execute("""SELECT distinct(source) from flows""")
+table = [list(r) for r in c]
+# source_correction = [s.replace('"','') for s in table]
+# delete double quote from first and last position in source to match with sources slug
+for r in table:
+	if '"' in r[0]:
+		source = re.sub('"', '', r[0])
+		c.execute("""UPDATE flows set source=? WHERE source=?""",[source, r[0]])
 
 # INDEX
 
@@ -375,9 +379,6 @@ with open('in_data/patch_sources.csv', 'r') as patch:
 # c.execute("""CREATE UNIQUE INDEX i_re_id ON RICentities (id)""")
 # c.execute("""CREATE INDEX i_re_rn ON RICentities (RICname)""")
 
-# c.execute("""DROP TABLE IF EXISTS flow_joined;""")
-# print "drop flow_joined"
-# print "-------------------------------------------------------------------------"
 # c.execute("""DROP TABLE IF EXISTS old_rate;""")
 print "drop old_rate"
 print "-------------------------------------------------------------------------"
@@ -425,9 +426,8 @@ tables = [
 
 for item in tables:
 	c.execute("select * from " + item)
-	writer = UnicodeWriter(open(os.path.join("out_data", item + ".csv"), "wb"))
+	writer = UnicodeWriter(open(os.path.join("out_data/sources", item + ".csv"), "wb"))
 	writer.writerow([description[0] for description in c.description])
-	# c.fetchall()
 	writer.writerows(c)
 	print "export " + item + ".csv done"
 	print "-------------------------------------------------------------------------"
