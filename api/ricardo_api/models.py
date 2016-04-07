@@ -235,7 +235,7 @@ def get_reportings_overview(partner_ids):
 
     exp_partners=row[7].split("|") if row[7] is not None else []
     imp_partners=row[10].split("|") if row[10] is not None else []
-    sourcetype=row[14].split(",")[0]
+    sourcetype=row[14].split(",")[0] if row[14] is not None else []
     # exp_sources=list(set(row[8].split("|"))) if row[4] is not None else []
     # imp_sources=list(set(row[9].split("|"))) if row[4] is not None else []
 
@@ -426,6 +426,18 @@ def get_mirror_entities(reporting_id):
             "continent":continent
             })
     return json.dumps(json_response,encoding="UTF8")
+
+def get_reporting_years():
+  cursor = get_db().cursor()
+  cursor.execute("""SELECT distinct year
+                      FROM flow_joined
+                      Where partner_slug NOT LIKE 'Worl%%'""")
+  json_response=[]
+  for year in cursor:
+    json_response.append(year[0])
+
+  return json.dumps(json_response,encoding="UTF8")
+
 
 def get_reporting_entities(types=[],to_partner_ids=[]):
 

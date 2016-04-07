@@ -86,6 +86,16 @@ def continent_with_partners():
         abort(500)
     return Response(json_data, status=200, mimetype='application/json')
 
+@app.route('/reporting_years')
+def reporting_years():
+    try:
+        json_data=models.get_reporting_years()
+    except Exception:
+        raise
+        abort(500)
+
+    return Response(json_data, status=200, mimetype='application/json')
+
 @app.route('/reporting_entities')
 def reporting_entities():
     type_filter = request.args.get('type_filter',None) #["countries","city","colonial_area","geographic_area"])

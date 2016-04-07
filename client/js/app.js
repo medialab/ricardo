@@ -64,7 +64,12 @@ config(['$routeProvider', function($routeProvider) {
   });
   $routeProvider.when('/network', {
     templateUrl: 'partials/network.html',
-    controller: 'network'
+    controller: 'network',
+    resolve: {
+      reportingYears : function (apiService) {
+        return apiService.getReportingYears()
+      }
+    }
   });
   $routeProvider.when('/reportings_by_year', {
     templateUrl: 'partials/matrix.html',

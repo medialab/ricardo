@@ -4,12 +4,12 @@
 
 angular.module('ricardo.controllers.network', [])
 
-  .controller('network', [ "$scope", "$location", "apiService", "utils",
-    function ($scope, $location, apiService, utils) {
+  .controller('network', [ "$scope", "$location", "apiService", "utils", "reportingYears",
+    function ($scope, $location, apiService, utils, reportingYears) {
 
     $scope.showlegend=false;
 
-    $scope.allYears = d3.range( 1789, 1940 );
+    $scope.allYears = reportingYears.sort(function(a,b){return a-b});
     $scope.selectedDate;
 
     $scope.colors = [
@@ -42,15 +42,16 @@ angular.module('ricardo.controllers.network', [])
     //                          "World":"#B1BCF5",
     //                          "Oceania":"#36E120"
     //                       }
-    // var typeColors = { "country":"#A561C7",
+    // var typeColors = {"country":"#A561C7",
     //                  "city/part_of":"#669746" ,
     //                  "group":"#B86634",
     //                  "geographical_area":"#6481A2",
     //                  "colonial_area":"#B74F74"
     //                 }
-    var continents=["Europe","Asia","Africa","America","World","Oceania"]
+    var continents=["Europe","Asia","Africa","America","World","Oceania","Pacific",
+                     "Mediterranean","Baltic","Antarctic","Atlantic Ocean"]
     var types=["country","city/part_of","group","geographical_area","colonial_area"]
-    var continentColors=d3.scale.category10().domain(continents);
+    var continentColors=d3.scale.category20().domain(continents);
     var typeColors=d3.scale.category10().domain(types);
 
     var impexpColor={"Imp":"#9ecae1",
@@ -118,6 +119,7 @@ angular.module('ricardo.controllers.network', [])
     }
 
     function initGraph (trades) {
+        console.log(trades);
         var listNations = [];
         var listOfNations = [];
         var pairs=[]
@@ -127,14 +129,19 @@ angular.module('ricardo.controllers.network', [])
                 listOfNations.push({
                   id: t.reporting_id,
                   continent: t.reporting_continent,
-                  type: t.reporting_type})
+                  type: t.reporting_type,
+                  role:"reporting"
+                })
+
             }
             if (listNations.indexOf(t.partner_id) === -1) {
                 listNations.push(t.partner_id)
                 listOfNations.push({
                   id: t.partner_id,
                   continent: t.partner_continent,
-                  type: t.partner_type})
+                  type: t.partner_type,
+                  role:"partner"
+                })
             }
         })
 
