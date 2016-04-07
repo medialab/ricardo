@@ -8,6 +8,7 @@ import csv
 from csv_unicode import UnicodeReader
 from csv_unicode import UnicodeWriter
 import unicodedata
+import re
 
 
 ################################################################################
@@ -240,15 +241,34 @@ with open('in_data/oups_fixed.csv', 'r') as oups_sources:
 	oups = {row[0]:row for row in oups}
 
 	create_note=lambda oldid: oldid[9:]
-	# for row in oups:
-	# 	c.execute("""UPDATE exchange_rates set source=?, notes=? WHERE source=?""",[row[1], create_note(row[0]), row[0]])
+
 
 	sub_c=conn.cursor()
 	for row in exchange_rates:
 		if row[3] in oups.keys():
 			if oups[row[3]][1] != "SOURCES TO BE FIXED":
-				# print oups[row[3]][1], "\n", oups[row[3]][0],"\n", row[3], "\n", "\n"
+				if oups[row[3]][0] != None and " in " in oups[row[3]][0]:
+					try:
+						date = re.search('\d\d\d\d', oups[row[3]][0]).group()
+						note = "missing rate for this year, used the referent value for " + str(date)
+					except:
+						print "ERROR", oups[row[3]][0]
 				sub_c.execute("""UPDATE exchange_rates set source=?, notes=? WHERE source=?""",[oups[row[3]][1], create_note(oups[row[3]][0]), row[3]])
+		if row[3] != None and "\n" in row[3]:
+			source = re.sub('\r\n', ' ', row[3])
+			c.execute("""UPDATE exchange_rates set source=? WHERE source=?""",[source, row[3]])
+
+
+with open('in_data/patch_ex.csv', 'r') as patch:	
+	patch=UnicodeReader(patch)
+	patch.next()
+	patch = [list(r) for r in patch]
+	
+	patch_number = 0
+	for r in patch:
+		patch_number +=1
+		c.execute("""UPDATE exchange_rates set source=? WHERE source=?""",[r[1].strip(), r[0]])
+	print "patch ex : ", len(patch)
 
 ################################################################################
 ##			Create table expimp_spegen
@@ -338,8 +358,12 @@ with open('in_data/patch_sources.csv', 'r') as patch:
 	patch=UnicodeReader(patch)
 	patch.next()
 	patch = [list(r) for r in patch]
+	
+	patch_number = 0
 	for r in patch:
+		patch_number +=1
 		c.execute("""UPDATE flows set source=? WHERE source=?""",[r[1].strip(), r[0]])
+	print "patch : ", len(patch)
 
 # INDEX
 
