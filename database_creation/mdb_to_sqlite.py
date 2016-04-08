@@ -176,12 +176,7 @@ print "-------------------------------------------------------------------------
 ##			Create table sources
 ################################################################################
 
-with open('in_data/patchs/oups_fixed.csv', 'r') as oups_sources:
-	oups=UnicodeReader(oups_sources)
-	oups.next()
-	oups = {row[0]:row for row in oups}
-
-with open('in_data/refine_source_merge.csv', 'r') as sources:
+with open('in_data/patchs/refine_source_merge.csv', 'r') as sources:
 	reader=UnicodeReader(sources)
 	reader.next()
 	uniqueId = []

@@ -225,11 +225,8 @@ for n, spe_gens, sb, ids, reporting, partner, year, e_i, f in lines :
 				dup_found=False
 			elif len(ids.split("|"))==len(sb.split("|")):
 				# keep only the Spe & NS flow when duplicate and if no nulls in sb 
-				# other wse we can't figure out which ID to remove
-				try:
+				# otherwise we can't figure out which ID to remove
 					local_ids_to_remove=[v for k,v in enumerate(ids.split("|")) if k!=speNS_indeces[0]]
-				except:
-					print "Error"
 			else:
 				dup_found=False
 		elif len(ids.split("|"))==len(spe_gens.split("|")):
