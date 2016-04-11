@@ -11,6 +11,15 @@
 			        </choices>
 			      </ui-select>
 			  	</div>
+			  	for
+			  	<div class="inline-select">
+			      <ui-select ng-model="stackchartFlow" theme="bootstrap" ng-change="changeStackFlow(stackchartFlow)">
+			        <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
+			        <choices repeat="item in stackflowChoices | filter: $select.search">
+			          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+			        </choices>
+			      </ui-select>
+		   		</div>
 			</h2>
 			<p>
 				This viz shows the data available by reportings. You can sort this list by name or coverage on period (1787-1938).
@@ -18,22 +27,26 @@
 				Each reporting is colored by his continent appartenance.
 			</p>
 		</div>
+		<div ng-show="worldpartner" class="col-md-12">
+			<h4>Flow by Continents in
+	   		<div class="inline-select">
+		        <ui-select ng-model="stackchartLayout" theme="bootstrap" ng-change="changeStackLayout(stackchartLayout)">
+		          <match placeholder="Select grouped or multiple layout">{{$select.selected.name.value}}</match>
+		          <choices repeat="item in stackchartLayoutChoices | filter: $select.search">
+		            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+		          </choices>
+		        </ui-select>
+		    </div>
+		    </h4>
+		    <reporting-world
+		    			ng-data="flowWorld"
+				        flow-type="stackchartFlow"
+				        layout="worldchartLayout">
+			</reporting-world>
+		</div>
 
-		<div class="col-md-12">
-		<!-- <reportings-available
-	        ng-data="matrix"
-	        ng-sort="changed"
-	    ></reportings-available> -->
-	    <h4>Flow by Continents for
-	    	<div class="inline-select">
-		      <ui-select ng-model="stackchartFlow" theme="bootstrap" ng-change="changeStackFlow(stackchartFlow)">
-		        <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
-		        <choices repeat="item in stackflowChoices | filter: $select.search">
-		          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-		        </choices>
-		      </ui-select>
-	   		</div>
-	   		in
+		<div ng-hide="worldpartner" class="col-md-12">
+	    <h4>Flow by Continents in
 	   		<div class="inline-select">
 		        <ui-select ng-model="stackchartLayout" theme="bootstrap" ng-change="changeStackLayout(stackchartLayout)">
 		          <match placeholder="Select grouped or multiple layout">{{$select.selected.name.value}}</match>
@@ -51,7 +64,7 @@
 			        layout="stackchartLayout">
 		</reporting-continent>
 		</div>
-		<div class="col-md-12">
+		<div ng-hide="worldpartner" class="col-md-12">
 			<!-- <div class="row">
 				<p class="col-md-2" ng-repeat="item in continentsColors" style="heigth:10pwx; background-color:{{item.color}}">
 					{{item.name}}
@@ -69,19 +82,20 @@
 		<div class="col-md-12">
 			<h4>
 			 Reporting Entities Overview
-	    	<!-- <div class="inline-select">
-		      <ui-select ng-model="matrixFlow" theme="bootstrap" ng-change="changeMatrixFlow(matrixFlow)">
-		        <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
-		        <choices repeat="item in matrixflowChoices | filter: $select.search">
-		          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-		        </choices>
-		      </ui-select>
-	   		</div> -->
 	   		Ordered by
 	   		<div class="inline-select">
 		        <ui-select ng-model="matrixLayout" theme="bootstrap" ng-change="changeMatrixLayout(matrixLayout)">
-		          <match placeholder="sort by">{{$select.selected.name.value}}</match>
+		          <match placeholder="Order By">{{$select.selected.name.value}}</match>
 		          <choices repeat="item in matrixLayoutChoices | filter: $select.search">
+		            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+		          </choices>
+		        </ui-select>
+		    </div>
+		    Color By
+		    <div class="inline-select">
+		        <ui-select ng-model="matrixColorBy" theme="bootstrap" ng-change="changeMatrixColor(matrixColorBy)">
+		          <match placeholder="Color By">{{$select.selected.name.value}}</match>
+		          <choices repeat="item in matrixColorChoices | filter: $select.search">
 		            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
 		          </choices>
 		        </ui-select>
@@ -96,16 +110,36 @@
 		    </div>
 			</h4>
 
-
-
-			<!-- <div class="btn-group pull-right" data-toggle="buttons">
-		          <label class=" btn btn-default active" id="byValue">
-		            <input type="radio" name="options"> By Value
+			<!-- <div class="btn-group" data-toggle="buttons">
+				<h4>Color By</h4>
+				 <label class=" btn btn-default active" id="byValue">
+		            <input type="radio" name="options">Partner
 		          </label>
 		          <label class="btn btn-default" id="byMajor">
-		            <input type="radio" name="options">By Source Type
+		            <input type="radio" name="options">Trade
 		          </label>
-		     </div> -->
+		           <label class="btn btn-default" id="byMajor">
+		            <input type="radio" name="options">Source
+		          </label>
+		           <label class="btn btn-default" id="byMajor">
+		            <input type="radio" name="options">Reporting Type
+		          </label>
+		           <label class="btn btn-default" id="byMajor">
+		            <input type="radio" name="options">Continent
+		          </label>
+		    </div>
+		    <div class="btn-group" data-toggle="buttons">
+				<h4>Order By</h4>
+				 <label class=" btn btn-default active" id="byValue">
+		            <input type="radio" name="options">Number of Reporting Years
+		          </label>
+		          <label class="btn btn-default" id="byMajor">
+		            <input type="radio" name="options">Partners in Average
+		          </label>
+		           <label class="btn btn-default" id="byMajor">
+		            <input type="radio" name="options">Flows in Average
+		          </label>
+		    </div> -->
 			<reporting-entities ng-data="flowEntities"
 			flow-type="matrixFlow"
 			layout="matrixLayout"

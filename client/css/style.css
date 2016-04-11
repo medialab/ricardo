@@ -1095,7 +1095,7 @@ div #reporting-entities-container{
   height: 700px;
   overflow: scroll;
 }
-.matrix-tooltip{
+.matrix-tooltip,.continent-tooltip{
   position: absolute;
   background: #333;
   color: #ddd;
@@ -1105,7 +1105,7 @@ div #reporting-entities-container{
   opacity: 0;
   font-family: 'montserrat', 'Arial', safouns-serif;
 }
-.matrix-tooltip hr{
+.matrix-tooltip hr,.continent-tooltip hr{
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }

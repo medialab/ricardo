@@ -66,7 +66,8 @@ angular.module('ricardo.directives.reportingContinent', [])
 
         var margin = {top: 20, right: 0, bottom: 40, left: 100 },
             width = document.querySelector('#reporting-continent-container').offsetWidth-margin.left-margin.right,
-            height=400;
+            height=400,
+            offsetHeight=10;
         var bisector = d3.bisector(function(d) {return d.year;}).left;
 
         var yValue=scope.flowType.type.value;
@@ -165,10 +166,32 @@ angular.module('ricardo.directives.reportingContinent', [])
 
         var bisect = d3.bisector(function(d) { return d.date;}).left;
 
-        //tooltips
+//////////////////////////////////////////////////////
+////////////////// Tooltips Setup //////////////////
+//////////////////////////////////////////////////////
+
         var tooltip = d3.select("body")
                       .append("div")
-                      .attr("class", "continent-tooltip");
+                      .attr("class", "continent-tooltip")
+                      .style("width", "200px")
+
+        var tip_margin = {top: 20, right: 0, bottom: 10, left:0},
+            tip_width = document.querySelector('.continent-tooltip').offsetWidth-tip_margin.left-tip_margin.right
+            // tip_height= document.querySelector('.matrix-tooltip').offsetHeight-tip_margin.top-tip_margin.bottom
+        tooltip.append("div").attr("class", "title");
+        tooltip.append("div").attr("class","tip_svg")
+        var svg_tip=tooltip.select(".tip_svg").append("svg")
+                .attr("width",tip_width)
+                .attr("height",20*5+tip_margin.top+tip_margin.bottom)
+                .append("g")
+                .attr("class","tip_group")
+                .attr("transform", "translate(" + tip_margin.left + "," + tip_margin.top + ")");
+
+
+
+        var x_tip=d3.scale.linear().range([0,tip_width-30])
+        var y_tip=d3.scale.ordinal().rangeRoundBands([0,100])
+
 
         function draw(data) {
 
@@ -191,9 +214,8 @@ angular.module('ricardo.directives.reportingContinent', [])
             n.minFlow = d3.max(nestedFiltered, function(d) { if(d.values[yValue]!==0) return d.values[yValue]; });
           });
 
-
           //remove voronoi from the other two graph
-          svg.select(".voronoi").remove();
+          // svg.select(".voronoi").remove();
           //append background for mouse event
           if (svg.select('.background').empty()){
             svg.append("rect")
@@ -202,18 +224,69 @@ angular.module('ricardo.directives.reportingContinent', [])
               .attr('height', height)
               .attr("fill","none")
               .style("pointer-events","all")
-              // .on("mouseover", function(){
-              //   console.log("over")
-              //     // var i = bisect(data, mouseYear); // returns the index to the current data item
-              // })
+              .on("mouseover", function(d){
+                tooltip.transition().style("opacity", .9);
+              })
               .on("mousemove", function(){
+                tooltip.style("opacity", .9)
+                .style("left", d3.event.pageX+20 + "px")
+                // .style("left", function(){
+                //   if (d3.event.pageX-margin.left<width/2) return (d3.event.pageX+20)+ "px";
+                //   else return (d3.event.pageX-220)+ "px"
+                //   // var tooltip_position=(d3.event.pageX-margin.left)<width/2 ? (d3.event.pageX+20):(d3.event.pageX-220) + "px"
+                //   // return tooltip_position
+                // })
+                // .style("top", (d3.event.pageY+75) + "px")
+                .style("top", "400px")
+
                 var mouse = d3.mouse(this),
                     mouseDate=x.invert(mouse[0]),
                     mouseYear = mouseDate.getFullYear(),
                     d0 = new Date(mouseYear,0,1),
                     d1 = new Date(mouseYear+1,0,1),
                     d = mouse - d0 > d1 - mouse ? d1 : d0;
-                svg.selectAll(".baseline").selectAll("circle,text")
+                var selectData=data.filter(function(e){return e.year===d.getFullYear()})
+                selectData.sort(function(a,b){return b.values[yValue]-a.values[yValue] })
+
+                tooltip.select(".title").html(
+                    "<h5>"+yName+" in "+d.getFullYear() +"</h5><hr>"
+                )
+
+                x_tip.domain([0,d3.max(selectData,function(d){return d.values[yValue]})])
+
+                // y_tip.domain(v.exp_continent.map(function(d){return d.continent}))
+                tooltip.select(".tip_group").selectAll("g").remove()
+                var tip_partner=tooltip.select(".tip_group")
+                       .selectAll(".tip_partner")
+                       .data(selectData)
+                       .enter().append("g")
+                       .attr("class","tip_flow")
+                       .attr("transform",function(d,i){
+                          return "translate(0,"+2*i*(offsetHeight+2)+")"})
+                tip_partner.append("rect")
+                           .attr("width",function(d){return x_tip(d.values[yValue])})
+                           .attr("height",10)
+                           .attr("fill",function(d){return continentColors[d.continent]});
+                tip_partner.append("text")
+                           .text(function(d){return d.continent})
+                           .attr("class","continentLabel")
+                           .attr("y",-2)
+                           .attr("fill","#fff")
+                           .attr("font-size",11)
+                tip_partner.append("text")
+                           .text(function(d){
+                              var value = layout==="expand" ? (d3.round(d.y*100,2)+" %"):(format(Math.round(d.values[yValue]))+" £");
+                              return value;
+                            })
+                           .attr("x",function(d){return x_tip(d.values[yValue])+2})
+                           .attr("y",9)
+                           .attr("text-anchor",function(d,i){
+                             return i===0 && d.values[yValue]!==0 ? "end":"start"
+                           })
+                           .attr("fill","#fff")
+                           .attr("font-size",12)
+
+                svg.selectAll(".baseline").selectAll("circle,line")
                     .filter(function(d){return d.values[yValue]!==0;})
                     .style("opacity", function(e) {
                       return e.year != d.getFullYear() ? 0 : 1;
@@ -272,10 +345,11 @@ angular.module('ricardo.directives.reportingContinent', [])
                        .text(d.getFullYear());
                 })
                 .on("mouseout",function(d){
-                          svg.selectAll(".baseline").selectAll("circle,text")
-                            .style("opacity",0)
-                          svg.selectAll(".highlight").remove();
-                      });
+                    tooltip.transition().style("opacity", 0);
+                    svg.selectAll(".baseline").selectAll("circle,text")
+                        .style("opacity",0)
+                    svg.selectAll(".highlight").remove();
+                });
           }
 
           if(layout==="multiple"){
@@ -298,9 +372,11 @@ angular.module('ricardo.directives.reportingContinent', [])
                       .attr("transform", function(d, i) { return "translate(0," + ((4-i) * height/5) + ")"; })
                       .attr("class", "multiple")
 
+                  var maxFlow=d3.max(nested,function(d){return d.maxFlow;})
+                  y.domain([0, maxFlow]);
                   multi_g.each(function(d,i) {
+                    // y.domain([0, d.maxFlow]);
                     var e = d3.select(this);
-                    y.domain([0, d.maxFlow]);
                     // var prefix = d3.formatPrefix(y.domain()[1]/2);
                     // var scale=y.domain()[1]/(prefix.scale(y.domain()[1]/2)*2)
                     // console.log(d3.round(prefix.scale(y.domain()[1]/2))*scale)
@@ -379,11 +455,12 @@ angular.module('ricardo.directives.reportingContinent', [])
                 }
             //y domain not updated
             else{
+                  y.domain([0, nested[0].maxFlow]);
                   svg.selectAll(".multiple")
                       .data(nested)
                       .attr("transform", function(d, i) { return "translate(0," + ((4-i) * height/5) + ")"; })
                       .each(function(d) {
-                        y.domain([0, d.maxFlow]);
+                        // y.domain([0, d.maxFlow]);
                         // var prefix = d3.formatPrefix(y.domain()[1]/2);
                         // var scale=y.domain()[1]/(prefix.scale(y.domain()[1]/2)*2)
                         // console.log(d3.round(prefix.scale(y.domain()[1]/2)))
@@ -484,6 +561,7 @@ angular.module('ricardo.directives.reportingContinent', [])
                           .attr("class", "area")
                           .attr("d", function(d) { return area(d.values); })
                           .style("fill", function(d) { return continentColors[d.key]; })
+                          .style("pointer-events","none")
                     e.append("path")
                             .attr("class", "line")
                             .attr("d", function(d) { return line(d.values); })
@@ -513,7 +591,7 @@ angular.module('ricardo.directives.reportingContinent', [])
                           .attr("y1", function(d){return y(d.y0);})
                           .attr("x2", function(d){return x(new Date(d.year,0,1))})
                           .attr("y2", function(d){return y(d.y0+d.y);})
-                          .attr("stroke","grey")
+                          .attr("stroke","black")
                           .style("opacity",0)
                           .style("pointer-events","none")
 
@@ -526,7 +604,7 @@ angular.module('ricardo.directives.reportingContinent', [])
                     //   .call(xAxis)
                     e.append("g")
                       .attr("class", "y axis")
-                      .style("opacity", i!==0 ? 0:1)
+                      .style("opacity", i!==4 ? 0:1)
                       .call(yAxis)
                       .call(customAxis)
                       .style("pointer-events","none")
@@ -587,7 +665,7 @@ angular.module('ricardo.directives.reportingContinent', [])
                             .attr("y1", function(d){return y(d.y0);})
                             .attr("x2", function(d){return x(new Date(d.year,0,1))})
                             .attr("y2", function(d){return y(d.y0+d.y);})
-                            .attr("stroke","grey")
+                            .attr("stroke","black")
                             .style("opacity",0)
                             .style("pointer-events","none")
 
@@ -595,7 +673,7 @@ angular.module('ricardo.directives.reportingContinent', [])
 
                         e.select(".y.axis")
                           .transition().duration(duration)
-                          .style("opacity", i!=0 ? 0:1)
+                          .style("opacity", i!=4 ? 0:1)
                           .call(yAxis)
                           .call(customAxis)
 
@@ -611,40 +689,40 @@ angular.module('ricardo.directives.reportingContinent', [])
                * Voronoi
                */
 
-              // if(voronoiGroup.empty()){
-              var voronoiGroup = svg.append("g")
-                            .attr("class", "voronoi")
-                            .attr("fill", "none")
-                            .attr("pointer-events", "all")
-              // }
+              // // if(voronoiGroup.empty()){
+              // var voronoiGroup = svg.append("g")
+              //               .attr("class", "voronoi")
+              //               .attr("fill", "none")
+              //               .attr("pointer-events", "all")
+              // // }
 
-              var voronoiGraph = voronoiGroup.selectAll("path")
-                .data(voronoi(dataFiltered))
+              // var voronoiGraph = voronoiGroup.selectAll("path")
+              //   .data(voronoi(dataFiltered))
 
 
-              voronoiGraph
-                .enter().append("path")
-                // .attr("d", function(d, i) { return "M" + d.join("L") + "Z"; })
-                // .datum(function(d, i) { return d.point; })
-                .attr("d", function(d) {
-                  if (d !== undefined && d.y!==0) return "M" + d.join("L") + "Z"; })
-                .datum(function(d) { if (d !== undefined && d.y!==0) return d.point ; })
-                .on("mouseover", mouseover)
-                .on("mouseout", mouseout)
-                .on('mousemove', function(d) {
-                  if(d!==undefined && d.y!==0 && d.values[yValue]!==0){
-                    var w = tooltip.style("width").replace("px", "");
-                    var h = tooltip.style("height").replace("px", "");
-                    tooltip.style("opacity", .9)
-                    .style("left", (d3.event.pageX-w/2) + "px")
-                    .style("top", (d3.event.pageY+75) + "px")
-                  }
-                })
-                // .on("click",function(d){
-                //   var data=scope.ngData.filter(function(e){return e.continent===d.continent})
-                //   svg.selectAll("g").remove();
-                //   draw(data);
-                // });
+              // voronoiGraph
+              //   .enter().append("path")
+              //   // .attr("d", function(d, i) { return "M" + d.join("L") + "Z"; })
+              //   // .datum(function(d, i) { return d.point; })
+              //   .attr("d", function(d) {
+              //     if (d !== undefined && d.y!==0) return "M" + d.join("L") + "Z"; })
+              //   .datum(function(d) { if (d !== undefined && d.y!==0) return d.point ; })
+              //   .on("mouseover", mouseover)
+              //   .on("mouseout", mouseout)
+              //   .on('mousemove', function(d) {
+              //     if(d!==undefined && d.y!==0 && d.values[yValue]!==0){
+              //       var w = tooltip.style("width").replace("px", "");
+              //       var h = tooltip.style("height").replace("px", "");
+              //       tooltip.style("opacity", .9)
+              //       .style("left", (d3.event.pageX-w/2) + "px")
+              //       .style("top", (d3.event.pageY+75) + "px")
+              //     }
+              //   })
+              //   // .on("click",function(d){
+              //   //   var data=scope.ngData.filter(function(e){return e.continent===d.continent})
+              //   //   svg.selectAll("g").remove();
+              //   //   draw(data);
+              //   // });
             }//if stacked layout
 
             svg.selectAll("path").attr("clip-path", "url(#clip)");

@@ -8,6 +8,7 @@ import json
 import codecs
 import networkx as nx
 import operator
+import re
 from difflib import SequenceMatcher
 
 def ric_entities_data(ids=[]):
@@ -203,10 +204,10 @@ def get_reportings_available_by_year():
   return json.dumps(json_response,encoding="UTF8")
 
 def get_reportings_overview(partner_ids):
-  partners_clause = "NOT LIKE 'World%'"if partner_ids=="" else "LIKE '%s'"%partner_ids
 
   cursor = get_db().cursor()
-  cursor.execute("""SELECT t1.reporting_slug as reporting_id,t1.reporting as reporting,t1.reporting_continent  as continent, t1.reporting_type as type, t1.year as year,
+  if partner_ids=="actualreported":
+    cursor.execute("""SELECT t1.reporting_slug as reporting_id,t1.reporting as reporting,t1.reporting_continent  as continent, t1.reporting_type as type, t1.year as year,
                     ifnull(SUM(t1.exports),0) as exports,ifnull(SUM(t2.imports),0) as imports,
                     group_concat(t1.partner_slug,"|") as exp_partners, group_concat(t1.partner_continent,"|") as exp_continents,group_concat(t1.partner_type,"|") as exp_types,
                     group_concat(t2.partner_slug,"|") as imp_partners, group_concat(t2.partner_continent,"|") as imp_continents,group_concat(t2.partner_type,"|") as imp_types,
@@ -215,65 +216,91 @@ def get_reportings_overview(partner_ids):
                     FROM
                     (SELECT reporting, reporting_slug , partner_slug, partner_continent,partner_type,(flow*Unit/rate) as exports, expimp, year, Source, type, reporting_continent,reporting_type
                     FROM flow_joined
-                    WHERE expimp = "Exp"
-                    AND partner_slug %s
-                    AND Flow is not NULL
-                    AND reporting_continent is not "World") t1
+                    WHERE partner_slug NOT LIKE 'World%' AND reporting_continent is not 'World'
+                    AND expimp = "Exp"
+                    AND Flow is not NULL) t1
                     LEFT OUTER JOIN
                       (SELECT reporting_slug,partner_slug, partner_continent,partner_type,(flow*Unit/rate) as imports, expimp, year, source,type
                     FROM flow_joined
-                    WHERE expimp = "Imp"
-                    AND partner_slug %s
+                    WHERE partner_slug NOT LIKE 'World%'
+                    AND expimp = "Imp"
                     AND Flow is not NULL) t2
                     ON  t1.year = t2.year AND  t1.reporting_slug = t2.reporting_slug AND t1.partner_slug = t2.partner_slug
                     GROUP BY  t1.reporting_slug, t1.year
-                     """%(partners_clause,partners_clause)
+                    """
                 )
+  else:
+    cursor.execute("""SELECT t1.reporting_slug as reporting_id,t1.reporting as reporting,t1.reporting_continent  as continent, t1.reporting_type as type, t1.year as year,
+                      t1.exports as exports, t2.imports as imports,
+                      t1.partner as partner,t1.source as source,t1.type as sourcetype
+                      FROM
+                      (SELECT reporting, reporting_slug , partner,partner_slug, (flow*Unit/rate) as exports, year, Source, type, reporting_continent,reporting_type
+                      FROM flow_joined
+                      WHERE  expimp = "Exp"
+                      AND (flow*Unit/rate)is not NULL
+                      AND (partner_slug like 'Worldbestguess'
+                      OR partner_slug like 'Worldestimated'
+                      OR partner_slug like 'Worldasreported'
+                      OR partner_slug like 'Worldsumpartners')
+                      ) t1
+                      LEFT OUTER JOIN
+                      (SELECT reporting_slug, (flow*Unit/rate) as imports, partner,partner_slug,year,source,type
+                      FROM flow_joined
+                      WHERE  expimp = "Exp"
+                      AND (flow*Unit/rate) is not NULL
+                      AND( partner_slug like 'Worldbestguess'
+                      OR partner_slug like 'Worldestimated'
+                      OR partner_slug like 'Worldasreported'
+                      OR partner_slug like 'Worldsumpartners')
+                      ) t2
+                      ON  t1.year = t2.year AND  t1.reporting_slug = t2.reporting_slug AND t1.partner_slug = t2.partner_slug
+                     """)
+
   json_response=[]
   table = [list(r) for r in cursor]
-  for row in table:
+  if partner_ids=="actualreported":
+    for row in table:
+      # exp_partners=row[7].split("|") if row[7] is not None else []
+      # imp_partners=row[10].split("|") if row[10] is not None else []
+      sourcetype=row[14].split(",")[0] if row[14] is not None else []
 
-    exp_partners=row[7].split("|") if row[7] is not None else []
-    imp_partners=row[10].split("|") if row[10] is not None else []
-    sourcetype=row[14].split(",")[0] if row[14] is not None else []
-    # exp_sources=list(set(row[8].split("|"))) if row[4] is not None else []
-    # imp_sources=list(set(row[9].split("|"))) if row[4] is not None else []
+      json_response.append({
+        "reporting_id": row[0],
+        "reporting": row[1],
+        "continent": row[2],
+        "type": row[3],
+        "year": row[4],
+        "exp_flow": round(row[5],2),
+        "imp_flow": round(row[6],2),
+        "total_flow":round(row[5]+row[6],2),
+        "exp_partner": row[7],
+        "exp_continent": row[8],
+        "exp_type": row[9],
+        "imp_partner": row[10],
+        "imp_continent": row[11] if row[11] is not None else [],
+        "imp_type": row[12],
+        "total_partner": ("|").join(list(set(exp_partners)|set(imp_partners))),
+        "source": row[13].split("|")[0] if row[7] is not None else None,
+        "sourcetype": sourcetype
+      })
+  else:
+    for row in table:
+      json_response.append({
+        "reporting_id": row[0],
+        "reporting": row[1],
+        "continent": row[2],
+        "type": row[3],
+        "year": row[4],
+        "exp_flow": round(row[5],2),
+        "imp_flow": round(row[6],2),
+        "total_flow":round(row[5]+row[6],2),
+        "partner":row[7].split("|")[0],
+        "source": row[8].split("|")[0],
+        "sourcetype": row[9].split(",")[0] if row[9] is not None else None
+      })
 
-    # exp_sources_cls=[]
-    # imp_sources_cls=[]
-
-    # if len(exp_sources)>0:
-    #   exp_sources_cls.append(exp_sources[0])
-    #   for i in exp_sources:
-    #     s=SequenceMatcher(None,exp_sources[0],i)
-    #     if s.ratio()<0.5:
-    #       exp_sources_cls.append(i)
-    # if len(imp_sources)>0:
-    #   imp_sources_cls.append(imp_sources[0])
-    #   for i in imp_sources:
-    #     s=SequenceMatcher(None,imp_sources[0],i)
-    #     if s.ratio()<0.5:
-    #       imp_sources_cls.append(i)
-
-    json_response.append({
-    "reporting_id": row[0],
-    "reporting": row[1],
-    "continent": row[2],
-    "type": row[3],
-    "year": row[4],
-    "exp_flow": round(row[5],2),
-    "imp_flow": round(row[6],2),
-    "total_flow":round(row[5]+row[6],2),
-    "exp_partner": row[7],
-    "exp_continent": row[8],
-    "exp_type": row[9],
-    "imp_partner": row[10],
-    "imp_continent": row[11],
-    "imp_type": row[12],
-    "total_partner": ("|").join(list(set(exp_partners)|set(imp_partners))),
-    "source": row[13].split("|")[0],
-    "sourcetype": sourcetype
-    })
+  json_response=[dict(t) for t in set([tuple(d.items()) for d in json_response])]
+  # json_response=list(set(json_response))
 
   return json.dumps(json_response,encoding="UTF8")
 
@@ -284,6 +311,8 @@ def get_nations_network_by_year(year):
                     FROM flow_joined
                     WHERE reporting NOT LIKE "Worl%%"
                     AND partner NOT LIKE "Worl%%"
+                    AND partner_slug IS NOT "NA"
+                    AND partner_slug IS NOT "Unknown"
                     AND Flow != "null"
                     AND year = %s
                     """%(year)

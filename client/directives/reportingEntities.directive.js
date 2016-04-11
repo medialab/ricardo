@@ -9,7 +9,7 @@ angular.module('ricardo.directives.reportingEntities', [])
       template: '<div id="reporting-entities-axis"></div><div id="reporting-entities-container"></div>',
       scope: {
           ngData: '=',
-          flowType: "=",
+          color: "=",
           layout: "=",
           reporting:"=",
           search:"="
@@ -38,15 +38,25 @@ angular.module('ricardo.directives.reportingEntities', [])
             reorder(data);
           }
         })
+        scope.$watch('color', function(newValue, oldValue) {
+          if ( newValue!==oldValue) {
+            layout=newValue.type.value;
+          }
+        })
 
         scope.$watch('search', function(newValue, oldValue) {
           if (newValue) {
             var offsetDiv=$("#reporting-entities-container").offset().top;
             var offsetTop=d3.select("#r_"+scope.reporting).node().getCTM().f;
             d3.selectAll(".entities").selectAll(".rlabel,.overlay").style("stroke","none");
-            d3.select("#r_"+scope.reporting).selectAll(".rlabel,.overlay").style("stroke","black");
+            d3.select("#r_"+scope.reporting).selectAll(".rlabel,.overlay").style("stroke","black").transition().delay(2000).duration(2000).style("stroke","none")
+            // setTimeout(function(){
+            //   setInterval(function(){
+            //     d3.select("#r_"+scope.reporting).selectAll(".rlabel,.overlay").style("stroke","black").transition().style("stroke","none")
+            //   },2000)
+            // },4000)
             $("#reporting-entities-container").animate({scrollTop:offsetTop-300},500);
-            searchFixed=true;
+            // searchFixed=true;
           }
         })
         var continentMap={
@@ -70,7 +80,10 @@ angular.module('ricardo.directives.reportingEntities', [])
                      "World":"#bf69bf",
                      "Oceania":"#6969bf",
                      "Pacific":"lightgrey",
-                     "Mediterranean":"lightblue"
+                     "Mediterranean":"lightblue",
+                     "Baltic":"white",
+                     "Antarctic":"grey",
+                     "Atlantic Ocean":"blue"
                     }
         var sourceColors = {
                     "primary":"lightblue",
@@ -92,7 +105,7 @@ angular.module('ricardo.directives.reportingEntities', [])
         var margin = {top: 0, right: 0, bottom: 40, left: 180},
             width = document.querySelector('#reporting-entities-container').offsetWidth-margin.left-margin.right,
             height,
-            offset=30,
+            // offset=30,
             orders
 
         var z=d3.scale.linear().range([0.2,1])
@@ -102,8 +115,8 @@ angular.module('ricardo.directives.reportingEntities', [])
         var legendWidth=50
 
         var x = d3.time.scale()
-              .range([0, width])
-              .domain([new Date(1786,0,1),new Date(1938,0,1)]);
+                .range([0, width])
+                .domain([new Date(1786,0,1),new Date(1938,0,1)]);
 
         var y = d3.scale.ordinal()
 
@@ -156,7 +169,11 @@ angular.module('ricardo.directives.reportingEntities', [])
 
         function order(layout,data){
           switch(layout){
-            case "coverage": data.sort(function(a, b){ return d3.descending(a.values.length, b.values.length)})
+            case "years": data.sort(function(a, b){ return d3.descending(a.values.length, b.values.length)})
+            break;
+            case "partner_avg":  data.sort(function(a, b){ return d3.descending(a.partnerAvg, b.partnerAvg)})
+            break;
+            case "flow_avg":  data.sort(function(a, b){ return d3.descending(a.flowAvg, b.flowAvg)})
             break;
             case "alphabet":  data.sort(function(a, b){ return d3.ascending(a.key, b.key)})
             break;
@@ -188,54 +205,46 @@ angular.module('ricardo.directives.reportingEntities', [])
           d3.select("#reporting-entities-container").selectAll(".entities")
             .transition().duration(500)
             .attr("transform", function(d){ return "translate(0 ,"+ y(d.key) + ")"})
-          d3.select("#reporting-entities-container").selectAll(".entities").selectAll(".continent_rect")
+          d3.select("#reporting-entities-container").selectAll(".entities").selectAll(".coverage_rect")
             .attr("x",function(d){
-                    if(layout==="coverage") return -d.values.length-2;
-                    else return -margin.left+offset;
+                if(layout==="years") return -d.values.length-2;
+                if(layout==="flow_avg") return -d.flowAvg-2;
+                if(layout==="partner_avg") return -d.partnerAvg-2;
              })
-             .attr("height",function(d){
-                if(layout==="coverage") return gridHeight-gridGap;
-                else return gridHeight;
+             .attr("height",gridHeight-gridGap)
+             .attr("width",function(d){
+                if(layout==="years") return d.values.length;
+                if(layout==="flow_avg") return d.flowAvg;
+                if(layout==="partner_avg") return d.partnerAvg;
              })
-              .attr("width",function(d){
-                if(layout==="coverage") return d.values.length;
-                else return margin.left-offset-2;
-             })
-            .style("fill",function(d){
-              if(layout==="coverage") return "#cc6666";
-              else return "none"
-              // if(layout==="continent") return continentColors[d.values[0].continent];
-              // if(layout==="type") return typeScale(d.values[0].type);
-            })
-          d3.select(".matrix").selectAll(".sideLabel").remove();
-          if(layout==="continent" || layout==="type"){
-            if (layout==="continent") var count=countByContinent;
-            else var count=countByType
-            var sideLabel=d3.select(".matrix").append("g")
-                          .selectAll(".sideLabel")
-                          .data(count).enter().append("g")
-                          .attr("class","sideLabel")
-                          .attr("transform", function(d){return "translate(-"+(margin.left)+","+d.y0*gridHeight+")";})
-            sideLabel.append("rect")
-                     .attr("width",offset)
-                     .attr("height",function(d){return d.number*gridHeight})
-                     .style("fill",function(d){
-                      if(layout==="continent") return continentColors[d.label];
-                      if(layout==="type") return typeScale(d.label);
-                     })
-            sideLabel.append("text")
-                          .attr("y",20)
-                          .attr("x",-5)
-                          .text(function(d){return d.label;})
-                          .attr("text-anchor","end")
-                          .attr("transform","rotate(270)")
-          }
+          // d3.select(".matrix").selectAll(".sideLabel").remove();
+          // if(layout==="continent" || layout==="type"){
+          //   if (layout==="continent") var count=countByContinent;
+          //   else var count=countByType
+          //   var sideLabel=d3.select(".matrix").append("g")
+          //                 .selectAll(".sideLabel")
+          //                 .data(count).enter().append("g")
+          //                 .attr("class","sideLabel")
+          //                 .attr("transform", function(d){return "translate(-"+(margin.left)+","+d.y0*gridHeight+")";})
+          //   sideLabel.append("rect")
+          //            .attr("width",offset)
+          //            .attr("height",function(d){return d.number*gridHeight})
+          //            .style("fill",function(d){
+          //             if(layout==="continent") return continentColors[d.label];
+          //             if(layout==="type") return typeScale(d.label);
+          //            })
+          //   sideLabel.append("text")
+          //                 .attr("y",20)
+          //                 .attr("x",-5)
+          //                 .text(function(d){return d.label;})
+          //                 .attr("text-anchor","end")
+          //                 .attr("transform","rotate(270)")
+          // }
         }
         function draw(data){
-
+          console.log(layout)
           data=order(layout,data);
-          console.log(data);
-
+          // console.log(data);
 
           //Count by countinent/type
           var countType=data.map(function(d){return d.values[0].type;})
@@ -350,13 +359,13 @@ angular.module('ricardo.directives.reportingEntities', [])
                 {"label":"<"+d3.round(max/10),
                   "value":"#daafaf"
                 },
-                {"label":d3.round(max/10)+"-"+d3.round(max/4),
+                {"label":d3.round(max/10)+"-"+(+d3.round(max/4)+2),
                   "value":"#cc6666"
                 },
-                {"label":d3.round(max/4)+"-"+d3.round(max*2/3),
+                {"label":(+d3.round(max/4)+2)+"-"+(+d3.round(max*2/3)-2),
                   "value":"#993333"
                 },
-                {"label":">"+d3.round(max*2/3),
+                {"label":">"+(+d3.round(max*2/3)-2),
                   "value":"#663333"
                 },
           ]
@@ -404,7 +413,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                       .data(data)
                       .enter().append("g")
                       .attr("class","entities")
-                      .attr("id",function(d){return "r_"+d.key;})
+                      .attr("id",function(d){return "r_"+d.values[0].reporting_id;})
                       .attr("transform", function(d){ return "translate(0 ,"+ y(d.key) + ")"});
 
          entity.on("mouseover",function(d){
@@ -451,20 +460,21 @@ angular.module('ricardo.directives.reportingEntities', [])
                .attr("width", gridWidth-gridGap)
                .attr("height", gridHeight-gridGap )
                .style("fill",function(v){return colorScale(v[yValue])})
+               // .style("fill",function(v){return sourceColors[v.sourcetype]})
                // .style("fill", function(v) {return continentColors[v.continent];})
                // .style("fill-opacity",function(v){return z(v[yValue]);})
                .on('mouseover', function(v) {
                   d3.select(this).style("stroke","black");
                   // d3.select(this.parentNode.parentNode).select("text").style("stroke","black");
-                  d3.select(".matrix").append("rect")
-                                    .attr("class","column")
-                                    .attr("x",x(new Date(v.year,0,1)))
-                                    .attr("height",height)
-                                    .attr("width",gridWidth-gridGap)
-                                    .style("fill","none")
-                                    .style("stroke","black");
+                  // d3.select(".matrix").append("rect")
+                  //                   .attr("class","column")
+                  //                   .attr("x",x(new Date(v.year,0,1)))
+                  //                   .attr("height",height)
+                  //                   .attr("width",gridWidth-gridGap)
+                  //                   .style("fill","none")
+                  //                   .style("stroke","black");
                   tooltip.select(".title").html(
-                    "<h5>"+d.key +" ("+v.continent+" "+v.type.split("/")[0]+")"+ " in " + v.year +"<p>"+yName+": " + v[yValue] + "</p></h5><hr>Partners by continent"
+                    "<h5>"+d.key +" ("+v.type.split("/")[0]+" in "+v.continent+")"+ " in " + v.year +"<p>"+yName+": " + v[yValue] + "</p></h5><hr>Partners by continent"
                     // "<p>"+yName+": " + v[yValue] + "</p>"
                   )
                   tooltip.select(".source").html(
@@ -474,7 +484,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                   tooltip.select(".tip_svg").select("svg").remove()
                   tooltip.select(".tip_svg").append("svg")
                              .attr("width",tip_width)
-                             .attr("height",20*v.exp_continent.length+tip_margin.top+tip_margin.bottom)
+                             .attr("height",20*v.exp_continent.length+tip_margin.top+tip_margin.bottom+20)
                              .append("g")
                              .attr("class","tip_group")
                              .attr("transform", "translate(" + tip_margin.left + "," + tip_margin.top + ")");
@@ -509,7 +519,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                 .on('mouseout', function(v) {
                   d3.select(this).style("stroke","none");
                   // d3.select(this.parentNode.parentNode).select("text").style("stroke","none");
-                  d3.select(".matrix").select(".column").remove();
+                  // d3.select(".matrix").select(".column").remove();
                   tooltip.transition().style("opacity", 0);
                   svg_axis.selectAll(".highlight").remove();
                 })
@@ -518,7 +528,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                     // var wid = tooltip.style("width").replace("px", "");
                     .style("left", (Math.min(window.innerWidth,
                         Math.max(0, (d3.event.pageX)))-75) + "px")
-                    .style("top", (d3.event.pageY + 40) + "px")
+                    .style("top", (d3.event.pageY +40) + "px")
                       // .style("width", wid + "px");
 
                      //tick highlighting
@@ -574,22 +584,25 @@ angular.module('ricardo.directives.reportingEntities', [])
                            .text(v.year);
                 });
                 e.append("rect")
-                 .attr("class","continent_rect")
-                 .attr("x",function(d){
-                    if(layout==="coverage") return -d.values.length-2;
-                    else return -margin.left+offset;
-                 })
+                  .attr("class","coverage_rect")
+                  .attr("x",function(d){
+                    if(layout==="years") return -d.values.length-2;
+                    if(layout==="flow_avg") return -d.flowAvg-2;
+                    if(layout==="partner_avg") return -d.partnerAvg-2;
+                  })
+                 .attr("height",gridHeight-gridGap)
                  .attr("width",function(d){
-                    if(layout==="coverage") return d.values.length;
-                    else return margin.left-offset-2;
+                    if(layout==="years") return d.values.length;
+                    if(layout==="flow_avg") return d.flowAvg;
+                    if(layout==="partner_avg") return d.partnerAvg;
                  })
-                 .attr("height", gridHeight-gridGap )
                  .style("opacity",0.5)
                  .style("fill","#cc6666")
+
                 e.append("text")
                   .text(function(d){
-                    if(d.key.length>23) return d.key.substring(0,20)+"...";
-                    else return d.key;
+                    if(d.key.split("(")[0].length>23) return d.key.split("(")[0].substring(0,20)+"...";
+                    else return d.key.split("(")[0];
                   })
                   .attr("class","rlabel")
                   .attr("text-anchor","end")
@@ -597,6 +610,21 @@ angular.module('ricardo.directives.reportingEntities', [])
                   .attr("y",8)
                   .attr("font-size",11)
                   .attr("cursor","default")
+                  .on("mouseover",function(d){
+                    if(d.key.split("(")[0].length>23){
+                      var textLength=this.getBBox();
+                      d3.select(this).text(function(d){return d.key})
+                                     .attr("x",-textLength.width)
+                                     .attr("text-anchor","start")
+                    }
+                  })
+                  .on("mouseout",function(d){
+                    if(d.key.split("(")[0].length>23){
+                      d3.select(this).text(function(d){return d.key.split("(")[0].substring(0,20)+"..."})
+                                     .attr("x",0)
+                                     .attr("text-anchor","end")
+                    }
+                  })
 
                 // e.append("line")
                 //   .attr("x1", -3)
