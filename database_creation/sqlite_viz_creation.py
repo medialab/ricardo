@@ -119,7 +119,7 @@ c.execute("""SELECT count(*) as nb,group_concat(`flow`,'|'),group_concat(ID,'|')
 	group_concat(transport_type,'|')
 	FROM `flow_joined`
 	WHERE transport_type is not null
-	GROUP BY year,expimp,reporting,partner HAVING count(*)>1
+	GROUP BY year, expimp, reporting, partner HAVING count(*)>1
 	""")
 sub_c=conn.cursor()
 rows_grouped=0
@@ -174,8 +174,8 @@ print "-------------------------------------------------------------------------
 ################################################################################
 
 c.execute("""SELECT * from (SELECT count(*) as nb,
-	group_concat(species_bullions,'|') as sb,group_concat(ID,'|'),
-	reporting,partner
+	group_concat(species_bullions,'|') as sb, group_concat(ID,'|'),
+	reporting, partner
 	FROM `flow_joined`
 	GROUP BY year,expimp,reporting,partner HAVING count(*)>1)
 	WHERE sb="S|NS"
@@ -202,9 +202,9 @@ print "-------------------------------------------------------------------------
 # remove GEN flows when duplicates with SPE flows
 ################################################################################
 
-c.execute("""SELECT count(*) as nb,group_concat(spegen,'|'),
-	group_concat(species_bullions,'|') as sb,group_concat(ID,'|'),
-	reporting,partner,year,expimp,group_concat(flow,'|')
+c.execute("""SELECT count(*) as nb, group_concat(spegen,'|'),
+	group_concat(species_bullions,'|') as sb, group_concat(ID,'|'),
+	reporting, partner, year, expimp, group_concat(flow,'|')
 	FROM `flow_joined`
 	GROUP BY year,`expimp`,`reporting`,`partner` HAVING count(*)>1
 	""")
@@ -223,10 +223,10 @@ for n, spe_gens, sb, ids, reporting, partner, year, e_i, f in lines :
 			if len(speNS_indeces)>1:
 			#if we have more than 1 NS in Spe dups
 				dup_found=False
-			elif len(ids.split("|"))==len(sb.split("|")):
+			elif len(ids.split("|"))==len(sb.split("|")) and len(speNS_indeces)>1:
 				# keep only the Spe & NS flow when duplicate and if no nulls in sb 
 				# otherwise we can't figure out which ID to remove
-					local_ids_to_remove=[v for k,v in enumerate(ids.split("|")) if k!=speNS_indeces[0]]
+				local_ids_to_remove=[v for k, v in enumerate(ids.split("|")) if k!=speNS_indeces[0]]
 			else:
 				dup_found=False
 		elif len(ids.split("|"))==len(spe_gens.split("|")):
@@ -260,8 +260,8 @@ print "-------------------------------------------------------------------------
 ################################################################################
 ##			Create the partner World as sum of partners
 ################################################################################
-c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`, `slug`)
-	VALUES ("World sum partners","geographical_area","World", "Worldsumpartners")""")
+c.execute("""INSERT INTO RICentities (`RICname`, `type`, `continent`, `slug`)
+	VALUES ("World sum partners", "geographical_area", "World", "Worldsumpartners")""")
 
 print "World sum partners added to RICentities"
 
@@ -269,21 +269,21 @@ c.execute("""INSERT INTO flow_joined (flow, unit, reporting, reporting_slug, yea
 	expimp, currency, partner, partner_slug, rate, source, type, reporting_type, reporting_continent)
 			SELECT sum(flow*unit) as flow,
 				1 as unit,
-				type,
 				reporting,
 				reporting_slug,
-				reporting_type, 
-				reporting_continent,
 				year,
 				expimp,
 				currency,
 				'World sum partners' as partner,
 				'Worldsumpartners' as partner_slug,
 				rate,
-				source
+				source,
+				type,
+				reporting_type, 
+				reporting_continent
 				from flow_joined
 			WHERE partner not like 'World%'
-			group by reporting,expimp,year """)
+			group by reporting, expimp, year """)
 
 print "World sum partners added to flow_joined"
 print "-------------------------------------------------------------------------"
@@ -292,7 +292,7 @@ print "-------------------------------------------------------------------------
 # ##			Create the partner World as best guess
 # ################################################################################
 c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`, `slug`)
-	VALUES ("World best guess","geographical_area","World", "Worldbestguess")""")
+	VALUES ("World best guess", "geographical_area", "World", "Worldbestguess")""")
 
 print "World as best guess added to RICentities"
 print "-------------------------------------------------------------------------"
