@@ -266,11 +266,14 @@ c.execute("""INSERT INTO RICentities (`RICname`,`type`,`continent`, `slug`)
 print "World sum partners added to RICentities"
 
 c.execute("""INSERT INTO flow_joined (flow, unit, reporting, reporting_slug, year, 
-	expimp, currency, partner, partner_slug, rate, source)
+	expimp, currency, partner, partner_slug, rate, source, type, reporting_type, reporting_continent)
 			SELECT sum(flow*unit) as flow,
 				1 as unit,
+				type,
 				reporting,
 				reporting_slug,
+				reporting_type, 
+				reporting_continent,
 				year,
 				expimp,
 				currency,
