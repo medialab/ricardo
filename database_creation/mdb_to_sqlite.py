@@ -199,10 +199,40 @@ with open('in_data/patchs/refine_source_merge.csv', 'r') as sources:
 						row[3].strip(),row[5].strip(),row[11].strip())
 					)
 
-				c.execute("""INSERT INTO source_types (acronym, reference, type, author, url)
-					VALUES (?, ?, ?, ?, ?)""",(row[0].strip(), row[12].strip(), row[13].strip(), row[9].strip(), 
-						row[10].strip())
-					)
+				# c.execute("""INSERT INTO source_types (acronym, reference, type, author, url)
+				# 	VALUES (?, ?, ?, ?, ?)""",(row[0].strip(), row[12].strip(), row[13].strip(), row[9].strip(), 
+				# 		row[10].strip())
+				# 	)
+print "-------------------------------------------------------------------------"
+################################################################################
+##			Create table source_type
+################################################################################
+with open('in_data/patchs/refine_source_merge.csv', 'r') as sources:
+	reader=UnicodeReader(sources)
+	reader.next()
+	
+
+	sourceTypeTable = []
+	
+	for row in reader:
+		if row[0]!="" and row[0] != "OUPS":
+			sourceTypes= [None] * 5
+			sourceTypes[0] = row[0].strip()
+			sourceTypes[1] = row[12].strip()
+			sourceTypes[2] = row[13].strip()
+			sourceTypes[3] = row[9].strip()
+			sourceTypes[4] = row[10].strip()
+			sourceTypeTable.append(sourceTypes)
+
+	data = [list(r) for r in sourceTypeTable]
+	data.sort(key=lambda _:(_[0],_[1],_[2],_[3]))
+	for g, d in itertools.groupby(data, lambda _:(_[0],_[1],_[2],_[3])):
+		groups = list(d)
+		uniqueSourceType = [sd for sd in groups]
+		print "len", len(uniqueSourceType)
+		uniqueSourceType = list(uniqueSourceType[0])
+		c.execute("""INSERT INTO source_types (acronym, reference, type, author, url)
+		VALUES (?,?,?,?,?)""", uniqueSourceType)
 
 ################################################################################
 ##			Create table exchanges_rates
