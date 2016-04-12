@@ -9,8 +9,9 @@ angular.module('ricardo.directives.reportingEntities', [])
       template: '<div id="reporting-entities-axis"></div><div id="reporting-entities-container"></div>',
       scope: {
           ngData: '=',
-          color: "=",
+          flowType:"=",
           layout: "=",
+          color: "=",
           reporting:"=",
           search:"="
       },
@@ -40,7 +41,7 @@ angular.module('ricardo.directives.reportingEntities', [])
         })
         scope.$watch('color', function(newValue, oldValue) {
           if ( newValue!==oldValue) {
-            layout=newValue.type.value;
+            colorBy=newValue.type.value;
           }
         })
 
@@ -101,6 +102,7 @@ angular.module('ricardo.directives.reportingEntities', [])
         var yValue="total_partner"
         var yName="Partners"
         var layout=scope.layout.type.value;
+        var colorBy=scope.color.type.value;
 
         var margin = {top: 0, right: 0, bottom: 40, left: 180},
             width = document.querySelector('#reporting-entities-container').offsetWidth-margin.left-margin.right,
@@ -242,81 +244,69 @@ angular.module('ricardo.directives.reportingEntities', [])
           // }
         }
         function draw(data){
-          console.log(layout)
           data=order(layout,data);
-          // console.log(data);
+          // if(colorBy==="partners"){
+          //   var partner_continent=[]
+          //   var type=d3.set(data.map(function(d){return d.values[0].type})).values();
+
+          //   data.forEach(function(d){
+          //     d.values.forEach(function(v){
+          //       v.exp_continent.forEach(function(e){
+          //         partner_continent.push(e.continent)
+          //       })
+          //     })
+          //   })
+          //   typeScale.domain(type);
+          //   partner_continent=d3.set(partner_continent).values();
+          // }
 
           //Count by countinent/type
-          var countType=data.map(function(d){return d.values[0].type;})
-          var countContinent=data.map(function(d){return d.values[0].continent;})
-          countType=d3.nest()
-                    .key(function(d){return d})
-                    .rollup(function(values) { return values.length; })
-                    .map(countType)
-          countContinent=d3.nest()
-                    .key(function(d){return d})
-                    .rollup(function(values) { return values.length; })
-                    .map(countContinent)
-          d3.keys(countType).forEach(function(d){
-                countByType.push({
-                  "label":d,
-                  "number":countType[d]
-                })
-          })
-          d3.keys(countContinent).forEach(function(d){
-              countByContinent.push({
-                "label":d,
-                "number":countContinent[d]
-              })
-          })
-          countByType.sort(function(a,b){return b.number-a.number})
-          countByContinent.sort(function(a,b){return b.number-a.number})
-          var y0=0
-          countByType.forEach(function(d){
-            d.y0=y0
-            d.y1=d.y0+d.number
-            y0+=d.number
-          })
-          y0=0
-          countByContinent.forEach(function(d){
-            d.y0=y0
-            d.y1=d.y0+d.number
-            y0+=d.number
-          })
+          // var countType=data.map(function(d){return d.values[0].type;})
+          // var countContinent=data.map(function(d){return d.values[0].continent;})
+          // countType=d3.nest()
+          //           .key(function(d){return d})
+          //           .rollup(function(values) { return values.length; })
+          //           .map(countType)
+          // countContinent=d3.nest()
+          //           .key(function(d){return d})
+          //           .rollup(function(values) { return values.length; })
+          //           .map(countContinent)
+          // d3.keys(countType).forEach(function(d){
+          //       countByType.push({
+          //         "label":d,
+          //         "number":countType[d]
+          //       })
+          // })
+          // d3.keys(countContinent).forEach(function(d){
+          //     countByContinent.push({
+          //       "label":d,
+          //       "number":countContinent[d]
+          //     })
+          // })
+          // countByType.sort(function(a,b){return b.number-a.number})
+          // countByContinent.sort(function(a,b){return b.number-a.number})
+          // var y0=0
+          // countByType.forEach(function(d){
+          //   d.y0=y0
+          //   d.y1=d.y0+d.number
+          //   y0+=d.number
+          // })
+          // y0=0
+          // countByContinent.forEach(function(d){
+          //   d.y0=y0
+          //   d.y1=d.y0+d.number
+          //   y0+=d.number
+          // })
+
 
 
 
           d3.select("#reporting-entities-container").select("svg").remove();
 
-          var gridData=[]
-          var partner_continent=[]
-          var type=d3.set(data.map(function(d){return d.values[0].type})).values();
-
-          data.forEach(function(d){
-            d.values.forEach(function(v){
-              v.exp_continent.forEach(function(e){
-                partner_continent.push(e.continent)
-              })
-
-              gridData.push(
-                {
-                  "reporting":d.key,
-                  "year":+v.year,
-                  "values":v
-                }
-              )
-            })
-          })
-
-          typeScale.domain(type);
-          partner_continent=d3.set(partner_continent).values();
           var reportings=data.map(function(d){
             return d.key;
           })
 
-          // var years=gridData.map(function(d){
-          //   return d.year;
-          // })
           var years=d3.range(1786,1938)
           years=d3.set(years).values();
 
@@ -334,7 +324,7 @@ angular.module('ricardo.directives.reportingEntities', [])
           var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[yValue]})});
           var min=d3.min(data,function(d){return d3.min(d.values,function(v){return +v[yValue]})});
 
-          // console.log(d3.extent(gridData,function(d){ return  +d.values[yValue];}))
+
           // var colorScale = d3.scale.linear()
           //                 .domain([min, max])
           //                 .range(["#3E9583", "#1F2D86"])
@@ -481,40 +471,43 @@ angular.module('ricardo.directives.reportingEntities', [])
                     "<hr><div style='background-color:"+sourceColors[v.sourcetype]+"'><span style='font-weight:bold'>Source("+v.sourcetype+"):</span>"+v.source+"</div>"
                   )
                   tooltip.transition().style("opacity", .9);
-                  tooltip.select(".tip_svg").select("svg").remove()
-                  tooltip.select(".tip_svg").append("svg")
-                             .attr("width",tip_width)
-                             .attr("height",20*v.exp_continent.length+tip_margin.top+tip_margin.bottom+20)
-                             .append("g")
-                             .attr("class","tip_group")
-                             .attr("transform", "translate(" + tip_margin.left + "," + tip_margin.top + ")");
-                  x_tip.domain([0,d3.max(v.exp_continent,function(d){return d.number})])
+                  if(colorBy==="partners"){
+                    tooltip.select(".tip_svg").select("svg").remove()
+                    tooltip.select(".tip_svg").append("svg")
+                               .attr("width",tip_width)
+                               .attr("height",20*v.exp_continent.length+tip_margin.top+tip_margin.bottom+20)
+                               .append("g")
+                               .attr("class","tip_group")
+                               .attr("transform", "translate(" + tip_margin.left + "," + tip_margin.top + ")");
+                    x_tip.domain([0,d3.max(v.exp_continent,function(d){return d.number})])
 
-                  // y_tip.domain(v.exp_continent.map(function(d){return d.continent}))
-                  var tip_partner=tooltip.select(".tip_group")
-                         .selectAll(".tip_partner")
-                         .data(v.exp_continent)
-                         .enter().append("g")
-                         .attr("class","tip_partner")
-                         .attr("transform",function(d,i){
-                            return "translate(0,"+2*i*(gridHeight+2)+")"})
-                  tip_partner.append("rect")
-                             .attr("width",function(d){return x_tip(d.number)})
-                             .attr("height",10)
-                             .attr("fill",function(d){return continentColors[d.continent]});
-                  tip_partner.append("text")
-                             .text(function(d){return d.continent})
-                             .attr("class","continentLabel")
-                             .attr("y",-2)
-                             .attr("fill","#fff")
-                             .attr("font-size",11)
-                  tip_partner.append("text")
-                             .text(function(d){return d.number})
-                             .attr("x",function(d){return x_tip(d.number)+2})
-                             .attr("y",9)
-                             .attr("text-anchor","start")
-                             .attr("fill","#fff")
-                             .attr("font-size",12)
+                    // y_tip.domain(v.exp_continent.map(function(d){return d.continent}))
+                    var tip_partner=tooltip.select(".tip_group")
+                           .selectAll(".tip_partner")
+                           .data(v.exp_continent)
+                           .enter().append("g")
+                           .attr("class","tip_partner")
+                           .attr("transform",function(d,i){
+                              return "translate(0,"+2*i*(gridHeight+2)+")"})
+                    tip_partner.append("rect")
+                               .attr("width",function(d){return x_tip(d.number)})
+                               .attr("height",10)
+                               .attr("fill",function(d){return continentColors[d.continent]});
+                    tip_partner.append("text")
+                               .text(function(d){return d.continent})
+                               .attr("class","continentLabel")
+                               .attr("y",-2)
+                               .attr("fill","#fff")
+                               .attr("font-size",11)
+                    tip_partner.append("text")
+                               .text(function(d){return d.number})
+                               .attr("x",function(d){return x_tip(d.number)+2})
+                               .attr("y",9)
+                               .attr("text-anchor","start")
+                               .attr("fill","#fff")
+                               .attr("font-size",12)
+                  }
+
                 })
                 .on('mouseout', function(v) {
                   d3.select(this).style("stroke","none");

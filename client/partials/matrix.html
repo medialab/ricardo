@@ -13,9 +13,9 @@
 			  	</div>
 			  	for
 			  	<div class="inline-select">
-			      <ui-select ng-model="stackchartFlow" theme="bootstrap" ng-change="changeStackFlow(stackchartFlow)">
+			      <ui-select ng-model="chartFlow" theme="bootstrap" ng-change="changeFlow(chartFlow)">
 			        <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
-			        <choices repeat="item in stackflowChoices | filter: $select.search">
+			        <choices repeat="item in flowChoices | filter: $select.search">
 			          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
 			        </choices>
 			      </ui-select>
@@ -28,11 +28,11 @@
 			</p>
 		</div>
 		<div ng-show="worldpartner" class="col-md-12">
-			<h4>Flow by Continents in
+			<h4>Flow by World Partner in
 	   		<div class="inline-select">
-		        <ui-select ng-model="stackchartLayout" theme="bootstrap" ng-change="changeStackLayout(stackchartLayout)">
+		        <ui-select ng-model="multichartLayout" theme="bootstrap" ng-change="changeMultiLayout(multichartLayout)">
 		          <match placeholder="Select grouped or multiple layout">{{$select.selected.name.value}}</match>
-		          <choices repeat="item in stackchartLayoutChoices | filter: $select.search">
+		          <choices repeat="item in multichartLayoutChoices | filter: $select.search">
 		            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
 		          </choices>
 		        </ui-select>
@@ -40,17 +40,31 @@
 		    </h4>
 		    <reporting-world
 		    			ng-data="flowWorld"
-				        flow-type="stackchartFlow"
-				        layout="worldchartLayout">
+				        flow-type="chartFlow"
+				        layout="multichartLayout">
 			</reporting-world>
+			 <!-- <div class="legend">
+		        <div class="legend-item">
+		          <div class="line import"></div> Import
+		        </div>
+		        <div class="legend-item">
+		            <div class="line export"></div> Export
+		        </div>
+		        <div class="legend-item">
+		            <div class="line total"></div> Total Trade
+		        </div>
+		        <div class="legend-item">
+		            {{ 'CURRENCY' | translate }} <strong>sterling pound</strong>
+          	</div> -->
+        </div>
 		</div>
 
 		<div ng-hide="worldpartner" class="col-md-12">
 	    <h4>Flow by Continents in
 	   		<div class="inline-select">
-		        <ui-select ng-model="stackchartLayout" theme="bootstrap" ng-change="changeStackLayout(stackchartLayout)">
+		        <ui-select ng-model="multichartLayout" theme="bootstrap" ng-change="changeMultiLayout(multichartLayout)">
 		          <match placeholder="Select grouped or multiple layout">{{$select.selected.name.value}}</match>
-		          <choices repeat="item in stackchartLayoutChoices | filter: $select.search">
+		          <choices repeat="item in multichartLayoutChoices | filter: $select.search">
 		            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
 		          </choices>
 		        </ui-select>
@@ -60,8 +74,8 @@
 	    			ng-data="flatContinent"
 	    			start-date="selectedMinDate"
 			        end-date="selectedMaxDate"
-			        flow-type="stackchartFlow"
-			        layout="stackchartLayout">
+			        flow-type="chartFlow"
+			        layout="multichartLayout">
 		</reporting-continent>
 		</div>
 		<div ng-hide="worldpartner" class="col-md-12">
@@ -141,7 +155,8 @@
 		          </label>
 		    </div> -->
 			<reporting-entities ng-data="flowEntities"
-			flow-type="matrixFlow"
+			color="matrixColorBy"
+			flow-type="chartFlow"
 			layout="matrixLayout"
 			reporting="reporting"
 			search="search"
