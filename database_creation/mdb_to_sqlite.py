@@ -188,7 +188,7 @@ with open('in_data/patchs/refine_source_merge.csv', 'r') as sources:
 			print row
 			pass
 		else:
-			if row[0]!="" and row[0] != "OUPS":
+			if row[0]!="":
 				# if "New series of the Spanish foreign sector 1850-2000" == row[2].strip():
 				# 	print "found in sources %s"%row[2].strip()
 				uniqueId.append(_id)
@@ -204,6 +204,7 @@ with open('in_data/patchs/refine_source_merge.csv', 'r') as sources:
 				# 		row[10].strip())
 				# 	)
 print "-------------------------------------------------------------------------"
+print "create table source type"
 ################################################################################
 ##			Create table source_type
 ################################################################################
@@ -225,20 +226,29 @@ with open('in_data/patchs/refine_source_merge.csv', 'r') as sources:
 			sourceTypeTable.append(sourceTypes)
 
 	data = [list(r) for r in sourceTypeTable]
-	data.sort(key=lambda _:(_[0],_[1],_[2],_[3]))
-	for g, d in itertools.groupby(data, lambda _:(_[0],_[1],_[2],_[3])):
-		groups = list(d)
-		uniqueSourceType = [sd for sd in groups]
-		print "len", len(uniqueSourceType)
-		uniqueSourceType = list(uniqueSourceType[0])
+	data.sort(key=lambda _:(_[0]))
+	for k, group in itertools.groupby(data, lambda _:_[0]):
+		print "source acronyme %s"%k 
+
+		groups = list(group)
+		def check_attributes(label,index):
+			atts=set(_[index] for _ in groups if _[index]!="")
+			if len(atts)>1:
+				print "more than one %s: %s"%(label,atts)
+			return " | ".join(atts)
+
+		sref=check_attributes("refs",1)
+		stype=check_attributes("type",2)
+		sauthor=check_attributes("author",3)
+		surl=check_attributes("url",4)
+
 		c.execute("""INSERT INTO source_types (acronym, reference, type, author, url)
-		VALUES (?,?,?,?,?)""", uniqueSourceType)
+		VALUES (?,?,?,?,?)""", (k,sref,stype,sauthor,surl))
 
 ################################################################################
 ##			Create table exchanges_rates
 ################################################################################
-c.execute("""CREATE TABLE IF NOT EXISTS exchange_rates(year, modified_currency,
-	rate_to_pounds, source, notes) """)
+
 print "Create exchanges_rates"
 c.execute("""INSERT INTO exchange_rates(year, modified_currency,
 	rate_to_pounds, source)
@@ -259,27 +269,12 @@ with open('in_data/patchs/oups_fixed.csv', 'r') as oups_sources:
 	oups = [list(r) for r in oups]
 	oups = {row[0]:row for row in oups}
 
-	# lambda function to delete currency_ prefix
-	create_note=lambda oldid: oldid[9:]
-
 	sub_c=conn.cursor()
 	for row in exchange_rates:
 		if row[3] in oups.keys():
 			if oups[row[3]][1] != "SOURCES TO BE FIXED":
-				if oups[row[3]][0] != None and " in " in oups[row[3]][0]:
-					try:
-						# catch date in source and add it to notes
-						date = re.search('\d\d\d\d', oups[row[3]][0]).group()
-						note = "missing rate for this year, used the referent value for " + str(date)
-					except:
-						print "ERROR -->", oups[row[3]][0]
 				sub_c.execute("""UPDATE exchange_rates set source=?, notes=? WHERE source=?""",
-					[oups[row[3]][1], create_note(oups[row[3]][0]), row[3]])
-		if row[3] != None and "\n" in row[3]:
-			# catch and remove \r\n
-			source = re.sub('\r\n', ' ', row[3])
-			c.execute("""UPDATE exchange_rates set source=? WHERE source=?""",[source, row[3]])
-
+					[oups[row[3]][1], oups[row[3]][3], row[3]])
 
 with open('in_data/patchs/patch_ex.csv', 'r') as patch:	
 	patch=UnicodeReader(patch)
@@ -289,6 +284,11 @@ with open('in_data/patchs/patch_ex.csv', 'r') as patch:
 	patch_number = 0
 	for r in patch:
 		patch_number +=1
+		if "\n" in r[0]:
+			r[0]=re.sub("\n","\r\n",r[0],re.M)
+		c.execute("SELECT count(*) FROM exchange_rates WHERE source=?",[r[0]])
+		if int(list(c)[0][0])==0:
+			print r[0].encode("utf8")
 		c.execute("""UPDATE exchange_rates set source=? WHERE source=?""",[r[1].strip(), r[0]])
 	print "patch ex : ", len(patch)
 
@@ -385,14 +385,14 @@ with open('in_data/patchs/patch_sources.csv', 'r') as patch:
 		c.execute("""UPDATE flows set source=? WHERE source=?""",[r[1].strip(), r[0]])
 	print "patch : ", len(patch)
 
-c.execute("""SELECT distinct(source) from flows""")
-table = [list(r) for r in c]
-# source_correction = [s.replace('"','') for s in table]
-# delete double quote from first and last position in source to match with sources slug
-for r in table:
-	if '"' in r[0]:
-		source = re.sub('"', '', r[0])
-		c.execute("""UPDATE flows set source=? WHERE source=?""",[source, r[0]])
+# c.execute("""SELECT distinct(source) from flows""")
+# table = [list(r) for r in c]
+# # source_correction = [s.replace('"','') for s in table]
+# # delete double quote from first and last position in source to match with sources slug
+# for r in table:
+# 	if '"' in r[0]:
+# 		source = re.sub('"', '', r[0])
+# 		c.execute("""UPDATE flows set source=? WHERE source=?""",[source, r[0]])
 
 # INDEX
 
@@ -440,6 +440,7 @@ print "-------------------------------------------------------------------------
 
 tables = [
 		"sources",
+		"source_types",
 		"entity_names",
 		"RICentities",
 		"exchange_rates",

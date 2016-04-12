@@ -14,36 +14,35 @@ def test(cursor):
 	# Get distinct source in flows, exchnange_rates and sources
 	#
 	cursor.execute("""SELECT distinct(source) FROM flows""")
-	set_flow= set(cursor)
+	set_flow= set(_ for _ in cursor)
 	print "distinct source in flow", len(set_flow) 
 
 	cursor.execute("""SELECT distinct(source) FROM exchange_rates""")
-	set_ex = set(cursor)
+	set_ex = set(_ for _ in cursor)
 	print "distinct source in exchange_rates", len(set_ex)
 
 	cursor.execute("""SELECT distinct(slug) FROM sources""")
-	set_source = set(cursor)
+	set_source = set(_ for _ in cursor)
 	print "nb elem in source", len(set_source)
  
  	#
 	# output missing source in flows
 	#
 	missing_flow_source_list = set_flow - set_source
-	print "nb elem in missing_flow_source_list", len(missing_flow_source_list)
-
-	writer = UnicodeWriter(open(os.path.join("../out_data/logs", "missing_flow_source_list" + ".csv"), "wb"))
-	writer.writerows(missing_flow_source_list)
-
+	print "flow sources missin in source table", len(missing_flow_source_list)
+	with codecs.open(os.path.join("../out_data/logs", "missing_flow_source_list" + ".csv"), "wb","UTF8") as f:
+		for s in missing_flow_source_list:
+			f.write((s[0] if s[0] is not None else u"") +u"\n")
 
 	#
 	# output missing source in exchange_rates
 	#
 	missing_ex_source_list = set_ex - set_source
-
-	print "nb elem in missing_ex_source_list", len(missing_ex_source_list)
-	writer = UnicodeWriter(open(os.path.join("../out_data/logs", "missing_ex_source_list" + ".csv"), "wb"))
-	writer.writerows(missing_ex_source_list)
-	
+	print missing_ex_source_list
+	print "Exchange rate missing in source table", len(missing_ex_source_list)
+	with codecs.open(os.path.join("../out_data/logs", "missing_ex_source_list" + ".csv"), "wb","utf8") as f:
+		for s in list(missing_ex_source_list):
+			f.write((s[0]  if s[0] is not None else u"") + u"\n")
 
 	#
 	# output missing source with id in flows
