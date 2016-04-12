@@ -21,7 +21,7 @@ angular.module('ricardo.controllers.matrix', [])
       $scope.partners= $scope.partnersChoices[1]
       $scope.worldpartner=$scope.partners.type.value==="worldestimate" ? true:false;
 
-      $scope.stackflowChoices = [
+      $scope.flowChoices = [
       {type: {value: "total_flow",writable: true},
        name: {value: "Total",writable: true}},
       {type: {value: "exp_flow",writable: true},
@@ -30,7 +30,7 @@ angular.module('ricardo.controllers.matrix', [])
        name: {value: "Imports",writable: true}
       }];
 
-      $scope.stackchartFlow = $scope.stackflowChoices[0]
+      $scope.chartFlow = $scope.flowChoices[0]
 
       $scope.matrixflowChoices = [
         {type: {value: "total_flow",writable: true},
@@ -49,32 +49,58 @@ angular.module('ricardo.controllers.matrix', [])
 
       $scope.matrixFlow = $scope.matrixflowChoices[0]
 
-
-      $scope.stackchartLayoutChoices = [
-        {type: {value: "zero",writable: true},
-         name: {value: "Stacked",writable: true}},
-        {type: {value: "expand",writable: true},
-         name: {value: "Percent",writable: true}},
+      if($scope.worldpartner){
+        $scope.multichartLayoutChoices = [
         {type: {value: "multiple",writable: true},
-         name: {value: "Multiple",writable: true}}
+         name: {value: "Multiple View",writable: true}},
+        {type: {value: "single",writable: true},
+         name: {value: "Single View",writable: true}},
         ];
-      $scope.stackchartLayout = $scope.stackchartLayoutChoices[2]
+      }
+      if(!$scope.worldpartner){
+        $scope.multichartLayoutChoices = [
+        {type: {value: "multiple",writable: true},
+         name: {value: "Multiple View",writable: true}},
+        {type: {value: "zero",writable: true},
+         name: {value: "Stacked View",writable: true}},
+        {type: {value: "expand",writable: true},
+         name: {value: "Percentage View",writable: true}},
+        ];
+      }
 
-      $scope.matrixLayoutChoices = [
+      $scope.multichartLayout = $scope.multichartLayoutChoices[0]
+
+
+      if($scope.worldpartner){
+        $scope.matrixLayoutChoices = [
         {type: {value: "years",writable: true},
          name: {value: "Number of Reporting Years",writable: true}},
-         {type: {value: "partner_avg",writable: true},
-         name: {value: "Partners in Average",writable: true}},
          {type: {value: "flow_avg",writable: true},
          name: {value: "Flows in Average",writable: true}},
         ];
+      }
       $scope.matrixLayout = $scope.matrixLayoutChoices[0]
 
-      $scope.matrixColorChoices = [
-        {type: {value: "partners",writable: true},
-         name: {value: "Number of Partners",writable: true}},
+      if($scope.worldpartner){
+        $scope.matrixColorChoices = [
          {type: {value: "flows",writable: true},
          name: {value: "Trade Flows",writable: true}},
+         {type: {value: "source",writable: true},
+         name: {value: "Source Type",writable: true}},
+         {type: {value: "reference",writable: true},
+         name: {value: "Reference",writable: true}},
+         {type: {value: "reporting_type",writable: true},
+         name: {value: "Reporting Type",writable: true}},
+         {type: {value: "reporting_continent",writable: true},
+         name: {value: "Reporting Continent",writable: true}},
+        ];
+      }
+      if(!$scope.worldpartner){
+        $scope.matrixColorChoices = [
+         {type: {value: "flows",writable: true},
+         name: {value: "Trade Flows",writable: true}},
+         {type: {value: "partners",writable: true},
+         name: {value: "Number of Partners",writable: true}},
          {type: {value: "source",writable: true},
          name: {value: "Source Type",writable: true}},
          {type: {value: "reporting_type",writable: true},
@@ -82,6 +108,7 @@ angular.module('ricardo.controllers.matrix', [])
          {type: {value: "reporting_continent",writable: true},
          name: {value: "Reporting Continent",writable: true}},
         ];
+      }
       $scope.matrixColorBy = $scope.matrixColorChoices[0]
 
 
@@ -104,14 +131,14 @@ angular.module('ricardo.controllers.matrix', [])
           init();
       }
 
-      $scope.changeStackFlow = function (flow) {
-          $scope.stackchartFlow=flow;
+      $scope.changeFlow = function (flow) {
+          $scope.chartFlow=flow;
       }
       $scope.changeMatrixFlow = function (flow) {
           $scope.matrixFlow=flow;
       }
-      $scope.changeStackLayout = function (layout) {
-        $scope.stackchartLayout = layout;
+      $scope.changeMultiLayout = function (layout) {
+        $scope.multichartLayout = layout;
         ;
       }
       $scope.changeMatrixLayout = function (layout) {
@@ -138,11 +165,10 @@ angular.module('ricardo.controllers.matrix', [])
           //   .then(function (data){
           //     //data manipulation
           //     $scope.data=data;
+          //   })
 
-          d3.csv("../world_overview.csv",function(data){
-            //preprocess data
-            // var continent=[]
-            if(!$scope.worldpartner) {
+          if(!$scope.worldpartner) {
+             d3.csv("../overview.csv",function(data){
                 data.forEach(function(d){
                   d.exp_partner=d.exp_partner.split("|").length
                   d.imp_partner=d.imp_partner.split("|").length
@@ -272,27 +298,26 @@ angular.module('ricardo.controllers.matrix', [])
                         )
                       })
                     })
+
                     $scope.flowEntities=d3.nest()
                           .key(function(d) { return d.reporting; })
                           .entries(data);
 
                     $scope.flowEntities.forEach(function(d){
-                      // var flow_sum=d.values.map(function(d){return d.total_flow})
-                      //               .reduce(function(a, b) {return (+a)+(+b) ; }, 0);
-                      // var partner_sum=d.values.map(function(d){return d.total_partner})
-                      //                 .reduce(function(a, b) {return (+a)+(+b) ; }, 0);
-
                       var flow_sum=d3.sum(d.values,function(d){return d.total_flow})
                       var partner_sum=d3.sum(d.values,function(d){return d.total_partner})
-
-                      d.flowAvg=flow_sum/d.values.length
-                      d.partnerAvg=partner_sum/d.values.length
+                      d.flowAvg=d3.round(flow_sum/d.values.length,2)
+                      d.partnerAvg=d3.round(partner_sum/d.values.length)
                     })
                     console.log($scope.flowEntities)
+
                     $scope.entities=$scope.flowEntities.map(function(d){return d.values[0].reporting_id;})
+                  })//d3 load data
                 }//data prepare for actualreported case
 
+
               if($scope.worldpartner){
+                d3.csv("../world_overview.csv",function(data){
                 $scope.flowWorld=d3.nest()
                                     .key(function(d) { return d.partner; })
                                     .key(function(d) { return d.year; })
@@ -304,21 +329,77 @@ angular.module('ricardo.controllers.matrix', [])
                                       }
                                     })
                                     .entries(data);
-                // $scope.flatWorld=[]
-                //     flowWorld.forEach(function(d){
-                //       d.values.forEach(function(v){
-                //         $scope.flatWorld.push(
-                //           {
-                //             "continent":d.key,
-                //             "year":+v.key,
-                //             "values":v.values
-                //           }
-                //         )
-                //       })
-                // })
 
+                //extend missing points with null values
+                $scope.flowWorld.forEach(function(d){
+                    // for (var i = $scope.rawMinDate; i<=$scope.rawMaxDate;i++){
+                    d.values.forEach(function(v){
+                      v.key=+v.key
+                    })
+                    for (var i = 1738; i<=1939;i++){
+                      var years=d.values.map(function(year){ return year.key});
+                      if (years.indexOf(i)=== -1){
+                        d.values.push({
+                          key:i,
+                          values:{
+                            exp_flow:null,
+                            imp_flow:null,
+                            total_flow: null,
+                            reportings:null
+                          }
+                        })
+                      }
+                    }
+                    //sort by year ascending
+                    d.values.sort(function(a,b){
+                      return a.key-b.key;
+                    });
+                })//add missing with null
+
+                $scope.flowWorld=$scope.flowWorld.filter(function(d){return d.key!=="World_best_guess"});
+
+                var worldEntities=d3.nest()
+                          .key(function(d) { return d.reporting; })
+                          .key(function(d) { return d.year; })
+                          .entries(data);
+
+                var worldbestguess=[]
+                worldEntities.forEach(function(d){
+                  d.values.forEach(function(e){
+                    e.values.forEach(function(p){
+                        if (p.partner==="World_best_guess") e.worldbestguess=p
+                    })
+                    if(e.values.length===2){
+                      e.values.forEach(function(p){
+                        if (p.partner!=="World_best_guess") e.worldbestguess.reference=p.partner
+                      })
+                    }
+                    if(e.values.length===3){
+                      e.values.forEach(function(p,i){
+                        if (p.partner!=="World_best_guess" && p.total_flow===e.worldbestguess.total_flow) e.worldbestguess.reference=p.partner
+                      })
+                    }
+                    if(e.values.length===4){
+                      e.worldbestguess.reference="World estimated"
+                    }
+                    worldbestguess.push(e.worldbestguess)
+                  })
+                })
+                $scope.flowEntities=d3.nest()
+                          .key(function(d) { return d.reporting; })
+                          .entries(worldbestguess);
+                $scope.flowEntities.forEach(function(d){
+                  // var flow_sum=d.values.map(function(d){return d.total_flow})
+                  //               .reduce(function(a, b) {return (+a)+(+b) ; }, 0);
+                  // var partner_sum=d.values.map(function(d){return d.total_partner})
+                  //                 .reduce(function(a, b) {return (+a)+(+b) ; }, 0);
+                  var flow_sum=d3.sum(d.values,function(d){return d.total_flow})
+                  d.flowAvg=d3.round(flow_sum/d.values.length,2)
+                })
+                // console.log($scope.flowEntities)
+                })
               }//data prepare for worldpartner case
-          })
+
         }
 
         init()
@@ -352,28 +433,28 @@ angular.module('ricardo.controllers.matrix', [])
         //       filename = "Database_Overview";
         //   utils.downloadCSV(dataExported, headers, order, filename);
         // }
-        // $scope.export = function () {
-        //   var dataExported = [];
-        //   $scope.data.forEach(function (d) {
-        //     dataExported.push({
-        //       reporting_id:d.reporting_id,
-        //       reporting:d.reporting,
-        //       year:d.year,
-        //       exp_flow:d.exp_flow,
-        //       imp_flow:d.imp_flow,
-        //       total_flow:d.total_flow,
-        //       partner:d.partner,
-        //       source:d.source,
-        //       sourcetype:d.sourcetype,
-        //       continent:d.continent,
-        //       type:d.type
-        //     })
-        //   });
+        $scope.export = function () {
+          var dataExported = [];
+          $scope.data.forEach(function (d) {
+            dataExported.push({
+              reporting_id:d.reporting_id,
+              reporting:d.reporting,
+              year:d.year,
+              exp_flow:d.exp_flow,
+              imp_flow:d.imp_flow,
+              total_flow:d.total_flow,
+              partner:d.partner,
+              source:d.source,
+              sourcetype:d.sourcetype,
+              continent:d.continent,
+              type:d.type
+            })
+          });
 
-        //   var headers = ["reporting_id","reporting", "year", "exp_flow", "imp_flow", "total_flow", "partner","source","sourcetype","continent","type"],
-        //       order = "",
-        //       filename = "Database_Overview";
-        //   utils.downloadCSV(dataExported, headers, order, filename);
-        // }
+          var headers = ["reporting_id","reporting", "year", "exp_flow", "imp_flow", "total_flow", "partner","source","sourcetype","continent","type"],
+              order = "",
+              filename = "Database_Overview";
+          utils.downloadCSV(dataExported, headers, order, filename);
+        }
 
  }])

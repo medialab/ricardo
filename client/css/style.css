@@ -617,7 +617,7 @@ h4 {
   stroke:none;
 }
 
-.area-imp, .area-exp{
+.area-imp, .area-exp,.area-total{
   fill: rgba(230, 230, 230, 0.4);
   stroke: none;
 }
@@ -630,6 +630,11 @@ h4 {
 
 .line-exp{
   stroke: #663333;
+  stroke-width: 1.5px;
+  fill: none;
+}
+.line-total{
+  stroke:black;
   stroke-width: 1.5px;
   fill: none;
 }
@@ -703,6 +708,9 @@ h4 {
 
 .legend .square.import{ background-color: #cc6666; }
 .legend .square.export{ background-color: #663333; }
+/*.legend .line.import{ border-color: #cc6666; }
+.legend .line.export{ border-color: #663333; }
+.legend .line.total{ border-color: #000000; }*/
 
 .legend .line{
   display: inline-block;

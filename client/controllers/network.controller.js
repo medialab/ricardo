@@ -137,6 +137,9 @@ angular.module('ricardo.controllers.network', [])
             if (listNations.indexOf(t.partner_id) === -1) {
                 listNations.push(t.partner_id)
                 listOfNations.push({
+                  // id: t.partner_id==="NA"? "unknown":t.partner_id,
+                  // continent: t.partner_continent===null? "unknown":t.partner_continent,
+                  // type: t.partner_type===null? "unknown":t.partner_type,
                   id: t.partner_id,
                   continent: t.partner_continent,
                   type: t.partner_type,
@@ -614,7 +617,7 @@ angular.module('ricardo.controllers.network', [])
                     $scope.filter.undo("neighbors","legend")
                           .apply();
                     $scope.nodeSelected = false;
-                    $scope.$apply();
+                    // $scope.$apply();
                 }
                 // $scope.sigma.bind("overEdge",function(e){
                 //     console.log(e.data.edge);
