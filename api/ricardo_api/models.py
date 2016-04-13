@@ -246,7 +246,7 @@ def get_reportings_overview(partner_ids):
                       LEFT OUTER JOIN
                       (SELECT reporting_slug, (flow*Unit/rate) as imports, partner,partner_slug,year,source,type
                       FROM flow_joined
-                      WHERE  expimp = "Exp"
+                      WHERE  expimp = "Imp"
                       AND (flow*Unit/rate) is not NULL
                       AND( partner_slug like 'Worldbestguess'
                       OR partner_slug like 'Worldestimated'
@@ -291,12 +291,12 @@ def get_reportings_overview(partner_ids):
         "continent": row[2],
         "type": row[3],
         "year": row[4],
-        "exp_flow": round(row[5],2),
-        "imp_flow": round(row[6],2),
-        "total_flow":round(row[5]+row[6],2),
-        "partner":row[7].split("|")[0],
-        "source": row[8].split("|")[0],
-        "sourcetype": row[9].split(",")[0] if row[9] is not None else None
+        "exp_flow": round(row[5],2) if row[5] is not None else row[5],
+        "imp_flow": round(row[6],2) if row[6] is not None else row[6],
+        "total_flow":round(sum(filter(None,[row[5],row[6]])),2),
+        "partner":row[7],
+        "source": row[8],
+        "sourcetype": row[9]
       })
 
   json_response=[dict(t) for t in set([tuple(d.items()) for d in json_response])]

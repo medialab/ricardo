@@ -75,37 +75,47 @@ angular.module('ricardo.controllers.matrix', [])
         $scope.matrixLayoutChoices = [
         {type: {value: "years",writable: true},
          name: {value: "Number of Reporting Years",writable: true}},
-         {type: {value: "flow_avg",writable: true},
+         {type: {value: "flowAvg",writable: true},
          name: {value: "Flows in Average",writable: true}},
+        ];
+      }
+      if(!$scope.worldpartner){
+        $scope.matrixLayoutChoices = [
+        {type: {value: "years",writable: true},
+         name: {value: "Number of Reporting Years",writable: true}},
+         {type: {value: "flowAvg",writable: true},
+         name: {value: "Flows in Average",writable: true}},
+        {type: {value: "partnerAvg",writable: true},
+         name: {value: "Partners in Average",writable: true}},
         ];
       }
       $scope.matrixLayout = $scope.matrixLayoutChoices[0]
 
       if($scope.worldpartner){
         $scope.matrixColorChoices = [
-         {type: {value: "flows",writable: true},
-         name: {value: "Trade Flows",writable: true}},
-         {type: {value: "source",writable: true},
-         name: {value: "Source Type",writable: true}},
          {type: {value: "reference",writable: true},
-         name: {value: "Reference",writable: true}},
-         {type: {value: "reporting_type",writable: true},
+         name: {value: "World Partner",writable: true}},
+         {type: {value: "flow",writable: true},
+         name: {value: "Trade Flows",writable: true}},
+         {type: {value: "sourcetype",writable: true},
+         name: {value: "Source Type",writable: true}},
+         {type: {value: "type",writable: true},
          name: {value: "Reporting Type",writable: true}},
-         {type: {value: "reporting_continent",writable: true},
+         {type: {value: "continent",writable: true},
          name: {value: "Reporting Continent",writable: true}},
         ];
       }
       if(!$scope.worldpartner){
         $scope.matrixColorChoices = [
-         {type: {value: "flows",writable: true},
+         {type: {value: "flow",writable: true},
          name: {value: "Trade Flows",writable: true}},
-         {type: {value: "partners",writable: true},
+         {type: {value: "partner",writable: true},
          name: {value: "Number of Partners",writable: true}},
-         {type: {value: "source",writable: true},
+         {type: {value: "sourcetype",writable: true},
          name: {value: "Source Type",writable: true}},
-         {type: {value: "reporting_type",writable: true},
+         {type: {value: "type",writable: true},
          name: {value: "Reporting Type",writable: true}},
-         {type: {value: "reporting_continent",writable: true},
+         {type: {value: "continent",writable: true},
          name: {value: "Reporting Continent",writable: true}},
         ];
       }
@@ -128,6 +138,70 @@ angular.module('ricardo.controllers.matrix', [])
       $scope.changePartner = function (partners) {
           $scope.partners=partners;
           $scope.worldpartner=partners.type.value==="worldestimate" ? true:false;
+          if($scope.worldpartner){
+            $scope.multichartLayoutChoices = [
+            {type: {value: "multiple",writable: true},
+             name: {value: "Multiple View",writable: true}},
+            {type: {value: "single",writable: true},
+             name: {value: "Single View",writable: true}},
+            ];
+          }
+          if(!$scope.worldpartner){
+            $scope.multichartLayoutChoices = [
+            {type: {value: "multiple",writable: true},
+             name: {value: "Multiple View",writable: true}},
+            {type: {value: "zero",writable: true},
+             name: {value: "Stacked View",writable: true}},
+            {type: {value: "expand",writable: true},
+             name: {value: "Percentage View",writable: true}},
+            ];
+          }
+          if($scope.worldpartner){
+            $scope.matrixLayoutChoices = [
+            {type: {value: "years",writable: true},
+             name: {value: "Number of Reporting Years",writable: true}},
+             {type: {value: "flowAvg",writable: true},
+             name: {value: "Flows in Average",writable: true}},
+            ];
+          }
+          if(!$scope.worldpartner){
+            $scope.matrixLayoutChoices = [
+            {type: {value: "years",writable: true},
+             name: {value: "Number of Reporting Years",writable: true}},
+             {type: {value: "flowAvg",writable: true},
+             name: {value: "Flows in Average",writable: true}},
+            {type: {value: "partnerAvg",writable: true},
+             name: {value: "Partners in Average",writable: true}},
+            ];
+          }
+           if($scope.worldpartner){
+              $scope.matrixColorChoices = [
+               {type: {value: "flow",writable: true},
+               name: {value: "Trade Flows",writable: true}},
+               {type: {value: "sourcetype",writable: true},
+               name: {value: "Source Type",writable: true}},
+               {type: {value: "reference",writable: true},
+               name: {value: "Reference",writable: true}},
+               {type: {value: "type",writable: true},
+               name: {value: "Reporting Type",writable: true}},
+               {type: {value: "continent",writable: true},
+               name: {value: "Reporting Continent",writable: true}},
+              ];
+            }
+            if(!$scope.worldpartner){
+              $scope.matrixColorChoices = [
+               {type: {value: "flow",writable: true},
+               name: {value: "Trade Flows",writable: true}},
+               {type: {value: "partner",writable: true},
+               name: {value: "Number of Partners",writable: true}},
+               {type: {value: "sourcetype",writable: true},
+               name: {value: "Source Type",writable: true}},
+               {type: {value: "type",writable: true},
+               name: {value: "Reporting Type",writable: true}},
+               {type: {value: "continent",writable: true},
+               name: {value: "Reporting Continent",writable: true}},
+              ];
+            }
           init();
       }
 
@@ -147,7 +221,6 @@ angular.module('ricardo.controllers.matrix', [])
       }
       $scope.changeMatrixColor = function (colorBy) {
         $scope.matrixColorBy = colorBy;
-        console.log($scope.matrixColorBy)
       }
 
       $scope.reporting;
@@ -166,7 +239,6 @@ angular.module('ricardo.controllers.matrix', [])
           //     //data manipulation
           //     $scope.data=data;
           //   })
-
           if(!$scope.worldpartner) {
              d3.csv("../overview.csv",function(data){
                 data.forEach(function(d){
@@ -308,6 +380,7 @@ angular.module('ricardo.controllers.matrix', [])
                       var partner_sum=d3.sum(d.values,function(d){return d.total_partner})
                       d.flowAvg=d3.round(flow_sum/d.values.length,2)
                       d.partnerAvg=d3.round(partner_sum/d.values.length)
+                      d.years=d.values.length
                     })
                     console.log($scope.flowEntities)
 
@@ -367,20 +440,19 @@ angular.module('ricardo.controllers.matrix', [])
                 worldEntities.forEach(function(d){
                   d.values.forEach(function(e){
                     e.values.forEach(function(p){
-                        if (p.partner==="World_best_guess") e.worldbestguess=p
+                       if (p.partner==="World_best_guess") e.worldbestguess=p
                     })
                     if(e.values.length===2){
                       e.values.forEach(function(p){
-                        if (p.partner!=="World_best_guess") e.worldbestguess.reference=p.partner
+                        if (p.partner!=="World_best_guess") {
+                          e.worldbestguess.reference=p.partner
+                        }
                       })
                     }
-                    if(e.values.length===3){
+                    else{
                       e.values.forEach(function(p,i){
-                        if (p.partner!=="World_best_guess" && p.total_flow===e.worldbestguess.total_flow) e.worldbestguess.reference=p.partner
+                        if (p.partner!=="World_best_guess" && p.exp_flow===e.worldbestguess.exp_flow) e.worldbestguess.reference=p.partner
                       })
-                    }
-                    if(e.values.length===4){
-                      e.worldbestguess.reference="World estimated"
                     }
                     worldbestguess.push(e.worldbestguess)
                   })
@@ -389,12 +461,9 @@ angular.module('ricardo.controllers.matrix', [])
                           .key(function(d) { return d.reporting; })
                           .entries(worldbestguess);
                 $scope.flowEntities.forEach(function(d){
-                  // var flow_sum=d.values.map(function(d){return d.total_flow})
-                  //               .reduce(function(a, b) {return (+a)+(+b) ; }, 0);
-                  // var partner_sum=d.values.map(function(d){return d.total_partner})
-                  //                 .reduce(function(a, b) {return (+a)+(+b) ; }, 0);
                   var flow_sum=d3.sum(d.values,function(d){return d.total_flow})
                   d.flowAvg=d3.round(flow_sum/d.values.length,2)
+                  d.years=d.values.length
                 })
                 // console.log($scope.flowEntities)
                 })
@@ -444,6 +513,8 @@ angular.module('ricardo.controllers.matrix', [])
               imp_flow:d.imp_flow,
               total_flow:d.total_flow,
               partner:d.partner,
+              // exp_partner:d.exp_partner,
+              // imp_partner:d.imp_partner,
               source:d.source,
               sourcetype:d.sourcetype,
               continent:d.continent,
@@ -451,7 +522,7 @@ angular.module('ricardo.controllers.matrix', [])
             })
           });
 
-          var headers = ["reporting_id","reporting", "year", "exp_flow", "imp_flow", "total_flow", "partner","source","sourcetype","continent","type"],
+          var headers = ["reporting_id","reporting", "year", "exp_flow", "imp_flow", "total_flow","partner","source","sourcetype","continent","type"],
               order = "",
               filename = "Database_Overview";
           utils.downloadCSV(dataExported, headers, order, filename);

@@ -90,7 +90,7 @@ angular.module('ricardo.directives.reportingWorld', [])
         function valueFormat(d){
           var prefix = d3.formatPrefix(d)
             var symbol;
-            if(layout==="zero"||layout==="multiple"){
+            if(layout==="single"||layout==="multiple"){
               if(prefix.symbol === "G"){
                 symbol = "billion"
               }else if(prefix.symbol === "M"){
@@ -201,7 +201,7 @@ angular.module('ricardo.directives.reportingWorld', [])
           y.domain([0,maxFlow])
 
           if(layout==="multiple"){
-
+            yAxis.ticks(2)
             y.range([height/3, margin.top]);
             area.y0(height/3)
                 .y1(function(d) { return y(d.values[yValue]); });
@@ -347,6 +347,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                       e.select(".y.axis")
                           .transition().duration(duration)
                           .call(yAxis)
+                          .style("opacity",1)
                           // .call(yAxis.tickValues(y.domain()))
                           .call(customAxis);
                       });
@@ -358,7 +359,7 @@ angular.module('ricardo.directives.reportingWorld', [])
               }//if multiple layout
 
              if(layout==="single"){
-
+                yAxis.ticks(4)
                 y.range([height, 0])
                  .domain([0,maxFlow]);
 
@@ -431,27 +432,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                     .attr("transform", "translate(0,"+height+")")
                     .call(xAxis)
                     .style("pointer-events","none");
-                  // var layer_g=svg.append('g')
-                  //              .attr("class", "layers")
-                  // layer_g.selectAll(".layer")
-                  //   .data(layers)
-                  //   .enter().append("path")
-                  //   .attr("class", "layer")
-                  //   .attr("d", function(d) { return area(d.values); })
-                  //   .style("fill", function(d) { return continentColors[d.key]; })
-                  //   .style("stroke", "#f5f5f5")
-                  //   .attr("opacity", 1)
-                  //   // .on("mouseover", function(d, i) {
-                  //   //   svg.selectAll(".layer").transition()
-                  //   //   .duration(duration)
-                  //   //   .attr("opacity", function(d, j) {
-                  //   //     return j != i ? 0.3 : 1;
-                  //   // })})
-                  //   // .on("mouseout", function(d, i) {
-                  //   //    svg.selectAll(".layer")
-                  //   //     .transition()
-                  //   //     .duration(duration)
-                  //   //     .attr("opacity", "1");})
+
                 }
                 else{
                       svg.selectAll(".multiple")
@@ -569,7 +550,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                                    .attr("y",9)
                                    .attr("text-anchor",function(d,i){
                                      if(i===0 && d.values[yValue]!==null) return "end"
-                                     else if(i===1 && d.values[yValue]>selectData[0].values[yValue]/2) return "end"
+                                     else if(d.values[yValue]>selectData[0].values[yValue]/2) return "end"
                                      else return "start"
                                    })
                                    .attr("fill","#fff")

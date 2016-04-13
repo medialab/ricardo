@@ -1094,10 +1094,10 @@ path.lineTrajectory {
   pointer-events: none;
 }
 
-div #reporting-entities-axis{
+/*div #reporting-entities-axis{
   height: 50px;
 
-}
+}*/
 
 div #reporting-entities-container{
   height: 700px;
@@ -1120,7 +1120,6 @@ div #reporting-entities-container{
 .matrix-tooltip .source{
  font-family: 'merriweather', 'Georgia', serif;
  font-size: 11px;
- color:black;
 }
 
 .sideLabel{
