@@ -5,7 +5,7 @@
 				Reportings available by partners
 				<div class="inline-select">
 			      <ui-select ng-model="partners" theme="bootstrap" ng-change="changePartner(partners)">
-			        <match placeholder="sort by ...">{{$select.selected.name.value}}</match>
+			        <match placeholder="Choose parter type ...">{{$select.selected.name.value}}</match>
 			        <choices repeat="item in partnersChoices | filter: $select.search">
 			          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
 			        </choices>
@@ -14,7 +14,7 @@
 			  	for
 			  	<div class="inline-select">
 			      <ui-select ng-model="chartFlow" theme="bootstrap" ng-change="changeFlow(chartFlow)">
-			        <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
+			        <match placeholder="Select flow type">{{$select.selected.name.value}}</match>
 			        <choices repeat="item in flowChoices | filter: $select.search">
 			          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
 			        </choices>
@@ -164,8 +164,8 @@
 			>
 			</reporting-entities>
 		</div>
-	</div>
-	<div>
-		<button id="export-btn" class="btn" ng-click="export()">Export Data Summary</button>
+		<div>
+			<button id="export-btn" class="btn" ng-click="export()">Export Metadata</button>
+		</div>
 	</div>
 </div>

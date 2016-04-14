@@ -19,13 +19,13 @@ angular.module('ricardo.directives.reportingEntities', [])
       link: function(scope, element, attrs) {
 
         scope.$watch("ngData", function (newValue, oldValue){
-            if(newValue && newValue!==oldValue){
+            if(newValue){
               draw(newValue);
             }
         });
 
         scope.$watch('flowType', function(newValue, oldValue) {
-          if ( newValue!==oldValue && scope.ngData ) {
+          if (newValue!==oldValue && scope.ngData ) {
             yValue=newValue.type.value;
             yName=newValue.name.value;
             draw(scope.ngData);
@@ -33,7 +33,7 @@ angular.module('ricardo.directives.reportingEntities', [])
         })
 
         scope.$watch('layout', function(newValue, oldValue) {
-          if ( newValue!==oldValue && scope.ngData ) {
+          if (newValue!==oldValue && scope.ngData ) {
             layout=newValue.type.value;
             layoutName=newValue.name.value;
 
@@ -42,7 +42,7 @@ angular.module('ricardo.directives.reportingEntities', [])
           }
         })
         scope.$watch('color', function(newValue, oldValue) {
-          if ( newValue!==oldValue) {
+          if (newValue!==oldValue) {
             colorBy=newValue.type.value;
             colorName=newValue.name.value;
             recolor(colorBy,scope.ngData);
@@ -117,8 +117,9 @@ angular.module('ricardo.directives.reportingEntities', [])
             height,
             offset=30,
             orders
+        var svg_g=d3.select("#reporting-entities-container").append("svg")
 
-        var z=d3.scale.linear().range([0.2,1])
+
         var gridHeight=10,
             gridGap=1
 
@@ -129,6 +130,8 @@ angular.module('ricardo.directives.reportingEntities', [])
                 .domain([new Date(1786,0,1),new Date(1938,0,1)]);
 
         var y = d3.scale.ordinal()
+        var z=d3.scale.linear().range([0.2,1])
+        var colorScale
 
         var marginScale=d3.scale.linear()
                         .range([margin.left-offset,2])
@@ -167,6 +170,7 @@ angular.module('ricardo.directives.reportingEntities', [])
             }
             else return d
         }
+
         var margin_axis = {top: 135, right: 0, bottom: 40, left: 180}
         var svg_axis = d3.select("#reporting-entities-axis").append("svg")
             .attr("width",width + margin.left + margin.right)
@@ -223,15 +227,27 @@ angular.module('ricardo.directives.reportingEntities', [])
         var countByType=[]
         var countByContinent=[]
 
-        function recolor(colorBy,data){
-          svg_axis.select(".legend").remove()
+        function recolor_legend(colorBy,data){
 
+          svg_axis.select(".legend").remove()
           if(colorBy==="partner"){
             yValue="exp_partner"
+
             var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[yValue]})});
-            var colorScale=d3.scale.threshold()
-                            .domain([d3.round(max/15),d3.round(max/4),d3.round(max*2/3)])
-                            .range(["#daafaf","#cc6666","#993333","#663333"])
+            var values=[]
+            data.forEach(function(d){
+              d.values.forEach(function(v){
+                values.push(v[yValue])
+              })
+            })
+
+            var threshold_out=[0,15,40,100,max]
+            var threshold_in=[15,40,100]
+            var threshold_color=["#daafaf","#cc6666","#993333","#663333"]
+
+            colorScale=d3.scale.threshold()
+                            .domain(threshold_in)
+                            .range(threshold_color)
             var legendData=[
                 {"label":"N/A",
                   "value":"lightgrey"
@@ -250,66 +266,61 @@ angular.module('ricardo.directives.reportingEntities', [])
                 },
             ]
             var legend=svg_axis.append("g")
-                      .attr("class","legend")
-                      .attr("transform","translate("+width*3/4+",-130)")
+                     .attr("class","legend")
+                     .attr("transform", "translate("+3*width/4+",-140)");
+            var legend_height=100
+            var legend_margin=10
 
-            var legend_g=legend.selectAll("g")
-                        .data(legendData)
-                        .enter().append("g")
-                        .attr("transform", function(d,i){return "translate(0,"+i*20+")"});
-            legend_g.append("rect")
-                    .attr("width",10)
-                    .attr("height",10)
-                    .style("fill",function(d){return d.value})
-            legend_g.append("text")
-                    .text(function(d){return d.label})
-                    .attr("x",15)
-                    .attr("y",10)
-                    .attr("font-size",11)
-          }
-          else if(colorBy==="flow"){
-            yValue=scope.flowType.type.value
-            var colorScale=d3.scale.threshold()
-                            .domain([50000,5000000,100000000])
-                            .range(["#daafaf","#cc6666","#993333","#663333"])
-            var legendData=[
-                {"label":"N/A",
-                  "value":"lightgrey"
-                },
-                {"label":"<"+valueFormat(50000),
-                  "value":"#daafaf"
-                },
-                {"label":valueFormat(50000)+"-"+valueFormat(5000000),
-                  "value":"#cc6666"
-                },
-                {"label":valueFormat(5000000)+"-"+valueFormat(100000000),
-                  "value":"#993333"
-                },
-                {"label":">"+valueFormat(100000000),
-                  "value":"#663333"
-                },
-            ]
-            var legend=svg_axis.append("g")
-                      .attr("class","legend")
-                      .attr("transform","translate("+width*3/4+",-130)")
+            var x_legend = d3.scale.linear()
+                  .domain([0,max])
+                  .range([0, width/4-legend_margin]);
 
-            var legend_g=legend.selectAll("g")
-                        .data(legendData)
-                        .enter().append("g")
-                        .attr("transform", function(d,i){return "translate(0,"+i*20+")"});
-            legend_g.append("rect")
-                    .attr("width",10)
-                    .attr("height",10)
-                    .style("fill",function(d){return d.value})
-            legend_g.append("text")
-                    .text(function(d){return d.label})
-                    .attr("x",15)
-                    .attr("y",10)
-                    .attr("font-size",11)
-            // var legend=svg_axis.append("g")
-            //          .attr("class","legend")
-            //          .attr("transform", "translate("+(width-legendWidth*5)+",-40)");
+              // Generate a histogram using twenty uniformly-spaced bins.
+              var data_legend = d3.layout.histogram()
+                  .bins(20)
+                  (values);
 
+              console.log(data_legend)
+              var y_legend = d3.scale.linear()
+                  .domain([0, d3.max(data_legend, function(d) { return d.y; })])
+                  .range([legend_height-legend_margin, 0]);
+
+
+              var xAxis_legend = d3.svg.axis()
+                  .scale(x_legend)
+                  .tickValues(threshold_out)
+                  // .ticks(4)
+                  .orient("bottom");
+
+              var bar = legend.selectAll(".bar")
+                  .data(data_legend)
+                  .enter().append("g")
+                  .attr("class", "histo_bar")
+                  .attr("transform", function(d) { return "translate(" + x_legend(d.x) + "," + y_legend(d.y) + ")"; });
+
+              bar.append("rect")
+                  .attr("x", 1)
+                  .attr("width", x_legend(data_legend[0].dx) - 1)
+                  .attr("height", function(d) { return legend_height-legend_margin - y_legend(d.y); })
+                  .style("fill",function(d){return colorScale(Math.ceil(d.x))});
+
+              legend.selectAll(".interval_rect")
+                    .data(threshold_out).enter()
+                    .append('rect')
+                    .attr("class","interval_rect")
+                    .attr("x",function(d){return x_legend(d);})
+                    .attr("width",function(d,i){
+                      if(i<threshold_out.length-1) return x_legend(threshold_out[i+1])-x_legend(threshold_out[i])
+                      else return 0;
+                    })
+                    .attr("height", 8)
+                    .attr("y",legend_height-legend_margin+1)
+                    .style("fill",function(d){return colorScale(d)});
+
+            legend.append("g")
+                  .attr("class", "x axis")
+                  .attr("transform", "translate(0," + legend_height + ")")
+                  .call(xAxis_legend);
             // legend.append("text")
             //       .text(colorName)
             //       .attr("x",-5)
@@ -332,6 +343,145 @@ angular.module('ricardo.directives.reportingEntities', [])
             //         .text(function(d){return d.label})
             //         .attr("text-anchor","start")
             //         .attr("y",-5)
+            //         .attr("font-size",11)
+          }
+          else if(colorBy==="flow"){
+            yValue=scope.flowType.type.value
+
+            var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[yValue]})});
+            // var values=[]
+            // data.forEach(function(d){
+            //   d.values.forEach(function(v){
+            //     values.push(v[yValue])
+            //   })
+            // })
+            // var threshold_out=[0,50000,5000000,100000000,max]
+            // var threshold_in=[50000,5000000,100000000]
+            // var threshold_color=["#daafaf","#cc6666","#993333","#663333"]
+
+            // colorScale=d3.scale.threshold()
+            //                 .domain(threshold_in)
+            //                 .range(threshold_color)
+
+            // var legend=svg_axis.append("g")
+            //          .attr("class","legend")
+            //          .attr("transform", "translate("+3*width/4+",-140)");
+            // var legend_height=100
+            // var legend_margin=10
+
+            // var x_legend = d3.scale.sqrt()
+            //       .domain([0,max])
+            //       .range([0, width/4-legend_margin]);
+
+            //   // Generate a histogram using twenty uniformly-spaced bins.
+            //   var data_legend = d3.layout.histogram()
+            //       .bins(20)
+            //       (values);
+
+            //   console.log(data_legend)
+            //   var y_legend = d3.scale.linear()
+            //       .domain([0, d3.max(data_legend, function(d) { return d.y; })])
+            //       .range([legend_height-legend_margin, 0]);
+
+
+            //   var xAxis_legend = d3.svg.axis()
+            //       .scale(x_legend)
+            //       .tickValues(threshold_out)
+            //       // .ticks(4)
+            //       .orient("bottom");
+
+            //   var bar = legend.selectAll(".bar")
+            //       .data(data_legend)
+            //       .enter().append("g")
+            //       .attr("class", "histo_bar")
+            //       .attr("transform", function(d) { return "translate(" + x_legend(d.x) + "," + y_legend(d.y) + ")"; });
+
+            //   bar.append("rect")
+            //       .attr("x", 1)
+            //       .attr("width", x_legend(data_legend[0].dx) - 1)
+            //       .attr("height", function(d) { return legend_height-legend_margin - y_legend(d.y); })
+            //       .style("fill",function(d){return colorScale(Math.ceil(d.x))});
+
+            //   legend.selectAll(".interval_rect")
+            //         .data(threshold_out).enter()
+            //         .append('rect')
+            //         .attr("class","interval_rect")
+            //         .attr("x",function(d){return x_legend(d);})
+            //         .attr("width",function(d,i){
+            //           if(i<threshold_out.length-1) return x_legend(threshold_out[i+1])-x_legend(threshold_out[i])
+            //           else return 0;
+            //         })
+            //         .attr("height", 8)
+            //         .attr("y",legend_height-legend_margin+1)
+            //         .style("fill",function(d){return colorScale(d)});
+
+            //   legend.append("g")
+            //       .attr("class", "x axis")
+            //       .attr("transform", "translate(0," + legend_height + ")")
+            //       .call(xAxis_legend);
+
+            colorScale=d3.scale.threshold()
+                            .domain([50000,5000000,100000000])
+                            .range(["#daafaf","#cc6666","#993333","#663333"])
+            var legendData=[
+                {"label":"N/A",
+                  "value":"lightgrey"
+                },
+                {"label":"<"+valueFormat(50000),
+                  "value":"#daafaf"
+                },
+                {"label":valueFormat(50000)+"-"+valueFormat(5000000),
+                  "value":"#cc6666"
+                },
+                {"label":valueFormat(5000000)+"-"+valueFormat(100000000),
+                  "value":"#993333"
+                },
+                {"label":">"+valueFormat(100000000),
+                  "value":"#663333"
+                },
+            ]
+            // legend.append("text")
+            //       .text(colorName)
+            //       .attr("x",-5)
+            //       .attr("y",6)
+            //       .attr("font-size",11)
+            //       .attr("text-anchor","end")
+
+            var legend=svg_axis.append("g")
+                     .attr("class","legend")
+                     .attr("transform", "translate("+2*width/3+",-40)");
+            var legend_g=legend.selectAll("g")
+                  .data(legendData)
+                  .enter().append("g")
+                  .attr("transform", function(d,i){return "translate("+i*legendWidth+",0)"});
+
+            legend_g.append("rect")
+                  .attr("y", 0)
+                  .attr("width", legendWidth)
+                  .attr("height", 10)
+                  .style("fill", function(d){return d.value;})
+
+            legend_g.append("text")
+                    .text(function(d){return d.label})
+                    .attr("text-anchor","start")
+                    .attr("y",-5)
+                    .attr("font-size",11)
+            // var legend=svg_axis.append("g")
+            //           .attr("class","legend")
+            //           .attr("transform","translate("+width*3/4+",-130)")
+
+            // var legend_g=legend.selectAll("g")
+            //             .data(legendData)
+            //             .enter().append("g")
+            //             .attr("transform", function(d,i){return "translate(0,"+i*20+")"});
+            // legend_g.append("rect")
+            //         .attr("width",10)
+            //         .attr("height",10)
+            //         .style("fill",function(d){return d.value})
+            // legend_g.append("text")
+            //         .text(function(d){return d.label})
+            //         .attr("x",15)
+            //         .attr("y",10)
             //         .attr("font-size",11)
           }
           else{
@@ -363,7 +513,9 @@ angular.module('ricardo.directives.reportingEntities', [])
                     .attr("y",10)
                     .attr("font-size",11)
           }
-
+        }
+        function recolor(colorBy,data){
+          recolor_legend(colorBy,data)
           d3.select("#reporting-entities-container").selectAll(".entities").selectAll(".available")
             .style("fill",function(v){
               if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(v[colorBy])
@@ -501,7 +653,7 @@ angular.module('ricardo.directives.reportingEntities', [])
           //   d.y1=d.y0+d.number
           //   y0+=d.number
           // })
-          d3.select("#reporting-entities-container").select("svg").remove();
+          svg_g.selectAll("g").remove();
 
           var reportings=data.map(function(d){
             return d.key;
@@ -516,8 +668,7 @@ angular.module('ricardo.directives.reportingEntities', [])
 
           height=gridHeight*reportings.length;
 
-          var svg = d3.select("#reporting-entities-container").append("svg")
-                    .attr("width",width + margin.left + margin.right)
+          var svg =svg_g.attr("width",width + margin.left + margin.right)
                     .attr("height",height+margin.top+margin.bottom)
                     .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -533,145 +684,7 @@ angular.module('ricardo.directives.reportingEntities', [])
 
           var gridWidth=width/(1938-1786);
 
-
-
-          svg_axis.select(".legend").remove()
-
-
-          if(colorBy==="partner"){
-            // yValue="exp_partner"
-            var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v.exp_partner})});
-            var colorScale=d3.scale.threshold()
-                            .domain([d3.round(max/15),d3.round(max/4),d3.round(max*2/3)])
-                            .range(["#daafaf","#cc6666","#993333","#663333"])
-            var legendData=[
-                {"label":"N/A",
-                  "value":"lightgrey"
-                },
-                {"label":"<"+valueFormat(d3.round(max/10)),
-                  "value":"#daafaf"
-                },
-                {"label":valueFormat(d3.round(max/10))+"-"+valueFormat(d3.round(max/4)),
-                  "value":"#cc6666"
-                },
-                {"label":valueFormat(d3.round(max/4))+"-"+valueFormat(d3.round(max*2/3)),
-                  "value":"#993333"
-                },
-                {"label":">"+valueFormat(d3.round(max*2/3)),
-                  "value":"#663333"
-                },
-            ]
-            var legend=svg_axis.append("g")
-                      .attr("class","legend")
-                      .attr("transform","translate("+width*3/4+",-130)")
-
-            var legend_g=legend.selectAll("g")
-                        .data(legendData)
-                        .enter().append("g")
-                        .attr("transform", function(d,i){return "translate(0,"+i*20+")"});
-            legend_g.append("rect")
-                    .attr("width",10)
-                    .attr("height",10)
-                    .style("fill",function(d){return d.value})
-            legend_g.append("text")
-                    .text(function(d){return d.label})
-                    .attr("x",15)
-                    .attr("y",10)
-                    .attr("font-size",11)
-          }
-          else if(colorBy==="flow"){
-            yValue=scope.flowType.type.value
-             var colorScale=d3.scale.threshold()
-                            .domain([50000,5000000,100000000])
-                            .range(["#daafaf","#cc6666","#993333","#663333"])
-            var legendData=[
-                {"label":"N/A",
-                  "value":"lightgrey"
-                },
-                {"label":"<"+valueFormat(50000),
-                  "value":"#daafaf"
-                },
-                {"label":valueFormat(50000)+"-"+valueFormat(5000000),
-                  "value":"#cc6666"
-                },
-                {"label":valueFormat(5000000)+"-"+valueFormat(100000000),
-                  "value":"#993333"
-                },
-                {"label":">"+valueFormat(100000000),
-                  "value":"#663333"
-                },
-            ]
-            var legend=svg_axis.append("g")
-                      .attr("class","legend")
-                      .attr("transform","translate("+width*3/4+",-130)")
-
-            var legend_g=legend.selectAll("g")
-                        .data(legendData)
-                        .enter().append("g")
-                        .attr("transform", function(d,i){return "translate(0,"+i*20+")"});
-            legend_g.append("rect")
-                    .attr("width",10)
-                    .attr("height",10)
-                    .style("fill",function(d){return d.value})
-            legend_g.append("text")
-                    .text(function(d){return d.label})
-                    .attr("x",15)
-                    .attr("y",10)
-                    .attr("font-size",11)
-            // var legend=svg_axis.append("g")
-            //          .attr("class","legend")
-            //          .attr("transform", "translate("+(width-legendWidth*5)+",-40)");
-
-            // legend.append("text")
-            //       .text(colorName)
-            //       .attr("x",-5)
-            //       .attr("y",6)
-            //       .attr("font-size",11)
-            //       .attr("text-anchor","end")
-
-            // var legend_g=legend.selectAll("g")
-            //       .data(legendData)
-            //       .enter().append("g")
-            //       .attr("transform", function(d,i){return "translate("+i*legendWidth+",0)"});
-
-            // legend_g.append("rect")
-            //       .attr("y", 0)
-            //       .attr("width", legendWidth)
-            //       .attr("height", 10)
-            //       .style("fill", function(d){return d.value;})
-
-            // legend_g.append("text")
-            //         .text(function(d){return d.label})
-            //         .attr("text-anchor","start")
-            //         .attr("y",-5)
-            //         .attr("font-size",11)
-          }
-          else{
-            var color_domain=[]
-            data.forEach(function(d){
-              d.values.forEach(function(v){
-                color_domain.push(v[colorBy])
-              })
-            })
-            categoryColor.domain(color_domain)
-
-            var legend=svg_axis.append("g")
-                      .attr("class","legend")
-                      .attr("transform","translate("+width/2+",-100)")
-            var legend_g=legend.selectAll("g")
-                        .data(categoryColor.domain())
-                        .enter().append("g")
-                        .attr("transform", function(d,i){return "translate(0,"+i*20+")"});
-            legend_g.append("rect")
-                    .attr("width",10)
-                    .attr("height",10)
-                    .style("fill",function(d){return categoryColor(d)})
-            legend_g.append("text")
-                    .text(function(d){return d})
-                    .attr("x",15)
-                    .attr("y",10)
-                    .attr("font-size",11)
-          }
+          recolor_legend(colorBy,data)
 
           var matrix=svg.append("g")
                      .attr("class", "matrix")
