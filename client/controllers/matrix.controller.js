@@ -324,7 +324,6 @@ angular.module('ricardo.controllers.matrix', [])
                       d.partnerAvg=d3.round(partner_sum/d.values.length)
                       d.years=d.values.length
                     })
-                    console.log($scope.flowEntities)
 
                     $scope.entities=$scope.flowEntities.map(function(d){return d.values[0].reporting_id;})
                   // })//d3 load data

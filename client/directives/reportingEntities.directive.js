@@ -20,7 +20,6 @@ angular.module('ricardo.directives.reportingEntities', [])
 
         scope.$watch("ngData", function (newValue, oldValue){
             if(newValue && newValue!==oldValue){
-              console.log("change")
               draw(newValue);
             }
         });
@@ -37,7 +36,7 @@ angular.module('ricardo.directives.reportingEntities', [])
           if ( newValue!==oldValue && scope.ngData ) {
             layout=newValue.type.value;
             layoutName=newValue.name.value;
-            // console.log(layout)
+
             var data=order(layout,scope.ngData);
             reorder(data);
           }
@@ -225,7 +224,6 @@ angular.module('ricardo.directives.reportingEntities', [])
         var countByContinent=[]
 
         function recolor(colorBy,data){
-          console.log(yValue)
           svg_axis.select(".legend").remove()
 
           if(colorBy==="partner"){
@@ -378,7 +376,7 @@ angular.module('ricardo.directives.reportingEntities', [])
 
         }
         function order(layout,data){
-          console.log(layout)
+
           switch(layout){
             case "years": data.sort(function(a, b){ return d3.descending(a.values.length, b.values.length)})
             break;
@@ -656,7 +654,6 @@ angular.module('ricardo.directives.reportingEntities', [])
               })
             })
             categoryColor.domain(color_domain)
-            console.log(categoryColor)
 
             var legend=svg_axis.append("g")
                       .attr("class","legend")
