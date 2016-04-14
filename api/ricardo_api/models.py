@@ -260,8 +260,8 @@ def get_reportings_overview(partner_ids):
   table = [list(r) for r in cursor]
   if partner_ids=="actualreported":
     for row in table:
-      # exp_partners=row[7].split("|") if row[7] is not None else []
-      # imp_partners=row[10].split("|") if row[10] is not None else []
+      exp_partners=row[7].split("|") if row[7] is not None else []
+      imp_partners=row[10].split("|") if row[10] is not None else []
       sourcetype=row[14].split(",")[0] if row[14] is not None else []
 
       json_response.append({
@@ -298,9 +298,7 @@ def get_reportings_overview(partner_ids):
         "source": row[8],
         "sourcetype": row[9]
       })
-
-  json_response=[dict(t) for t in set([tuple(d.items()) for d in json_response])]
-  # json_response=list(set(json_response))
+    json_response=[dict(t) for t in set([tuple(d.items()) for d in json_response])]
 
   return json.dumps(json_response,encoding="UTF8")
 

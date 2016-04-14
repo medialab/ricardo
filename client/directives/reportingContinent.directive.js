@@ -346,7 +346,7 @@ angular.module('ricardo.directives.reportingContinent', [])
                 })
                 .on("mouseout",function(d){
                     tooltip.transition().style("opacity", 0);
-                    svg.selectAll(".baseline").selectAll("circle,text")
+                    svg.selectAll(".baseline").selectAll("circle,line")
                         .style("opacity",0)
                     svg.selectAll(".highlight").remove();
                 });
