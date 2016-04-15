@@ -72,3 +72,6 @@ database_creation/in_data/*.mdb
 
 # API log
 ricardoapi.log*
+
+# Libreoffice lock files
+.~lock.*
