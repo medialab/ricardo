@@ -255,6 +255,7 @@ c.execute("""INSERT INTO exchange_rates(year, modified_currency,
 	SELECT Yr as year, `Modified currency` as modified_currency,
 	`FX rate (NCU/£)` as rate_to_pounds, trim('currency_' || `Source Currency`) as source
 	FROM old_rate
+	WHERE rate_to_pounds is not null
 	""")
 print "exchanges_rates created"
 print "-------------------------------------------------------------------------"
@@ -275,22 +276,6 @@ with open('in_data/patchs/oups_fixed.csv', 'r') as oups_sources:
 			if oups[row[3]][1] != "SOURCES TO BE FIXED":
 				sub_c.execute("""UPDATE exchange_rates set source=?, notes=? WHERE source=?""",
 					[oups[row[3]][1], oups[row[3]][3], row[3]])
-
-with open('in_data/patchs/patch_ex.csv', 'r') as patch:	
-	patch=UnicodeReader(patch)
-	patch.next()
-	patch = [list(r) for r in patch]
-	
-	patch_number = 0
-	for r in patch:
-		patch_number +=1
-		if "\n" in r[0]:
-			r[0]=re.sub("\n","\r\n",r[0],re.M)
-		c.execute("SELECT count(*) FROM exchange_rates WHERE source=?",[r[0]])
-		if int(list(c)[0][0])==0:
-			print r[0].encode("utf8")
-		c.execute("""UPDATE exchange_rates set source=? WHERE source=?""",[r[1].strip(), r[0]])
-	print "patch ex : ", len(patch)
 
 ################################################################################
 ##			Create table expimp_spegen
@@ -373,7 +358,7 @@ c.execute("""INSERT INTO flows(id, source, flow, unit, currency, year, reporting
 	""")
 print "flows created"
 print "-------------------------------------------------------------------------"
-print "update flows with patch"
+print "apply sources patch"
 with open('in_data/patchs/patch_sources.csv', 'r') as patch:
 	patch=UnicodeReader(patch)
 	patch.next()
@@ -382,7 +367,13 @@ with open('in_data/patchs/patch_sources.csv', 'r') as patch:
 	patch_number = 0
 	for r in patch:
 		patch_number +=1
+
+		c.execute("""DELETE FROM sources WHERE slug=?""",[r[0]])
 		c.execute("""UPDATE flows set source=? WHERE source=?""",[r[1].strip(), r[0]])
+		if "\n" in r[0]:
+			r[0]=re.sub("\n","\r\n",r[0],re.M)
+		c.execute("""UPDATE exchange_rates set source=? WHERE source=?""",[r[1].strip(), r[0]])
+
 	print "patch : ", len(patch)
 
 # c.execute("""SELECT distinct(source) from flows""")
