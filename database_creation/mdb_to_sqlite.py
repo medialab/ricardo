@@ -251,9 +251,9 @@ with open('in_data/patchs/refine_source_merge.csv', 'r') as sources:
 
 print "Create exchanges_rates"
 c.execute("""INSERT INTO exchange_rates(year, modified_currency,
-	rate_to_pounds, source)
+	rate_to_pounds, source, notes)
 	SELECT Yr as year, `Modified currency` as modified_currency,
-	`FX rate (NCU/£)` as rate_to_pounds, trim('currency_' || `Source Currency`) as source
+	`FX rate (NCU/£)` as rate_to_pounds, trim('currency_' || `Source Currency`) as source, `Note Currency` as notes
 	FROM old_rate
 	WHERE rate_to_pounds is not null
 	""")
@@ -276,6 +276,7 @@ with open('in_data/patchs/oups_fixed.csv', 'r') as oups_sources:
 			if oups[row[3]][1] != "SOURCES TO BE FIXED":
 				sub_c.execute("""UPDATE exchange_rates set source=?, notes=? WHERE source=?""",
 					[oups[row[3]][1], oups[row[3]][3], row[3]])
+				sub_c.execute("""DELETE from sources WHERE slug=? """,[row[3]])
 
 ################################################################################
 ##			Create table expimp_spegen
@@ -396,29 +397,29 @@ with open('in_data/patchs/patch_sources.csv', 'r') as patch:
 # c.execute("""CREATE INDEX i_re_rn ON RICentities (RICname)""")
 
 # c.execute("""DROP TABLE IF EXISTS old_rate;""")
-print "drop old_rate"
-print "-------------------------------------------------------------------------"
-c.execute("""DROP TABLE IF EXISTS old_RICentities;""")
-print "drop old_RICentities"
-print "-------------------------------------------------------------------------"
-c.execute("""DROP TABLE IF EXISTS RICentities_backup;""")
-print "drop RICentities_backup"
-print "-------------------------------------------------------------------------"
+# print "drop old_rate"
+# print "-------------------------------------------------------------------------"
+# c.execute("""DROP TABLE IF EXISTS old_RICentities;""")
+# print "drop old_RICentities"
+# print "-------------------------------------------------------------------------"
+# c.execute("""DROP TABLE IF EXISTS RICentities_backup;""")
+# print "drop RICentities_backup"
+# print "-------------------------------------------------------------------------"
 # c.execute("""DROP TABLE IF EXISTS old_currency;""")
-print "drop old_currency"
-print "-------------------------------------------------------------------------"
-#c.execute("""DROP TABLE IF EXISTS old_flow;""")
-print "drop old_flow"
-print "-------------------------------------------------------------------------"
-c.execute("""DROP TABLE IF EXISTS old_RICentities_groups;""")
-print "drop old_RICentities_groups"
-print "-------------------------------------------------------------------------"
-c.execute("""DROP TABLE IF EXISTS old_entity_names_cleaning;""")
-print "drop old_entity_names_cleaning"
-print "-------------------------------------------------------------------------"
-c.execute("""DROP TABLE IF EXISTS 'old_Exp-Imp-Standard';""")
-print "drop old_Exp-Imp-Standard"
-print "-------------------------------------------------------------------------"
+# print "drop old_currency"
+# print "-------------------------------------------------------------------------"
+# c.execute("""DROP TABLE IF EXISTS old_flow;""")
+# print "drop old_flow"
+# print "-------------------------------------------------------------------------"
+# c.execute("""DROP TABLE IF EXISTS old_RICentities_groups;""")
+# print "drop old_RICentities_groups"
+# print "-------------------------------------------------------------------------"
+# c.execute("""DROP TABLE IF EXISTS old_entity_names_cleaning;""")
+# print "drop old_entity_names_cleaning"
+# print "-------------------------------------------------------------------------"
+# c.execute("""DROP TABLE IF EXISTS 'old_Exp-Imp-Standard';""")
+# print "drop old_Exp-Imp-Standard"
+# print "-------------------------------------------------------------------------"
 
 print "cleaning done"
 conn.commit()
