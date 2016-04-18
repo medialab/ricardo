@@ -17,7 +17,7 @@ angular.module('ricardo.controllers.matrix', [])
        name: {value: "World Partners",writable: true}
       }
       ]
-      $scope.partners= $scope.partnersChoices[1]
+      $scope.partners= $scope.partnersChoices[0]
       $scope.worldpartner=$scope.partners.type.value==="worldestimate" ? true:false;
 
       updatePartner()
@@ -179,6 +179,7 @@ angular.module('ricardo.controllers.matrix', [])
             })
             d.partner=d.partner.length
             d.partner_continent=continents.sort(function(a,b){return b.number-a.number;});
+
           });
           var data_nest=d3.nest()
                           .key(function(d){return d.reporting})

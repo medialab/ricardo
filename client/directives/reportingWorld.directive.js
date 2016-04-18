@@ -20,7 +20,6 @@ angular.module('ricardo.directives.reportingWorld', [])
 
         scope.$watch("ngData", function (newValue, oldValue){
             if(newValue && scope.ngData){
-              console.log(newValue)
             	draw(newValue);
             }
         });

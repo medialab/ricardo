@@ -190,15 +190,16 @@ def get_reportings_available_by_year():
   cursor = get_db().cursor()
   cursor.execute("""SELECT tot.reporting_id as reporting_id, tot.reporting as reporting, group_concat(tot.flow,"|") as flow,  group_concat(tot.expimp,"|") as expimp,
                     group_concat(tot.partner,"|") as partner, tot.year as year,
-                    tot.reporting_continent as reporting_continent, tot.reporting_type as reporting_type, group_concat(distinct tot.type) as sourcetype,  group_concat(distinct tot.source)  as source
+                    tot.reporting_continent as reporting_continent, tot.reporting_type as reporting_type, group_concat(tot.type,"|") as sourcetype,  group_concat(tot.source,"|")  as source
                     from
                     (select t.reporting_slug as reporting_id,t.reporting as reporting, sum(t.flow) as flow, t.expimp as expimp, group_concat(t.partner_slug) as partner,
-                    t.year as year, t.reporting_continent as reporting_continent, t.reporting_type as reporting_type,group_concat(distinct t.type) as type,t.source as source
+                    t.year as year, t.reporting_continent as reporting_continent, t.reporting_type as reporting_type,group_concat(distinct t.type) as type,group_concat(distinct t.source)  as source
                     FROM
-                    (SELECT reporting, reporting_slug, flow*Unit/rate as flow, (partner_slug||"-"||partner_continent) as partner_slug, year, source, type,reporting_continent,reporting_type, expimp
+                    (SELECT reporting, reporting_slug, flow*Unit/rate as flow, (replace(partner_slug,",","")||"-"||partner_continent) as partner_slug, year, source, type,reporting_continent,reporting_type, expimp
                     FROM flow_joined
                     WHERE partner_slug NOT LIKE 'World%' AND reporting_continent is not 'World'
                     AND flow*Unit/rate is not NULL
+                    AND partner_continent is not NULL
                     GROUP BY  reporting_slug, partner_slug,year,expimp) t
                     Group by t.reporting_slug, t.year, t.expimp) tot
                     GROUP BY  tot.reporting_id, tot.year"""
@@ -224,8 +225,8 @@ def get_reportings_available_by_year():
         "year":row[5],
         "continent":row[6],
         "type":row[7],
-        "sourcetype":row[8],
-        "source":row[9]
+        "sourcetype":("|").join(sorted(row[8].split("|")[i].split(","))),
+        "source":row[9].split("|")[i]
       })
 
     json_response.append({
@@ -237,15 +238,15 @@ def get_reportings_available_by_year():
         "year":row[5],
         "continent":row[6],
         "type":row[7],
-        "sourcetype":row[8],
-        "source":row[9]
+        "sourcetype":("|").join(sorted(row[8].split("|")[0].split(","))),
+        "source":row[9].split("|")[0]
       })
   return json.dumps(json_response,encoding="UTF8")
 
 def get_world_available():
   cursor = get_db().cursor()
   cursor.execute("""SELECT t.reporting_slug as reporting_id,t.reporting as reporting, group_concat(t.flow,"|") as flow, group_concat(t.expimp,"|") as expimp, t.partner as partner,
-                  t.year as year,group_concat(distinct t.type) as type,group_concat(t.source,"|")as source,count(distinct t.source)as source_count
+                  t.year as year,group_concat(t.type,"|") as type,group_concat(t.source,"|")as source,count(distinct t.source)as source_count
                   ,t.reporting_continent as reporting_continent, t.reporting_type as reporting_type
                   FROM
                   (SELECT reporting, reporting_slug, flow*Unit/rate as flow, partner, year, source, type, reporting_continent,reporting_type, expimp
@@ -272,7 +273,7 @@ def get_world_available():
         "expimp":row[3].split("|")[i],
         "partner":row[4],
         "year":row[5],
-        "sourcetype":row[6],
+        "sourcetype":row[6].split("|")[i],
         "source":row[7].split("|")[i],
         "continent":row[9],
         "type":row[10],
@@ -286,7 +287,7 @@ def get_world_available():
         "partner":row[4],
         "year":row[5],
         "source":total_source,
-        "sourcetype": row[6],
+        "sourcetype": ("|").join(list(set(row[6].split("|")))),
         "continent":row[9],
         "type":row[10]
       })

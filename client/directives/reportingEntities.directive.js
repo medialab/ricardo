@@ -596,7 +596,6 @@ angular.module('ricardo.directives.reportingEntities', [])
           // }
         }
         function draw(data){
-          console.log(data)
           data=order(layout,data);
 
           marginScale.domain([0,d3.max(data,function(d){return d[layout]})])

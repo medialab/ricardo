@@ -193,7 +193,6 @@ angular.module('ricardo.directives.reportingContinent', [])
 
 
         function draw(data) {
-          console.log(data)
           x.domain([new Date(scope.startDate,0,1), new Date(scope.endDate,0,1)]);
 
           var dataFiltered=data.filter(function(d){
