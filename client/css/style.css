@@ -666,7 +666,8 @@ h4 {
 }
 
 .line-compare-alt{
-  stroke: #dbb994;
+  /*stroke: #dbb994;*/
+  stroke:#663333;
   stroke-width: 1.5px;
   fill: none;
 }
@@ -722,14 +723,16 @@ h4 {
 .legend .line.available{      border-color: #cc6666; }
 .legend .line.unavailable{  border-bottom: 1px solid #e5b2b2; }
 .legend .line.diff-import{    border-color: #cc6666; }
-.legend .line.diff-export{    border-color: #dbb994; }
+.legend .line.diff-export{    border-color: #663333; }
+/*.legend .line.diff-export{    border-color: #dbb994; }*/
 
 .legendImport {
   color: #cc6666;
 }
 
 .legendExport {
-  color: #dbb994;
+  /*color: #dbb994;*/
+  color: #663333;
 }
 
 /*
