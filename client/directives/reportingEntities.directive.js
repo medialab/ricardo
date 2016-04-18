@@ -28,7 +28,7 @@ angular.module('ricardo.directives.reportingEntities', [])
           if (newValue!==oldValue && scope.ngData ) {
             yValue=newValue.type.value;
             yName=newValue.name.value;
-            draw(scope.ngData);
+            // draw(scope.ngData);
           }
         })
 
@@ -212,7 +212,7 @@ angular.module('ricardo.directives.reportingEntities', [])
         tooltip.append("div").attr("class","source")
         // var tip_max=d3.max(data,function(d){
         //   return d3.max(d.values,function(v){
-        //     return d3.max(v.exp_continent,function(n){
+        //     return d3.max(v.partner_continent,function(n){
         //       return n.number;
         //     })
         //   })})
@@ -231,13 +231,13 @@ angular.module('ricardo.directives.reportingEntities', [])
 
           svg_axis.select(".legend").remove()
           if(colorBy==="partner"){
-            yValue="exp_partner"
+            // yValue="exp_partner"
 
-            var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[yValue]})});
+            var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[colorBy]})});
             var values=[]
             data.forEach(function(d){
               d.values.forEach(function(v){
-                values.push(v[yValue])
+                values.push(v[colorBy])
               })
             })
 
@@ -346,9 +346,8 @@ angular.module('ricardo.directives.reportingEntities', [])
             //         .attr("font-size",11)
           }
           else if(colorBy==="flow"){
-            yValue=scope.flowType.type.value
 
-            var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[yValue]})});
+            var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[colorBy]})});
             // var values=[]
             // data.forEach(function(d){
             //   d.values.forEach(function(v){
@@ -519,7 +518,7 @@ angular.module('ricardo.directives.reportingEntities', [])
           d3.select("#reporting-entities-container").selectAll(".entities").selectAll(".available")
             .style("fill",function(v){
               if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(v[colorBy])
-              else return colorScale(v[yValue])
+              else return colorScale(v[colorBy])
              })
              .style("opacity",function(v){
                 if(colorBy==="partner" || colorBy==="flow") return 1
@@ -597,6 +596,7 @@ angular.module('ricardo.directives.reportingEntities', [])
           // }
         }
         function draw(data){
+          console.log(data)
           data=order(layout,data);
 
           marginScale.domain([0,d3.max(data,function(d){return d[layout]})])
@@ -673,8 +673,8 @@ angular.module('ricardo.directives.reportingEntities', [])
                     .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-          var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[yValue]})});
-          var min=d3.min(data,function(d){return d3.min(d.values,function(v){return +v[yValue]})});
+          var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v.flow})});
+          var min=d3.min(data,function(d){return d3.min(d.values,function(v){return +v.flow})});
 
 
           y.domain(reportings)
@@ -743,7 +743,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                .attr("height", gridHeight-gridGap )
                .style("fill",function(v){
                   if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(v[colorBy])
-                  else return colorScale(v[yValue])
+                  else return colorScale(v[colorBy])
                  })
                 .style("opacity",function(v){
                   if(colorBy==="partner" || colorBy==="flow") return 1
@@ -753,7 +753,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                // .style("fill", function(v) {return continentColors[v.continent];})
                // .style("fill-opacity",function(v){return z(v[yValue]);})
                .on('mouseover', function(v) {
-                  var partner=scope.worldpartner? "World Partner: "+v.partner : "Number of partners: "+v.exp_partner
+                  var partner=scope.worldpartner? "World Partner: "+v.partner : "Number of partners: "+v.partner
                   var reference=scope.worldpartner? "World Partner Reference: " + v.reference : "Number of partners by continent"
                   d3.select(this).style("stroke","black");
                   // d3.select(this.parentNode.parentNode).select("text").style("stroke","black");
@@ -766,28 +766,28 @@ angular.module('ricardo.directives.reportingEntities', [])
                   //                   .style("stroke","black");
                   tooltip.select(".title").html(
                     "<h5>"+d.key +" ("+v.type.split("/")[0]+" in "+v.continent+")"+ " in " + v.year +
-                    "<p>"+yName+": " + v[yValue]+"</p>" +"<p>"+partner+"</p>"+"<hr>"+
+                    "<p>"+yName+": " + v.flow+"</p>" +"<p>"+partner+"</p>"+"<hr>"+
                     reference
                   )
                   tooltip.select(".source").html(
                     "<hr><div><span style='font-weight:bold'>Source("+v.sourcetype+"):</span>"+v.source+"</div>"
                   )
                   tooltip.transition().style("opacity", .9);
+                  tooltip.select(".tip_svg").select("svg").remove()
 
                   if(!scope.worldpartner){
-                    tooltip.select(".tip_svg").select("svg").remove()
                     tooltip.select(".tip_svg").append("svg")
                                .attr("width",tip_width)
-                               .attr("height",20*v.exp_continent.length+tip_margin.top+tip_margin.bottom+20)
+                               .attr("height",20*v.partner_continent.length+tip_margin.top+tip_margin.bottom+20)
                                .append("g")
                                .attr("class","tip_group")
                                .attr("transform", "translate(" + tip_margin.left + "," + tip_margin.top + ")");
-                    x_tip.domain([0,d3.max(v.exp_continent,function(d){return d.number})])
+                    x_tip.domain([0,d3.max(v.partner_continent,function(d){return d.number})])
 
-                    // y_tip.domain(v.exp_continent.map(function(d){return d.continent}))
+                    // y_tip.domain(v.partner_continent.map(function(d){return d.continent}))
                     var tip_partner=tooltip.select(".tip_group")
                            .selectAll(".tip_partner")
-                           .data(v.exp_continent)
+                           .data(v.partner_continent)
                            .enter().append("g")
                            .attr("class","tip_partner")
                            .attr("transform",function(d,i){

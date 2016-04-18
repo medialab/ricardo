@@ -278,6 +278,23 @@ angular.module('ricardo.services', [])
        });
 
        return deferred.promise;
+     },
+     getWorldAvailable: function(params){
+       var deferred = $q.defer();
+       var serviceUrl = '/world_available'
+       $http({
+          method: 'GET',
+          url: BASE_API_URL + serviceUrl,
+          params: params,
+          cache: true,
+          timeout: 100000
+        }).success(function(data){
+         deferred.resolve(data);
+       }).error(function(){
+         deferred.reject("An error occured while fetching data");
+       });
+
+       return deferred.promise;
      }
    }
   }])

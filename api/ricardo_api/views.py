@@ -154,13 +154,20 @@ def nations_network():
 
 @app.route('/reportings_available_by_years')
 def reportings_available_by_years():
-    partner_ids = request.args.get('partner_ids', 'actualreported')
     try:
-        json_data=models.get_reportings_overview(partner_ids)
-        # json_data=models.get_reportings_available_by_year()
+        # json_data=models.get_reportings_overview(partner_ids)
+        json_data=models.get_reportings_available_by_year()
+        # json_data=models.get_world_available()
     except:
         app.logger.exception("exception in nations available")
         abort(500)
     return Response(json_data, status=200, mimetype='application/json')
 
-
+@app.route('/world_available')
+def world_available():
+    try:
+        json_data=models.get_world_available()
+    except:
+        app.logger.exception("exception in nations available")
+        abort(500)
+    return Response(json_data, status=200, mimetype='application/json')

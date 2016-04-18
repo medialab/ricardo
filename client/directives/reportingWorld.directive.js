@@ -20,6 +20,7 @@ angular.module('ricardo.directives.reportingWorld', [])
 
         scope.$watch("ngData", function (newValue, oldValue){
             if(newValue && scope.ngData){
+              console.log(newValue)
             	draw(newValue);
             }
         });
@@ -28,7 +29,6 @@ angular.module('ricardo.directives.reportingWorld', [])
           if ( newValue!==oldValue && scope.ngData ) {
             yValue=newValue.type.value;
             yName=newValue.name.value;
-            draw(scope.ngData);
           }
         })
 
@@ -130,15 +130,15 @@ angular.module('ricardo.directives.reportingWorld', [])
 
 
         var line = d3.svg.line()
-                    .defined(function(d) { return d.values[yValue]!==null; })
+                    .defined(function(d) { return d.values.flow!==null; })
                     .x(function(d) { return x(new Date(d.key,0,1));})
-                    .y(function(d) { return y(d.values[yValue]); });
+                    .y(function(d) { return y(d.values.flow); });
 
         var area = d3.svg.area()
-                    .defined(function(d) { return d.values[yValue]!==null; })
+                    .defined(function(d) { return d.values.flow!==null; })
                     .x(function(d) { return x(new Date(d.key,0,1));})
                     // .y0(height/3)
-                    // .y1(function(d) { return y(d.values[yValue]); });
+                    // .y1(function(d) { return y(d.values.flow); });
                     // .y0(function(d) { return y(d.y0); })
                     // .y1(function(d) { return y(d.y0 + d.y); });
 
@@ -194,7 +194,7 @@ angular.module('ricardo.directives.reportingWorld', [])
 
           var maxFlow=d3.max(data, function(d) {
             return d3.max(d.values,function(v){
-              return v.values[yValue]
+              return v.values.flow
             })
           });
           x.domain([new Date(minDate,0,1), new Date(maxDate,0,1)]);
@@ -204,7 +204,7 @@ angular.module('ricardo.directives.reportingWorld', [])
             yAxis.ticks(2)
             y.range([height/3, margin.top]);
             area.y0(height/3)
-                .y1(function(d) { return y(d.values[yValue]); });
+                .y1(function(d) { return y(d.values.flow); });
 
             if (svg.select('g').empty()){
 
@@ -249,7 +249,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                           .attr("x1", function(d){return x(new Date(d.key,0,1))})
                           .attr("y1", height/3)
                           .attr("x2", function(d){return x(new Date(d.key,0,1))})
-                          .attr("y2", function(d){return y(d.values[yValue]);})
+                          .attr("y2", function(d){return y(d.values.flow);})
                           .attr("stroke","grey")
                           .style("opacity",0)
                           .style("pointer-events","none")
@@ -257,15 +257,15 @@ angular.module('ricardo.directives.reportingWorld', [])
                       baselineEnter.append("circle")
                           .attr("r", 2.2)
                           .attr("cx", function(d){return x(new Date(d.key,0,1))})
-                          .attr("cy", function(d){return y(d.values[yValue])})
+                          .attr("cy", function(d){return y(d.values.flow)})
                           .style("opacity",0)
                           .style("pointer-events","none")
 
                       // baselineEnter.append("text")
-                      //         .text(function(d){ return format(Math.round(d.values[yValue]))+ ' £';})
+                      //         .text(function(d){ return format(Math.round(d.values.flow))+ ' £';})
                       //         .attr("text-anchor","middle")
                       //         .attr("x", function(d){return x(new Date(d.year,0,1))})
-                      //         .attr("y", function(d){return y(d.values[yValue])-5;})
+                      //         .attr("y", function(d){return y(d.values.flow)-5;})
                       //         .style("opacity",0)
                       //         .style("pointer-events","none")
                       baseline.exit().remove();
@@ -297,6 +297,7 @@ angular.module('ricardo.directives.reportingWorld', [])
             //y domain not updated
             else{
                   svg.selectAll(".multiple")
+                      .data(data)
                       .attr("transform", function(d, i) { return "translate(0," + ((2-i) * height/3) + ")"; })
                       .each(function(d) {
                         var e = d3.select(this);
@@ -323,7 +324,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                           .attr("x1", function(d){return x(new Date(d.key,0,1))})
                           .attr("y1", height/3)
                           .attr("x2", function(d){return x(new Date(d.key,0,1))})
-                          .attr("y2", function(d){return y(d.values[yValue]);})
+                          .attr("y2", function(d){return y(d.values.flow);})
                           .attr("stroke","grey")
                           .style("opacity",0)
                           .style("pointer-events","none")
@@ -331,15 +332,15 @@ angular.module('ricardo.directives.reportingWorld', [])
                       baselineEnter.append("circle")
                           .attr("r", 2.2)
                           .attr("cx", function(d){return x(new Date(d.key,0,1))})
-                          .attr("cy", function(d){return y(d.values[yValue])})
+                          .attr("cy", function(d){return y(d.values.flow)})
                           .style("opacity",0)
                           .style("pointer-events","none")
 
                       // baselineEnter.append("text")
-                      //         .text(function(d){ return format(Math.round(d.values[yValue]))+ ' £';})
+                      //         .text(function(d){ return format(Math.round(d.values.flow))+ ' £';})
                       //         .attr("text-anchor","middle")
                       //         .attr("x", function(d){return x(new Date(d.year,0,1))})
-                      //         .attr("y", function(d){return y(d.values[yValue])-5;})
+                      //         .attr("y", function(d){return y(d.values.flow)-5;})
                       //         .style("opacity",0)
                       //         .style("pointer-events","none")
                       baseline.exit().remove();
@@ -364,7 +365,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                  .domain([0,maxFlow]);
 
                 area.y0(height)
-                    .y1(function(d) { return y(d.values[yValue]);});
+                    .y1(function(d) { return y(d.values.flow);});
 
                 if (svg.select('g').empty()){
                   var multi_g=svg.selectAll(".multiple")
@@ -407,7 +408,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                              .attr("x1", function(d){return x(new Date(d.key,0,1))})
                               .attr("y1", function(d){return y(0);})
                               .attr("x2", function(d){return x(new Date(d.key,0,1))})
-                              .attr("y2", function(d){return y(d.values[yValue]);})
+                              .attr("y2", function(d){return y(d.values.flow);})
                               .attr("stroke","black")
                               .style("opacity",0)
                               .style("pointer-events","none")
@@ -436,6 +437,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                 }
                 else{
                       svg.selectAll(".multiple")
+                          .data(data)
                           .attr("transform", "translate(0,0)")
                           .each(function(d,i) {
                             var e = d3.select(this);
@@ -461,7 +463,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                                 .attr("x1", function(d){return x(new Date(d.key,0,1))})
                                 .attr("y1", function(d){return y(0);})
                                 .attr("x2", function(d){return x(new Date(d.key,0,1))})
-                                .attr("y2", function(d){return y(d.values[yValue]);})
+                                .attr("y2", function(d){return y(d.values.flow);})
                                 .attr("stroke","black")
                                 .style("opacity",0)
                                 .style("pointer-events","none")
@@ -483,7 +485,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                     }
 
              }//if single layout
-
+                svg.select('.overlay').remove();
                 if (svg.select('.overlay').empty()){
                   svg.append("rect")
                     .attr('class', 'overlay')
@@ -516,12 +518,12 @@ angular.module('ricardo.directives.reportingWorld', [])
                       var selectData=data_flatten.filter(function(e){return e.year===d.getFullYear()})
 
                       if(selectData.length>0){
-                        selectData.sort(function(a,b){return b.values[yValue]-a.values[yValue] })
+                        selectData.sort(function(a,b){return b.values.flow-a.values.flow })
                         tooltip.select(".title").html(
                             "<h5>"+yName+" in "+d.getFullYear() +"</h5><hr>"
                         )
 
-                        x_tip.domain([0,d3.max(selectData,function(d){return d.values[yValue]})])
+                        x_tip.domain([0,d3.max(selectData,function(d){return d.values.flow})])
 
                         // y_tip.domain(v.exp_continent.map(function(d){return d.continent}))
                         tooltip.select(".tip_group").selectAll("g").remove()
@@ -533,7 +535,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                                .attr("transform",function(d,i){
                                   return "translate(0,"+2*i*(offsetHeight+2)+")"})
                         tip_partner.append("rect")
-                                   .attr("width",function(d){return d.values[yValue]!==null ? x_tip(d.values[yValue]):0})
+                                   .attr("width",function(d){return d.values.flow!==null ? x_tip(d.values.flow):0})
                                    .attr("height",10)
                                    .attr("fill",function(d){return partnerColors(d.partner)});
                         tip_partner.append("text")
@@ -544,20 +546,20 @@ angular.module('ricardo.directives.reportingWorld', [])
                                    .attr("font-size",11)
                         tip_partner.append("text")
                                    .text(function(d){
-                                      return d.values[yValue]!==null ? format(Math.round(d.values[yValue]))+" £" : "N/A";
+                                      return d.values.flow!==null ? format(Math.round(d.values.flow))+" £" : "N/A";
                                     })
-                                   .attr("x",function(d){return d.values[yValue]!==null ? x_tip(d.values[yValue])+2: 2})
+                                   .attr("x",function(d){return d.values.flow!==null ? x_tip(d.values.flow)+2: 2})
                                    .attr("y",9)
                                    .attr("text-anchor",function(d,i){
-                                     if(i===0 && d.values[yValue]!==null) return "end"
-                                     else if(d.values[yValue]>selectData[0].values[yValue]/2) return "end"
+                                     if(i===0 && d.values.flow!==null) return "end"
+                                     else if(d.values.flow>selectData[0].values.flow/2) return "end"
                                      else return "start"
                                    })
                                    .attr("fill","#fff")
                                    .attr("font-size",12)
 
                         svg.selectAll(".baseline").selectAll("circle,line")
-                            .filter(function(d){return d.values[yValue]!==null;})
+                            .filter(function(d){return d.values.flow!==null;})
                             .style("opacity", function(e) {
                               return e.key != d.getFullYear() ? 0 : 1;
                             })
