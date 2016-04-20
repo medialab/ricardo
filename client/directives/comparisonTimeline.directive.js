@@ -52,7 +52,7 @@ angular.module('ricardo.directives.comparisonTimeline', [])
           diffSource = function(d){
             if (!isNaN(d.exp) && !isNaN(d.imp) && d.imp !== null && d.exp !== null ) {
               // return ( d.imp_mirror - d.exp ) / d.exp ;
-               return ( d.imp_mirror - d.exp ) / d.imp_mirror  ;
+               return ( d.imp - d.exp_mirror ) / d.imp  ;
             }
           }
 
@@ -63,7 +63,7 @@ angular.module('ricardo.directives.comparisonTimeline', [])
           diffTarget = function(d){
             if (!isNaN(d.exp_mirror) && !isNaN(d.imp_mirror) && d.exp_mirror !== null && d.imp_mirror !== null) {
               // return ( d.imp - d.exp_mirror ) / d.exp_mirror ;
-             return ( d.exp_mirror-d.imp ) / d.exp_mirror ;
+             return ( d.exp-d.imp_mirror ) / d.exp ;
 
             }
           }
