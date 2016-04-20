@@ -1,11 +1,7 @@
 var gulp = require('gulp'),
 	concat = require('gulp-concat'),
 	uglify = require('gulp-uglify'),
-	ngAnnotate = require('gulp-ng-annotate'),
-	watch = require('gulp-watch'),
-	webserver = require('gulp-webserver'),
-	http = require('http'),
-	livereload = require('gulp-livereload');
+	ngAnnotate = require('gulp-ng-annotate');
 
 /*
  * Minify angular app
@@ -61,25 +57,3 @@ gulp.task('concat_lib', function () {
 
 gulp.task('default', ['min_js', 'concat_lib'], function() {
 });
-
-/*
- *	DEV - Watch if files change and reload browser
- */
-
-// gulp.task('webserver_dev', function() {
-//   gulp.src('app')
-//     .pipe(webserver({
-//     	port: 4000,
-//     	path: '/',
-// 		livereload: true,
-// 		open: true,
-// 		fallback: 'index_prod.html'
-//     }));
-// });
-
-
-
-
-
-
-

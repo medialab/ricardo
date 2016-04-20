@@ -1,8 +1,8 @@
 'use strict';
 
-/* 
- * Directive : comparison timeline between country source & country target 
- * with watch, update and draw functions 
+/*
+ * Directive : comparison timeline between country source & country target
+ * with watch, update and draw functions
  */
 
 angular.module('ricardo.directives.comparisonTimeline', [])
@@ -46,12 +46,13 @@ angular.module('ricardo.directives.comparisonTimeline', [])
           , diffTarget
           , diffTargetDefined
 
-        
+
 
         function draw(data){
           diffSource = function(d){
             if (!isNaN(d.exp) && !isNaN(d.imp) && d.imp !== null && d.exp !== null ) {
-              return ( d.imp_mirror - d.exp ) / d.exp ;
+              // return ( d.imp_mirror - d.exp ) / d.exp ;
+               return ( d.imp_mirror - d.exp ) / d.imp_mirror  ;
             }
           }
 
@@ -61,7 +62,9 @@ angular.module('ricardo.directives.comparisonTimeline', [])
 
           diffTarget = function(d){
             if (!isNaN(d.exp_mirror) && !isNaN(d.imp_mirror) && d.exp_mirror !== null && d.imp_mirror !== null) {
-              return ( d.imp - d.exp_mirror ) / d.exp_mirror ;
+              // return ( d.imp - d.exp_mirror ) / d.exp_mirror ;
+             return ( d.exp_mirror-d.imp ) / d.exp_mirror ;
+
             }
           }
 
@@ -95,21 +98,21 @@ angular.module('ricardo.directives.comparisonTimeline', [])
           y.domain([
             d3.min( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
                 if (diffSourceDefined(d) && diffTargetDefined(d)) {
-                  return Math.min( diffSource(d), diffTarget(d) );            
+                  return Math.min( diffSource(d), diffTarget(d) );
                 }
                 else if (diffSourceDefined(d) ) {
                   return diffSource(d);
                 }
                 else if (diffTargetDefined(d)) {
                   return diffTarget(d);
-                }  
+                }
                 else {
                   return false;
                 }
               }),
             d3.max( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
                 if (diffSourceDefined(d) && diffTargetDefined(d)) {
-                  return Math.max( diffSource(d), diffTarget(d) );            
+                  return Math.max( diffSource(d), diffTarget(d) );
                 }
                 else if (diffSourceDefined(d) ) {
                   return diffSource(d);
@@ -161,8 +164,8 @@ angular.module('ricardo.directives.comparisonTimeline', [])
               .attr("class", "line-compare-alt")
               .attr("d", diffTargetLine)
 
-          /* 
-           * Zero line 
+          /*
+           * Zero line
            */
           svg.append("line")
                .attr("x1", 0)
@@ -171,9 +174,9 @@ angular.module('ricardo.directives.comparisonTimeline', [])
                .attr("y2", y(0))
                .attr("stroke-width", 1)
                .attr("stroke", "#663333");
-        
-          /* 
-           * Axis 
+
+          /*
+           * Axis
            */
           var gy = svg.select("g.y.axis"),
               gx = svg.select("g.x.axis");
@@ -189,7 +192,7 @@ angular.module('ricardo.directives.comparisonTimeline', [])
                 .attr("class", "y axis")
                 .call(yAxis)
                 .call(customAxis);
-                
+
             gy.selectAll("g").filter(function(d) { return d; })
                 .classed("minor", true);
 
@@ -204,7 +207,7 @@ angular.module('ricardo.directives.comparisonTimeline', [])
 
             gy.selectAll("g").filter(function(d) { return d; })
                 .classed("minor", true);
-            
+
           }
 
           function customAxis(g) {
@@ -214,15 +217,15 @@ angular.module('ricardo.directives.comparisonTimeline', [])
               .attr("font-size", "0.85em");
             }
 
-        /* 
-         * Select only imp & exp data from country selected 
+        /*
+         * Select only imp & exp data from country selected
          */
           var ComparisonTabData = [];
 
           data.forEach(function (d) {
             if (d.year >= scope.startDate && d.year <= scope.endDate) {
               if (diffSourceDefined(d)) {
-                ComparisonTabData.push({type: "source", points: diffSource(d), year: d.year}); 
+                ComparisonTabData.push({type: "source", points: diffSource(d), year: d.year});
               }
               if (diffTargetDefined(d)) {
                 ComparisonTabData.push({type: "target", points: diffTarget(d), year: d.year});
@@ -233,15 +236,15 @@ angular.module('ricardo.directives.comparisonTimeline', [])
 
         }
 
-          /* 
-           * Voronoi fonction 
+          /*
+           * Voronoi fonction
            */
           function voronoi(data, yValue, svg, margin, height, width) {
             var voronoi = d3.geom.voronoi()
             .x(function(d) { return x(new Date(d.year, 0, 1)); })
             .y(function(d) { return y(d[yValue]); })
             .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]]);
-        
+
             var voronoiGroup = svg.select(".voronoi")
 
             if(voronoiGroup.empty()){
@@ -252,16 +255,16 @@ angular.module('ricardo.directives.comparisonTimeline', [])
             }
 
             var voronoiGraph = voronoiGroup.selectAll("path")
-                .data(voronoi(data.filter(function(d){ 
-                  if(d.points !== "-Infinity" && !isNaN(d.points) && d.points !== undefined) { 
-                    return d[yValue] !== null 
-                  } 
+                .data(voronoi(data.filter(function(d){
+                  if(d.points !== "-Infinity" && !isNaN(d.points) && d.points !== undefined) {
+                    return d[yValue] !== null
+                  }
                 })))
 
             voronoiGraph
                   .enter().append("path")
                   .attr("d", function(data) {
-                    if (data !== null && data !== undefined && data.length > 1) 
+                    if (data !== null && data !== undefined && data.length > 1)
                     return "M" + data.join("L") + "Z"; })
                   .datum(function(d) { if(d!==undefined) return d.point; })
                   .on("mouseover", mouseover)
@@ -274,7 +277,7 @@ angular.module('ricardo.directives.comparisonTimeline', [])
              */
 
             var focus = svg.select(".focus")
-                      
+
             if(focus.empty()){
                 focus = svg.append("g")
                     .attr("transform", "translate(-100,-100)")
@@ -293,7 +296,7 @@ angular.module('ricardo.directives.comparisonTimeline', [])
             function mouseover(d) {
                 if(d[yValue]!==null)
                 {
-                  var colorPoint = d.type === "source" ? "#CC6666" : "#dbb994"
+                  var colorPoint = d.type === "source" ? "#CC6666" : "#663333"
                   focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
                   focus.select("text").attr("fill", colorPoint).text(format(Math.round(d[yValue] * 100) / 100 ));
                 }
