@@ -4,12 +4,16 @@
 
 angular.module('ricardo.controllers.world', [])
 
-  .controller('world', [ "$scope", "$location", "apiService", "dataTableService",
-    "utils", "reportingEntities", "reportingWorldFlows", "WORLD_TABLE_HEADERS", function ($scope, $location, apiService, dataTableService,
-    utils, reportingEntities, reportingWorldFlows, WORLD_TABLE_HEADERS) {
+  .controller('world', [ "$scope", "$location", "apiService","dataTableService",
+    "utils", "reportingEntities", "reportingWorldFlows", "reportingWorldPartner","WORLD_TABLE_HEADERS", function ($scope, $location, apiService, dataTableService,
+    utils, reportingEntities, reportingWorldFlows,reportingWorldPartner,WORLD_TABLE_HEADERS) {
+
+
+    // data process for multilinechart
+    var worldpartnerData=reportingWorldPartner.filter(function(d){return d.partner!=="World_best_guess"})
+    initWorldMultiChart(worldpartnerData)
 
     $scope.nbReportings = reportingWorldFlows;
-
     var data
     var worldFlowsYears = d3.nest()
       .key(function (d) { return d.year})
@@ -83,6 +87,36 @@ angular.module('ricardo.controllers.world', [])
     $scope.rawYearsRange_forInf
     $scope.rawYearsRange_forSup
 
+
+    /*
+     * Config dropdownlist of multiline chart
+     */
+    $scope.multichartLayoutChoices = [
+        {type: {value: "multiple",writable: true},
+         name: {value: "Multiple View",writable: true}},
+        {type: {value: "single",writable: true},
+         name: {value: "Single View",writable: true}},
+    ];
+    $scope.multichartLayout = $scope.multichartLayoutChoices[0]
+
+    $scope.multiFlowChoices = [
+      {type: {value: "total",writable: true},
+       name: {value: "Total",writable: true}},
+      {type: {value: "Exp",writable: true},
+       name: {value: "Exports",writable: true}},
+      {type: {value: "Imp",writable: true},
+       name: {value: "Imports",writable: true}
+      }
+    ];
+
+    $scope.multichartFlow = $scope.multiFlowChoices[0]
+
+    $scope.changeMultiFlow = function (flow) {
+        $scope.multichartFlow=flow;
+    }
+    $scope.changeMultiLayout = function (layout) {
+        $scope.multichartLayout=layout;
+    }
     /*
      * Config buttons of linechart
      */
@@ -125,7 +159,7 @@ angular.module('ricardo.controllers.world', [])
      *  Init the timelines
      */
 
-     init();
+    init();
 
     function init() {
 
@@ -167,7 +201,39 @@ angular.module('ricardo.controllers.world', [])
       updateDateRange();
     }
 
+    /*
+     * Init world multi line chart functions
+     */
 
+    function initWorldMultiChart(data){
+        // console.log(data)
+        $scope.flowWorld=d3.nest()
+                              .key(function(d) { return d.partner; })
+                              .entries(data);
+        //extend missing points with null values
+        $scope.flowWorld.forEach(function(d){
+            // for (var i = $scope.rawMinDate; i<=$scope.rawMaxDate;i++){
+            d.values.forEach(function(v){
+              v.year=+v.year
+            })
+            for (var i = 1787; i<=1939;i++){
+              var years=d.values.map(function(e){ return e.year});
+              if (years.indexOf(i)=== -1){
+                d.values.push({
+                  year:i,
+                  Imp:null,
+                  Exp:null,
+                  total:null,
+                  source:null
+                })
+              }
+            }
+            //sort by year ascending
+            d.values.sort(function(a,b){
+              return a.year-b.year;
+            });
+          })//add missing with null
+      }
 
     /*
      * Init line chart functions

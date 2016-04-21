@@ -4,6 +4,35 @@
     <p class="paragraphPage">
      {{ 'WORLD_VIEW_INTRO' | translate }}
     </p>
+
+    <div class="col-md-12">
+      <h4>Flow by World Partner in
+        <div class="inline-select">
+            <ui-select ng-model="multichartLayout" theme="bootstrap" ng-change="changeMultiLayout(multichartLayout)">
+              <match placeholder="Select grouped or multiple layout">{{$select.selected.name.value}}</match>
+              <choices repeat="item in multichartLayoutChoices | filter: $select.search">
+                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+              </choices>
+            </ui-select>
+        </div>
+        for
+        <div class="inline-select">
+            <ui-select ng-model="multichartFlow" theme="bootstrap" ng-change="changeMultiFlow(multichartFlow)">
+              <match placeholder="Select flow type">{{$select.selected.name.value}}</match>
+              <choices repeat="item in multiFlowChoices | filter: $select.search">
+                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+              </choices>
+            </ui-select>
+          </div>
+        </h4>
+        <reporting-world
+              ng-data="flowWorld"
+              start-date="selectedMinDate"
+              end-date="selectedMaxDate"
+              flow-type="multichartFlow"
+              layout="multichartLayout">
+        </reporting-world>
+    </div>
     <div class="row timeline-cont">
       <div class="col-xs-12 col-sm-12">
         <h4>

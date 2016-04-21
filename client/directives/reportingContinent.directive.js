@@ -11,8 +11,6 @@ angular.module('ricardo.directives.reportingContinent', [])
       template: '<div id="reporting-continent-container"></div>',
       scope: {
         ngData: '=',
-        startDate: '=',
-        endDate: '=',
         flowType: "=",
         layout: "="
       },
@@ -23,18 +21,6 @@ angular.module('ricardo.directives.reportingContinent', [])
             	draw(newValue);
             }
         });
-
-        scope.$watch('endDate', function(newValue, oldValue) {
-          if ( newValue && scope.ngData ) {
-            draw(scope.ngData)
-          }
-        })
-
-        scope.$watch('startDate', function(newValue, oldValue) {
-          if ( newValue && scope.ngData ) {
-            draw(scope.ngData)
-          }
-        })
 
         scope.$watch('flowType', function(newValue, oldValue) {
           if ( newValue!==oldValue && scope.ngData ) {
@@ -76,8 +62,6 @@ angular.module('ricardo.directives.reportingContinent', [])
         var color = d3.scale.category10();
         var format = d3.format("0,000");
         var duration=300;
-
-        // var domain = [0, 1000,1000000,1000000000,10000000000,100000000000];
 
         var x = d3.time.scale()
                   .range([0, width]);
@@ -145,14 +129,14 @@ angular.module('ricardo.directives.reportingContinent', [])
                     .offset(layout)
                     .values(function(d) { return d.values; })
                     .x(function(d) { return x(new Date(d.year,0,1)); })
-                    .y(function(d) { return d.values.flow; })
+                    .y(function(d) { return d.values.reportings; })
                     // .order("reverse"); //if log scale
         var line = d3.svg.line()
-                    .defined(function(d) { return d.values.flow!==0; })
+                    .defined(function(d) { return d.values.reportings!==0; })
                     .x(function(d) { return x(new Date(d.year,0,1));})
 
         var area = d3.svg.area()
-                    .defined(function(d) { return d.values.flow!==0; })
+                    .defined(function(d) { return d.values.reportings!==0; })
                     .x(function(d) { return x(new Date(d.year,0,1));})
                     // .y0(function(d) { return y(d.y0); })
                     // .y1(function(d) { return y(d.y0 + d.y); });
@@ -193,7 +177,9 @@ angular.module('ricardo.directives.reportingContinent', [])
 
 
         function draw(data) {
-          x.domain([new Date(scope.startDate,0,1), new Date(scope.endDate,0,1)]);
+          var minDate=d3.min(data,function(d){return d.year})
+          var maxDate=d3.max(data,function(d){return d.year})
+          x.domain([new Date(minDate,0,1), new Date(maxDate,0,1)]);
 
           var dataFiltered=data.filter(function(d){
             return d.year>=x.domain()[0].getFullYear() && d.year<= x.domain()[1].getFullYear();
@@ -208,8 +194,8 @@ angular.module('ricardo.directives.reportingContinent', [])
             var nestedFiltered=n.values.filter(function(d){
               return d.year>=x.domain()[0].getFullYear() && d.year<= x.domain()[1].getFullYear();
             })
-            n.maxFlow = d3.max(nestedFiltered, function(d) { return d.values.flow; });
-            n.minFlow = d3.max(nestedFiltered, function(d) { if(d.values.flow!==0) return d.values.flow; });
+            n.maxFlow = d3.max(nestedFiltered, function(d) { return d.values.reportings; });
+            n.minFlow = d3.min(nestedFiltered, function(d) { if(d.values.reportings!==0) return d.values.reportings; });
           });
 
           //remove voronoi from the other two graph
@@ -245,13 +231,13 @@ angular.module('ricardo.directives.reportingContinent', [])
                     d1 = new Date(mouseYear+1,0,1),
                     d = mouse - d0 > d1 - mouse ? d1 : d0;
                 var selectData=data.filter(function(e){return e.year===d.getFullYear()})
-                selectData.sort(function(a,b){return b.values.flow-a.values.flow })
+                selectData.sort(function(a,b){return b.values.reportings-a.values.reportings })
 
                 tooltip.select(".title").html(
                     "<h5>"+yName+" in "+d.getFullYear() +"</h5><hr>"
                 )
 
-                x_tip.domain([0,d3.max(selectData,function(d){return d.values.flow})])
+                x_tip.domain([0,d3.max(selectData,function(d){return d.values.reportings})])
 
                 // y_tip.domain(v.exp_continent.map(function(d){return d.continent}))
                 tooltip.select(".tip_group").selectAll("g").remove()
@@ -263,7 +249,7 @@ angular.module('ricardo.directives.reportingContinent', [])
                        .attr("transform",function(d,i){
                           return "translate(0,"+2*i*(offsetHeight+2)+")"})
                 tip_partner.append("rect")
-                           .attr("width",function(d){return x_tip(d.values.flow)})
+                           .attr("width",function(d){return x_tip(d.values.reportings)})
                            .attr("height",10)
                            .attr("fill",function(d){return continentColors[d.continent]});
                 tip_partner.append("text")
@@ -274,19 +260,20 @@ angular.module('ricardo.directives.reportingContinent', [])
                            .attr("font-size",11)
                 tip_partner.append("text")
                            .text(function(d){
-                              var value = layout==="expand" ? (d3.round(d.y*100,2)+" %"):(format(Math.round(d.values.flow))+" £");
+                              var value = layout==="expand" ? (d3.round(d.y*100,2)+" %"):format(Math.round(d.values.reportings));
                               return value;
                             })
-                           .attr("x",function(d){return x_tip(d.values.flow)+2})
+                           .attr("x",function(d){return x_tip(d.values.reportings)+2})
                            .attr("y",9)
-                           .attr("text-anchor",function(d,i){
-                             return i===0 && d.values.flow!==0 ? "end":"start"
-                           })
+                           .attr("text-anchor","start")
+                           // .attr("text-anchor",function(d,i){
+                           //   return i===0 && d.values.reportings!==0 ? "end":"start"
+                           // })
                            .attr("fill","#fff")
                            .attr("font-size",12)
 
                 svg.selectAll(".baseline").selectAll("circle,line")
-                    .filter(function(d){return d.values.flow!==0;})
+                    .filter(function(d){return d.values.reportings!==0;})
                     .style("opacity", function(e) {
                       return e.year != d.getFullYear() ? 0 : 1;
                     })
@@ -352,17 +339,15 @@ angular.module('ricardo.directives.reportingContinent', [])
           }
 
           if(layout==="multiple"){
-
             y.range([height/5, margin.top]);
             yAxis.ticks(2);
             //relayout area
             area.y0(height/5)
-                .y1(function(d) { return y(d.values.flow); });
+                .y1(function(d) { return y(d.values.reportings); });
 
-            line.y(function(d) { return y(d.values.flow); });
+            line.y(function(d) { return y(d.values.reportings); });
 
             if (svg.select('g').empty()){
-
               var multi_g=svg.selectAll(".multiple")
                       .data(nested)
                       .enter().append("g")
@@ -406,7 +391,7 @@ angular.module('ricardo.directives.reportingContinent', [])
                           .attr("x1", function(d){return x(new Date(d.year,0,1))})
                           .attr("y1", height/5)
                           .attr("x2", function(d){return x(new Date(d.year,0,1))})
-                          .attr("y2", function(d){return y(d.values.flow);})
+                          .attr("y2", function(d){return y(d.values.reportings);})
                           .attr("stroke","grey")
                           .style("opacity",0)
                           .style("pointer-events","none")
@@ -414,15 +399,15 @@ angular.module('ricardo.directives.reportingContinent', [])
                       baselineEnter.append("circle")
                           .attr("r", 2.2)
                           .attr("cx", function(d){return x(new Date(d.year,0,1))})
-                          .attr("cy", function(d){return y(d.values.flow)})
+                          .attr("cy", function(d){return y(d.values.reportings)})
                           .style("opacity",0)
                           .style("pointer-events","none")
 
                       baselineEnter.append("text")
-                              .text(function(d){ return format(Math.round(d.values.flow))+ ' £';})
+                              .text(function(d){ return format(Math.round(d.values.reportings))+ ' £';})
                               .attr("text-anchor","middle")
                               .attr("x", function(d){return x(new Date(d.year,0,1))})
-                              .attr("y", function(d){return y(d.values.flow)-5;})
+                              .attr("y", function(d){return y(d.values.reportings)-5;})
                               .style("opacity",0)
                               .style("pointer-events","none")
                       baseline.exit().remove();
@@ -488,7 +473,7 @@ angular.module('ricardo.directives.reportingContinent', [])
                           .attr("x1", function(d){return x(new Date(d.year,0,1))})
                           .attr("y1", height/5)
                           .attr("x2", function(d){return x(new Date(d.year,0,1))})
-                          .attr("y2", function(d){return y(d.values.flow);})
+                          .attr("y2", function(d){return y(d.values.reportings);})
                           .attr("stroke","grey")
                           .style("opacity",0)
                           .style("pointer-events","none")
@@ -496,15 +481,15 @@ angular.module('ricardo.directives.reportingContinent', [])
                       baselineEnter.append("circle")
                           .attr("r", 2.2)
                           .attr("cx", function(d){return x(new Date(d.year,0,1))})
-                          .attr("cy", function(d){return y(d.values.flow)})
+                          .attr("cy", function(d){return y(d.values.reportings)})
                           .style("opacity",0)
                           .style("pointer-events","none")
 
                       baselineEnter.append("text")
-                              .text(function(d){ return format(Math.round(d.values.flow))+ ' £';})
+                              .text(function(d){ return format(Math.round(d.values.reportings))+ ' £';})
                               .attr("text-anchor","middle")
                               .attr("x", function(d){return x(new Date(d.year,0,1))})
-                              .attr("y", function(d){return y(d.values.flow)-5;})
+                              .attr("y", function(d){return y(d.values.reportings)-5;})
                               .style("opacity",0)
                               .style("pointer-events","none")
                       baseline.exit().remove();
@@ -709,7 +694,7 @@ angular.module('ricardo.directives.reportingContinent', [])
               //   .on("mouseover", mouseover)
               //   .on("mouseout", mouseout)
               //   .on('mousemove', function(d) {
-              //     if(d!==undefined && d.y!==0 && d.values.flow!==0){
+              //     if(d!==undefined && d.y!==0 && d.values.reportings!==0){
               //       var w = tooltip.style("width").replace("px", "");
               //       var h = tooltip.style("height").replace("px", "");
               //       tooltip.style("opacity", .9)
@@ -728,7 +713,7 @@ angular.module('ricardo.directives.reportingContinent', [])
 
           }//end draw function
           function mouseover(d){
-            if(d!==undefined && d.y!==0 && d.values.flow!==0){
+            if(d!==undefined && d.y!==0 && d.values.reportings!==0){
               svg.selectAll(".area")
                 .transition().duration(duration)
                 .style("stroke",function(e) {
@@ -747,7 +732,7 @@ angular.module('ricardo.directives.reportingContinent', [])
                   .style("opacity", function(e) {
                     return e.year != d.year ? 0 : 1;
                   })
-              var value = layout==="zero" ? (format(Math.round(d.y))+" £") : (d3.round(d.y*100,2)+" %");
+              var value = layout==="zero" ? format(Math.round(d.y)) : (d3.round(d.y*100,2)+" %");
               tooltip.html(
                 "<h5>"+ d.continent + " in " + d.year + "</h5>" +
                 // "<p>"+yName+": " + valueFormat(d.y) + "</p>"
