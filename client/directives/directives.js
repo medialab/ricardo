@@ -17,5 +17,6 @@ angular.module('ricardo.directives', [
 	'ricardo.directives.collapseLegend',
 	'ricardo.directives.reportingContinent',
 	'ricardo.directives.reportingEntities',
-	'ricardo.directives.reportingWorld'
+	'ricardo.directives.reportingWorld',
+	'ricardo.directives.reportingSynth'
 ])

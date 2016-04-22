@@ -190,112 +190,160 @@ def get_reportings_available_by_year():
   cursor = get_db().cursor()
   cursor.execute("""SELECT tot.reporting_id as reporting_id, tot.reporting as reporting, group_concat(tot.flow,"|") as flow,  group_concat(tot.expimp,"|") as expimp,
                     group_concat(tot.partner,"|") as partner, tot.year as year,
-                    tot.reporting_continent as reporting_continent, tot.reporting_type as reporting_type, group_concat(tot.type,"|") as sourcetype,  group_concat(tot.source,"|")  as source
+                    group_concat(tot.type,"|") as sourcetype,  group_concat(tot.source,"|")  as source,count(distinct tot.source) as source_count,
+                    tot.reporting_continent as reporting_continent, tot.reporting_type as reporting_type,"actual" as partnertype
                     from
                     (select t.reporting_slug as reporting_id,t.reporting as reporting, sum(t.flow) as flow, t.expimp as expimp, group_concat(t.partner_slug) as partner,
                     t.year as year, t.reporting_continent as reporting_continent, t.reporting_type as reporting_type,group_concat(distinct t.type) as type,group_concat(distinct t.source)  as source
                     FROM
-                    (SELECT reporting, reporting_slug, flow*Unit/rate as flow, (replace(partner_slug,",","")||"-"||partner_continent) as partner_slug, year, source, type,reporting_continent,reporting_type, expimp
+                    (SELECT reporting, reporting_slug, flow*Unit/rate as flow, (replace(partner_slug,",","")||"+"||partner_continent) as partner_slug, year, source, type,reporting_continent,reporting_type, expimp
                     FROM flow_joined
                     WHERE partner_slug NOT LIKE 'World%' AND reporting_continent is not 'World'
                     AND flow*Unit/rate is not NULL
                     AND partner_continent is not NULL
                     GROUP BY  reporting_slug, partner_slug,year,expimp) t
                     Group by t.reporting_slug, t.year, t.expimp) tot
-                    GROUP BY  tot.reporting_id, tot.year"""
+                    GROUP BY  tot.reporting_id, tot.year
+                    UNION ALL
+                    SELECT t.reporting_slug as reporting_id,t.reporting as reporting, group_concat(t.flow,"|") as flow, group_concat(t.expimp,"|") as expimp, t.partner as partner,
+                    t.year as year,group_concat(t.type,"|") as type,group_concat(t.source,"|")as source, count(distinct t.source)as source_count,
+                    t.reporting_continent as reporting_continent, t.reporting_type as reporting_type, "world" as partnertype
+                    FROM
+                    (SELECT reporting, reporting_slug, flow*Unit/rate as flow, partner, year, source, type, reporting_continent,reporting_type, expimp
+                    FROM flow_joined
+                    WHERE flow*Unit/rate is not NULL
+                    AND reporting_continent is not 'World'
+                    AND( partner_slug like 'Worldbestguess'
+                    OR partner_slug like 'Worldestimated'
+                    OR partner_slug like 'Worldasreported'
+                    OR partner_slug like 'Worldsumpartners')
+                    GROUP BY  reporting_slug, partner,year,expimp) t
+                    Group by t.reporting_slug, partner,t.year"""
                   )
 
   json_response=[]
   table = [list(r) for r in cursor]
   for row in table:
     total=0
-    total_partner=[]
-    total_partner_continent=[]
+    if row[11]=="actual":
+      total_partner=[]
+      for i in range(len(row[3].split("|"))):
+        total+=float(row[2].split("|")[i])
+        total_partner+=row[4].split("|")[i].split(",")
 
-    for i in range(len(row[3].split("|"))):
-      total+=float(row[2].split("|")[i])
-      total_partner+=row[4].split("|")[i].split(",")
+        json_response.append({
+          "reporting_id": row[0],
+          "reporting": row[1],
+          "flow": float(row[2].split("|")[i]),
+          "expimp":row[3].split("|")[i],
+          "partners":row[4].split("|")[i].split(","),
+          "year":row[5],
+          "sourcetype":("|").join(sorted(row[6].split("|")[i].split(","))),
+          "source":row[7].split("|")[i],
+          "continent":row[9],
+          "type":row[10],
+          "partnertype":row[11]
+        })
 
       json_response.append({
-        "reporting_id": row[0],
-        "reporting": row[1],
-        "flow": float(row[2].split("|")[i]),
-        "expimp":row[3].split("|")[i],
-        "partner":row[4].split("|")[i].split(","),
-        "year":row[5],
-        "continent":row[6],
-        "type":row[7],
-        "sourcetype":("|").join(sorted(row[8].split("|")[i].split(","))),
-        "source":row[9].split("|")[i]
-      })
+          "reporting_id": row[0],
+          "reporting": row[1],
+          "flow": total,
+          "expimp":"total",
+          "partners":list(set(total_partner)),
+          "year":row[5],
+          "sourcetype":("|").join(sorted(row[6].split("|")[0].split(","))),
+          "source":row[7].split("|")[0],
+          "continent":row[9],
+          "type":row[10],
+          "partnertype":row[11]
+        })
+    else:
+      total_source=row[7].split("|")[0] if row[8]==1 else row[7]
+      for i in range(len(row[3].split("|"))):
+        total+=float(row[2].split("|")[i])
+        json_response.append({
+          "reporting_id": row[0],
+          "reporting": row[1],
+          "flow": float(row[2].split("|")[i]),
+          "expimp":row[3].split("|")[i],
+          "partners":row[4],
+          "year":row[5],
+          "sourcetype":row[6].split("|")[i],
+          "source":row[7].split("|")[i],
+          "continent":row[9],
+          "type":row[10],
+          "partnertype":row[11]
+        })
 
-    json_response.append({
-        "reporting_id": row[0],
-        "reporting": row[1],
-        "flow": total,
-        "expimp":"total",
-        "partner":list(set(total_partner)),
-        "year":row[5],
-        "continent":row[6],
-        "type":row[7],
-        "sourcetype":("|").join(sorted(row[8].split("|")[0].split(","))),
-        "source":row[9].split("|")[0]
-      })
+      json_response.append({
+          "reporting_id": row[0],
+          "reporting": row[1],
+          "flow": total,
+          "expimp":"total",
+          "partners":row[4],
+          "year":row[5],
+          "sourcetype": ("|").join(list(set(row[6].split("|")))),
+          "source":total_source,
+          "continent":row[9],
+          "type":row[10],
+          "partnertype":row[11]
+        })
+
   return json.dumps(json_response,encoding="UTF8")
 
 def get_world_available():
   cursor = get_db().cursor()
-  cursor.execute("""SELECT t.reporting_slug as reporting_id,t.reporting as reporting, group_concat(t.flow,"|") as flow, group_concat(t.expimp,"|") as expimp, t.partner as partner,
-                  t.year as year,group_concat(t.type,"|") as type,group_concat(t.source,"|")as source,count(distinct t.source)as source_count
-                  ,t.reporting_continent as reporting_continent, t.reporting_type as reporting_type
-                  FROM
-                  (SELECT reporting, reporting_slug, flow*Unit/rate as flow, partner, year, source, type, reporting_continent,reporting_type, expimp
-                  FROM flow_joined
-                  WHERE flow*Unit/rate is not NULL
-                  AND( partner_slug like 'Worldbestguess'
-                  OR partner_slug like 'Worldestimated'
-                  OR partner_slug like 'Worldasreported'
-                  OR partner_slug like 'Worldsumpartners')
-                  GROUP BY  reporting_slug, partner,year,expimp) t
-                  Group by t.reporting_slug, partner,t.year
-                  """)
+  cursor.execute("""SELECT  group_concat(tot.flow,"|") as flow, group_concat(tot.expimp,"|") as expimp, partner,year,source
+                    from
+                    (SELECT sum(t.flow) as flow, partner, year, expimp,source
+                    from
+                    (SELECT flow*Unit/rate as flow, partner, year, expimp,source
+                    FROM flow_joined
+                    WHERE flow*Unit/rate is not NULL
+                    AND(partner_slug like 'Worldbestguess'
+                    OR partner_slug like 'Worldestimated'
+                    OR partner_slug like 'Worldasreported'
+                    OR partner_slug like 'Worldsumpartners')
+                    GROUP BY  reporting_slug, partner,year,expimp) t
+                    group by partner,year,expimp) tot
+                    group by partner,year
+                    """)
   json_response=[]
   table = [list(r) for r in cursor]
   for row in table:
-    total=0
-    total_source=row[7].split("|")[0] if row[8]==1 else row[7]
-    for i in range(len(row[3].split("|"))):
-      total+=float(row[2].split("|")[i])
+    expimp=row[1].split("|")
+    if len(expimp)==2:
       json_response.append({
-        "reporting_id": row[0],
-        "reporting": row[1],
-        "flow": float(row[2].split("|")[i]),
-        "expimp":row[3].split("|")[i],
-        "partner":row[4],
-        "year":row[5],
-        "sourcetype":row[6].split("|")[i],
-        "source":row[7].split("|")[i],
-        "continent":row[9],
-        "type":row[10],
+        expimp[0]: float(row[0].split("|")[0]),
+        expimp[1]: float(row[0].split("|")[1]),
+        "total":float(row[0].split("|")[0])+float(row[0].split("|")[1]),
+        "partner":row[2],
+        "year":row[3],
+        "source":row[4]
       })
-
-    json_response.append({
-        "reporting_id": row[0],
-        "reporting": row[1],
-        "flow": total,
-        "expimp":"total",
-        "partner":row[4],
-        "year":row[5],
-        "source":total_source,
-        "sourcetype": ("|").join(list(set(row[6].split("|")))),
-        "continent":row[9],
-        "type":row[10]
+    if len(expimp)==1 and expimp[0]=="Exp":
+      json_response.append({
+        expimp[0]:float(row[0].split("|")[0]),
+        "Imp":0,
+        "total":float(row[0].split("|")[0]),
+        "partner":row[2],
+        "year":row[3],
+        "source":row[4]
+      })
+    if len(expimp)==1 and expimp[0]=="Imp":
+      json_response.append({
+        expimp[0]:float(row[0].split("|")[0]),
+        "Exp":0,
+        "total":float(row[0].split("|")[0]),
+        "partner":row[2],
+        "year":row[3],
+        "source":row[4]
       })
   return json.dumps(json_response,encoding="UTF8")
 
-
+# not compatible so for
 def get_reportings_overview(partner_ids):
-
   cursor = get_db().cursor()
   if partner_ids=="actualreported":
     cursor.execute("""SELECT t1.reporting_slug as reporting_id,t1.reporting as reporting,t1.reporting_continent  as continent, t1.reporting_type as type, t1.year as year,

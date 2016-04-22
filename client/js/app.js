@@ -59,6 +59,10 @@ config(['$routeProvider', function($routeProvider) {
       },
       reportingWorldFlows : function (apiService) {
         return apiService.getWorldFlows()
+        // return apiService.getWorldAvailable()
+      },
+      reportingWorldPartner: function (apiService) {
+        return apiService.getWorldAvailable()
       }
     }
   });

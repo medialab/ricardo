@@ -2,16 +2,7 @@
 	<div class="row">
 		<div class="col-md-12">
 			<h2>
-				Reportings available by partners
-				<div class="inline-select">
-			      <ui-select ng-model="partners" theme="bootstrap" ng-change="changePartner(partners)">
-			        <match placeholder="Choose parter type ...">{{$select.selected.name.value}}</match>
-			        <choices repeat="item in partnersChoices | filter: $select.search">
-			          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-			        </choices>
-			      </ui-select>
-			  	</div>
-			  	for
+				Reportings available for
 			  	<div class="inline-select">
 			      <ui-select ng-model="chartFlow" theme="bootstrap" ng-change="changeFlow(chartFlow)">
 			        <match placeholder="Select flow type">{{$select.selected.name.value}}</match>
@@ -22,45 +13,14 @@
 		   		</div>
 			</h2>
 			<p>
-				This viz shows the data available by reportings. You can sort this list by name or coverage on period (1787-1938).
+				This viz shows the metadata by reportings on period (1787-1938).
 				</br>
-				Each reporting is colored by his continent appartenance.
+				You can play with the data by ordering and coloring.
 			</p>
 		</div>
-		<div ng-show="worldpartner" class="col-md-12">
-			<h4>Flow by World Partner in
-	   		<div class="inline-select">
-		        <ui-select ng-model="multichartLayout" theme="bootstrap" ng-change="changeMultiLayout(multichartLayout)">
-		          <match placeholder="Select grouped or multiple layout">{{$select.selected.name.value}}</match>
-		          <choices repeat="item in multichartLayoutChoices | filter: $select.search">
-		            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-		          </choices>
-		        </ui-select>
-		    </div>
-		    </h4>
-		    <reporting-world
-		    			ng-data="flowWorld"
-				        flow-type="chartFlow"
-				        layout="multichartLayout">
-			</reporting-world>
-			 <!-- <div class="legend">
-		        <div class="legend-item">
-		          <div class="line import"></div> Import
-		        </div>
-		        <div class="legend-item">
-		            <div class="line export"></div> Export
-		        </div>
-		        <div class="legend-item">
-		            <div class="line total"></div> Total Trade
-		        </div>
-		        <div class="legend-item">
-		            {{ 'CURRENCY' | translate }} <strong>sterling pound</strong>
-          	</div> -->
-        </div>
-		</div>
 
-		<div ng-hide="worldpartner" class="col-md-12">
-	    <h4>Flow by Continents in
+		<div class="col-md-12">
+	    <h4>Reporting by Continents in
 	   		<div class="inline-select">
 		        <ui-select ng-model="multichartLayout" theme="bootstrap" ng-change="changeMultiLayout(multichartLayout)">
 		          <match placeholder="Select grouped or multiple layout">{{$select.selected.name.value}}</match>
@@ -72,31 +32,40 @@
 	    </h4>
 	    <reporting-continent
 	    			ng-data="flatContinent"
-	    			start-date="selectedMinDate"
-			        end-date="selectedMaxDate"
 			        flow-type="chartFlow"
 			        layout="multichartLayout">
 		</reporting-continent>
 		</div>
-		<div ng-hide="worldpartner" class="col-md-12">
-			<!-- <div class="row">
-				<p class="col-md-2" ng-repeat="item in continentsColors" style="heigth:10pwx; background-color:{{item.color}}">
-					{{item.name}}
-				</p>
-			</div> -->
-			<h4> Number of Reporting Entities by year</h4>
-			<bar-chart
+		<div class="col-md-12">
+			<h4> Number of Reporting Entities by year Group by
+			<div class="inline-select">
+		        <ui-select ng-model="synCurveBy" theme="bootstrap" ng-change="changeSynCurve(synCurveBy)">
+		          <match placeholder="By">{{$select.selected.name.value}}</match>
+		          <choices repeat="item in synCurveChoices | filter: $select.search">
+		            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+		          </choices>
+		        </ui-select>
+		    </div>
+			</h4>
+
+			<reporting-synth
+				ng-data="nbReportings"
+				flow-type="chartFlow"
+				category="synCurveBy"
+			>
+			</reporting-synth>
+<!-- 			<bar-chart
 			          ng-data="nbReportings"
 			          start-date="selectedMinDate"
 			          end-date="selectedMaxDate"
 			          raw-start-date="rawMinDate"
 			          raw-end-date="rawMaxDate">
-			</bar-chart>
+			</bar-chart> -->
 		</div>
 		<div class="col-md-12">
 			<h4>
 			 Reporting Entities Overview
-	   		Ordered by
+	   		Order by
 	   		<div class="inline-select">
 		        <ui-select ng-model="matrixLayout" theme="bootstrap" ng-change="changeMatrixLayout(matrixLayout)">
 		          <match placeholder="Order By">{{$select.selected.name.value}}</match>
@@ -124,43 +93,23 @@
 		    </div>
 			</h4>
 
-			<!-- <div class="btn-group" data-toggle="buttons">
-				<h4>Color By</h4>
-				 <label class=" btn btn-default active" id="byValue">
-		            <input type="radio" name="options">Partner
+			<div class="btn-group" data-toggle="buttons">
+				<h4>Layout</h4>
+				 <label class=" btn btn-default active" ng-click="grouped=false">
+		            <input type="radio" >By Entity
 		          </label>
-		          <label class="btn btn-default" id="byMajor">
-		            <input type="radio" name="options">Trade
-		          </label>
-		           <label class="btn btn-default" id="byMajor">
-		            <input type="radio" name="options">Source
-		          </label>
-		           <label class="btn btn-default" id="byMajor">
-		            <input type="radio" name="options">Reporting Type
-		          </label>
-		           <label class="btn btn-default" id="byMajor">
-		            <input type="radio" name="options">Continent
+		          <label class="btn btn-default" ng-click="grouped=true">
+		            <input type="radio" name="options" >By Group
 		          </label>
 		    </div>
-		    <div class="btn-group" data-toggle="buttons">
-				<h4>Order By</h4>
-				 <label class=" btn btn-default active" id="byValue">
-		            <input type="radio" name="options">Number of Reporting Years
-		          </label>
-		          <label class="btn btn-default" id="byMajor">
-		            <input type="radio" name="options">Partners in Average
-		          </label>
-		           <label class="btn btn-default" id="byMajor">
-		            <input type="radio" name="options">Flows in Average
-		          </label>
-		    </div> -->
-			<reporting-entities ng-data="flowEntities"
-			worldpartner="worldpartner"
-			color="matrixColorBy"
+			<reporting-entities flat-data="flow"
+			ng-data="flowEntities"
 			flow-type="chartFlow"
+			color="matrixColorBy"
 			layout="matrixLayout"
 			reporting="reporting"
 			search="search"
+			group="grouped"
 			>
 			</reporting-entities>
 		</div>
