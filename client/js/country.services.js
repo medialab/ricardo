@@ -9,6 +9,8 @@ angular.module('ricardo.services.country', [])
   .factory('countryService', function () {
     return {
         rollupYears:  function (leaves){
+            var nb_exps_not_null=leaves.filter(function(l){return l.exp!=null}).length;
+            var nb_imps_not_null=leaves.filter(function(l){return l.imp!=null}).length;
             var res = {
             exp: d3.sum(leaves, function(d){ 
               if (!/^World/.test(d.partner_id) )
@@ -23,7 +25,12 @@ angular.module('ricardo.services.country', [])
                 return 0
             }),
             };
-            res.tot = res.exp + res.imp;
+            if(nb_exps_not_null==0)
+              res.exp=null
+            if(nb_imps_not_null==0)
+              res.imp=null
+
+            res.tot = (res.exp || res.imp) ? res.exp + res.imp : null;
             res.type = leaves
             return res;
             },
@@ -45,21 +52,28 @@ angular.module('ricardo.services.country', [])
           partners.forEach(function(p){
             p.years = []
             p.values.forEach(function(d){
+             
+             if(d.values.exp || d.values.imp)
               p.years.push({
                 key: d.key,
                 exp: d.values.exp,
                 imp: d.values.imp,
                 balance: (d.values.exp - d.values.imp) / (d.values.exp + d.values.imp) || 0,
-                pct_exp: d.values.exp / indexYears[d.key].exp * 100,
-                pct_imp: d.values.imp / indexYears[d.key].imp * 100,
-                pct_tot: (d.values.exp + d.values.imp) / indexYears[d.key].tot * 100
+                pct_exp: d.values.exp ? d.values.exp / indexYears[d.key].exp * 100 : null,
+                pct_imp: d.values.imp ? d.values.imp / indexYears[d.key].imp * 100 : null,
+                pct_tot: (d.values.exp && d.values.imp) ? (d.values.exp + d.values.imp) / indexYears[d.key].tot * 100 : null
               });
             });
 
             delete p.values;
-            p.avg_tot = d3.mean(p.years, function(d){ return d.pct_tot });
-            p.avg_imp = d3.mean(p.years, function(d){ return d.pct_imp });
-            p.avg_exp = d3.mean(p.years, function(d){ return d.pct_exp });
+            p.avg_tot = d3.mean(p.years.filter(function(d){return d.pct_tot!=null}), function(d){ return d.pct_tot });
+            p.avg_imp = d3.mean(p.years.filter(function(d){return d.pct_imp!=null}), function(d){ return d.pct_imp });
+            p.avg_exp = d3.mean(p.years.filter(function(d){return d.pct_exp!=null}), function(d){ return d.pct_exp });
+            if(!p.avg_tot && p.avg_imp)
+              p.avg_tot=p.avg_imp
+            if(!p.avg_tot && p.avg_exp)
+              p.avg_tot=p.avg_exp
+            
           })
           return partners  
         }
