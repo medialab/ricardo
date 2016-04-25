@@ -625,7 +625,7 @@ angular.module('ricardo.controllers.country', [])
           .entries(data)
 
         partners = countryService.addTypePartner(partners, data);
-        partners = countryService.countryService.valuesToPartners(partners, indexYears);
+        partners = countryService.valuesToPartners(partners, indexYears);
 
         if ($scope.filtered.type.value !== "all")
           partners = partners.filter(function (d) {
