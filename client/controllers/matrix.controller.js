@@ -119,7 +119,6 @@ angular.module('ricardo.controllers.matrix', [])
         //data manipulation
         $scope.rawMinDate = d3.min(data, function(d) { return +d.year; })
         $scope.rawMaxDate = d3.max(data, function(d) { return +d.year; })
-
           var flow=data.filter(function(d){return d.expimp===$scope.chartFlow.type.value});
           var actualData=flow.filter(function(d){return d.partnertype==="actual"})
           var worldData=flow.filter(function(d){return d.partnertype==="world"})
@@ -199,22 +198,13 @@ angular.module('ricardo.controllers.matrix', [])
 
           flowEntities_uniq.forEach(function(d){
             if(d.partnertype==="actual"){
-              if(d.partners_mirror){
                 d.partner_mirror=d.partners_mirror
                 d.partner_intersect = d.partner.filter(function(value) {
                                        return d.partner_mirror.indexOf(value) > -1;
                                    });
                 // d.mirror_rate=d.partner_intersect.length/d.partner.length
                 d.mirror_rate=2*d.partner_intersect.length/(d.partner.length+d.partner_mirror.length)
-              }
-              else {
-                d.partner_mirror=[]
-                d.mirror_rate=0
-              }
             }
-            // d.partner_set= [{sets: ['partner'], size: d.partner.length},
-            //                {sets: ['bilateral_partner'], size: d.partners_mirror ? d.partners_mirror.split(",").length:0},
-            //                {sets: ['partner','bilateral_partner'], size: d.partners_mirror? partner_intersect.length: 0 }];
           })
           $scope.flow=flowEntities_uniq
           $scope.flowEntities=d3.nest()

@@ -301,7 +301,7 @@ def get_reportings_available_by_year():
           "continent":row[9],
           "type":row[10],
           "partnertype":row[11],
-          "mirror_partner":partner_mirror,
+          "partners_mirror":partner_mirror,
         })
 
       json_response.append({
