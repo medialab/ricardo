@@ -185,9 +185,9 @@ angular.module('ricardo.controllers.world', [])
       var minDate = parseInt(localStorage.getItem('selectedMinDate'));
       var maxDate = parseInt(localStorage.getItem('selectedMaxDate'));
       $scope.selectedMinDate = minDate ?
-        minDate : Math.max( $scope.selectedMinDate, $scope.rawMinDate );
+        minDate : $scope.rawMinDate;
       $scope.selectedMaxDate = maxDate ?
-        maxDate : Math.min( $scope.selectedMaxDate, $scope.rawMaxDate );
+        maxDate :$scope.rawMaxDate;
 
       if ($scope.selectedMaxDate > 1938)
         $scope.selectedMaxDate = 1938;
@@ -432,7 +432,6 @@ angular.module('ricardo.controllers.world', [])
       $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
       $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
       $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
-
       updateTableData();
       if ($scope.reporting.length > 0)
         initLinechart($scope.reporting, $scope.linechartFlow.type.value,
