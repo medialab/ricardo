@@ -56,9 +56,9 @@ angular.module('ricardo.directives.reportingSynth', [])
         var categoryName=scope.category.name.value;
 
 
-        var categoryColor=d3.scale.category10()
-        // var categoryColor  = d3.scale.ordinal()
-        //             .range(["#6969bf", "#bf6969", "#bfbf69" , "#69bf69", "#69bfbf"]);
+        // var categoryColor=d3.scale.category10()
+        var categoryColor  = d3.scale.ordinal()
+                    .range(["#393b79","#637939", "#8c6d31","#843c39", "#7b4173"]);
         var scaleColor=d3.scale.ordinal().range(["#daafaf","#cc6666","#993333","#663333"])
         var stack = d3.layout.stack()
                               .values(function(d) { return d.values; })
@@ -248,7 +248,7 @@ angular.module('ricardo.directives.reportingSynth', [])
 
           var color_domain=data.map(function(d){return d.key;})
                                 .sort(function(a, b){return (category==="partner"||category==="mirror_rate")? d3.ascending(+a, +b):d3.descending(a, b);})//need sorted
-          console.log(color_domain)
+
           if(category==="partner" || category==="mirror_rate") scaleColor.domain(color_domain)
           else categoryColor.domain(color_domain)
           draw_legend(color_domain)

@@ -51,21 +51,21 @@ angular.module('ricardo.directives.reportingWorld', [])
             draw(scope.ngData)
           }
         })
-        // var partnerColors = {
-        //       "World_best_guess":"#bf6969",
-        //        "World sum partners":"#bfbf69" ,
-        //        "World as reported":"#69bf69",
-        //        "World estimated":"#bf69bf",
-        // }
-        var partnerColors=d3.scale.category10()
 
-        function colorByContinent(continent) {
-          return continentColors[continent]
+        var categoryColors = {
+               "World sum partners":"#526ca9" ,
+               "World as reported":"#a67f48",
+               "World estimated":"#75792f",
+        }
+        // var partnerColors=d3.scale.category10()
+
+        function partnerColors(partner) {
+          return categoryColors[partner]
         }
 
         var margin = {top: 20, right: 0, bottom: 40, left: 0 },
             width = document.querySelector('#reporting-world-container').offsetWidth-margin.left-margin.right,
-            height=400,
+            height=300,
             offsetHeight=10;
         var bisector = d3.bisector(function(d) {return d.year;}).left;
 
@@ -90,9 +90,9 @@ angular.module('ricardo.directives.reportingWorld', [])
 
         var yAxis = d3.svg.axis()
                       .scale(y)
-                      .orient("left")
+                      .orient("right")
+                      .tickSize(width)
                       .ticks(2)
-                      .tickSize(-width)
                       .tickFormat(function(d,i){
                         if(i == 0){
                           return
@@ -121,8 +121,7 @@ angular.module('ricardo.directives.reportingWorld', [])
 
         function customAxis(g) {
           g.selectAll("text")
-            .attr("text-anchor","end")
-            .attr("x", width)
+            .attr("x",4)
             .attr("dy", -4)
             .attr("font-size", "0.85em");
           g.selectAll("line")
@@ -295,12 +294,12 @@ angular.module('ricardo.directives.reportingWorld', [])
                       //         .style("pointer-events","none")
                       baseline.exit().remove();
 
-                    e.append("text")
-                      .attr("class","partner")
-                      .text(function(d){ return d.key})
-                      .attr("text-anchor","start")
-                      .attr("y",height/3-margin.top)
-                      .attr("font-size",15)
+                    // e.append("text")
+                    //   .attr("class","partner")
+                    //   .text(function(d){ return d.key})
+                    //   .attr("text-anchor","start")
+                    //   .attr("y",height/3-margin.top)
+                    //   .attr("font-size",15)
                     // e.append("g")
                     //       .attr("class", "x axis")
                     //       .attr("transform", "translate(0,"+height/5+")")

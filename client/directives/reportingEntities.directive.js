@@ -114,8 +114,8 @@ angular.module('ricardo.directives.reportingEntities', [])
                   else return scaleColor(d[colorBy].length)
                  })
                 .style("opacity",function(v){
-                  if(colorBy==="partner" || colorBy==="flow") return 1
-                  else return 0.7
+                  if(colorBy==="partner" || colorBy==="mirror_rate") return 1
+                  else return 0.5
                 })
             .attr("x", function(d) { return x(new Date(d.year,0,1));})
             .attr("y", function(d) {
@@ -152,9 +152,9 @@ angular.module('ricardo.directives.reportingEntities', [])
                     }
 
 
-        var categoryColor=d3.scale.category10()
-        // var categoryColor= d3.scale.ordinal()
-                           // .range(["#6969bf", "#bf6969", "#bfbf69" , "#69bf69", "#69bfbf"]);
+        // var categoryColor=d3.scale.category10()
+        var categoryColor  = d3.scale.ordinal()
+                    .range(["#393b79","#637939", "#8c6d31","#843c39", "#7b4173"]);
 
         function colorByContinent(continent) {
           return continentColors[continent]
@@ -478,8 +478,8 @@ angular.module('ricardo.directives.reportingEntities', [])
               else return scaleColor(v[colorBy].length)
              })
              .style("opacity",function(v){
-                if(colorBy==="partner") return 1
-                else return 0.8
+                if(colorBy==="partner" || colorBy==="mirror_rate") return 1
+                else return 0.7
               })
 
         }
@@ -529,7 +529,6 @@ angular.module('ricardo.directives.reportingEntities', [])
              .attr("width",function(d){ return margin.left-offset-marginScale(d[layout])})
         }
         function draw(data){
-
           data=order(layout,data);
           updateColor(colorBy,data)
           marginScale.domain([0,d3.max(data,function(d){return d[layout]})])
@@ -641,7 +640,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                   else return scaleColor(v[colorBy].length)
                  })
                 .style("opacity",function(){
-                  if(colorBy==="partner" || colorBy==="flow") return 1
+                  if(colorBy==="partner" || colorBy==="mirror_rate") return 1
                   else return 0.7
                 })
                // .style("fill",function(v){return sourceColors[v.sourcetype]})

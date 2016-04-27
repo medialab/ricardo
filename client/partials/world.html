@@ -5,7 +5,7 @@
      {{ 'WORLD_VIEW_INTRO' | translate }}
     </p>
 
-    <div class="col-md-12">
+    <div class="col-sm-12">
       <h4>Flow by World Partner in
         <div class="inline-select">
             <ui-select ng-model="multichartLayout" theme="bootstrap" ng-change="changeMultiLayout(multichartLayout)">
@@ -32,6 +32,20 @@
               flow-type="multichartFlow"
               layout="multichartLayout">
         </reporting-world>
+        <div class="legend">
+        <div class="legend-item">
+          <div class="square worldsum"></div> World Sum Partners
+        </div>
+          <div class="legend-item">
+            <div class="square worldreport"></div> World as Reported
+          </div>
+          <div class="legend-item">
+            <div class="square worldestimate"></div> World Estimated
+          </div>
+          <div class="legend-item">
+            {{ 'CURRENCY' | translate }} <strong>sterling pound</strong>
+          </div>
+        </div>
     </div>
     <div class="row timeline-cont">
       <div class="col-xs-12 col-sm-12">
