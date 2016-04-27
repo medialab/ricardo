@@ -815,7 +815,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                   .attr("width",function(d){ return margin.left-offset-marginScale(d[layout])})
                   .attr("height",gridHeight-gridGap)
                   .style("opacity",0.7)
-                  .style("fill","#cc6666")
+                  .style("fill","lightgrey")
 
               sideChart.append("text")
                          .attr("class","barLabel")
