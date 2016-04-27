@@ -108,7 +108,7 @@ body {
     margin-bottom: 60px;
 }
 
-h1,h2,h3,h4{
+h1,h2,h3,h4,h5{
     font-family: 'montserrat', 'Arial', sans-serif;
     font-weight: bold;
 }
@@ -709,9 +709,10 @@ h4 {
 
 .legend .square.import{ background-color: #cc6666; }
 .legend .square.export{ background-color: #663333; }
-/*.legend .line.import{ border-color: #cc6666; }
-.legend .line.export{ border-color: #663333; }
-.legend .line.total{ border-color: #000000; }*/
+.legend .square.worldsum{ background-color: #314856; }
+.legend .square.worldreport{ background-color: #a67f48; }
+.legend .square.worldestimate{ background-color: #235135; }
+
 
 .legend .line{
   display: inline-block;
@@ -1103,10 +1104,10 @@ path.lineTrajectory {
 }*/
 
 div #reporting-entities-container{
-  height: 700px;
+  height: 800px;
   overflow: scroll;
 }
-.matrix-tooltip,.continent-tooltip{
+.matrix-tooltip,.continent-tooltip,.synth-tooltip{
   position: absolute;
   background: #333;
   color: #ddd;
@@ -1114,16 +1115,29 @@ div #reporting-entities-container{
   border: 0px;
   border-radius: 5px;
   opacity: 0;
-  font-family: 'montserrat', 'Arial', safouns-serif;
+  font-family: 'merriweather', 'Georgia', serif;
+  font-size: 11px;
 }
+/*.matrix-tooltip h5,.continent-tooltip h5,.synth-tooltip h5{
+ text-align: center;
+}*/
 .matrix-tooltip hr,.continent-tooltip hr{
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
-.matrix-tooltip .source{
+
+.matrix-tooltip table,.synth-tooltip table{
+  margin: 0 auto;
+}
+.matrix-tooltip td,.synth-tooltip td{
+  padding-top: 3px;
+  padding-right: 7px;
+  border-top: 1px solid #D1D1D1;
+}
+/*.matrix-tooltip .source,.matrix-tooltip .title p{
  font-family: 'merriweather', 'Georgia', serif;
  font-size: 11px;
-}
+}*/
 
 .sideLabel{
   font-family: 'montserrat', 'Arial', safouns-serif;

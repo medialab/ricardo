@@ -6,7 +6,8 @@ angular.module('ricardo.directives.reportingEntities', [])
   .directive('reportingEntities', [function(){
     return {
       restrict: 'E',
-      template: '<div style="height:140px" id="reporting-entities-axis"></div><div id="reporting-entities-container"></div>',
+      // template: '<div style="height:140px" id="reporting-entities-axis"></div><div id="reporting-entities-container"></div>',
+      template: '<div id="reporting-entities-container"></div>',
       scope: {
           flatData: "=",
           ngData: '=',
@@ -15,7 +16,6 @@ angular.module('ricardo.directives.reportingEntities', [])
           layout: "=",
           reporting:"=",
           search:"=",
-          group:"="
       },
       link: function(scope, element, attrs) {
 
@@ -24,7 +24,6 @@ angular.module('ricardo.directives.reportingEntities', [])
               draw(newValue);
             }
         });
-
         scope.$watch('flowType', function(newValue, oldValue) {
           if (newValue!==oldValue && scope.ngData ) {
             yValue=newValue.type.value;
@@ -32,7 +31,6 @@ angular.module('ricardo.directives.reportingEntities', [])
             // draw(scope.ngData);
           }
         })
-
         scope.$watch('layout', function(newValue, oldValue) {
           if(newValue && scope.ngData){
             layout=newValue.type.value;
@@ -66,36 +64,41 @@ angular.module('ricardo.directives.reportingEntities', [])
           }
         })
 
-        scope.$watch('group', function(newValue, oldValue) {
-          if (newValue){
-            svg_g.selectAll(".entities,.margin.axis").style("opacity",0)
-            d3.select("#reporting-entities-container")
-              .style("height",nb_height)
-              .style("overflow","initial")
-            regroup(colorBy)
-          }
-          else {
-            d3.select("#reporting-entities-container")
-              .style("height","800px")
-              .style("overflow","scroll")
-            svg_g.selectAll(".entities").style("opacity",1)
-            d3.selectAll(".available")
-               .attr("x", function(d) { return x(new Date(d.year,0,1));})
-               .attr("y",function(d){return y(d.reporting)})
-               .attr("width", gridWidth-gridGap)
-               .attr("height", gridHeight-gridGap )
-               .style("fill",function(d){
-                  if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(d[colorBy])
-                  else return colorScale(d[colorBy])
-                 })
-                .style("opacity",function(v){
-                  if(colorBy==="partner" || colorBy==="flow") return 1
-                  else return 0.7
-                })
-          }
-        })
+        // scope.$watch('group', function(newValue, oldValue) {
+        //   if (newValue){
+        //     svg_g.selectAll(".entities,.margin.axis").style("display","none")
+        //     svg_g.select(".num.axis").style("opacity",1)
+        //     d3.select("#reporting-entities-container")
+        //       .style("height",nb_height)
+        //       .style("overflow","initial")
+        //     regroup(colorBy)
+        //   }
+        //   else {
+        //     d3.select("#reporting-entities-container")
+        //       .style("height","800px")
+        //       .style("overflow","scroll")
+        //     svg_g.selectAll(".entities").style("display","block")
+        //     svg_g.select(".num.axis").style("opacity",0)
+        //     d3.selectAll(".available")
+        //        .attr("x", function(d) { return x(new Date(d.year,0,1));})
+        //        .attr("y",function(d){return y(d.reporting)})
+        //        .attr("width", gridWidth-gridGap)
+        //        .attr("height", gridHeight-gridGap )
+        //        .style("fill",function(d){
+        //           if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(d[colorBy])
+        //           else return scaleColor(d[colorBy].length)
+        //          })
+        //         .style("opacity",function(v){
+        //           if(colorBy==="partner" || colorBy==="flow") return 1
+        //           else return 0.7
+        //         })
+        //   }
+        // })
         function regroup(colorBy){
-          var yearData=scope.flatData.sort(function(a, b){ return d3.descending(a[colorBy], b[colorBy])})
+          var yearData=scope.flatData.sort(function(a, b){
+            if(colorBy==="partner") return d3.descending(a[colorBy].length, b[colorBy].length)
+            else return d3.descending(a[colorBy], b[colorBy])
+          })
           // y= d3.scale.linear()
           //       .range([0, 600])
           //       .domain(d3.extent(yearData,function(d){return d[colorBy]}));
@@ -108,7 +111,7 @@ angular.module('ricardo.directives.reportingEntities', [])
             .attr('height',4)
             .style("fill",function(d){
                   if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(d[colorBy])
-                  else return colorScale(d[colorBy])
+                  else return scaleColor(d[colorBy].length)
                  })
                 .style("opacity",function(v){
                   if(colorBy==="partner" || colorBy==="flow") return 1
@@ -148,17 +151,14 @@ angular.module('ricardo.directives.reportingEntities', [])
                      "Atlantic Ocean":"blue"
                     }
 
-        // var sourceColors = {
-        //             "primary":"lightblue",
-        //             "secondary":"lightgrey",
-        //             "estimation":"grey"
-        //             }
-        var categoryColor=d3.scale.category10();
+
+        var categoryColor=d3.scale.category10()
+        // var categoryColor= d3.scale.ordinal()
+                           // .range(["#6969bf", "#bf6969", "#bfbf69" , "#69bf69", "#69bfbf"]);
 
         function colorByContinent(continent) {
           return continentColors[continent]
         }
-
 
         var yValue=scope.flowType.type.value;
         var yName=scope.flowType.name.value;
@@ -170,7 +170,6 @@ angular.module('ricardo.directives.reportingEntities', [])
         var margin = {top: 0, right: 0, bottom: 40, left: 180},
             width = document.querySelector('#reporting-entities-container').offsetWidth-margin.left-margin.right,
             height,
-            nb_height,
             offset=30,
             orders
         var svg_g=d3.select("#reporting-entities-container").append("svg")
@@ -184,11 +183,10 @@ angular.module('ricardo.directives.reportingEntities', [])
 
         var x = d3.time.scale()
                 .range([0, width])
-                .domain([new Date(1786,0,1),new Date(1938,0,1)]);
 
         var y = d3.scale.ordinal()
         var z=d3.scale.linear().range([0.2,1])
-        var colorScale
+        var scaleColor
         var numScale=d3.scale.linear()
 
         var marginScale=d3.scale.linear()
@@ -269,15 +267,14 @@ angular.module('ricardo.directives.reportingEntities', [])
         var tooltip_margin = d3.select("body")
                       .append("div")
                       .attr("class", "matrix-tooltip")
-                      .style("width", "200px")
-
-
 
         var tip_margin = {top: 10, right: 0, bottom: 10, left:0},
             tip_width = document.querySelector('.matrix-tooltip').offsetWidth-tip_margin.left-tip_margin.right
             // tip_height= document.querySelector('.matrix-tooltip').offsetHeight-tip_margin.top-tip_margin.bottom
         tooltip.append("div").attr("class", "title");
-        tooltip.append("div").attr("class","tip_svg")
+        tooltip.append("div").attr("class","tip_svg");
+        tooltip.append("div").attr("class","table");
+        // tooltip.append("div").attr("class","tip_venn")
 
         tooltip.append("div").attr("class","source")
         // var tip_max=d3.max(data,function(d){
@@ -303,19 +300,19 @@ angular.module('ricardo.directives.reportingEntities', [])
           if(colorBy==="partner"){
             // yValue="exp_partner"
 
-            var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[colorBy]})});
+            var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[colorBy].length})});
             var values=[]
             data.forEach(function(d){
               d.values.forEach(function(v){
-                values.push(v[colorBy])
+                values.push(v[colorBy].length)
               })
             })
 
-            var threshold_out=[0,15,40,100,max]
-            var threshold_in=[15,40,100]
+            var threshold_out=[0,10,50,100,max]
+            var threshold_in=[10,50,100]
             var threshold_color=["#daafaf","#cc6666","#993333","#663333"]
 
-            colorScale=d3.scale.threshold()
+            scaleColor=d3.scale.threshold()
                             .domain(threshold_in)
                             .range(threshold_color)
             var legendData=[
@@ -371,7 +368,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                   .attr("x", 1)
                   .attr("width", x_legend(data_legend[0].dx) - 1)
                   .attr("height", function(d) { return legend_height-legend_margin - y_legend(d.y); })
-                  .style("fill",function(d){return colorScale(Math.ceil(d.x))});
+                  .style("fill",function(d){return scaleColor(Math.ceil(d.x))});
 
               legend.selectAll(".interval_rect")
                     .data(threshold_out).enter()
@@ -384,7 +381,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                     })
                     .attr("height", 8)
                     .attr("y",legend_height-legend_margin+1)
-                    .style("fill",function(d){return colorScale(d)});
+                    .style("fill",function(d){return scaleColor(d)});
 
             legend.append("g")
                   .attr("class", "x axis")
@@ -414,89 +411,13 @@ angular.module('ricardo.directives.reportingEntities', [])
             //         .attr("y",-5)
             //         .attr("font-size",11)
           }
-          // else if(colorBy==="flow"){
-
-          //   var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[colorBy]})});
-
-          //   colorScale=d3.scale.threshold()
-          //                   .domain([50000,5000000,100000000])
-          //                   .range(["#daafaf","#cc6666","#993333","#663333"])
-          //   var legendData=[
-          //       {"label":"N/A",
-          //         "value":"lightgrey"
-          //       },
-          //       {"label":"<"+valueFormat(50000),
-          //         "value":"#daafaf"
-          //       },
-          //       {"label":valueFormat(50000)+"-"+valueFormat(5000000),
-          //         "value":"#cc6666"
-          //       },
-          //       {"label":valueFormat(5000000)+"-"+valueFormat(100000000),
-          //         "value":"#993333"
-          //       },
-          //       {"label":">"+valueFormat(100000000),
-          //         "value":"#663333"
-          //       },
-          //   ]
-          //   // legend.append("text")
-          //   //       .text(colorName)
-          //   //       .attr("x",-5)
-          //   //       .attr("y",6)
-          //   //       .attr("font-size",11)
-          //   //       .attr("text-anchor","end")
-
-          //   var legend=svg_axis.append("g")
-          //            .attr("class","legend")
-          //            .attr("transform", "translate("+2*width/3+",-40)");
-          //   var legend_g=legend.selectAll("g")
-          //         .data(legendData)
-          //         .enter().append("g")
-          //         .attr("transform", function(d,i){return "translate("+i*legendWidth+",0)"});
-
-          //   legend_g.append("rect")
-          //         .attr("y", 0)
-          //         .attr("width", legendWidth)
-          //         .attr("height", 10)
-          //         .style("fill", function(d){return d.value;})
-
-          //   legend_g.append("text")
-          //           .text(function(d){return d.label})
-          //           .attr("text-anchor","start")
-          //           .attr("y",-5)
-          //           .attr("font-size",11)
-          //   // var legend=svg_axis.append("g")
-          //   //           .attr("class","legend")
-          //   //           .attr("transform","translate("+width*3/4+",-130)")
-
-          //   // var legend_g=legend.selectAll("g")
-          //   //             .data(legendData)
-          //   //             .enter().append("g")
-          //   //             .attr("transform", function(d,i){return "translate(0,"+i*20+")"});
-          //   // legend_g.append("rect")
-          //   //         .attr("width",10)
-          //   //         .attr("height",10)
-          //   //         .style("fill",function(d){return d.value})
-          //   // legend_g.append("text")
-          //   //         .text(function(d){return d.label})
-          //   //         .attr("x",15)
-          //   //         .attr("y",10)
-          //   //         .attr("font-size",11)
-          // }
           else{
-            var color_domain=[]
-            data.forEach(function(d){
-              d.values.forEach(function(v){
-                color_domain.push(v[colorBy])
-              })
-            })
-            color_domain=d3.set(color_domain).values().sort(function(a, b){ return d3.descending(a, b)})
-            categoryColor.domain(color_domain)
 
-          svg_axis.select(".legend").remove()
+            svg_axis.select(".legend").remove()
 
-          var legend=svg_axis.append("g")
-                      .attr("class","legend")
-                      .attr("transform","translate("+width*3/4+",-130)")
+            var legend=svg_axis.append("g")
+                        .attr("class","legend")
+                        .attr("transform","translate("+width*3/4+",-130)")
 
             var legend_g=legend.selectAll("g")
                         .data(categoryColor.domain())
@@ -513,20 +434,54 @@ angular.module('ricardo.directives.reportingEntities', [])
                     .attr("font-size",11)
           }
         }
-        function recolor(colorBy,data){
-          recolor_legend(colorBy,data)
-          if(scope.group) regroup(colorBy)
+        function updateColor(colorBy,data){
+          if(colorBy==="partner"){
+            // var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[colorBy].length})});
+            // var threshold_out=[0,10,50,100,max]
+            var threshold_in=[10,50,100]
+            var threshold_color=["#daafaf","#cc6666","#993333","#663333"]
+
+            scaleColor=d3.scale.threshold()
+                            .domain(threshold_in)
+                            .range(threshold_color)
+          }
+          else if(colorBy==="mirror_rate"){
+            // var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[colorBy]})});
+            // var threshold_out=[0,10,50,100,max]
+            var threshold_in=[0.01,0.1,0.5]
+            var threshold_color=["#daafaf","#cc6666","#993333","#663333"]
+
+            scaleColor=d3.scale.threshold()
+                            .domain(threshold_in)
+                            .range(threshold_color)
+          }
           else{
-            d3.selectAll(".available")
-              .style("fill",function(v){
-                if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(v[colorBy])
-                else return colorScale(v[colorBy])
-               })
-               .style("opacity",function(v){
-                  if(colorBy==="partner" || colorBy==="flow") return 1
-                  else return 0.5
-                })
-            }
+            var color_domain=[]
+            data.forEach(function(d){
+              d.values.forEach(function(v){
+                color_domain.push(v[colorBy])
+              })
+            })
+            color_domain=d3.set(color_domain).values().sort(function(a, b){ return d3.descending(a, b)})
+            categoryColor.domain(color_domain)
+          }
+
+        }
+        function recolor(colorBy,data){
+          // recolor_legend(colorBy,data)
+          // if(scope.group) regroup(colorBy)
+          updateColor(colorBy,data)
+          d3.selectAll(".available")
+            .style("fill",function(v){
+              if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(v[colorBy])
+              else if(colorBy==="mirror_rate") return v.mirror_rate!==undefined? scaleColor(v[colorBy]):"none"
+              else return scaleColor(v[colorBy].length)
+             })
+             .style("opacity",function(v){
+                if(colorBy==="partner") return 1
+                else return 0.8
+              })
+
         }
         function order(layout,data){
           switch(layout){
@@ -576,55 +531,50 @@ angular.module('ricardo.directives.reportingEntities', [])
         function draw(data){
 
           data=order(layout,data);
+          updateColor(colorBy,data)
           marginScale.domain([0,d3.max(data,function(d){return d[layout]})])
 
-          var nbReporting=d3.nest()
-                             .key(function(d) { return d.year; })
-                             .rollup(function(v) { return {
-                                nb_reporting:v.length
-                                }
-                              })
-                             .entries(scope.flatData);
+          // var nbReporting=d3.nest()
+          //                    .key(function(d) { return d.year; })
+          //                    .rollup(function(v) { return {
+          //                       nb_reporting:v.length
+          //                       }
+          //                     })
+          //                    .entries(scope.flatData);
 
-          d3.select(".margin.axis").call(marginAxis);
+          var minDate=d3.min(scope.flatData,function(d){return +d.year});
+          var maxDate=d3.max(scope.flatData,function(d){return +d.year});
 
-          svg_g.selectAll("g").remove();
+          var years=d3.range(minDate,maxDate)
 
           var reportings=data.map(function(d){
             return d.key;
           })
 
-          var years=d3.range(1786,1938)
-          years=d3.set(years).values();
-
-          //map reportings array to object
-          // var reporting_map={}
-          // reportings.forEach(function(d,i){ reporting_map[d]=i });
 
           height=gridHeight*reportings.length;
 
-          nb_height=5*d3.max(nbReporting,function(d){return d.values.nb_reporting})
+          d3.select(".margin.axis").call(marginAxis);
+          svg_g.selectAll("g").remove();
+
+          // nb_height=5*d3.max(nbReporting,function(d){return d.values.nb_reporting})
 
           var svg =svg_g.attr("width",width + margin.left + margin.right)
                     .attr("height",height+margin.top+margin.bottom)
                     .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-          var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v.flow})});
-          var min=d3.min(data,function(d){return d3.min(d.values,function(v){return +v.flow})});
+          // var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v.flow})});
+          // var min=d3.min(data,function(d){return d3.min(d.values,function(v){return +v.flow})});
 
-
+          x.domain([new Date(minDate,0,1),new Date(maxDate,0,1)]);
           y.domain(reportings)
             .rangeRoundBands([0, height])
 
-          z.domain([min,max]);
+          // recolor_legend(colorBy,data)
 
-
-          recolor_legend(colorBy,data)
-          console.log(nb_height)
-
-          numScale.domain([0,d3.max(nbReporting,function(d){return d.values.nb_reporting})])
-                  .range([0,nb_height])
+          // numScale.domain([0,d3.max(nbReporting,function(d){return d.values.nb_reporting})])
+          //         .range([0,nb_height])
 
         var matrix=svg.append("g")
                      .attr("class", "matrix")
@@ -632,6 +582,7 @@ angular.module('ricardo.directives.reportingEntities', [])
 
         matrix.append("g")
               .attr("class", "num axis")
+              .style("opacity",0)
               .call(numAxis)
 
         var entity=matrix.append("g")
@@ -676,6 +627,184 @@ angular.module('ricardo.directives.reportingEntities', [])
                 .style("fill","none")
                 .style("pointer-events","all")
 
+              e.append("g")
+               .selectAll("rect")
+               .data(d.values)
+               .enter().append("rect")
+               .attr("class","available")
+               .attr("x", function(v) { return x(new Date(v.year,0,1));})
+               .attr("y",function(d){return y(d.key)})
+               .attr("width", gridWidth-gridGap)
+               .attr("height", gridHeight-gridGap )
+               .style("fill",function(v){
+                  if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(v[colorBy])
+                  else return scaleColor(v[colorBy].length)
+                 })
+                .style("opacity",function(){
+                  if(colorBy==="partner" || colorBy==="flow") return 1
+                  else return 0.7
+                })
+               // .style("fill",function(v){return sourceColors[v.sourcetype]})
+               // .style("fill", function(v) {return continentColors[v.continent];})
+               // .style("fill-opacity",function(v){return z(v[yValue]);})
+               .on('mouseover', function(v) {
+                  var partner=v.partnertype==="actual" ? "Actual Reported": v.reference;
+                  var bilateral=v.partnertype==="actual"? "Number of bilateral partners: "+v.mirror_rate : ""
+                  var reference=v.partnertype==="actual"? "Number of partners by continent":"World Partner reference: " + v.reference
+                  d3.select(this).style("stroke","black");
+                  // d3.select(this.parentNode.parentNode).select("text").style("stroke","black");
+                  // d3.select(".matrix").append("rect")
+                  //                   .attr("class","column")
+                  //                   .attr("x",x(new Date(v.year,0,1)))
+                  //                   .attr("height",height)
+                  //                   .attr("width",gridWidth-gridGap)
+                  //                   .style("fill","none")
+                  //                   .style("stroke","black");
+                  tooltip.transition().style("opacity", .9);
+                  tooltip.select(".title").html(
+                    "<h5>"+v.reporting +" ("+v.type.split("/")[0]+" in "+v.continent+")"+ " in " + v.year +"</h5><hr>"+
+                    "<p style='font-weight:bold'>Partner Type: "+v.reference+"</p>")
+                  tooltip.select(".source").html(
+                    "<div><span style='font-weight:bold'>Source("+v.sourcetype+"):</span>"+v.source+"</div>"
+                  )
+                  tooltip.select(".tip_svg").style("display","none");
+                  tooltip.select(".table").style("display","none");
+                  if(colorBy==="partner") {
+                    tooltip.select(".tip_svg").style("display","block");
+                    tooltip.select(".tip_svg").selectAll("*").remove()
+
+                    if(v.partnertype==="actual"){
+                      tooltip.select(".tip_svg").html("<p>Number of partners: "+v.partner.length+"</p><p>By continent:</p>")
+                      tooltip.select(".tip_svg").append("svg")
+                                 .attr("width",tip_width)
+                                 .attr("height",20*v.partner_continent.length+tip_margin.top+tip_margin.bottom+20)
+                                 .append("g")
+                                 .attr("class","tip_group")
+                                 .attr("transform", "translate(" + tip_margin.left + "," + tip_margin.top + ")");
+                      x_tip.domain([0,d3.max(v.partner_continent,function(d){return d.number})])
+
+                      // y_tip.domain(v.partner_continent.map(function(d){return d.continent}))
+                      var tip_partner=tooltip.select(".tip_group")
+                             .selectAll(".tip_partner")
+                             .data(v.partner_continent)
+                             .enter().append("g")
+                             .attr("class","tip_partner")
+                             .attr("transform",function(d,i){
+                                return "translate(0,"+2*i*(gridHeight+2)+")"})
+                      tip_partner.append("rect")
+                                 .attr("width",function(d){return x_tip(d.number)})
+                                 .attr("height",10)
+                                 .attr("fill",function(d){return continentColors[d.continent]});
+                      tip_partner.append("text")
+                                 .text(function(d){return d.continent})
+                                 .attr("class","continentLabel")
+                                 .attr("y",-2)
+                                 .attr("fill","#fff")
+                                 .attr("font-size",11)
+                      tip_partner.append("text")
+                                 .text(function(d){return d.number})
+                                 .attr("x",function(d){return x_tip(d.number)+2})
+                                 .attr("y",9)
+                                 .attr("text-anchor","start")
+                                 .attr("fill","#fff")
+                                 .attr("font-size",12)
+                      }
+                    }
+                    else if(colorBy==="mirror_rate") {
+                      tooltip.select(".table").style("display","block");
+                      tooltip.select(".table").select("table").remove();
+                      tooltip.select(".table").html("<table><tr><td>Number of Partners</td><td style='text-align:right'>"
+                        +v.partner.length+"</td></tr><tr><td>Number of Bilateral Partners</td><td style='text-align:right'>"
+                        +v.partner_intersect.length+"</td></tr><tr><td>Bilateral Rate</td><td style='text-align:right'>"
+                        +d3.round(v.mirror_rate,2)+"</td></tr></table>")
+                      // var table = tooltip.select(".table").append("table")
+                      // var tr = table.selectAll(".row").data(selectBar).enter().append("tr").attr("class","row");
+                      // // create the first column for each segment.
+                      // tr.append("td").append("svg").attr("width", '6').attr("height", '6').append("rect")
+                      //   .attr("width", '6').attr("height", '6')
+                      //   .attr("fill",function(d){
+                      //       if(d.key!=="Total") return category==="partner"||category==="mirror_rate"? scaleColor(d.key):categoryColor(d.key)
+                      //       else return "none"
+                      //   })
+
+                      // // create the second column for each segment.
+                      // tr.append("td").text(function(d){
+                      //   if (category==="partner" && d.key!=="Total") return partner_map[d.key];
+                      //   else if(category==="mirror_rate" && d.key!=="Total") return mirror_map[d.key];
+                      //   else return d.key;
+                      // })
+
+                      // // create the third column for each segment.
+                      // tr.append("td").text(function(d){ return d.value}).style("text-align","right");
+                    }
+                })
+                .on('mouseout', function() {
+                  d3.select(this).style("stroke","none");
+                  // d3.select(this.parentNode.parentNode).select("text").style("stroke","none");
+                  // d3.select(".matix").select(".column").remove();
+                  tooltip.transition().style("opacity", 0);
+                  svg_axis.selectAll(".highlight").remove();
+                })
+                .on('mousemove', function() {
+                    tooltip.style("opacity", .9)
+                    // var wid = tooltip.style("width").replace("px", "");
+                    .style("left", (Math.min(window.innerWidth,
+                        Math.max(0, (d3.event.pageX)))-75) + "px")
+                    .style("top", (d3.event.pageY +40) + "px")
+                      // .style("width", wid + "px");
+
+                    //  //tick highlighting
+                    // var text = svg_axis.append("text")
+                    //        .attr("class", "highlight")
+                    //        .attr("x", x(new Date(d.year,0,1)))
+                    //        .attr("y", -9)
+                    //        .attr("font-size", "0.85em")
+                    //        .attr("text-anchor","middle")
+                    //        .text(d.year);
+
+                    // // Define the gradient
+                    // var gradient = svg_axis.append("svg:defs")
+                    //       .append("svg:linearGradient")
+                    //       .attr("id", "gradient")
+                    //       .attr("x1", "0%")
+                    //       .attr("y1", "100%")
+                    //       .attr("x2", "100%")
+                    //       .attr("y2", "100%")
+                    //       .attr("spreadMethod", "pad");
+
+                    //   // Define the gradient colors
+                    //   gradient.append("svg:stop")
+                    //       .attr("offset", "0%")
+                    //       .attr("stop-color", "#f5f5f5")
+                    //       .attr("stop-opacity", 0.1);
+
+                    //   gradient.append("svg:stop")
+                    //       .attr("offset", "50%")
+                    //       .attr("stop-color", "#f5f5f5")
+                    //       .attr("stop-opacity", 1);
+
+                    //   gradient.append("svg:stop")
+                    //       .attr("offset", "100%")
+                    //       .attr("stop-color", "#f5f5f5")
+                    //       .attr("stop-opacity", 0.1);
+
+                    //   // add rect as background to hide date display in
+                    //   var bbox = text.node().getBBox();
+                    //   var rect = svg_axis.append("svg:rect")
+                    //       .attr("class", "highlight")
+                    //       .attr("x", bbox.x-20)
+                    //       .attr("y", bbox.y)
+                    //       .attr("width", bbox.width+40)
+                    //       .attr("height", bbox.height)
+                    //       .style("fill", 'url(#gradient)')
+                    //   svg_axis.append("text")
+                    //        .attr("class", "highlight")
+                    //        .attr("x", x(new Date(d.year,0,1)))
+                    //        .attr("y", -9)
+                    //        .attr("font-size", "0.85em")
+                    //        .attr("text-anchor","middle")
+                    //        .text(d.year);
+                });
 
               // z.domain(d3.extent(d.values,function(v){ return  +v[yValue];}));
               var sideChart=e.append('g')
@@ -689,7 +818,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                   .style("opacity",0.7)
                   .style("fill","#cc6666")
 
-                sideChart.append("text")
+              sideChart.append("text")
                          .attr("class","barLabel")
                          .attr("y",8)
                          .attr("font-size",11)
@@ -718,15 +847,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                       })
                       .text(valueFormat(d[layout]))
                     tooltip_margin.style("opacity", .9).html(
-                    "<h5>"+d.key +"</h5><hr>"+layoutName+": "+d[layout]
-
-                    )
-                    // if(d.key.split("(")[0].length>23){
-                    //   var textLength=this.getBBox();
-                    //   d3.select(this).text(function(d){return d.key})
-                    //                  .attr("x",-textLength.width)
-                    //                  .attr("text-anchor","start")
-                    // }
+                    "<h5>"+d.key +"</h5><hr>"+layoutName+": "+d[layout])
                   })
                   .on('mousemove', function(v) {
                     tooltip_margin
@@ -752,152 +873,154 @@ angular.module('ricardo.directives.reportingEntities', [])
                   })
             })//end draw entity group
 
-            matrix.append("g").attr("class","availableGroup")
-               .selectAll("rect")
-               .data(scope.flatData)
-               .enter().append("rect")
-               .attr("class","available")
-               .attr("x", function(d) { return x(new Date(d.year,0,1));})
-               .attr("y",function(d){return y(d.reporting)})
-               .attr("width", gridWidth-gridGap)
-               .attr("height", gridHeight-gridGap )
-               .style("fill",function(d){
-                  if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(d[colorBy])
-                  else return colorScale(d[colorBy])
-                 })
-                .style("opacity",function(v){
-                  if(colorBy==="partner" || colorBy==="flow") return 1
-                  else return 0.5
-                })
-               // .style("fill",function(v){return sourceColors[v.sourcetype]})
-               // .style("fill", function(v) {return continentColors[v.continent];})
-               // .style("fill-opacity",function(v){return z(v[yValue]);})
-               .on('mouseover', function(d) {
-                  var partner=d.partnertype==="actual" ? "Number of partners: "+d.partner : "World Partner: "+d.partner
-                  var reference=d.partnertype==="actual"?  "Number of partners by continent":"World Partner reference: " + d.reference
-                  d3.select(this).style("stroke","black");
-                  // d3.select(this.parentNode.parentNode).select("text").style("stroke","black");
-                  // d3.select(".matrix").append("rect")
-                  //                   .attr("class","column")
-                  //                   .attr("x",x(new Date(v.year,0,1)))
-                  //                   .attr("height",height)
-                  //                   .attr("width",gridWidth-gridGap)
-                  //                   .style("fill","none")
-                  //                   .style("stroke","black");
-                  tooltip.select(".title").html(
-                    "<h5>"+d.reporting +" ("+d.type.split("/")[0]+" in "+d.continent+")"+ " in " + d.year +
-                     "<p>"+partner+"</p>"+"<hr>"+reference
-                  )
-                  tooltip.select(".source").html(
-                    "<hr><div><span style='font-weight:bold'>Source("+d.sourcetype+"):</span>"+d.source+"</div>"
-                  )
-                  tooltip.transition().style("opacity", .9);
-                  tooltip.select(".tip_svg").select("svg").remove()
+            // matrix.append("g").attr("class","availableGroup")
+            //    .selectAll("rect")
+            //    .data(scope.flatData)
+            //    .enter().append("rect")
+            //    .attr("class","available")
+            //    .attr("x", function(d) { return x(new Date(d.year,0,1));})
+            //    .attr("y",function(d){return y(d.reporting)})
+            //    .attr("width", gridWidth-gridGap)
+            //    .attr("height", gridHeight-gridGap )
+            //    .style("fill",function(d){
+            //       if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(d[colorBy])
+            //       else return scaleColor(d[colorBy].length)
+            //      })
+            //     .style("opacity",function(v){
+            //       if(colorBy==="partner" || colorBy==="flow") return 1
+            //       else return 0.8
+            //     })
+            //    // .style("fill",function(v){return sourceColors[v.sourcetype]})
+            //    // .style("fill", function(v) {return continentColors[v.continent];})
+            //    // .style("fill-opacity",function(v){return z(v[yValue]);})
+            //    .on('mouseover', function(d) {
+            //       var partner=d.partnertype==="actual" ? "Number of partners: "+d.partner.length : "World Partner: "+d.partner
+            //       var bilateral= d.partner_mirror!==undefined ? d.partner_mirror.length: 0
+            //       var reference=d.partnertype==="actual"?  "Number of partners by continent":"World Partner reference: " + d.reference
+            //       d3.select(this).style("stroke","black");
+            //       // d3.select(this.parentNode.parentNode).select("text").style("stroke","black");
+            //       // d3.select(".matrix").append("rect")
+            //       //                   .attr("class","column")
+            //       //                   .attr("x",x(new Date(v.year,0,1)))
+            //       //                   .attr("height",height)
+            //       //                   .attr("width",gridWidth-gridGap)
+            //       //                   .style("fill","none")
+            //       //                   .style("stroke","black");
+            //       tooltip.select(".title").html(
+            //         "<h5>"+d.reporting +" ("+d.type.split("/")[0]+" in "+d.continent+")"+ " in " + d.year +"<hr>"+
+            //          "<p>"+partner+"</p>"+"<p>Number of bilateral partners:" +bilateral+"</p>"
+            //       )
+            //       tooltip.select(".source").html(
+            //         "<hr><div><span style='font-weight:bold'>Source("+d.sourcetype+"):</span>"+d.source+"</div>"
+            //       )
+            //       tooltip.transition().style("opacity", .9);
 
-                  if(d.partnertype==="actual"){
-                    tooltip.select(".tip_svg").append("svg")
-                               .attr("width",tip_width)
-                               .attr("height",20*d.partner_continent.length+tip_margin.top+tip_margin.bottom+20)
-                               .append("g")
-                               .attr("class","tip_group")
-                               .attr("transform", "translate(" + tip_margin.left + "," + tip_margin.top + ")");
-                    x_tip.domain([0,d3.max(d.partner_continent,function(d){return d.number})])
+            //       tooltip.select(".tip_svg").select("svg").remove()
 
-                    // y_tip.domain(v.partner_continent.map(function(d){return d.continent}))
-                    var tip_partner=tooltip.select(".tip_group")
-                           .selectAll(".tip_partner")
-                           .data(d.partner_continent)
-                           .enter().append("g")
-                           .attr("class","tip_partner")
-                           .attr("transform",function(d,i){
-                              return "translate(0,"+2*i*(gridHeight+2)+")"})
-                    tip_partner.append("rect")
-                               .attr("width",function(d){return x_tip(d.number)})
-                               .attr("height",10)
-                               .attr("fill",function(d){return continentColors[d.continent]});
-                    tip_partner.append("text")
-                               .text(function(d){return d.continent})
-                               .attr("class","continentLabel")
-                               .attr("y",-2)
-                               .attr("fill","#fff")
-                               .attr("font-size",11)
-                    tip_partner.append("text")
-                               .text(function(d){return d.number})
-                               .attr("x",function(d){return x_tip(d.number)+2})
-                               .attr("y",9)
-                               .attr("text-anchor","start")
-                               .attr("fill","#fff")
-                               .attr("font-size",12)
-                  }
+            //       if(d.partnertype==="actual"){
+            //         tooltip.select(".tip_svg").append("svg")
+            //                    .attr("width",tip_width)
+            //                    .attr("height",20*d.partner_continent.length+tip_margin.top+tip_margin.bottom+20)
+            //                    .append("g")
+            //                    .attr("class","tip_group")
+            //                    .attr("transform", "translate(" + tip_margin.left + "," + tip_margin.top + ")");
+            //         x_tip.domain([0,d3.max(d.partner_continent,function(d){return d.number})])
 
-                })
-                .on('mouseout', function(d) {
-                  d3.select(this).style("stroke","none");
-                  // d3.select(this.parentNode.parentNode).select("text").style("stroke","none");
-                  // d3.select(".matrix").select(".column").remove();
-                  tooltip.transition().style("opacity", 0);
-                  svg_axis.selectAll(".highlight").remove();
-                })
-                .on('mousemove', function(d) {
-                    tooltip.style("opacity", .9)
-                    // var wid = tooltip.style("width").replace("px", "");
-                    .style("left", (Math.min(window.innerWidth,
-                        Math.max(0, (d3.event.pageX)))-75) + "px")
-                    .style("top", (d3.event.pageY +40) + "px")
-                      // .style("width", wid + "px");
+            //         // y_tip.domain(v.partner_continent.map(function(d){return d.continent}))
+            //         var tip_partner=tooltip.select(".tip_group")
+            //                .selectAll(".tip_partner")
+            //                .data(d.partner_continent)
+            //                .enter().append("g")
+            //                .attr("class","tip_partner")
+            //                .attr("transform",function(d,i){
+            //                   return "translate(0,"+2*i*(gridHeight+2)+")"})
+            //         tip_partner.append("rect")
+            //                    .attr("width",function(d){return x_tip(d.number)})
+            //                    .attr("height",10)
+            //                    .attr("fill",function(d){return continentColors[d.continent]});
+            //         tip_partner.append("text")
+            //                    .text(function(d){return d.continent})
+            //                    .attr("class","continentLabel")
+            //                    .attr("y",-2)
+            //                    .attr("fill","#fff")
+            //                    .attr("font-size",11)
+            //         tip_partner.append("text")
+            //                    .text(function(d){return d.number})
+            //                    .attr("x",function(d){return x_tip(d.number)+2})
+            //                    .attr("y",9)
+            //                    .attr("text-anchor","start")
+            //                    .attr("fill","#fff")
+            //                    .attr("font-size",12)
+            //       }
 
-                     //tick highlighting
-                    var text = svg_axis.append("text")
-                           .attr("class", "highlight")
-                           .attr("x", x(new Date(d.year,0,1)))
-                           .attr("y", -9)
-                           .attr("font-size", "0.85em")
-                           .attr("text-anchor","middle")
-                           .text(d.year);
+            //     })
+            //     .on('mouseout', function(d) {
+            //       d3.select(this).style("stroke","none");
+            //       // d3.select(this.parentNode.parentNode).select("text").style("stroke","none");
+            //       // d3.select(".matrix").select(".column").remove();
+            //       tooltip.transition().style("opacity", 0);
+            //       svg_axis.selectAll(".highlight").remove();
+            //     })
+            //     .on('mousemove', function(d) {
+            //         tooltip.style("opacity", .9)
+            //         // var wid = tooltip.style("width").replace("px", "");
+            //         .style("left", (Math.min(window.innerWidth,
+            //             Math.max(0, (d3.event.pageX)))-75) + "px")
+            //         .style("top", (d3.event.pageY +40) + "px")
+            //           // .style("width", wid + "px");
 
-                    // Define the gradient
-                    var gradient = svg_axis.append("svg:defs")
-                          .append("svg:linearGradient")
-                          .attr("id", "gradient")
-                          .attr("x1", "0%")
-                          .attr("y1", "100%")
-                          .attr("x2", "100%")
-                          .attr("y2", "100%")
-                          .attr("spreadMethod", "pad");
+            //         //  //tick highlighting
+            //         // var text = svg_axis.append("text")
+            //         //        .attr("class", "highlight")
+            //         //        .attr("x", x(new Date(d.year,0,1)))
+            //         //        .attr("y", -9)
+            //         //        .attr("font-size", "0.85em")
+            //         //        .attr("text-anchor","middle")
+            //         //        .text(d.year);
 
-                      // Define the gradient colors
-                      gradient.append("svg:stop")
-                          .attr("offset", "0%")
-                          .attr("stop-color", "#f5f5f5")
-                          .attr("stop-opacity", 0.1);
+            //         // // Define the gradient
+            //         // var gradient = svg_axis.append("svg:defs")
+            //         //       .append("svg:linearGradient")
+            //         //       .attr("id", "gradient")
+            //         //       .attr("x1", "0%")
+            //         //       .attr("y1", "100%")
+            //         //       .attr("x2", "100%")
+            //         //       .attr("y2", "100%")
+            //         //       .attr("spreadMethod", "pad");
 
-                      gradient.append("svg:stop")
-                          .attr("offset", "50%")
-                          .attr("stop-color", "#f5f5f5")
-                          .attr("stop-opacity", 1);
+            //         //   // Define the gradient colors
+            //         //   gradient.append("svg:stop")
+            //         //       .attr("offset", "0%")
+            //         //       .attr("stop-color", "#f5f5f5")
+            //         //       .attr("stop-opacity", 0.1);
 
-                      gradient.append("svg:stop")
-                          .attr("offset", "100%")
-                          .attr("stop-color", "#f5f5f5")
-                          .attr("stop-opacity", 0.1);
+            //         //   gradient.append("svg:stop")
+            //         //       .attr("offset", "50%")
+            //         //       .attr("stop-color", "#f5f5f5")
+            //         //       .attr("stop-opacity", 1);
 
-                      // add rect as background to hide date display in
-                      var bbox = text.node().getBBox();
-                      var rect = svg_axis.append("svg:rect")
-                          .attr("class", "highlight")
-                          .attr("x", bbox.x-20)
-                          .attr("y", bbox.y)
-                          .attr("width", bbox.width+40)
-                          .attr("height", bbox.height)
-                          .style("fill", 'url(#gradient)')
-                      svg_axis.append("text")
-                           .attr("class", "highlight")
-                           .attr("x", x(new Date(d.year,0,1)))
-                           .attr("y", -9)
-                           .attr("font-size", "0.85em")
-                           .attr("text-anchor","middle")
-                           .text(d.year);
-                });
+            //         //   gradient.append("svg:stop")
+            //         //       .attr("offset", "100%")
+            //         //       .attr("stop-color", "#f5f5f5")
+            //         //       .attr("stop-opacity", 0.1);
+
+            //         //   // add rect as background to hide date display in
+            //         //   var bbox = text.node().getBBox();
+            //         //   var rect = svg_axis.append("svg:rect")
+            //         //       .attr("class", "highlight")
+            //         //       .attr("x", bbox.x-20)
+            //         //       .attr("y", bbox.y)
+            //         //       .attr("width", bbox.width+40)
+            //         //       .attr("height", bbox.height)
+            //         //       .style("fill", 'url(#gradient)')
+            //         //   svg_axis.append("text")
+            //         //        .attr("class", "highlight")
+            //         //        .attr("x", x(new Date(d.year,0,1)))
+            //         //        .attr("y", -9)
+            //         //        .attr("font-size", "0.85em")
+            //         //        .attr("text-anchor","middle")
+            //         //        .text(d.year);
+            //     });
           }
       }
   }

@@ -33,6 +33,8 @@ angular.module('ricardo.controllers.matrix', [])
              name: {value: "World Partner",writable: true}},
              {type: {value: "partner",writable: true},
              name: {value: "Number of Partners",writable: true}},
+             {type: {value: "mirror_rate",writable: true},
+             name: {value: "Bilateral Rate",writable: true}},
              {type: {value: "sourcetype",writable: true},
              name: {value: "Source Type",writable: true}},
              {type: {value: "type",writable: true},
@@ -40,6 +42,7 @@ angular.module('ricardo.controllers.matrix', [])
              {type: {value: "continent",writable: true},
              name: {value: "Reporting Continent",writable: true}},
             ];
+
       $scope.matrixColorBy=$scope.matrixColorChoices[0]
 
       $scope.synCurveChoices = [
@@ -89,7 +92,7 @@ angular.module('ricardo.controllers.matrix', [])
 
       $scope.changeSynCurve = function (curveBy) {
         $scope.synCurveBy = curveBy;
-        group_reporting($scope.flow,curveBy.type.value)
+        // group_reporting($scope.flow,curveBy.type.value)
 
       }
 
@@ -112,219 +115,6 @@ angular.module('ricardo.controllers.matrix', [])
         $scope.reporting=reporting;
         $scope.search+=1;
       }
-      function group_reporting(data,curveBy){
-          $scope.nbReportings=d3.nest()
-                            .key(function(d) { return curveBy==="none" ? "none":d[curveBy]; })
-                            .key(function(d) { return d.year; })
-                            .rollup(function(v) { return {
-                              nb_reporting:v.length
-                              }
-                            })
-                           .entries(data);
-          //extend missing points with null values
-          $scope.nbReportings.forEach(function(d){
-              // for (var i = $scope.rawMinDate; i<=$scope.rawMaxDate;i++){
-              d.values.forEach(function(v){
-                v.key=+v.key
-              })
-              for (var i = $scope.rawMinDate; i<= $scope.rawMaxDate;i++){
-                var years=d.values.map(function(year){ return year.key});
-                if (years.indexOf(i)=== -1){
-                  d.values.push({
-                    key:i,
-                    values:{
-                      nb_reporting:null
-                    }
-                  })
-                }
-              }
-              //sort by year ascending
-              d.values.sort(function(a,b){
-                return a.key-b.key;
-              });
-          })//add missing with null
-      }
-      function reporting_proc(data){
-        data.forEach(function(d){
-          d.sourcetype=d.sourcetype.split("|")[0]//trim to uniq sourcetype
-        })
-        var flow=data.filter(function(d){return d.expimp===$scope.chartFlow.type.value});
-        $scope.flow=flow;
-
-        flow.forEach(function(d){
-            d.year=+d.year;
-            d.partner_continent=[]
-            d.partners.split(",").forEach(function(p){
-              d.partner_continent.push(p.split("+")[1])
-            })
-            var partner_continent=d3.nest()
-                              .key(function(d){return d})
-                              .rollup(function(values) { return values.length; })
-                              .map(d.partner_continent);
-
-            var continents =[]
-            var continent_keys= d3.keys(partner_continent);
-            // var imp_keys= d3.keys(imp_continent);
-            continent_keys.forEach(function(d){
-              // continent.push(exp_keys);
-              continents.push({
-                "continent":d,
-                "number":partner_continent[d]
-              })
-            })
-            d.partner=d.partners.split(",").length
-            d.partner_continent=continents.sort(function(a,b){return b.number-a.number;});
-
-          });
-            group_reporting(flow,$scope.synCurveBy.type.value)
-
-            $scope.rawMinDate = d3.min( $scope.nbReportings, function(d) { return d.year; })
-            $scope.rawMaxDate = d3.max( $scope.nbReportings, function(d) { return d.year; })
-
-            /*
-             * Check if dates were in localstorage
-             */
-            // var minDate = parseInt(localStorage.getItem('selectedMinDate'));
-            // var maxDate = parseInt(localStorage.getItem('selectedMaxDate'));
-            // $scope.selectedMinDate = minDate ?
-            //   minDate : Math.max( $scope.selectedMinDate, $scope.rawMinDate );
-            // $scope.selectedMaxDate = maxDate ?
-            //   maxDate : Math.min( $scope.selectedMaxDate, $scope.rawMaxDate );
-
-
-            var flowContinent=d3.nest()
-                                    .key(function(d) { return d.continent; })
-                                    .key(function(d) { return d.year; })
-                                    .rollup(function(v){ return {
-                                        flow: d3.sum(v,function(d){return d.flow}),
-                                        reportings: v.length
-                                      }
-                                    })
-                                    .entries(flow);
-
-            //extend missing points with 0 values
-            flowContinent.forEach(function(d){
-                for (var i = $scope.rawMinDate; i<=$scope.rawMaxDate;i++){
-                  var years=d.values.map(function(year){ return year.key});
-                  if (years.indexOf(i.toString())=== -1){
-                    d.values.push({
-                      key:i,
-                      values:{
-                        flow:0,
-                        reportings:0
-                      }
-                    })
-                  }
-                }
-              //sort by year ascending
-              d.values.sort(function(a,b){
-                return a.key-b.key;
-              });
-            })//add missing with 0
-
-            $scope.flatContinent=[]
-            flowContinent.forEach(function(d){
-              d.values.forEach(function(v){
-                $scope.flatContinent.push(
-                  {
-                    "continent":d.key,
-                    "year":+v.key,
-                    "values":v.values
-                  }
-                )
-              })
-            })
-
-            $scope.flowEntities=d3.nest()
-                  .key(function(d) { return d.reporting; })
-                  .entries(flow);
-
-            $scope.flowEntities.forEach(function(d){
-              var partner_sum=d3.sum(d.values,function(d){return d.partner})
-              d.partnerAvg=d3.round(partner_sum/d.values.length)
-              d.years=d.values.length
-            })
-
-            $scope.entities=$scope.flowEntities.map(function(d){return d.values[0].reporting_id;})
-
-      }
-      function world_proc(data){
-        var flow=data.filter(function(d){return d.expimp=== $scope.chartFlow.type.value});
-        $scope.flow=flow;
-        $scope.flowWorld=d3.nest()
-                              .key(function(d) { return d.partner; })
-                              .key(function(d) { return d.year; })
-                              .rollup(function(v){ return {
-                                  flow: d3.sum(v,function(d){return d.flow}),
-                                  reportings: v.length
-                                }
-                              })
-                              .entries(flow);
-
-          //extend missing points with null values
-          $scope.flowWorld.forEach(function(d){
-              // for (var i = $scope.rawMinDate; i<=$scope.rawMaxDate;i++){
-              d.values.forEach(function(v){
-                v.key=+v.key
-              })
-              for (var i = 1787; i<=1939;i++){
-                var years=d.values.map(function(year){ return year.key});
-                if (years.indexOf(i)=== -1){
-                  d.values.push({
-                    key:i,
-                    values:{
-                      flow: null,
-                      reportings:null
-                    }
-                  })
-                }
-              }
-              //sort by year ascending
-              d.values.sort(function(a,b){
-                return a.key-b.key;
-              });
-          })//add missing with null
-
-          $scope.flowWorld=$scope.flowWorld.filter(function(d){return d.key!=="World_best_guess"});
-
-          var worldEntities=d3.nest()
-                    .key(function(d) { return d.reporting; })
-                    .key(function(d) { return d.year; })
-                    .entries(flow);
-
-          var worldbestguess=[]
-          worldEntities.forEach(function(d){
-            d.values.forEach(function(e){
-              e.values.forEach(function(p){
-                 if (p.partner==="World_best_guess") e.worldbestguess=p
-              })
-              if(e.values.length===2){
-                e.values.forEach(function(p){
-                  if (p.partner!=="World_best_guess") {
-                    e.worldbestguess.reference=p.partner
-                  }
-                })
-              }
-              else{
-                e.values.forEach(function(p,i){
-                  if (p.partner!=="World_best_guess" && p.flow===e.worldbestguess.flow) e.worldbestguess.reference=p.partner
-                })
-              }
-              worldbestguess.push(e.worldbestguess)
-            })
-          })
-
-          $scope.flowEntities=d3.nest()
-                    .key(function(d) { return d.reporting; })
-                    .entries(worldbestguess);
-          $scope.flowEntities.forEach(function(d){
-            var flow_sum=d3.sum(d.values,function(d){return d.flow})
-            d.flowAvg=d3.round(flow_sum/d.values.length,2)
-            d.years=d.values.length
-          })
-          $scope.entities=$scope.flowEntities.map(function(d){return d.values[0].reporting_id;})
-      }
-
       function reprocess(data){
         //data manipulation
         $scope.rawMinDate = d3.min(data, function(d) { return +d.year; })
@@ -336,9 +126,11 @@ angular.module('ricardo.controllers.matrix', [])
           //actualData proc
           actualData.forEach(function(d){
             d.year=+d.year;
+            d.partner=[]
             d.partner_continent=[]
             d.partners.forEach(function(p){
               d.partner_continent.push(p.split("+")[1])
+              d.partner.push(p.split("+")[0])
             })
             var partner_continent=d3.nest()
                               .key(function(d){return d})
@@ -355,7 +147,6 @@ angular.module('ricardo.controllers.matrix', [])
                 "number":partner_continent[d]
               })
             })
-            d.partner=d.partners.length
             d.reference="Actual Reported"
             d.partner_continent=continents.sort(function(a,b){return b.number-a.number;});
           });
@@ -383,17 +174,17 @@ angular.module('ricardo.controllers.matrix', [])
                   if (p.partners!=="World_best_guess" && p.flow===e.worldbestguess.flow) e.worldbestguess.reference=p.partners
                 })
               }
-              e.worldbestguess.partner=1;
+              e.worldbestguess.partner=["World_best_guess"];
               worldbestguess.push(e.worldbestguess)
             })
           })
 
           flow=actualData.concat(worldbestguess)
-
           var flowEntities=d3.nest()
                 .key(function(d) { return d.reporting; })
                 .key(function(d) { return d.year; })
                 .entries(flow);
+
           var flowEntities_uniq=[]
           flowEntities.forEach(function(d){
             d.values.forEach(function(v){
@@ -405,60 +196,80 @@ angular.module('ricardo.controllers.matrix', [])
               else flowEntities_uniq.push(v.values[0])
             })
           })
+
+          flowEntities_uniq.forEach(function(d){
+            if(d.partnertype==="actual"){
+              if(d.partners_mirror){
+                d.partner_mirror=d.partners_mirror
+                d.partner_intersect = d.partner.filter(function(value) {
+                                       return d.partner_mirror.indexOf(value) > -1;
+                                   });
+                // d.mirror_rate=d.partner_intersect.length/d.partner.length
+                d.mirror_rate=2*d.partner_intersect.length/(d.partner.length+d.partner_mirror.length)
+              }
+              else {
+                d.partner_mirror=[]
+                d.mirror_rate=0
+              }
+            }
+            // d.partner_set= [{sets: ['partner'], size: d.partner.length},
+            //                {sets: ['bilateral_partner'], size: d.partners_mirror ? d.partners_mirror.split(",").length:0},
+            //                {sets: ['partner','bilateral_partner'], size: d.partners_mirror? partner_intersect.length: 0 }];
+          })
           $scope.flow=flowEntities_uniq
           $scope.flowEntities=d3.nest()
               .key(function(d) { return d.reporting; })
               .entries(flowEntities_uniq);
           $scope.flowEntities.forEach(function(d){
-            var partner_sum=d3.sum(d.values,function(d){return d.partner})
+            var partner_sum=d3.sum(d.values,function(d){return d.partner.length})
             d.partnerAvg=d3.round(partner_sum/d.values.length)
             d.years=d.values.length
           })
           $scope.entities=$scope.flowEntities.map(function(d){return d.values[0].reporting_id;})
 
-          //reporting by continent
-          var reportingContinent=d3.nest()
-                                .key(function(d) { return d.continent; })
-                                .key(function(d) { return +d.year; })
-                                .rollup(function(v){ return {
-                                    reportings: v.length
-                                  }
-                                })
-                                .entries(flow);
+        //   //reporting by continent
+        //   var reportingContinent=d3.nest()
+        //                         .key(function(d) { return d.continent; })
+        //                         .key(function(d) { return +d.year; })
+        //                         .rollup(function(v){ return {
+        //                             reportings: v.length
+        //                           }
+        //                         })
+        //                         .entries(flow);
 
-        //extend missing points with 0 values
-        reportingContinent.forEach(function(d){
-            for (var i = $scope.rawMinDate; i<=$scope.rawMaxDate;i++){
-              var years=d.values.map(function(year){ return year.key});
-              if (years.indexOf(i.toString())=== -1){
-                d.values.push({
-                  key:i,
-                  values:{
-                    reportings:0
-                  }
-                })
-              }
-            }
-          //sort by year ascending
-          d.values.sort(function(a,b){
-            return a.key-b.key;
-          });
-        })//add missing with 0
+        // //extend missing points with 0 values
+        // reportingContinent.forEach(function(d){
+        //     for (var i = $scope.rawMinDate; i<=$scope.rawMaxDate;i++){
+        //       var years=d.values.map(function(year){ return year.key});
+        //       if (years.indexOf(i.toString())=== -1){
+        //         d.values.push({
+        //           key:i,
+        //           values:{
+        //             reportings:0
+        //           }
+        //         })
+        //       }
+        //     }
+        //   //sort by year ascending
+        //   d.values.sort(function(a,b){
+        //     return a.key-b.key;
+        //   });
+        // })//add missing with 0
 
-        $scope.flatContinent=[]
-        reportingContinent.forEach(function(d){
-          d.values.forEach(function(v){
-            $scope.flatContinent.push(
-              {
-                "continent":d.key,
-                "year":+v.key,
-                "values":v.values
-              }
-            )
-          })
-        })
+        // $scope.flatContinent=[]
+        // reportingContinent.forEach(function(d){
+        //   d.values.forEach(function(v){
+        //     $scope.flatContinent.push(
+        //       {
+        //         "continent":d.key,
+        //         "year":+v.key,
+        //         "values":v.values
+        //       }
+        //     )
+        //   })
+        // })
         //syncurve
-        group_reporting(flow,$scope.synCurveBy.type.value)
+        // group_reporting($scope.flow,$scope.matrixColorBy.type.value)
       }//end reprocess
 
       function init() {
@@ -490,11 +301,12 @@ angular.module('ricardo.controllers.matrix', [])
                   source:d.source,
                   sourcetype:d.sourcetype,
                   continent:d.continent,
-                  type:d.type
+                  type:d.type,
+                  partners_mirror:d.partners_mirror
                 })
               });
 
-              var headers = ["reporting_id","reporting", "year", "expimp", "flow", "partners","partnertype","source","sourcetype","continent","type"],
+              var headers = ["reporting_id","reporting", "year", "expimp", "flow", "partners","partnertype","source","sourcetype","continent","type","partners_mirror"],
                   order = "",
                   filename = "metadata";
 

@@ -19,8 +19,8 @@
 			</p>
 		</div>
 
-		<div class="col-md-12">
-	    <h4>Reporting by Continents in
+<!-- <div class="col-md-12">
+	    <h4>Number of Reportings by Continents in
 	   		<div class="inline-select">
 		        <ui-select ng-model="multichartLayout" theme="bootstrap" ng-change="changeMultiLayout(multichartLayout)">
 		          <match placeholder="Select grouped or multiple layout">{{$select.selected.name.value}}</match>
@@ -35,8 +35,8 @@
 			        flow-type="chartFlow"
 			        layout="multichartLayout">
 		</reporting-continent>
-		</div>
-		<div class="col-md-12">
+		</div> -->
+<!-- 		<div class="col-md-12">
 			<h4> Number of Reporting Entities by year Group by
 			<div class="inline-select">
 		        <ui-select ng-model="synCurveBy" theme="bootstrap" ng-change="changeSynCurve(synCurveBy)">
@@ -54,14 +54,14 @@
 				category="synCurveBy"
 			>
 			</reporting-synth>
-<!-- 			<bar-chart
+			<bar-chart
 			          ng-data="nbReportings"
 			          start-date="selectedMinDate"
 			          end-date="selectedMaxDate"
 			          raw-start-date="rawMinDate"
 			          raw-end-date="rawMaxDate">
-			</bar-chart> -->
-		</div>
+			</bar-chart>
+		</div> -->
 		<div class="col-md-12">
 			<h4>
 			 Reporting Entities Overview
@@ -92,16 +92,12 @@
 		        </ui-select>
 		    </div>
 			</h4>
-
-			<div class="btn-group" data-toggle="buttons">
-				<h4>Layout</h4>
-				 <label class=" btn btn-default active" ng-click="grouped=false">
-		            <input type="radio" >By Entity
-		          </label>
-		          <label class="btn btn-default" ng-click="grouped=true">
-		            <input type="radio" name="options" >By Group
-		          </label>
-		    </div>
+		    <reporting-synth
+				ng-data="flow"
+				flow-type="chartFlow"
+				category="matrixColorBy"
+			>
+			</reporting-synth>
 			<reporting-entities flat-data="flow"
 			ng-data="flowEntities"
 			flow-type="chartFlow"
@@ -109,7 +105,6 @@
 			layout="matrixLayout"
 			reporting="reporting"
 			search="search"
-			group="grouped"
 			>
 			</reporting-entities>
 		</div>
