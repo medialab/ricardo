@@ -139,8 +139,7 @@ angular.module('ricardo.directives.reportingSynth', [])
         }
         var mirror_map={
           0:"0",
-          0.1:"0 - 0.1",
-          0.5:"0.1 - 0.5",
+          0.5:"0 - 0.5",
           1:"0.5 - 1"
         }
         function group_reporting(data,curveBy){
@@ -155,8 +154,8 @@ angular.module('ricardo.directives.reportingSynth', [])
 
           }
           else if(curveBy==="mirror_rate"){
-            var threshold_out=[0,0.1,0.5,1]
-            var threshold_in=[0.01,0.1,0.5]
+            var threshold_out=[0,0.5,1]
+            var threshold_in=[0.01,0.5]
             data=data.filter(function(d){return d[curveBy]!==undefined})
           }
           var thresScale=d3.scale.threshold()
@@ -270,7 +269,7 @@ angular.module('ricardo.directives.reportingSynth', [])
                       .on("mouseover",function(d){
                         d3.select(this).style("opacity",1)
                         d3.selectAll('.layer').selectAll("rect").filter(function(layer){return layer.key===d}).style("opacity",1)
-                        tooltip.transition().style("opacity", .9);
+                        tooltip.transition().style("display", "block").style("opacity", .9);
                         var selectBar=data.map(function(layer){
                             var l=layer.values.filter(function(e){return e.key===d})
                             return {
@@ -315,8 +314,11 @@ angular.module('ricardo.directives.reportingSynth', [])
                       })
                       .on("mouseout",function(d){
                         d3.select(this).style("opacity",0)
-                        d3.selectAll('.layer').selectAll("rect").style("opacity",0.7)
-                        tooltip.transition().style("opacity",0);
+                        d3.selectAll('.layer').selectAll("rect")
+                        .style("opacity",function(d){
+                          return category==="partner" || category==="mirror_rate" ? 0.9:0.7;
+                        })
+                        tooltip.transition().style("display", "none")
                       })
 
 
@@ -333,7 +335,7 @@ angular.module('ricardo.directives.reportingSynth', [])
               .attr("y", function(d) { return y(d.y + d.y0); })
               .attr("height", function(d) { return y(d.y0) - y(d.y + d.y0); })
               .attr("width", barwidth-1)
-              .style("opacity",0.7)
+              .style("opacity",function(d){return category==="partner" || category==="mirror_rate" ? 0.9:0.7;})
               .attr("pointer-events","none")
 
 

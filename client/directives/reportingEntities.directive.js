@@ -448,8 +448,8 @@ angular.module('ricardo.directives.reportingEntities', [])
           else if(colorBy==="mirror_rate"){
             // var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[colorBy]})});
             // var threshold_out=[0,10,50,100,max]
-            var threshold_in=[0.01,0.1,0.5]
-            var threshold_color=["#daafaf","#cc6666","#993333","#663333"]
+            var threshold_in=[0.01,0.5]
+            var threshold_color=["#daafaf","#cc6666","#993333"]
 
             scaleColor=d3.scale.threshold()
                             .domain(threshold_in)
@@ -659,7 +659,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                   //                   .attr("width",gridWidth-gridGap)
                   //                   .style("fill","none")
                   //                   .style("stroke","black");
-                  tooltip.transition().style("opacity", .9);
+                  tooltip.transition().style("display","block").style("opacity",.9);
                   tooltip.select(".title").html(
                     "<h5>"+v.reporting +" ("+v.type.split("/")[0]+" in "+v.continent+")"+ " in " + v.year +"</h5><hr>"+
                     "<p style='font-weight:bold'>Partner Type: "+v.reference+"</p>")
@@ -741,15 +741,15 @@ angular.module('ricardo.directives.reportingEntities', [])
                   d3.select(this).style("stroke","none");
                   // d3.select(this.parentNode.parentNode).select("text").style("stroke","none");
                   // d3.select(".matix").select(".column").remove();
-                  tooltip.transition().style("opacity", 0);
+                  tooltip.transition().style("display", 'none');
                   svg_axis.selectAll(".highlight").remove();
                 })
                 .on('mousemove', function() {
-                    tooltip.style("opacity", .9)
-                    // var wid = tooltip.style("width").replace("px", "");
-                    .style("left", (Math.min(window.innerWidth,
+                    var hid = tooltip.style("height").replace("px", "");
+
+                    tooltip.style("display","block").style("left", (Math.min(window.innerWidth,
                         Math.max(0, (d3.event.pageX)))-75) + "px")
-                    .style("top", (d3.event.pageY +40) + "px")
+                    .style("top",(d3.event.pageY+40)+"px")
                       // .style("width", wid + "px");
 
                     //  //tick highlighting
