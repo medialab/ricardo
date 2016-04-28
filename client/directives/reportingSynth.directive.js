@@ -64,7 +64,6 @@ angular.module('ricardo.directives.reportingSynth', [])
                               .values(function(d) { return d.values; })
                               .x(function(d) { return x(new Date(d.year,0,1)); })
                               .y(function(d) { return d.values.nb_reporting; })
-                              .order("inside-out")
 
         var format = d3.format("0,000");
         var duration=300;
@@ -133,10 +132,10 @@ angular.module('ricardo.directives.reportingSynth', [])
                     .x(function(d) { return x(new Date(d.key,0,1));})
                     .y(function(d) { return y(d.values.nb_reporting); });
         var partner_map={
-          0:"less than 10",
+          0:"no partner",
+          1:"1 - 10",
           10:"10 - 50",
-          50:"50 - 100",
-          100:"more than 100"
+          50:"more than 50"
         }
         var mirror_map={
           0:"0",
@@ -150,8 +149,8 @@ angular.module('ricardo.directives.reportingSynth', [])
          if(curveBy==="partner"){
             // var max=d3.max(data,function(d){return d.partner.length});
             // var threshold_out=["less than 10","10 to 50","50 to 100","more than 100"]
-            var threshold_out=[0,10,50,100]
-            var threshold_in=[10,50,100]
+            var threshold_out=[0,1,10,50]
+            var threshold_in=[1,10,50]
 
           }
           else if(curveBy==="mirror_rate"){
@@ -197,6 +196,9 @@ angular.module('ricardo.directives.reportingSynth', [])
                 return a.key-b.key;
               });
           })//add missing with null
+          nbReportings.sort(function(a,b){
+            return (+a.key)-(+b.key);
+          })
           return nbReportings;
         }
         function draw_legend(color_domain){

@@ -173,7 +173,7 @@ angular.module('ricardo.controllers.matrix', [])
                   if (p.partners!=="World_best_guess" && p.flow===e.worldbestguess.flow) e.worldbestguess.reference=p.partners
                 })
               }
-              e.worldbestguess.partner=["World_best_guess"];
+              e.worldbestguess.partner=[];
               worldbestguess.push(e.worldbestguess)
             })
           })
@@ -183,13 +183,17 @@ angular.module('ricardo.controllers.matrix', [])
                 .key(function(d) { return d.reporting; })
                 .key(function(d) { return d.year; })
                 .entries(flow);
-
+          // var flowEntities_uniq=flowEntities
           var flowEntities_uniq=[]
           flowEntities.forEach(function(d){
             d.values.forEach(function(v){
               if(v.values.length>1){
-                v.values.forEach(function(e){
-                  if (e.partnertype==="actual") flowEntities_uniq.push(e)
+                v.values.forEach(function(e,i){
+                  if (e.partnertype==="actual"){
+                    var attribute=e
+                    attribute.reference=v.values[1].reference
+                    flowEntities_uniq.push(attribute)
+                  }
                 })
               }
               else flowEntities_uniq.push(v.values[0])
@@ -197,18 +201,23 @@ angular.module('ricardo.controllers.matrix', [])
           })
 
           flowEntities_uniq.forEach(function(d){
-            if(d.partnertype==="actual"){
-                d.partner_mirror=d.partners_mirror
-                d.partner_intersect = d.partner.filter(function(value) {
-                                       return d.partner_mirror.indexOf(value) > -1;
-                                   });
-                // d.mirror_rate=d.partner_intersect.length/d.partner.length
-                d.mirror_rate=2*d.partner_intersect.length/(d.partner.length+d.partner_mirror.length)
+            if(d.partners_mirror.length>0){
+              d.partner_mirror=d.partners_mirror
+              d.partner_intersect = d.partner.filter(function(value) {
+                                     return d.partner_mirror.indexOf(value) > -1;
+                                 });
+              // d.mirror_rate=d.partner_intersect.length/d.partner.length
+              d.mirror_rate=2*d.partner_intersect.length/(d.partner.length+d.partner_mirror.length)
+            }
+            else {
+              d.partner_mirror=[]
+              d.partner_intersect=[]
+              d.mirror_rate=0
             }
           })
           $scope.flow=flowEntities_uniq
           $scope.flowEntities=d3.nest()
-              .key(function(d) { return d.reporting; })
+              .key(function(d) { return d.reporting;})
               .entries(flowEntities_uniq);
           $scope.flowEntities.forEach(function(d){
             var partner_sum=d3.sum(d.values,function(d){return d.partner.length})

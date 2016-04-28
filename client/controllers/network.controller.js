@@ -34,6 +34,7 @@ angular.module('ricardo.controllers.network', [])
       {type: {value: "imp",writable: true},
        name: {value: "Imports",writable: true}
     }];
+
     var communityColors;
     // var continentColors = { "Europe":"#7ED27C",
     //                          "Asia":"#FC9FEB" ,
@@ -56,7 +57,9 @@ angular.module('ricardo.controllers.network', [])
 
     var impexpColor={"Imp":"#9ecae1",
                       "Exp":"#fdae6b"}
-
+    $scope.changeFlow = function(flow) {
+      $scope.networkFlow=flow;
+    }
     $scope.changeColor = function(color) {
       $scope.colored = color;
       if (color.name.value === "community") {
@@ -195,7 +198,7 @@ angular.module('ricardo.controllers.network', [])
                 label: n.id,
                 x: Math.random(),
                 y: Math.random(),
-                // type: 'hoveredNode',
+                type: 'hoveredNode',
                 attributes: {
                     "community": null,
                     "continent": n.continent,

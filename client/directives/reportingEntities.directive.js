@@ -305,8 +305,8 @@ angular.module('ricardo.directives.reportingEntities', [])
               })
             })
 
-            var threshold_out=[0,10,50,100,max]
-            var threshold_in=[10,50,100]
+            var threshold_out=[0,10,50,max]
+            var threshold_in=[1,10,50]
             var threshold_color=["#daafaf","#cc6666","#993333","#663333"]
 
             scaleColor=d3.scale.threshold()
@@ -435,7 +435,7 @@ angular.module('ricardo.directives.reportingEntities', [])
           if(colorBy==="partner"){
             // var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[colorBy].length})});
             // var threshold_out=[0,10,50,100,max]
-            var threshold_in=[10,50,100]
+            var threshold_in=[1,10,50]
             var threshold_color=["#daafaf","#cc6666","#993333","#663333"]
 
             scaleColor=d3.scale.threshold()
@@ -638,9 +638,6 @@ angular.module('ricardo.directives.reportingEntities', [])
                // .style("fill", function(v) {return continentColors[v.continent];})
                // .style("fill-opacity",function(v){return z(v[yValue]);})
                .on('mouseover', function(v) {
-                  var partner=v.partnertype==="actual" ? "Actual Reported": v.reference;
-                  var bilateral=v.partnertype==="actual"? "Number of bilateral partners: "+v.mirror_rate : ""
-                  var reference=v.partnertype==="actual"? "Number of partners by continent":"World Partner reference: " + v.reference
                   d3.select(this).style("stroke","black").style("opacity",1);
                   // d3.select(this.parentNode.parentNode).select("text").style("stroke","black");
                   // d3.select(".matrix").append("rect")
@@ -653,18 +650,19 @@ angular.module('ricardo.directives.reportingEntities', [])
                   tooltip.transition().style("display","block").style("opacity",.9);
                   tooltip.select(".title").html(
                     "<h5>"+v.reporting +" ("+v.type.split("/")[0]+" in "+v.continent+")"+ " in " + v.year +"</h5><hr>"+
-                    "<p style='font-weight:bold'>Partner Type: "+v.reference+"</p>")
+                    "<p style='font-weight:bold'>World Partner: "+v.reference+"</p>")
                   tooltip.select(".source").html(
                     "<div><span style='font-weight:bold'>Source("+v.sourcetype+"):</span>"+v.source+"</div>"
                   )
                   tooltip.select(".tip_svg").style("display","none");
                   tooltip.select(".table").style("display","none");
                   if(colorBy==="partner") {
+
                     tooltip.select(".tip_svg").style("display","block");
                     tooltip.select(".tip_svg").selectAll("*").remove()
-
+                    tooltip.select(".tip_svg").html("<p>Number of partners: "+v.partner.length+"</p>")
                     if(v.partnertype==="actual"){
-                      tooltip.select(".tip_svg").html("<p>Number of partners: "+v.partner.length+"</p><p>By continent:</p>")
+                      tooltip.select(".tip_svg").append("p").text("By continent:")
                       tooltip.select(".tip_svg").append("svg")
                                  .attr("width",tip_width)
                                  .attr("height",20*v.partner_continent.length+tip_margin.top+tip_margin.bottom+20)
@@ -703,8 +701,8 @@ angular.module('ricardo.directives.reportingEntities', [])
                     else if(colorBy==="mirror_rate") {
                       tooltip.select(".table").style("display","block");
                       tooltip.select(".table").select("table").remove();
-                      tooltip.select(".table").html("<table><tr><td>Number of Partners</td><td style='text-align:right'>"
-                        +v.partner.length+"</td></tr><tr><td>Number of Bilateral Partners</td><td style='text-align:right'>"
+                      tooltip.select(".table").html("<table><tr><td>Number of Partners (A)</td><td style='text-align:right'>"
+                        +v.partner.length+"</td></tr><tr><td>Number of Bilateral Partners (A &cap; B)</td><td style='text-align:right'>"
                         +v.partner_intersect.length+"</td></tr><tr><td>Bilateral Rate</td><td style='text-align:right'>"
                         +d3.round(v.mirror_rate,2)+"</td></tr></table>")
                       // var table = tooltip.select(".table").append("table")
