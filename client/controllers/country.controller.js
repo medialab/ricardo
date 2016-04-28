@@ -379,6 +379,13 @@ angular.module('ricardo.controllers.country', [])
          return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
       });
 
+      var partner_selected=$scope.reporting.map(function(d){return d.RICid})
+      if(partner_selected.length>0){
+        $scope.tableDataSources=$scope.tableDataSources.filter(function(d){
+          return partner_selected.indexOf(d.partner_id) > -1;
+        });
+      }
+
       var missing;
       var allExpNull = $scope.tableDataSources.every(function (d) {
         return d.exp === null;
@@ -693,6 +700,7 @@ angular.module('ricardo.controllers.country', [])
       if(newValue !== oldValue && newValue){
         initLinechart($scope.reporting, $scope.linechartFlow.type.value,
           $scope.linechartCurrency.type.value);
+        updateTableData()
       }
     }, true)
 
