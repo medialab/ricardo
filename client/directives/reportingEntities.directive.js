@@ -113,10 +113,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                   if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(d[colorBy])
                   else return scaleColor(d[colorBy].length)
                  })
-                .style("opacity",function(v){
-                  if(colorBy==="partner" || colorBy==="mirror_rate") return 1
-                  else return 0.5
-                })
+                .style("opacity",0.7)
             .attr("x", function(d) { return x(new Date(d.year,0,1));})
             .attr("y", function(d) {
                   var topping = years[+d.year];
@@ -240,22 +237,22 @@ angular.module('ricardo.directives.reportingEntities', [])
         }
 
         var margin_axis = {top: 135, right: 0, bottom: 40, left: 180}
-        var svg_axis = d3.select("#reporting-entities-axis").append("svg")
-            .attr("width",width + margin.left + margin.right)
-            .attr("height",140)
-            .append("g")
-            .attr("transform", "translate(" + margin_axis.left + ","+margin_axis.top+")");
-        svg_axis.append("g")
-                .attr("class", "x axis")
-                .call(xAxis);
+        // var svg_axis = d3.select("#reporting-entities-axis").append("svg")
+        //     .attr("width",width + margin.left + margin.right)
+        //     .attr("height",140)
+        //     .append("g")
+        //     .attr("transform", "translate(" + margin_axis.left + ","+margin_axis.top+")");
+        // svg_axis.append("g")
+        //         .attr("class", "x axis")
+        //         .call(xAxis);
 
-        svg_axis.append("g")
-                .attr("transform", "translate(-" + (2+margin_axis.left-offset) + ",0)")
-                .attr("class", "margin axis")
-                .append("text")
-                .attr("y",-20)
-                .attr("font-size",11)
-                .text(layoutName)
+        // svg_axis.append("g")
+        //         .attr("transform", "translate(-" + (2+margin_axis.left-offset) + ",0)")
+        //         .attr("class", "margin axis")
+        //         .append("text")
+        //         .attr("y",-20)
+        //         .attr("font-size",11)
+        //         .text(layoutName)
 
 //////////////////////////////////////////////////////
 ////////////////// Tooltips Setup //////////////////
@@ -477,10 +474,7 @@ angular.module('ricardo.directives.reportingEntities', [])
               else if(colorBy==="mirror_rate") return v.mirror_rate!==undefined? scaleColor(v[colorBy]):"none"
               else return scaleColor(v[colorBy].length)
              })
-             .style("opacity",function(v){
-                if(colorBy==="partner" || colorBy==="mirror_rate") return 1
-                else return 0.7
-              })
+             .style("opacity",0.7)
 
         }
         function order(layout,data){
@@ -639,10 +633,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                   if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(v[colorBy])
                   else return scaleColor(v[colorBy].length)
                  })
-                .style("opacity",function(){
-                  if(colorBy==="partner" || colorBy==="mirror_rate") return 1
-                  else return 0.7
-                })
+                .style("opacity",0.7)
                // .style("fill",function(v){return sourceColors[v.sourcetype]})
                // .style("fill", function(v) {return continentColors[v.continent];})
                // .style("fill-opacity",function(v){return z(v[yValue]);})
@@ -650,7 +641,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                   var partner=v.partnertype==="actual" ? "Actual Reported": v.reference;
                   var bilateral=v.partnertype==="actual"? "Number of bilateral partners: "+v.mirror_rate : ""
                   var reference=v.partnertype==="actual"? "Number of partners by continent":"World Partner reference: " + v.reference
-                  d3.select(this).style("stroke","black");
+                  d3.select(this).style("stroke","black").style("opacity",1);
                   // d3.select(this.parentNode.parentNode).select("text").style("stroke","black");
                   // d3.select(".matrix").append("rect")
                   //                   .attr("class","column")
@@ -738,71 +729,72 @@ angular.module('ricardo.directives.reportingEntities', [])
                     }
                 })
                 .on('mouseout', function() {
-                  d3.select(this).style("stroke","none");
+                  d3.select(this).style("stroke","none").style("opacity",0.7)
                   // d3.select(this.parentNode.parentNode).select("text").style("stroke","none");
                   // d3.select(".matix").select(".column").remove();
                   tooltip.transition().style("display", 'none');
-                  svg_axis.selectAll(".highlight").remove();
+                  d3.select("#reporting-synth-container").selectAll(".highlight").remove();
                 })
-                .on('mousemove', function() {
+                .on('mousemove', function(v) {
                     var hid = tooltip.style("height").replace("px", "");
 
                     tooltip.style("display","block").style("left", (Math.min(window.innerWidth,
                         Math.max(0, (d3.event.pageX)))-75) + "px")
                     .style("top",(d3.event.pageY+40)+"px")
                       // .style("width", wid + "px");
+                    var svg_axis=d3.select("#reporting-synth-container").select(".synth_svg")
+                    var axis_height=100
+                     //tick highlighting
+                    var text = svg_axis.append("text")
+                           .attr("class", "highlight")
+                           .attr("x", x(new Date(v.year,0,1)))
+                           .attr("y", axis_height+17)
+                           .attr("font-size", "0.85em")
+                           .attr("text-anchor","middle")
+                           .text(v.year);
 
-                    //  //tick highlighting
-                    // var text = svg_axis.append("text")
-                    //        .attr("class", "highlight")
-                    //        .attr("x", x(new Date(d.year,0,1)))
-                    //        .attr("y", -9)
-                    //        .attr("font-size", "0.85em")
-                    //        .attr("text-anchor","middle")
-                    //        .text(d.year);
+                    // Define the gradient
+                    var gradient = svg_axis.append("svg:defs")
+                          .append("svg:linearGradient")
+                          .attr("id", "gradient")
+                          .attr("x1", "0%")
+                          .attr("y1", "100%")
+                          .attr("x2", "100%")
+                          .attr("y2", "100%")
+                          .attr("spreadMethod", "pad");
 
-                    // // Define the gradient
-                    // var gradient = svg_axis.append("svg:defs")
-                    //       .append("svg:linearGradient")
-                    //       .attr("id", "gradient")
-                    //       .attr("x1", "0%")
-                    //       .attr("y1", "100%")
-                    //       .attr("x2", "100%")
-                    //       .attr("y2", "100%")
-                    //       .attr("spreadMethod", "pad");
+                      // Define the gradient colors
+                      gradient.append("svg:stop")
+                          .attr("offset", "0%")
+                          .attr("stop-color", "#f5f5f5")
+                          .attr("stop-opacity", 0.1);
 
-                    //   // Define the gradient colors
-                    //   gradient.append("svg:stop")
-                    //       .attr("offset", "0%")
-                    //       .attr("stop-color", "#f5f5f5")
-                    //       .attr("stop-opacity", 0.1);
+                      gradient.append("svg:stop")
+                          .attr("offset", "50%")
+                          .attr("stop-color", "#f5f5f5")
+                          .attr("stop-opacity", 1);
 
-                    //   gradient.append("svg:stop")
-                    //       .attr("offset", "50%")
-                    //       .attr("stop-color", "#f5f5f5")
-                    //       .attr("stop-opacity", 1);
+                      gradient.append("svg:stop")
+                          .attr("offset", "100%")
+                          .attr("stop-color", "#f5f5f5")
+                          .attr("stop-opacity", 0.1);
 
-                    //   gradient.append("svg:stop")
-                    //       .attr("offset", "100%")
-                    //       .attr("stop-color", "#f5f5f5")
-                    //       .attr("stop-opacity", 0.1);
-
-                    //   // add rect as background to hide date display in
-                    //   var bbox = text.node().getBBox();
-                    //   var rect = svg_axis.append("svg:rect")
-                    //       .attr("class", "highlight")
-                    //       .attr("x", bbox.x-20)
-                    //       .attr("y", bbox.y)
-                    //       .attr("width", bbox.width+40)
-                    //       .attr("height", bbox.height)
-                    //       .style("fill", 'url(#gradient)')
-                    //   svg_axis.append("text")
-                    //        .attr("class", "highlight")
-                    //        .attr("x", x(new Date(d.year,0,1)))
-                    //        .attr("y", -9)
-                    //        .attr("font-size", "0.85em")
-                    //        .attr("text-anchor","middle")
-                    //        .text(d.year);
+                      // add rect as background to hide date display in
+                      var bbox = text.node().getBBox();
+                      var rect = svg_axis.append("svg:rect")
+                          .attr("class", "highlight")
+                          .attr("x", bbox.x-20)
+                          .attr("y", bbox.y)
+                          .attr("width", bbox.width+40)
+                          .attr("height", bbox.height)
+                          .style("fill", 'url(#gradient)')
+                      svg_axis.append("text")
+                           .attr("class", "highlight")
+                           .attr("x", x(new Date(v.year,0,1)))
+                           .attr("y", axis_height+17)
+                           .attr("font-size", "0.85em")
+                           .attr("text-anchor","middle")
+                           .text(v.year);
                 });
 
               // z.domain(d3.extent(d.values,function(v){ return  +v[yValue];}));
@@ -811,8 +803,8 @@ angular.module('ricardo.directives.reportingEntities', [])
 
               sideChart.append("rect")
                   .attr("class","coverage_rect")
-                  .attr("x",function(d){ return marginScale(d[layout])})
-                  .attr("width",function(d){ return margin.left-offset-marginScale(d[layout])})
+                  .attr("x",function(d){ return d3.min([marginScale(d[layout]),margin.left-offset-5])})
+                  .attr("width",function(d){ return d3.max([margin.left-offset-marginScale(d[layout]),5])})
                   .attr("height",gridHeight-gridGap)
                   .style("opacity",0.7)
                   .style("fill","lightgrey")
@@ -872,6 +864,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                   })
             })//end draw entity group
 
+            //stacked by group
             // matrix.append("g").attr("class","availableGroup")
             //    .selectAll("rect")
             //    .data(scope.flatData)

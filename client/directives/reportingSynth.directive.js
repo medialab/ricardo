@@ -123,6 +123,7 @@ angular.module('ricardo.directives.reportingSynth', [])
                     .attr("height", height + margin.top + margin.bottom)
                     .attr("width",width + margin.left + margin.right)
                     .append("g")
+                    .attr("class","synth_svg")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
@@ -261,7 +262,7 @@ angular.module('ricardo.directives.reportingSynth', [])
                       .append("rect")
                       .attr("class","background")
                       .attr("x", function(d) { return x(new Date(d,0,1)); })
-                      .attr("height", function(d) { return height; })
+                      .attr("height",height)
                       .attr("width", barwidth-1)
                       .style("fill","lightgrey")
                       .style("opacity",0)
@@ -310,15 +311,64 @@ angular.module('ricardo.directives.reportingSynth', [])
                       })
                       .on("mousemove",function(d){
                         tooltip.style("left", d3.event.pageX+20 + "px")
-                               .style("top", "300px")
+                               .style("top", d3.event.pageY-100 + "px")
+                        //  //tick highlighting
+                        var text = svg.append("text")
+                                 .attr("class", "highlight")
+                                 .attr("x", x(new Date(d,0,1)))
+                                 .attr("y", height+17)
+                                 .attr("font-size", "0.85em")
+                                 .attr("text-anchor","middle")
+                                 .text(d);
+
+                          // Define the gradient
+                          var gradient = svg.append("svg:defs")
+                                .append("svg:linearGradient")
+                                .attr("id", "gradient")
+                                .attr("x1", "0%")
+                                .attr("y1", "100%")
+                                .attr("x2", "100%")
+                                .attr("y2", "100%")
+                                .attr("spreadMethod", "pad");
+
+                            // Define the gradient colors
+                            gradient.append("svg:stop")
+                                .attr("offset", "0%")
+                                .attr("stop-color", "#f5f5f5")
+                                .attr("stop-opacity", 0.1);
+
+                            gradient.append("svg:stop")
+                                .attr("offset", "50%")
+                                .attr("stop-color", "#f5f5f5")
+                                .attr("stop-opacity", 1);
+
+                            gradient.append("svg:stop")
+                                .attr("offset", "100%")
+                                .attr("stop-color", "#f5f5f5")
+                                .attr("stop-opacity", 0.1);
+
+                            // add rect as background to hide date display in
+                            var bbox = text.node().getBBox();
+                            var rect = svg.append("svg:rect")
+                                .attr("class", "highlight")
+                                .attr("x", bbox.x-20)
+                                .attr("y", bbox.y)
+                                .attr("width", bbox.width+40)
+                                .attr("height", bbox.height)
+                                .style("fill", 'url(#gradient)')
+                            svg.append("text")
+                                 .attr("class", "highlight")
+                                 .attr("x", x(new Date(d,0,1)))
+                                 .attr("y", height+17)
+                                 .attr("font-size", "0.85em")
+                                 .attr("text-anchor","middle")
+                                 .text(d);
                       })
                       .on("mouseout",function(d){
                         d3.select(this).style("opacity",0)
-                        d3.selectAll('.layer').selectAll("rect")
-                        .style("opacity",function(d){
-                          return category==="partner" || category==="mirror_rate" ? 0.9:0.7;
-                        })
+                        d3.selectAll('.layer').selectAll("rect").style("opacity",0.7)
                         tooltip.transition().style("display", "none")
+                        svg.selectAll(".highlight").remove();
                       })
 
 
@@ -335,7 +385,7 @@ angular.module('ricardo.directives.reportingSynth', [])
               .attr("y", function(d) { return y(d.y + d.y0); })
               .attr("height", function(d) { return y(d.y0) - y(d.y + d.y0); })
               .attr("width", barwidth-1)
-              .style("opacity",function(d){return category==="partner" || category==="mirror_rate" ? 0.9:0.7;})
+              .style("opacity",function(d){return category==="partner" || category==="mirror_rate" ? 0.8:0.7;})
               .attr("pointer-events","none")
 
 

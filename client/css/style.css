@@ -1133,8 +1133,9 @@ div #reporting-entities-container{
   padding-top: 3px;
   padding-right: 7px;
   border-top: 1px solid #D1D1D1;
+  font-size: 11px;
 }
-.matrix-tooltip .source,.synth-tooltip td{
+.matrix-tooltip .source,.synth-tooltip .table{
  font-size: 11px;
 }
 
