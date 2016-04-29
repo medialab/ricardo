@@ -192,6 +192,8 @@ angular.module('ricardo.controllers.matrix', [])
                   if (e.partnertype==="actual"){
                     var attribute=e
                     attribute.reference=v.values[1].reference
+                    attribute.sourcetype=v.values[1].sourcetype
+                    attribute.source=v.values[1].source
                     flowEntities_uniq.push(attribute)
                   }
                 })
@@ -207,7 +209,7 @@ angular.module('ricardo.controllers.matrix', [])
                                      return d.partner_mirror.indexOf(value) > -1;
                                  });
               // d.mirror_rate=d.partner_intersect.length/d.partner.length
-              d.mirror_rate=2*d.partner_intersect.length/(d.partner.length+d.partner_mirror.length)
+              d.mirror_rate=d.partner_intersect.length/(d.partner.length+d.partner_mirror.length)
             }
             else {
               d.partner_mirror=[]

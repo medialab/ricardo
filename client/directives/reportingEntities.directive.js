@@ -121,18 +121,33 @@ angular.module('ricardo.directives.reportingEntities', [])
                   if (topping) return topping*5;
                 })
         }
-        var continentMap={
-           "Europe":1,
-           "America":2,
-           "Africa":3,
-           "Asia":4,
-           "Oceania":5
+        var world_partner_map={
+          "World estimated":0,
+          "World as reported":1,
+          "World sum partners":2,
+          "undefined":3
         }
-        var typeMap={
-           "country":1,
-           "city/part_of":2,
-           "group":3,
-           "colonial_area":4
+        var source_map={
+          "primary":0,
+          "secondary":1,
+          "estimation":2,
+          "OUPS":3,
+          "Tableau général commerce France":4,
+          "estimation|primary":5,
+          "estimation|secondary":6
+        }
+        var type_map={
+          "country":0,
+          "city/part_of":1,
+          "group":2,
+          "colonial_area":3
+        }
+        var continent_map={
+           "Europe":0,
+           "America":1,
+           "Africa":2,
+           "Asia":3,
+           "Oceania":4
         }
         var continentColors = {
                     "Europe":"#bf6969",
@@ -151,8 +166,8 @@ angular.module('ricardo.directives.reportingEntities', [])
 
         // var categoryColor=d3.scale.category10()
         var categoryColor  = d3.scale.ordinal()
-                    .range(["#393b79","#637939", "#8c6d31","#843c39", "#7b4173"]);
-
+                    // .range(["#5254a3","#637939", "#bd9e39","#ad494a", "#a55194","#e7ba52","#de9ed6"]);
+                    .range(['#393b79',  '#bd9e39', '#ad494a',  '#637939', '#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
         function colorByContinent(continent) {
           return continentColors[continent]
         }
@@ -459,7 +474,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                 color_domain.push(v[colorBy])
               })
             })
-            color_domain=d3.set(color_domain).values().sort(function(a, b){ return d3.descending(a, b)})
+            color_domain=sort_color(colorBy,d3.set(color_domain).values())
             categoryColor.domain(color_domain)
           }
 
@@ -476,6 +491,20 @@ angular.module('ricardo.directives.reportingEntities', [])
              })
              .style("opacity",0.7)
 
+        }
+        function sort_color(colorBy,color_domain){
+          switch(colorBy){
+            case "reference": color_domain.sort(function(a, b){ return d3.ascending(world_partner_map[a], world_partner_map[b])})
+            break;
+            case "sourcetype":  color_domain.sort(function(a, b){ return d3.ascending(source_map[a],source_map[b])})
+            // case "sourcetype":  color_domain.sort(function(a, b){ return d3.descending(a,b)})
+            break;
+            case "type": color_domain.sort(function(a, b){ return d3.ascending(type_map[a], type_map[b])})
+            break;
+            case "continent": color_domain.sort(function(a, b){ return d3.ascending(continent_map[a], continent_map[b])})
+            break;
+          }
+          return color_domain;
         }
         function order(layout,data){
           switch(layout){

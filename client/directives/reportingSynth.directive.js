@@ -58,7 +58,7 @@ angular.module('ricardo.directives.reportingSynth', [])
 
         // var categoryColor=d3.scale.category10()
         var categoryColor  = d3.scale.ordinal()
-                    .range(["#393b79","#637939", "#8c6d31","#843c39", "#7b4173"]);
+                    .range(['#393b79',  '#bd9e39', '#ad494a',  '#637939', '#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
         var scaleColor=d3.scale.ordinal().range(["#daafaf","#cc6666","#993333","#663333"])
         var stack = d3.layout.stack()
                               .values(function(d) { return d.values; })
@@ -107,7 +107,7 @@ angular.module('ricardo.directives.reportingSynth', [])
         var tooltip = d3.select("body")
                       .append("div")
                       .attr("class", "synth-tooltip")
-                      .style("width", "150px")
+                      .style("width", "160px")
 
         var tooltip_title=tooltip.append("div").attr("class", "title");
         var tooltip_table=tooltip.append("div").attr("class","table")
@@ -131,6 +131,7 @@ angular.module('ricardo.directives.reportingSynth', [])
                     .defined(function(d) { return d.values.nb_reporting!==0; })
                     .x(function(d) { return x(new Date(d.key,0,1));})
                     .y(function(d) { return y(d.values.nb_reporting); });
+
         var partner_map={
           0:"no partner",
           1:"1 - 10",
@@ -141,6 +142,48 @@ angular.module('ricardo.directives.reportingSynth', [])
           0:"0",
           0.5:"0 - 0.5",
           1:"0.5 - 1"
+        }
+        var world_partner_map={
+          "World estimated":0,
+          "World as reported":1,
+          "World sum partners":2,
+          "undefined":3
+        }
+        var source_map={
+          "primary":0,
+          "secondary":1,
+          "estimation":2,
+          "OUPS":3,
+          "Tableau général commerce France":4,
+          "estimation|primary":5,
+          "estimation|secondary":6
+        }
+        var type_map={
+          "country":0,
+          "city/part_of":1,
+          "group":2,
+          "colonial_area":3
+        }
+        var continent_map={
+           "Europe":0,
+           "America":1,
+           "Africa":2,
+           "Asia":3,
+           "Oceania":4
+        }
+        function sort_color(colorBy,color_domain){
+          switch(colorBy){
+            case "reference": color_domain.sort(function(a, b){ return d3.ascending(world_partner_map[a], world_partner_map[b])})
+            break;
+            case "sourcetype":  color_domain.sort(function(a, b){ return d3.ascending(source_map[a],source_map[b])})
+            // case "sourcetype":  color_domain.sort(function(a, b){ return d3.descending(a,b)})
+            break;
+            case "type": color_domain.sort(function(a, b){ return d3.ascending(type_map[a], type_map[b])})
+            break;
+            case "continent": color_domain.sort(function(a, b){ return d3.ascending(continent_map[a], continent_map[b])})
+            break;
+          }
+          return color_domain;
         }
         function group_reporting(data,curveBy){
           minDate=d3.min(data,function(d){return +d.year});
@@ -249,10 +292,17 @@ angular.module('ricardo.directives.reportingSynth', [])
           });
 
           var color_domain=data.map(function(d){return d.key;})
-                                .sort(function(a, b){return (category==="partner"||category==="mirror_rate")? d3.ascending(+a, +b):d3.descending(a, b);})//need sorted
+          // if(category==="partner" || category==="mirror_rate")
+          //                       .sort(function(a, b){return (category==="partner"||category==="mirror_rate")? d3.ascending(+a, +b):d3.ascending(a, b);})//need sorted
 
-          if(category==="partner" || category==="mirror_rate") scaleColor.domain(color_domain)
-          else categoryColor.domain(color_domain)
+          if(category==="partner" || category==="mirror_rate") {
+            color_domain.sort(function(a,b){return d3.ascending(+a, +b);})
+            scaleColor.domain(color_domain)
+          }
+          else {
+            color_domain=sort_color(category,color_domain)
+            categoryColor.domain(color_domain)
+          }
           draw_legend(color_domain)
 
           x.domain([new Date(minDate,0,1), new Date(maxDate,0,1)]);
