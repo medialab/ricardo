@@ -303,7 +303,6 @@ angular.module('ricardo.directives.linechartWorld', [])
 
           focus.append("text")
             .attr("y", -10)
-            .attr("text-anchor", "middle")
             .attr("pointer-events","none");
 
 

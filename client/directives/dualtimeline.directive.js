@@ -331,7 +331,6 @@ angular.module('ricardo.directives.dualTimeline', [])
 
             focus.append("text")
                 .attr("y", -10)
-                .attr("text-anchor", "middle")
                 .attr("pointer-events","none");
 
             var format = d3.format("0,000");
