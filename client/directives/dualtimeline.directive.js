@@ -48,7 +48,7 @@ angular.module('ricardo.directives.dualTimeline', [])
         function draw(data){
           document.querySelector('#dual-timeline-container').innerHTML = null;
 
-          var margin = {top: 10, right: 0, bottom: 30, left: 0},
+          var margin = {top: 20, right: 0, bottom: 30, left: 0},
               width = document.querySelector('#dual-timeline-container').offsetWidth - margin.left - margin.right,
               height = 180 - margin.top - margin.bottom;
 
@@ -144,22 +144,26 @@ angular.module('ricardo.directives.dualTimeline', [])
           svg.append("path")
               .datum(data)
               .attr("class", "area-imp")
-              .attr("d", areaImp);
+              .attr("d", areaImp)
+              .attr("pointer-events","none");
 
           svg.append("path")
               .datum(data)
               .attr("class", "line-imp")
               .attr("d", lineImp)
+              .attr("pointer-events","none");
 
           svg.append("path")
               .datum(data)
               .attr("class", "area-exp")
               .attr("d", areaExp)
+              .attr("pointer-events","none");
 
           svg.append("path")
               .datum(data)
               .attr("class", "line-exp")
               .attr("d", lineExp)
+              .attr("pointer-events","none");
 
           // add discrete points
           var ipoint_g=svg.selectAll(".ipoint")
@@ -191,7 +195,8 @@ angular.module('ricardo.directives.dualTimeline', [])
                      .attr("x2",lineImp.x())
                      .attr("y2",areaImp.y1())
                      .attr("stroke-width",1)
-                     .attr("stroke","rgba(230, 230, 230, 0.4)");
+                     .attr("stroke","rgba(230, 230, 230, 0.4)")
+
 
             var epoint_g=svg.selectAll(".epoint")
             .data(data.filter(function(d,i) {
@@ -322,10 +327,12 @@ angular.module('ricardo.directives.dualTimeline', [])
 
             focus.append("circle")
                 .attr("r", 3)
+                .attr("pointer-events","none");
 
             focus.append("text")
                 .attr("y", -10)
                 .attr("text-anchor", "middle")
+                .attr("pointer-events","none");
 
             var format = d3.format("0,000");
 
@@ -337,7 +344,14 @@ angular.module('ricardo.directives.dualTimeline', [])
                 focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
                 focus.select("text")
                   .attr("fill", colorPoint)
-                  .text(format(Math.round(d[yValue])) + ' £');
+                  .text(format(Math.round(d[yValue])) + ' £')
+                  .attr("text-anchor", function(d){
+                    var xPos=d3.transform(d3.select(this.parentNode).attr("transform")).translate[0]
+                    var tWidth=d3.select(this).node().getBBox().width
+                    if((xPos-tWidth/2)<0) return "start"
+                    else if((xPos+tWidth/2)>width) return "end"
+                    else return "middle"
+                  });
 
                 /*
                  * Vertical line
@@ -347,9 +361,10 @@ angular.module('ricardo.directives.dualTimeline', [])
                      .attr("x1", x(new Date(d.year, 0, 1)))
                      .attr("y1", y(d[yValue]))
                      .attr("x2", x(new Date(d.year, 0, 1)))
-                     .attr("y2", 142)
+                     .attr("y2", 132)
                      .attr("stroke-width", 1)
-                     .attr("stroke", "grey");
+                     .attr("stroke", "grey")
+
 
                 /*
                  * Add date
@@ -357,9 +372,10 @@ angular.module('ricardo.directives.dualTimeline', [])
                 var text = svg.append("text")
                      .attr("class", "lineDateText")
                      .attr("x", x(new Date(d.year, 0, 1)) - 15)
-                     .attr("y", 157)
+                     .attr("y", 147)
                      .attr("font-size", "0.85em")
-                     .text(d.year);
+                     .text(d.year)
+                     .attr("pointer-events","none");
 
                 /*
                  *  Define the gradient
@@ -402,6 +418,7 @@ angular.module('ricardo.directives.dualTimeline', [])
                     .attr("width", bbox.width + 100)
                     .attr("height", bbox.height)
                     .style("fill", 'url(#gradient)')
+                    .attr("pointer-events","none");
 
 
                 /*
@@ -409,10 +426,11 @@ angular.module('ricardo.directives.dualTimeline', [])
                  */
                 var textDate = svg.append("text")
                      .attr("class", "lineDateText")
-                     .attr("x", x(new Date(d.year, 0, 1)) - 15)
-                     .attr("y", 157)
+                     .attr("x", x(new Date(d.year, 0, 1)) - 14)
+                     .attr("y", 147)
                      .attr("font-size", "0.85em")
-                     .text(d.year);
+                     .text(d.year)
+                     .attr("pointer-events","none");
               }
             }
 

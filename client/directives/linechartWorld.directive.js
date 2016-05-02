@@ -298,11 +298,14 @@ angular.module('ricardo.directives.linechartWorld', [])
             }
 
           focus.append("circle")
-            .attr("r", 3);
+            .attr("r", 3)
+            .attr("pointer-events","none");
 
           focus.append("text")
             .attr("y", -10)
             .attr("text-anchor", "middle")
+            .attr("pointer-events","none");
+
 
           var format = d3.format("0,000");
 
@@ -326,6 +329,14 @@ angular.module('ricardo.directives.linechartWorld', [])
                 else
                   focus.select("text").attr("fill", colorPoint).text(format(Math.round(d[yValue])) + ' £');
 
+                focus.select('text')
+                    .attr("text-anchor", function(d){
+                        var xPos=d3.transform(d3.select(this.parentNode).attr("transform")).translate[0]
+                        var tWidth=d3.select(this).node().getBBox().width
+                        if((xPos-tWidth/2)<0) return "start"
+                        else if((xPos+tWidth/2)>width) return "end"
+                        else return "middle"
+                      });
                 chart.append("line")
                        .attr("class", "lineDate")
                        .attr("x1", x(new Date(d.year, 0, 1)))
@@ -334,12 +345,14 @@ angular.module('ricardo.directives.linechartWorld', [])
                        .attr("y2", 350)
                        .attr("stroke-width", 1)
                        .attr("stroke", "grey");
+
                var text = chart.append("text")
                        .attr("class", "lineDate")
                        .attr("x", x(new Date(d.year, 0, 1)) - 15)
                        .attr("y", 368)
                        .attr("font-size", "0.85em")
-                       .text(d.year);
+                       .text(d.year)
+                       .attr("pointer-events","none");
 
                 // Define the gradient
                 var gradient = chart.append("chart:defs")
@@ -376,6 +389,7 @@ angular.module('ricardo.directives.linechartWorld', [])
                       .attr("width", bbox.width + 100)
                       .attr("height", bbox.height)
                       .style("fill", 'url(#gradient)')
+                      .attr("pointer-events","none");
 
 
                   // add date
@@ -384,7 +398,8 @@ angular.module('ricardo.directives.linechartWorld', [])
                        .attr("x", x(new Date(d.year, 0, 1)) - 15)
                        .attr("y", 368)
                        .attr("font-size", "0.85em")
-                       .text(d.year);
+                       .text(d.year)
+                       .attr("pointer-events","none");
               }
 
             }
