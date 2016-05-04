@@ -52,14 +52,28 @@ angular.module('ricardo.directives.reportingEntities', [])
           if (newValue) {
             var offsetDiv=$("#reporting-entities-container").offset().top;
             var offsetTop=d3.select("#r_"+scope.reporting).node().getCTM().f;
-            d3.selectAll(".entities").selectAll(".rlabel,.overlay").style("stroke","none");
-            d3.select("#r_"+scope.reporting).selectAll(".rlabel,.overlay").style("stroke","black").transition().delay(2000).duration(2000).style("stroke","none")
-            // setTimeout(function(){
-            //   setInterval(function(){
-            //     d3.select("#r_"+scope.reporting).selectAll(".rlabel,.overlay").style("stroke","black").transition().style("stroke","none")
-            //   },2000)
-            // },4000)
+            d3.select("#r_"+scope.reporting).selectAll(".rlabel").style("stroke","black")
+                           .attr("y",15)
+                           .attr("font-size","14px");
+            d3.select("#r_"+scope.reporting).selectAll(".overlay").style("fill","lightgrey")
+            d3.select("#r_"+scope.reporting).selectAll(".overlay,.coverage_rect")
+                          .attr("height",gridHeight-gridGap+15)
+            d3.select("#r_"+scope.reporting).selectAll(".available").selectAll("circle")
+                      .attr("cy",(gridHeight-gridGap+15)/2)
+            d3.select("#r_"+scope.reporting).selectAll(".available").selectAll("rect")
+                          .attr("height",gridHeight-gridGap+15)
             $("#reporting-entities-container").animate({scrollTop:offsetTop-300},500);
+
+            d3.selectAll(".entities")
+                      .filter(function(e){
+                       var key=d3.select("#r_"+scope.reporting).datum().key
+                        return y(e.key)>y(key);})
+                      .attr("transform",function(e){
+                        var curTransform = d3.select(this).attr("transform")
+                        var curXPos = +curTransform.split(",")[0].replace("translate(","");
+                        var curYPos = +curTransform.split(",")[1].replace(")","");
+                        return "translate(" + curXPos + "," + (curYPos + 15) + ")"
+                      })
             // searchFixed=true;
           }
         })
@@ -179,7 +193,7 @@ angular.module('ricardo.directives.reportingEntities', [])
         var colorBy=scope.color.type.value;
         var colorName=scope.color.name.value;
 
-        var margin = {top: 0, right: 0, bottom: 40, left: 180},
+        var margin = {top: 0, right: 10, bottom: 40, left: 180},
             width = document.querySelector('#reporting-entities-container').offsetWidth-margin.left-margin.right,
             height,
             offset=30,
@@ -188,8 +202,8 @@ angular.module('ricardo.directives.reportingEntities', [])
 
 
         var gridHeight=10,
-            gridGap=1
-        var gridWidth=width/(1938-1786);
+            gridGap=1,
+            gridWidth
 
         var legendWidth=60
 
@@ -251,7 +265,7 @@ angular.module('ricardo.directives.reportingEntities', [])
             else return d
         }
 
-        var margin_axis = {top: 135, right: 0, bottom: 40, left: 180}
+        var margin_axis = {top: 135, right: 10, bottom: 40, left: 180}
         // var svg_axis = d3.select("#reporting-entities-axis").append("svg")
         //     .attr("width",width + margin.left + margin.right)
         //     .attr("height",140)
@@ -306,6 +320,7 @@ angular.module('ricardo.directives.reportingEntities', [])
         var countByType=[]
         var countByContinent=[]
 
+        //replaced with reportingSynth directive
         function recolor_legend(colorBy,data){
 
           svg_axis.select(".legend").remove()
@@ -483,14 +498,12 @@ angular.module('ricardo.directives.reportingEntities', [])
           // recolor_legend(colorBy,data)
           // if(scope.group) regroup(colorBy)
           updateColor(colorBy,data)
-          d3.selectAll(".available")
+          d3.selectAll(".available").selectAll("circle")
             .style("fill",function(v){
               if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(v[colorBy])
               else if(colorBy==="mirror_rate") return v.mirror_rate!==undefined? scaleColor(v[colorBy]):"none"
               else return scaleColor(v[colorBy].length)
              })
-             .style("opacity",0.7)
-
         }
         function sort_color(colorBy,color_domain){
           switch(colorBy){
@@ -543,6 +556,12 @@ angular.module('ricardo.directives.reportingEntities', [])
           marginScale.domain([0,d3.max(data,function(d){return d[layout]})])
           d3.select(".margin.axis").call(marginAxis);
           d3.select(".margin.axis").select("text").text(layoutName)
+          d3.select("#reporting-synth-container").select(".ordertitle").remove()
+          d3.select("#reporting-synth-container").select(".reporting-synth-container")
+            .append("text").text("Order by "+layout)
+            .attr("y",80)
+            .attr("text-anchor","end")
+            .attr("class","ordertitle")
 
           d3.select("#reporting-entities-container").selectAll(".entities")
             .transition().duration(500)
@@ -573,8 +592,8 @@ angular.module('ricardo.directives.reportingEntities', [])
             return d.key;
           })
 
-
           height=gridHeight*reportings.length;
+          gridWidth=width/(maxDate-minDate);
 
           d3.select(".margin.axis").call(marginAxis);
           svg_g.selectAll("g").remove();
@@ -615,14 +634,39 @@ angular.module('ricardo.directives.reportingEntities', [])
                       .attr("id",function(d){return "r_"+d.values[0].reporting_id;})
                       .attr("transform", function(d){ return "translate(0 ,"+ y(d.key) + ")"});
 
-         entity.on("mouseover",function(d){
+        entity.on("mouseover",function(d,i){
                   if(!searchFixed){
-                    d3.select(this).selectAll(".overlay,.rlabel").style("stroke","black");
+                    d3.select(this).selectAll(".rlabel").style("stroke","black")
+                                   .attr("y",15)
+                                   .attr("font-size","14px");
+                    d3.select(this).selectAll(".overlay").style("fill","lightgrey")
+                    d3.select(this).selectAll(".overlay,.coverage_rect")
+                                  .attr("height",gridHeight-gridGap+15)
+                    d3.select(this).selectAll(".available").selectAll("circle")
+                              .attr("cy",(gridHeight-gridGap+15)/2)
+                    d3.select(this).selectAll(".available").selectAll("rect")
+                                  .attr("height",gridHeight-gridGap+15)
+                    d3.selectAll(".entities").filter(function(e){return y(e.key)>y(d.key);})
+                      .attr("transform",function(e){
+                        var curTransform = d3.select(this).attr("transform")
+                        var curXPos = +curTransform.split(",")[0].replace("translate(","");
+                        var curYPos = +curTransform.split(",")[1].replace(")","");
+                        return "translate(" + curXPos + "," + (curYPos + 15) + ")"
+                      })
                   }
                 })
                 .on("mouseout",function(d){
                   if(!searchFixed){
-                    d3.select(this).selectAll(".overlay,.rlabel").style("stroke","none");
+                    d3.select(this).selectAll(".rlabel").style("stroke","none")
+                                .attr("y",8).attr("font-size","11px");
+                    d3.select(this).selectAll(".overlay").style("fill","none")
+                    d3.select(this).selectAll(".overlay,.coverage_rect")
+                                   .attr("height",gridHeight-gridGap)
+                    d3.select(this).selectAll(".available").selectAll("circle")
+                            .attr("cy",function(v) { return gridHeight/2;})
+                    d3.select(this).selectAll(".available").selectAll("rect")
+                                   .attr("height",gridHeight-gridGap)
+                    d3.selectAll(".entities").attr("transform", function(d){ return "translate(0 ,"+ y(d.key) + ")"});
                   }
                 })
           //       .on("click",function(d){
@@ -635,47 +679,47 @@ angular.module('ricardo.directives.reportingEntities', [])
           entity.each(function(d){
               var e = d3.select(this);
               //emptycell
-              e.append("g").selectAll("rect")
-                .data(years)
-                .enter().append("rect")
-                .attr("x", function(d) { return x(new Date(d,0,1));})
-                .attr("width", gridWidth-gridGap)
-                .attr("height", gridHeight-gridGap )
-                .style("fill", "lightgrey")
+              // e.append("g").selectAll("rect")
+              //   .data(years)
+              //   .enter().append("rect")
+              //   .attr("x", function(d) { return x(new Date(d,0,1));})
+              //   .attr("width", gridWidth-gridGap)
+              //   .attr("height", gridHeight-gridGap )
+              //   .style("fill", "lightgrey")
               e.append("rect")
                 .attr("class","overlay")
-                .attr("width",width)
+                .attr("width",width+gridWidth/2)
                 .attr("height",gridHeight-gridGap)
                 .style("fill","none")
+                .style("opacity","0.7")
                 .style("pointer-events","all")
-
-              e.append("g")
-               .selectAll("rect")
-               .data(d.values)
-               .enter().append("rect")
-               .attr("class","available")
-               .attr("x", function(v) { return x(new Date(v.year,0,1));})
-               .attr("y",function(d){return y(d.key)})
-               .attr("width", gridWidth-gridGap)
-               .attr("height", gridHeight-gridGap )
+              //test circle for matrix layout
+              var available=e.append("g")
+                             .selectAll(".available")
+                             .data(d.values)
+                             .enter().append("g")
+                             .attr("class","available")
+              available.append("rect")
+                        .attr("x",function(v) { return x(new Date(v.year,0,1));})
+                        .attr("width", gridWidth-gridGap)
+                        .attr("height", gridHeight-gridGap)
+                        .style("fill","none")
+                        .style("pointer-events","all")
+              available.append("circle")
+               .attr("cx",function(v) { return x(new Date(v.year,0,1));})
+               .attr("cy",function(v) { return gridHeight/2;})
+               .attr("r", gridWidth/2)
                .style("fill",function(v){
                   if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(v[colorBy])
                   else return scaleColor(v[colorBy].length)
                  })
-                .style("opacity",0.7)
+               .style("opacity",0.7)
+               .style("pointer-events","none")
                // .style("fill",function(v){return sourceColors[v.sourcetype]})
                // .style("fill", function(v) {return continentColors[v.continent];})
                // .style("fill-opacity",function(v){return z(v[yValue]);})
-               .on('mouseover', function(v) {
-                  d3.select(this).style("stroke","black").style("opacity",1);
-                  // d3.select(this.parentNode.parentNode).select("text").style("stroke","black");
-                  // d3.select(".matrix").append("rect")
-                  //                   .attr("class","column")
-                  //                   .attr("x",x(new Date(v.year,0,1)))
-                  //                   .attr("height",height)
-                  //                   .attr("width",gridWidth-gridGap)
-                  //                   .style("fill","none")
-                  //                   .style("stroke","black");
+               available.on('mouseover', function(v) {
+                  d3.select(this).select("circle").style("stroke","black").style("opacity",1);
                   tooltip.transition().style("display","block").style("opacity",.9);
                   tooltip.select(".title").html(
                     "<h5>"+v.reporting +" ("+v.type.split("/")[0]+" in "+v.continent+")"+ " in " + v.year +"</h5><hr>"+
@@ -756,11 +800,9 @@ angular.module('ricardo.directives.reportingEntities', [])
                     }
                 })
                 .on('mouseout', function() {
-                  d3.select(this).style("stroke","none").style("opacity",0.7)
-                  // d3.select(this.parentNode.parentNode).select("text").style("stroke","none");
-                  // d3.select(".matix").select(".column").remove();
+                   d3.select(this).select("circle").style("stroke","none").style("opacity",0.7)
                   tooltip.transition().style("display", 'none');
-                  d3.select("#reporting-synth-container").selectAll(".highlight").remove();
+                  d3.select("#reporting-synth-container").selectAll(".highlight,#gradient").remove();
                 })
                 .on('mousemove', function(v) {
                     var hid = tooltip.style("height").replace("px", "");
@@ -835,26 +877,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                   .attr("height",gridHeight-gridGap)
                   .style("opacity",0.7)
                   .style("fill","lightgrey")
-
-              sideChart.append("text")
-                         .attr("class","barLabel")
-                         .attr("y",8)
-                         .attr("font-size",11)
-                         .style("stroke","black")
-                         .style("opacity",0)
-
-                e.append("text")
-                  .text(function(d){
-                    if(d.key.split("(")[0].length>23) return d.key.split("(")[0].substring(0,20)+"...";
-                    else return d.key.split("(")[0];
-                  })
-                  .attr("class","rlabel")
-                  .attr("text-anchor","end")
-                  .attr("x",-2)
-                  .attr("y",8)
-                  .attr("font-size",11)
-                  .attr("cursor","default")
-                  .on("mouseover",function(d){
+                   .on("mouseover",function(d){
                     d3.select(this.parentNode.parentNode).selectAll(".rlabel").style("opacity",0)
                     d3.select(this.parentNode).selectAll(".coverage_rect,.barLabel")
                                               .style("opacity",1)
@@ -864,7 +887,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                                       return marginScale(d[layout])>margin.left/2 ? "end":"start"
                       })
                       .text(valueFormat(d[layout]))
-                    tooltip_margin.style("opacity", .9).html(
+                    tooltip_margin.style("display", "block").style("opacity", .9).html(
                     "<h5>"+d.key +"</h5><hr>"+layoutName+": "+d[layout])
                   })
                   .on('mousemove', function(v) {
@@ -877,18 +900,69 @@ angular.module('ricardo.directives.reportingEntities', [])
                       // .style("width", wid + "px");
                   })
                   .on("mouseout",function(d){
-                    tooltip_margin.style("opacity",0)
-                   d3.select(this.parentNode.parentNode).selectAll(".rlabel").style("opacity",1)
+                    tooltip_margin.style("display", "none")
+                    d3.select(this.parentNode.parentNode).selectAll(".rlabel").style("opacity",1)
                     d3.select(this.parentNode).select(".coverage_rect")
                                               .style("opacity",0.7)
                     d3.select(this.parentNode).select(".barLabel")
                                               .style("opacity",0)
-                    // if(d.key.split("(")[0].length>23){
-                    //   d3.select(this).text(function(d){return d.key.split("(")[0].substring(0,20)+"..."})
-                    //                  .attr("x",0)
-                    //                  .attr("text-anchor","end")
-                    // }
                   })
+
+              sideChart.append("text")
+                         .attr("class","barLabel")
+                         .attr("y",8)
+                         .attr("font-size",11)
+                         .style("stroke","black")
+                         .style("opacity",0)
+                         .attr("pointer-events","none")
+
+                e.append("text")
+                  .text(function(d){
+                    if(d.key.split("(")[0].length>23) return d.key.split("(")[0].substring(0,20)+"...";
+                    else return d.key.split("(")[0];
+                  })
+                  .attr("class","rlabel")
+                  .attr("text-anchor","end")
+                  .attr("x",-2)
+                  .attr("y",8)
+                  .attr("font-size",11)
+                  .attr("cursor","default")
+                  .attr("pointer-events","none")
+                  // .on("mouseover",function(d){
+                  //   d3.select(this.parentNode.parentNode).selectAll(".rlabel").style("opacity",0)
+                  //   d3.select(this.parentNode).selectAll(".coverage_rect,.barLabel")
+                  //                             .style("opacity",1)
+                  //   d3.select(this.parentNode).select(".barLabel")
+                  //     .attr("x",function(d){ return marginScale(d[layout])})
+                  //     .attr("text-anchor",function(d){
+                  //                     return marginScale(d[layout])>margin.left/2 ? "end":"start"
+                  //     })
+                  //     .text(valueFormat(d[layout]))
+                  //   tooltip_margin.style("opacity", .9).html(
+                  //   "<h5>"+d.key +"</h5><hr>"+layoutName+": "+d[layout])
+                  // })
+                  // .on('mousemove', function(v) {
+                  //   tooltip_margin
+                  //   // var wid = tooltip.style("width").replace("px", "");
+                  //   .style("left", (Math.min(window.innerWidth,
+                  //       Math.max(0, (d3.event.pageX)))) + "px")
+                  //   // .style("left",(margin.left-offset)/2+"px")
+                  //   .style("top", (d3.event.pageY+40) + "px")
+                  //     // .style("width", wid + "px");
+                  // })
+                  // .on("mouseout",function(d){
+                  //   tooltip_margin.style("opacity",0)
+                  //  d3.select(this.parentNode.parentNode).selectAll(".rlabel").style("opacity",1)
+                  //   d3.select(this.parentNode).select(".coverage_rect")
+                  //                             .style("opacity",0.7)
+                  //   d3.select(this.parentNode).select(".barLabel")
+                  //                             .style("opacity",0)
+                  //   // if(d.key.split("(")[0].length>23){
+                  //   //   d3.select(this).text(function(d){return d.key.split("(")[0].substring(0,20)+"..."})
+                  //   //                  .attr("x",0)
+                  //   //                  .attr("text-anchor","end")
+                  //   // }
+                  // })
             })//end draw entity group
 
             //stacked by group

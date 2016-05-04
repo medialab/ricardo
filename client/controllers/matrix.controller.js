@@ -44,6 +44,7 @@ angular.module('ricardo.controllers.matrix', [])
             ];
 
       $scope.matrixColorBy=$scope.matrixColorChoices[0]
+      $scope.showBilateralTip=false;
 
       $scope.synCurveChoices = [
             {type: {value: "none",writable: true},
@@ -98,14 +99,13 @@ angular.module('ricardo.controllers.matrix', [])
 
       $scope.changeMultiLayout = function (layout) {
         $scope.multichartLayout = layout;
-        ;
       }
       $scope.changeMatrixLayout = function (layout) {
         $scope.matrixLayout = layout;
-        ;
       }
       $scope.changeMatrixColor = function (colorBy) {
         $scope.matrixColorBy = colorBy;
+        $scope.showBilateralTip= colorBy.type.value==="mirror_rate" ? true:false
       }
 
       //quick nav

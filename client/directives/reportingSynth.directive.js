@@ -44,7 +44,7 @@ angular.module('ricardo.directives.reportingSynth', [])
         //        "World estimated":"#bf69bf",
         // }
 
-        var margin = {top: 20, right: 0, bottom: 20, left: 180 },
+        var margin = {top: 20, right: 10, bottom: 20, left: 180 },
             width = document.querySelector('#reporting-synth-container').offsetWidth-margin.left-margin.right,
             height=100,
             offsetHeight=10;
@@ -114,7 +114,7 @@ angular.module('ricardo.directives.reportingSynth', [])
 
         var svg_legend = d3.select("#reporting-synth-axis").append("svg")
             .attr("width",width + margin.left + margin.right)
-            .attr("height",40)
+            .attr("height",50)
             .append("g")
             .attr("transform", "translate(" + margin.left + ","+margin.top+")");
 
@@ -186,9 +186,9 @@ angular.module('ricardo.directives.reportingSynth', [])
           return color_domain;
         }
         function group_reporting(data,curveBy){
+
           minDate=d3.min(data,function(d){return +d.year});
           maxDate=d3.max(data,function(d){return +d.year});
-
          if(curveBy==="partner"){
             // var max=d3.max(data,function(d){return d.partner.length});
             // var threshold_out=["less than 10","10 to 50","50 to 100","more than 100"]
@@ -245,12 +245,17 @@ angular.module('ricardo.directives.reportingSynth', [])
           return nbReportings;
         }
         function draw_legend(color_domain){
-          svg_legend.selectAll("g").remove()
-            var legend=svg_legend.selectAll(".legend")
+          svg_legend.selectAll("*").remove()
+          var title=svg_legend.append("text")
+                    .text("Number of Reportings by "+categoryName)
+                    .attr("font-size",11)
+
+          var legend=svg_legend.selectAll(".legend")
                     .data(color_domain)
                     .enter()
                     .append("g")
                     .attr("class","legend")
+
 
             legend.append("rect")
                   .attr("width",10)
@@ -269,16 +274,16 @@ angular.module('ricardo.directives.reportingSynth', [])
 
             svg_legend.selectAll(".legend")
                   .attr("transform",function(d,i){
-                    if(i===0) return "translate(0,0)"
+                    if(i===0) return "translate(0,10)"
                     else {
                       var prevtext=d3.select(this.previousElementSibling).select("text").node().getBBox()
                       legend_offset=legend_offset+prevtext.width+20
-                      return "translate("+legend_offset+",0)"
+                      return "translate("+legend_offset+",10)"
                     }
                   })
         }
         function draw(data) {
-
+          
           var layers=stack(data)
 
           // var minDate=d3.min(data[0].values,function(d){return +d.key});
@@ -303,6 +308,7 @@ angular.module('ricardo.directives.reportingSynth', [])
             color_domain=sort_color(category,color_domain)
             categoryColor.domain(color_domain)
           }
+
           draw_legend(color_domain)
 
           x.domain([new Date(minDate,0,1), new Date(maxDate,0,1)]);
@@ -310,7 +316,7 @@ angular.module('ricardo.directives.reportingSynth', [])
 
           svg.selectAll("g").remove()
           var backbar=svg.append("g").selectAll(".background")
-                      .data(d3.range(minDate,maxDate)).enter()
+                      .data(d3.range(minDate,maxDate+1)).enter()
                       .append("rect")
                       .attr("class","background")
                       .attr("x", function(d) { return x(new Date(d,0,1)); })

@@ -1,24 +1,14 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<h2>
-				Reportings available for
-			  	<div class="inline-select">
-			      <ui-select ng-model="chartFlow" theme="bootstrap" ng-change="changeFlow(chartFlow)">
-			        <match placeholder="Select flow type">{{$select.selected.name.value}}</match>
-			        <choices repeat="item in flowChoices | filter: $select.search">
-			          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-			        </choices>
-			      </ui-select>
-		   		</div>
-			</h2>
-			<p>
+			</br>
+			</br>
+			<p class="paragraphPage">
 				This viz shows the metadata by reportings on period (1787-1938).
 				</br>
 				You can play with the data by ordering and coloring.
 			</p>
 		</div>
-
 <!-- <div class="col-md-12">
 	    <h4>Number of Reportings by Continents in
 	   		<div class="inline-select">
@@ -64,7 +54,15 @@
 		</div> -->
 		<div class="col-md-12">
 			<h4>
-			 Reporting Entities Overview
+			 Reporting Entities Overview in
+			 <div class="inline-select">
+			      <ui-select ng-model="chartFlow" theme="bootstrap" ng-change="changeFlow(chartFlow)">
+			        <match placeholder="Select flow type">{{$select.selected.name.value}}</match>
+			        <choices repeat="item in flowChoices | filter: $select.search">
+			          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+			        </choices>
+			      </ui-select>
+		   		</div>
 	   		Order by
 	   		<div class="inline-select">
 		        <ui-select ng-model="matrixLayout" theme="bootstrap" ng-change="changeMatrixLayout(matrixLayout)">
@@ -92,7 +90,7 @@
 		        </ui-select>
 		    </div>
 			</h4>
-			<div ng-show="true" class="legend pull-right" >
+			<div ng-show="showBilateralTip" class="legend pull-right" >
 		        <div class="legend-item" >
 		          <div><strong>A:</strong> Number of partners reported by <strong>R</strong></div>
 		          <div><strong>B:</strong> Number of reportings reports <strong>R</strong> as partner</div>
@@ -118,5 +116,5 @@
 		<div>
 			<button id="export-btn" class="btn" ng-click="export()">Export Metadata</button>
 		</div>
-	</div>
+	</dsiv>
 </div>
