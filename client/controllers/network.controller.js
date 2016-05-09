@@ -122,7 +122,7 @@ angular.module('ricardo.controllers.network', [])
     }
 
     function initGraph (trades) {
-        console.log(trades);
+        $scope.trades=trades;
         var listNations = [];
         var listOfNations = [];
         var pairs=[]
@@ -198,7 +198,7 @@ angular.module('ricardo.controllers.network', [])
                 label: n.id,
                 x: Math.random(),
                 y: Math.random(),
-                type: 'hoveredNode',
+                // type: 'hoveredNode', //trigger highlight
                 attributes: {
                     "community": null,
                     "continent": n.continent,
@@ -728,13 +728,21 @@ angular.module('ricardo.controllers.network', [])
 
       $scope.export = function () {
         var dataExported = [];
-        $scope.sigma.graph.edges().forEach(function (e) {
-          dataExported.push({source:e.source, target:e.target, flow:e.flow})
-        });
+        // $scope.sigma.graph.edges().forEach(function (e) {
+        //   dataExported.push({source:e.source, target:e.target, flow:e.flow})
+        // });
+        $scope.trades.forEach(function(e){
+          dataExported.push({
+            reporting:e.reporting,
+            partner:e.partner,
+            flow:e.flow,
+            expimp:e.expimp
+          })
+        })
 
-        var headers = ["source", "target", "flow"],
+        var headers = ["reporting", "partner", "flow","expimp"],
             order = "",
-            filename = "RICardo - Network " + $scope.year;
+            filename = "RICardo - Network "+ $scope.selectedDate;
         utils.downloadCSV(dataExported, headers, order, filename);
       }
 

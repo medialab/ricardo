@@ -447,7 +447,7 @@ def get_reportings_overview(partner_ids):
                       (SELECT reporting, reporting_slug , partner,partner_slug, (flow*Unit/rate) as exports, year, Source, type, reporting_continent,reporting_type
                       FROM flow_joined
                       WHERE  expimp = "Exp"
-                      AND (flow*Unit/rate)is not NULL
+                      AND (flow*Unit/rate) is not NULL
                       AND (partner_slug like 'Worldbestguess'
                       OR partner_slug like 'Worldestimated'
                       OR partner_slug like 'Worldasreported'
@@ -514,14 +514,14 @@ def get_reportings_overview(partner_ids):
 
 def get_nations_network_by_year(year):
   cursor = get_db().cursor()
-  cursor.execute("""SELECT reporting, reporting_slug, partner, partner_slug, Flow, expimp,
+  cursor.execute("""SELECT reporting, reporting_slug, partner, partner_slug, (flow*Unit/rate) as flow, expimp,
                     reporting_continent, partner_continent,reporting_type,partner_type
                     FROM flow_joined
                     WHERE reporting NOT LIKE "Worl%%"
                     AND partner NOT LIKE "Worl%%"
                     AND partner_slug IS NOT "NA"
                     AND partner_slug IS NOT "Unknown"
-                    AND Flow != "null"
+                    AND (flow*Unit/rate) != "null"
                     AND year = %s
                     """%(year)
               )
