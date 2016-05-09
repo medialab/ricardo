@@ -4,57 +4,12 @@
 			</br>
 			</br>
 			<p class="paragraphPage">
-				This viz shows the metadata by reportings on period (1787-1938).
-				</br>
-				You can play with the data by ordering and coloring.
+				{{ 'METADATA_VIEW_INTRO' | translate }}
 			</p>
 		</div>
-<!-- <div class="col-md-12">
-	    <h4>Number of Reportings by Continents in
-	   		<div class="inline-select">
-		        <ui-select ng-model="multichartLayout" theme="bootstrap" ng-change="changeMultiLayout(multichartLayout)">
-		          <match placeholder="Select grouped or multiple layout">{{$select.selected.name.value}}</match>
-		          <choices repeat="item in multichartLayoutChoices | filter: $select.search">
-		            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-		          </choices>
-		        </ui-select>
-		    </div>
-	    </h4>
-	    <reporting-continent
-	    			ng-data="flatContinent"
-			        flow-type="chartFlow"
-			        layout="multichartLayout">
-		</reporting-continent>
-		</div> -->
-<!-- 		<div class="col-md-12">
-			<h4> Number of Reporting Entities by year Group by
-			<div class="inline-select">
-		        <ui-select ng-model="synCurveBy" theme="bootstrap" ng-change="changeSynCurve(synCurveBy)">
-		          <match placeholder="By">{{$select.selected.name.value}}</match>
-		          <choices repeat="item in synCurveChoices | filter: $select.search">
-		            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-		          </choices>
-		        </ui-select>
-		    </div>
-			</h4>
-
-			<reporting-synth
-				ng-data="nbReportings"
-				flow-type="chartFlow"
-				category="synCurveBy"
-			>
-			</reporting-synth>
-			<bar-chart
-			          ng-data="nbReportings"
-			          start-date="selectedMinDate"
-			          end-date="selectedMaxDate"
-			          raw-start-date="rawMinDate"
-			          raw-end-date="rawMaxDate">
-			</bar-chart>
-		</div> -->
 		<div class="col-md-12">
 			<h4>
-			 Reporting Entities Overview in
+			 {{ 'METADATA_VIEW_TITLE' | translate }}
 			 <div class="inline-select">
 			      <ui-select ng-model="chartFlow" theme="bootstrap" ng-change="changeFlow(chartFlow)">
 			        <match placeholder="Select flow type">{{$select.selected.name.value}}</match>
@@ -63,7 +18,7 @@
 			        </choices>
 			      </ui-select>
 		   		</div>
-	   		Order by
+	   		{{ 'METADATA_VIEW_CTL1' | translate }}
 	   		<div class="inline-select">
 		        <ui-select ng-model="matrixLayout" theme="bootstrap" ng-change="changeMatrixLayout(matrixLayout)">
 		          <match placeholder="Order By">{{$select.selected.name.value}}</match>
@@ -72,7 +27,7 @@
 		          </choices>
 		        </ui-select>
 		    </div>
-		    Color by
+		    {{ 'METADATA_VIEW_CTL2' | translate }}
 		    <div class="inline-select">
 		        <ui-select ng-model="matrixColorBy" theme="bootstrap" ng-change="changeMatrixColor(matrixColorBy)">
 		          <match placeholder="Color By">{{$select.selected.name.value}}</match>

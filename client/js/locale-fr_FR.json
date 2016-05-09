@@ -66,5 +66,9 @@
 	"AND": " et ",
 	"DOWNLOAD_1": "Montre/cacher le tableau des données",
 	"DOWNLOAD_2": "Télécherger les données",
-	"DOWNLOAD_3": "Télécharger les données en monnaie originale"
+	"DOWNLOAD_3": "Télécharger les données en monnaie originale",
+	"METADATA_VIEW_INTRO": "TODO",
+	"METADATA_VIEW_TITLE": "TODO ",
+	"METADATA_VIEW_CTL1": "TODO ",
+	"METADATA_VIEW_CTL2": "TODO "
 }

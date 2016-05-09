@@ -66,5 +66,9 @@
 	"AND": " and ",
 	"DOWNLOAD_1": "Show/Hide data table",
 	"DOWNLOAD_2": "Download data",
-	"DOWNLOAD_3": "Download data with original currency"
+	"DOWNLOAD_3": "Download data with original currency",
+	"METADATA_VIEW_INTRO": "This viz shows the metadata availability by reportings on period (1787-1938). You can play with the data by ordering and coloring.",
+	"METADATA_VIEW_TITLE": "Reporting entities overview for",
+	"METADATA_VIEW_CTL1": "Order by",
+	"METADATA_VIEW_CTL2": "Color by"
 }
