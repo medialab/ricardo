@@ -64,6 +64,7 @@ angular.module('ricardo.directives.reportingSynth', [])
                               .values(function(d) { return d.values; })
                               .x(function(d) { return x(new Date(d.year,0,1)); })
                               .y(function(d) { return d.values.nb_reporting; })
+                  
 
         var format = d3.format("0,000");
         var duration=300;
@@ -239,15 +240,19 @@ angular.module('ricardo.directives.reportingSynth', [])
                 return a.key-b.key;
               });
           })//add missing with null
+          //sort by category
           nbReportings.sort(function(a,b){
-            return (+a.key)-(+b.key);
+            if (curveBy==="reference") return d3.ascending(world_partner_map[a.key], world_partner_map[b.key])
+            else if (curveBy==="type") return d3.ascending(type_map[a.key], type_map[b.key])
+            else if (curveBy==="continent") return d3.ascending(continent_map[a.key], continent_map[b.key])
+            else return (+a.key)-(+b.key);
           })
           return nbReportings;
         }
         function draw_legend(color_domain){
           svg_legend.selectAll("*").remove()
           var title=svg_legend.append("text")
-                    .text("Number of Reportings by "+categoryName)
+                    .text("Number of Reportings Color By "+categoryName)
                     .attr("font-size",11)
 
           var legend=svg_legend.selectAll(".legend")
@@ -285,7 +290,7 @@ angular.module('ricardo.directives.reportingSynth', [])
         function draw(data) {
           
           var layers=stack(data)
-
+          console.log(layers)
           // var minDate=d3.min(data[0].values,function(d){return +d.key});
           // var maxDate=d3.max(data[0].values,function(d){return +d.key});
 
@@ -314,12 +319,23 @@ angular.module('ricardo.directives.reportingSynth', [])
           x.domain([new Date(minDate,0,1), new Date(maxDate,0,1)]);
           y.domain([0,maxReporting])
 
-          svg.selectAll("g").remove()
+          svg.selectAll("*").remove()
+          // svg.append("text")
+          //    .text("↓ Order by")
+          //    .attr("text-anchor","end")
+          //    .attr("font-size","11px")
+          //    .attr("transform","translate(-10,"+(height)+")")
+          svg.append("text")
+             .text("↓ Number of Reportings")
+             .attr("class","ordertitle")
+             .attr("text-anchor","end")
+             .attr("font-size","11px")
+             .attr("transform","translate(-10,"+(height+10)+")")
           var backbar=svg.append("g").selectAll(".background")
                       .data(d3.range(minDate,maxDate+1)).enter()
                       .append("rect")
                       .attr("class","background")
-                      .attr("x", function(d) { return x(new Date(d,0,1)); })
+                      .attr("x", function(d) { return x(new Date(d,0,1))-barwidth/2; })
                       .attr("height",height)
                       .attr("width", barwidth-1)
                       .style("fill","lightgrey")
@@ -435,18 +451,50 @@ angular.module('ricardo.directives.reportingSynth', [])
               .enter().append("g")
                 .attr("class", "layer")
                 .style("fill", function(d) { return category==="partner" || category==="mirror_rate"? scaleColor(d.key):categoryColor(d.key) })
+          
+          var indexIter=d3.range(0,153).map(function(d){return d*0;});
+          var indexIterH=d3.range(0,153).map(function(d){return d*0;});
 
-          layer.selectAll("rect")
-              .data(function(d) { return d.values; })
+          layer.each(function(data,index){
+            var e=d3.select(this)
+            e.selectAll("rect")
+              .data(data.values)
               .enter().append("rect")
-              .attr("x", function(d) { return x(new Date(d.key,0,1)); })
-              .attr("y", function(d) { return y(d.y + d.y0); })
-              .attr("height", function(d) { return y(d.y0) - y(d.y + d.y0); })
+              .attr("x", function(d) { return x(new Date(d.key,0,1))-barwidth/2; })
+              .attr("y", function(d,i) { 
+                if(index!==0 && layers[index-1].values[i].y===0) indexIter[i]+=1;
+                if(d.y>0 && (y(d.y0) - y(d.y + d.y0))<2) indexIterH[i]+= 2-(y(d.y0) - y(d.y + d.y0));
+                return y(d.y + d.y0)-2*(index-indexIter[i]) - indexIterH[i]
+              })
+              .attr("height", function(d) { 
+                if((y(d.y0) - y(d.y + d.y0))===0) return y(d.y0) - y(d.y + d.y0);
+                else return d3.max([y(d.y0) - y(d.y + d.y0),2]);
+                // return y(d.y0) - y(d.y + d.y0)
+                // if((y(d.y0) - y(d.y + d.y0))<=2) return 2;
+                // else return y(d.y0) - y(d.y + d.y0); 
+              })
               .attr("width", barwidth-1)
               .style("opacity",function(d){return category==="partner" || category==="mirror_rate" ? 0.8:0.7;})
               .attr("pointer-events","none")
-
-
+          })
+          // layer.selectAll("rect")
+          //     .data(function(d) { return d.values; })
+          //     .enter().append("r ect")
+          //     .attr("x", function(d) { return x(new Date(d.key,0,1))-barwidth/2; })
+          //     .attr("y", function(d) { 
+          //       return y(d.y + d.y0)-2
+          //       // if((y(d.y0) - y(d.y + d.y0))<=2) return 2;
+          //       // if((d.y+d.y0)===0) return y(d.y + d.y0)+2;
+          //       // else return y(d.y + d.y0); 
+          //     })
+          //     .attr("height", function(d) { 
+          //       return y(d.y0) - y(d.y + d.y0);
+          //       // if((y(d.y0) - y(d.y + d.y0))<=2) return 2;
+          //       // else return y(d.y0) - y(d.y + d.y0); 
+          //     })
+          //     .attr("width", barwidth-1)
+          //     .style("opacity",function(d){return category==="partner" || category==="mirror_rate" ? 0.8:0.7;})
+          //     .attr("pointer-events","none")
 
           // var multi_g=svg.selectAll(".multiple")
           //                 .data(data)
