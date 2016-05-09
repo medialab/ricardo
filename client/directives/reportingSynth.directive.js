@@ -252,7 +252,7 @@ angular.module('ricardo.directives.reportingSynth', [])
         function draw_legend(color_domain){
           svg_legend.selectAll("*").remove()
           var title=svg_legend.append("text")
-                    .text("Number of Reportings Color By "+categoryName)
+                    .text("Number of Reportings Color by "+categoryName)
                     .attr("font-size",11)
 
           var legend=svg_legend.selectAll(".legend")
@@ -290,7 +290,6 @@ angular.module('ricardo.directives.reportingSynth', [])
         function draw(data) {
           
           var layers=stack(data)
-          console.log(layers)
           // var minDate=d3.min(data[0].values,function(d){return +d.key});
           // var maxDate=d3.max(data[0].values,function(d){return +d.key});
 
@@ -326,7 +325,7 @@ angular.module('ricardo.directives.reportingSynth', [])
           //    .attr("font-size","11px")
           //    .attr("transform","translate(-10,"+(height)+")")
           svg.append("text")
-             .text("↓ Number of Reportings")
+             .text("↓ Number of Reporting Years")
              .attr("class","ordertitle")
              .attr("text-anchor","end")
              .attr("font-size","11px")

@@ -739,59 +739,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                         Math.max(0, (d3.event.pageX)))-wid/2) + "px")
                     .style("top",(d3.event.pageY+40)+"px")
                       // .style("width", wid + "px");
-                    var svg_axis=d3.select("#reporting-synth-container").select(".synth_svg")
-                    var axis_height=100
-                     //tick highlighting
-                    var text = svg_axis.append("text")
-                           .attr("class", "highlight")
-                           .attr("x", x(new Date(v.year,0,1)))
-                           .attr("y", axis_height+17)
-                           .attr("font-size", "0.85em")
-                           .attr("text-anchor","middle")
-                           .text(v.year);
-
-                    // Define the gradient
-                    var gradient = svg_axis.append("svg:defs")
-                          .append("svg:linearGradient")
-                          .attr("id", "gradient")
-                          .attr("x1", "0%")
-                          .attr("y1", "100%")
-                          .attr("x2", "100%")
-                          .attr("y2", "100%")
-                          .attr("spreadMethod", "pad");
-
-                      // Define the gradient colors
-                      gradient.append("svg:stop")
-                          .attr("offset", "0%")
-                          .attr("stop-color", "#f5f5f5")
-                          .attr("stop-opacity", 0.1);
-
-                      gradient.append("svg:stop")
-                          .attr("offset", "50%")
-                          .attr("stop-color", "#f5f5f5")
-                          .attr("stop-opacity", 1);
-
-                      gradient.append("svg:stop")
-                          .attr("offset", "100%")
-                          .attr("stop-color", "#f5f5f5")
-                          .attr("stop-opacity", 0.1);
-
-                      // add rect as background to hide date display in
-                      var bbox = text.node().getBBox();
-                      var rect = svg_axis.append("svg:rect")
-                          .attr("class", "highlight")
-                          .attr("x", bbox.x-20)
-                          .attr("y", bbox.y)
-                          .attr("width", bbox.width+40)
-                          .attr("height", bbox.height)
-                          .style("fill", 'url(#gradient)')
-                      svg_axis.append("text")
-                           .attr("class", "highlight")
-                           .attr("x", x(new Date(v.year,0,1)))
-                           .attr("y", axis_height+17)
-                           .attr("font-size", "0.85em")
-                           .attr("text-anchor","middle")
-                           .text(v.year);
+                    gradientLabel(v.year)
                 });
 
               // z.domain(d3.extent(d.values,function(v){ return  +v[yValue];}));
@@ -805,7 +753,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                   .attr("height",gridHeight-gridGap)
                   .style("opacity",0.7)
                   .style("fill","lightgrey")
-                   .on("mouseover",function(d){
+                  .on("mouseover",function(d){
                     d3.select(this.parentNode.parentNode).selectAll(".rlabel").style("opacity",0)
                     d3.select(this.parentNode).selectAll(".coverage_rect,.barLabel")
                                               .style("opacity",1)
@@ -818,7 +766,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                     tooltip_margin.style("display", "block").style("opacity", .9).html(
                     "<h5>"+d.key +"</h5><hr>"+layoutName+": "+d[layout])
                   })
-                  .on('mousemove', function(v) {
+                  .on('mousemove', function() {
                     // var wid = tooltip.style("width").replace("px", "");
                     tooltip_margin.style("left", (Math.min(window.innerWidth,
                         Math.max(0, (d3.event.pageX)))) + "px")
@@ -908,6 +856,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                     tooltip.style("display","block")
                            .style("left",nodePos.left-wid/2+"px")
                            .style("top",nodePos.top+40+"px")
+                    gradientLabel(yearSelected)
                   }
                   else tooltip.style("display","none")
                 }
@@ -1005,6 +954,61 @@ angular.module('ricardo.directives.reportingEntities', [])
                   +v.partner_intersect.length+"</td></tr><tr><td>Bilateral Rate</td><td style='text-align:right'>"
                   +d3.round(v.mirror_rate,2)+"</td></tr></table>")
               }
+            }
+            function gradientLabel(year){
+              var svg_axis=d3.select("#reporting-synth-container").select(".synth_svg")
+              var axis_height=100
+               //tick highlighting
+              var text = svg_axis.append("text")
+                     .attr("class", "highlight")
+                     .attr("x", x(new Date(year,0,1)))
+                     .attr("y", axis_height+17)
+                     .attr("font-size", "0.85em")
+                     .attr("text-anchor","middle")
+                     .text(year);
+
+              // Define the gradient
+              var gradient = svg_axis.append("svg:defs")
+                    .append("svg:linearGradient")
+                    .attr("id", "gradient")
+                    .attr("x1", "0%")
+                    .attr("y1", "100%")
+                    .attr("x2", "100%")
+                    .attr("y2", "100%")
+                    .attr("spreadMethod", "pad");
+
+                // Define the gradient colors
+                gradient.append("svg:stop")
+                    .attr("offset", "0%")
+                    .attr("stop-color", "#f5f5f5")
+                    .attr("stop-opacity", 0.1);
+
+                gradient.append("svg:stop")
+                    .attr("offset", "50%")
+                    .attr("stop-color", "#f5f5f5")
+                    .attr("stop-opacity", 1);
+
+                gradient.append("svg:stop")
+                    .attr("offset", "100%")
+                    .attr("stop-color", "#f5f5f5")
+                    .attr("stop-opacity", 0.1);
+
+                // add rect as background to hide date display in
+                var bbox = text.node().getBBox();
+                var rect = svg_axis.append("svg:rect")
+                    .attr("class", "highlight")
+                    .attr("x", bbox.x-20)
+                    .attr("y", bbox.y)
+                    .attr("width", bbox.width+40)
+                    .attr("height", bbox.height)
+                    .style("fill", 'url(#gradient)')
+                svg_axis.append("text")
+                     .attr("class", "highlight")
+                     .attr("x", x(new Date(year,0,1)))
+                     .attr("y", axis_height+17)
+                     .attr("font-size", "0.85em")
+                     .attr("text-anchor","middle")
+                     .text(year);
             }
             //stacked by group
             // matrix.append("g").attr("class","availableGroup")
