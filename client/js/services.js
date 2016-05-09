@@ -160,7 +160,7 @@ angular.module('ricardo.services', [])
           method: 'GET',
           url : BASE_API_URL + serviceUrl,
           params : params,
-          cache: true
+          cache: false
         }).success(function(data){
          deferred.resolve(data);
        }).error(function (err){
@@ -182,7 +182,6 @@ angular.module('ricardo.services', [])
        }).error(function(){
          deferred.reject("An error occured while fetching data");
        });
-
        return deferred.promise;
      },
      getWorldFlows: function(params){
@@ -192,14 +191,12 @@ angular.module('ricardo.services', [])
           method: 'GET',
           url : BASE_API_URL + serviceUrl,
           params : params,
-          cache: true
+          cache: false
         }).success(function(data){
           deferred.resolve(data);
        }).error(function(){
-         console.log("there is an error");
          deferred.reject("An error occured while fetching data");
        });
-
        return deferred.promise;
      },
      getFlowsResources: function(url){
