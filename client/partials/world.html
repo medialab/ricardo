@@ -159,7 +159,11 @@
   <div id="select-lineChart" >
   <div class="row">
     <div class="col-xs-12 col-sm-12">
-      <linechart-world ng-data="linechartData" currency="linechartCurrency">
+      <linechart-world 
+      ng-data="linechartData" 
+      currency="linechartCurrency"
+      start-date="selectedMinDate"
+      end-date="selectedMaxDate">
       </linechart-world>
     </div>
   </div>
