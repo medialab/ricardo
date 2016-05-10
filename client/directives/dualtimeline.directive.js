@@ -9,29 +9,16 @@ angular.module('ricardo.directives.dualTimeline', [])
     return {
       restrict: 'E'
       ,template: '<div id="dual-timeline-container"></div>'
+      ,replace: false
       ,scope: {
         ngData: '='
         ,startDate: '='
         ,endDate: '='
       }
       ,link: function(scope, element, attrs){
-        scope.$watch('ngData', function(newValue, oldValue) {
-          console.log("DT")
-          if ( newValue ) {
-            draw(scope.ngData)
-          }
-        })
-
-        scope.$watch('endDate', function(newValue, oldValue) {
-          console.log("DT end")
-          if ( newValue && scope.ngData) {
-            draw(scope.ngData)
-          }
-        })
-
-        scope.$watch('startDate', function(newValue, oldValue) {
-          console.log("DT start")
-          if ( newValue && scope.ngData) {
+        scope.$watchCollection('[ngData, endDate, startDate]', function(newValue, oldValue) {
+          if (newValue[0]) {
+            scope.$apply()
             draw(scope.ngData)
           }
         })
@@ -46,12 +33,11 @@ angular.module('ricardo.directives.dualTimeline', [])
           , lineExp
 
         function draw(data){
-          document.querySelector('#dual-timeline-container').innerHTML = null;
-
+          // document.querySelector('#dual-timeline-container').innerHTML = null;
+          d3.select("#dual-timeline-container").select("svg").remove();
           var margin = {top: 20, right: 0, bottom: 30, left: 0},
               width = document.querySelector('#dual-timeline-container').offsetWidth - margin.left - margin.right,
               height = 180 - margin.top - margin.bottom;
-
           /*
            * Config axis
            */
@@ -123,12 +109,14 @@ angular.module('ricardo.directives.dualTimeline', [])
               .x(function(d) { return x(d.date); })
               .y(function(d) { return y(d.exp); });
 
+
           var svg = d3.select("#dual-timeline-container").append("svg")
               .attr("width", width + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
-            .append("g")
+              .append("g")
+              .attr("class","dualTimeline")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+          
           data.forEach(function(d){
             d.date = new Date(d.year, 0, 1)
           })
@@ -283,7 +271,6 @@ angular.module('ricardo.directives.dualTimeline', [])
           })
 
           voronoi(ImpExp, "points", svg, margin, height, width);
-
         }
           /*
            * Voronoi fonction

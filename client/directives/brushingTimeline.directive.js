@@ -8,6 +8,7 @@ angular.module('ricardo.directives.brushingTimeline', [])
   .directive('brushingTimeline', [function(){
     return {
       restrict: 'E'
+      ,replace: false
       ,template: '<div id="brushing-timeline-container"></div>'
       ,scope: {
         ngData: '='
@@ -23,26 +24,18 @@ angular.module('ricardo.directives.brushingTimeline', [])
         scope.mirrorLines = !!scope.mirrorLines;
 
         scope.$watch('ngData', function(newValue, oldValue) {
-          console.log("B")
           if ( newValue ) {
+            scope.$apply()
             draw(scope.ngData)
           }
         })
 
-        scope.$watch('endDate', function(newValue, oldValue) {
-          console.log("B end")
-          if ( newValue && scope.ngData ) {
+        scope.$watchCollection('[startDate,endDate]', function(newValue, oldValue) {
+          if ( newValue[0] && newValue[1] && scope.ngData ) {
             updateBrush()
           }
         })
 
-        scope.$watch('startDate', function(newValue, oldValue) {
-          console.log("B start")
-          if ( newValue && scope.ngData ) {
-            updateBrush()
-          }
-        })
-        
         var brush
 
         function draw(data){
@@ -108,7 +101,7 @@ angular.module('ricardo.directives.brushingTimeline', [])
           // baselines
 
           var entityDataAvaible = scope.sourceCountry ? scope.sourceCountry : "World";
-          
+
           svg.append("text")
               .attr("class", "baselineLabel")
               .text(entityDataAvaible)
@@ -169,10 +162,10 @@ angular.module('ricardo.directives.brushingTimeline', [])
                   }
                   else if(i===data.length-1){
                     if (data[i-1].imp_mirror===null) return d;
-                  } 
+                  }
                   else{
                     if (data[i-1].imp_mirror===null && data[i+1].imp_mirror===null) return d;
-                  } 
+                  }
                 }
               }))
               .enter()
@@ -191,10 +184,10 @@ angular.module('ricardo.directives.brushingTimeline', [])
                   }
                   else if(i===data.length-1){
                     if (data[i-1].exp_mirror===null) return d;
-                  } 
+                  }
                   else{
                     if (data[i-1].exp_mirror===null && data[i+1].exp_mirror===null) return d;
-                  } 
+                  }
                 }
               }))
               .enter()
@@ -216,7 +209,7 @@ angular.module('ricardo.directives.brushingTimeline', [])
               .attr("class", "line-exp")
               .attr("d", availExp)
 
-          // add discrete points 
+          // add discrete points
           svg.selectAll(".ipoint")
               .data(data.filter(function(d,i) {
                 if(d.imp!==null){
@@ -225,10 +218,10 @@ angular.module('ricardo.directives.brushingTimeline', [])
                   }
                   else if(i===data.length-1){
                     if (data[i-1].imp===null) return d;
-                  } 
+                  }
                   else{
                     if (data[i-1].imp===null && data[i+1].imp===null) return d;
-                  } 
+                  }
                 }
               }))
               .enter()
@@ -247,10 +240,10 @@ angular.module('ricardo.directives.brushingTimeline', [])
                   }
                   else if(i===data.length-1){
                     if (data[i-1].exp===null) return d;
-                  } 
+                  }
                   else{
                     if (data[i-1].exp===null && data[i+1].exp===null) return d;
-                  } 
+                  }
                 }
               }))
               .enter()
@@ -305,14 +298,14 @@ angular.module('ricardo.directives.brushingTimeline', [])
 
           function brushended() {
             if (!d3.event.sourceEvent) return; // only transition after input
-            
+
             var extent0 = brush.extent(),
                 extent1 = extent0.map(function(d){return d3.time.year(new Date(d))});
 
             d3.select(this).transition()
                 .call(brush.extent(extent1))
                 .call(brush.event);
-            
+
             if(brush.empty()){
               brush.extent(x.domain())
               // dispatch.brushed(x.domain())
@@ -323,7 +316,7 @@ angular.module('ricardo.directives.brushingTimeline', [])
               // dispatch.brushing(brush.extent())
             }
 
-            applyBrush()       
+            applyBrush()
           }
           //selection.selectAll("g.brush").remove();
           var gBrush = svg.select(".brush");

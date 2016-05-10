@@ -163,8 +163,7 @@ angular.module('ricardo.controllers.bilateral', [])
             /*
              * Send data to timeline directive
              */
-            $scope.timelineData = data.flows;   
-
+            $scope.timelineData = data.flows;
             /*
              * Save source & target in localStorage
              */

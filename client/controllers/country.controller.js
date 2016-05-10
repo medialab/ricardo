@@ -331,6 +331,7 @@ angular.module('ricardo.controllers.country', [])
            });
 
           $scope.timelineData=timelineData;
+          $scope.$apply();
           /*
            * Display filters selection and init partner histogram
            */
@@ -596,6 +597,7 @@ angular.module('ricardo.controllers.country', [])
       });
 
       $scope.partnersData = partners
+
       if (partners.length === 0)
         $scope.missingPartner = 1;
     }

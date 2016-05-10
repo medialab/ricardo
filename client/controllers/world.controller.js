@@ -197,7 +197,6 @@ angular.module('ricardo.controllers.world', [])
 
       $scope.timelineData = worldFlowsYearsFormat;
       $scope.tableData = worldFlowsYearsFormat;
-      if ($scope.tableData) $scope.$apply(); //cause route issue
       updateDateRange();
     }
 

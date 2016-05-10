@@ -160,7 +160,8 @@ angular.module('ricardo.services', [])
           method: 'GET',
           url : BASE_API_URL + serviceUrl,
           params : params,
-          cache: false
+          cache:true
+          // cache: false
         }).success(function(data){
          deferred.resolve(data);
        }).error(function (err){
@@ -191,7 +192,8 @@ angular.module('ricardo.services', [])
           method: 'GET',
           url : BASE_API_URL + serviceUrl,
           params : params,
-          cache: false
+          // cache: false
+          cache:true
         }).success(function(data){
           deferred.resolve(data);
        }).error(function(){
