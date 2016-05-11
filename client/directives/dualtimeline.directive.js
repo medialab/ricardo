@@ -5,7 +5,7 @@
 angular.module('ricardo.directives.dualTimeline', [])
 
   /* directive with watch, update and draw functions */
-  .directive('dualTimeline', [function(){
+  .directive('dualTimeline', ["$timeout",function($timeout){
     return {
       restrict: 'E'
       ,template: '<div id="dual-timeline-container"></div>'
@@ -19,6 +19,9 @@ angular.module('ricardo.directives.dualTimeline', [])
         scope.$watchCollection('[ngData, endDate, startDate]', function(newValue, oldValue) {
           if (newValue[0]) {
             scope.$apply()
+            // $timeout(function(){
+            //   scope.$apply()
+            // },0)
             draw(scope.ngData)
           }
         })

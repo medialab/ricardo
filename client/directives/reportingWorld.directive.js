@@ -18,40 +18,15 @@ angular.module('ricardo.directives.reportingWorld', [])
       },
       link: function(scope, element, attrs) {
 
-        scope.$watch("ngData", function (newValue, oldValue){
-            if(newValue && scope.ngData){
-            	draw(newValue);
+         scope.$watchCollection('[ngData,startDate,endDate,flowType,layout]', function(newValue, oldValue) {
+            if(newValue[0]){
+              yValue=newValue[3].type.value;
+              yName=newValue[3].name.value;
+              layout=newValue[4].type.value;
+              draw(newValue[0]);
             }
-        });
-
-        scope.$watch('flowType', function(newValue, oldValue) {
-          if (newValue && scope.ngData ) {
-            yValue=newValue.type.value;
-            yName=newValue.name.value;
-            console.log("change")
-            draw(scope.ngData);
-          }
-        })
-
-        scope.$watch('layout', function(newValue, oldValue) {
-          if ( newValue!==oldValue && scope.ngData ) {
-            layout=newValue.type.value;
-            draw(scope.ngData);
-          }
-        })
-
-        scope.$watch('endDate', function(newValue, oldValue) {
-          if ( newValue && scope.ngData ) {
-            draw(scope.ngData)
-          }
-        })
-
-        scope.$watch('startDate', function(newValue, oldValue) {
-          if ( newValue && scope.ngData ) {
-            draw(scope.ngData)
-          }
-        })
-
+          });
+         
         var categoryColors = {
                "World sum partners":"#526ca9" ,
                "World as reported":"#a67f48",

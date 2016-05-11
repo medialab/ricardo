@@ -197,6 +197,7 @@ angular.module('ricardo.controllers.world', [])
 
       $scope.timelineData = worldFlowsYearsFormat;
       $scope.tableData = worldFlowsYearsFormat;
+      // $scope.$apply()
       updateDateRange();
     }
 

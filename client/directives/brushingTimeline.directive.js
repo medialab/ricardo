@@ -5,7 +5,7 @@
 angular.module('ricardo.directives.brushingTimeline', [])
 
   /* directive with watch and draw function */
-  .directive('brushingTimeline', [function(){
+  .directive('brushingTimeline', ["$timeout",function($timeout){
     return {
       restrict: 'E'
       ,replace: false
@@ -24,8 +24,14 @@ angular.module('ricardo.directives.brushingTimeline', [])
         scope.mirrorLines = !!scope.mirrorLines;
 
         scope.$watch('ngData', function(newValue, oldValue) {
-          if ( newValue ) {
+          if (newValue) {
             scope.$apply()
+            // if(!scope.$$phase) {
+            //    scope.$apply()
+            // }
+            // $timeout(function(){
+            //   scope.$apply()
+            // },3000)
             draw(scope.ngData)
           }
         })
@@ -35,14 +41,8 @@ angular.module('ricardo.directives.brushingTimeline', [])
             updateBrush()
           }
         })
-
-        var brush
-
-        function draw(data){
-
-          document.querySelector('#brushing-timeline-container').innerHTML = null;
-
-          var margin = {top: 6, right: 0, bottom: 6, left: 0},
+        
+        var margin = {top: 6, right: 0, bottom: 6, left: 0},
               width = document.querySelector('#brushing-timeline-container').offsetWidth - margin.left - margin.right,
               svgHeight = scope.mirrorLines ? 140 : 70,
               height = 20,
@@ -84,11 +84,16 @@ angular.module('ricardo.directives.brushingTimeline', [])
               .defined(function(d) { return d.exp_mirror !== null; })
               .x(function(d) { return x(d.date); })
               .y(function(d) { return baselineHeight_2on2 + interline / 2; });
+          var brush = d3.svg.brush()
+                      .x(x)
+
+        function draw(data){
+          d3.select("#brushing-timeline-container").select("svg").remove()
 
           var svg = d3.select("#brushing-timeline-container").append("svg")
               .attr("width", width + margin.left + margin.right)
               .attr("height", svgHeight + margin.top + margin.bottom)
-            .append("g")
+              .append("g")
               .attr("transform", "translate(" + margin.left + "," + ( margin.top ) + ")")
 
           data.forEach(function(d){
@@ -282,9 +287,7 @@ angular.module('ricardo.directives.brushingTimeline', [])
 
           // Brush
 
-          brush = d3.svg.brush()
-            .x(x)
-            .extent([new Date(scope.startDate), new Date(scope.endDate)])
+          brush.extent([new Date(scope.startDate), new Date(scope.endDate)])
             .on("brush", function(){
               if(brush.empty()){
                 brush.clear()
