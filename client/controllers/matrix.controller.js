@@ -4,8 +4,8 @@
 
 angular.module('ricardo.controllers.matrix', [])
 
-  .controller('matrix', [ "$scope", "$location", "apiService", "utils",
-    function ($scope, $location, apiService, utils) {
+  .controller('matrix', [ "$scope", "$location", "apiService", "dataTableService","utils","METADATA_TABLE_HEADERS",
+    function ($scope, $location, apiService, dataTableService, utils,METADATA_TABLE_HEADERS) {
 
       var yearsDelta = d3.range(1787, 1940)
 
@@ -85,6 +85,7 @@ angular.module('ricardo.controllers.matrix', [])
                 localStorage.selectedMaxDate = newVal[1];
               }
             })
+      $scope.viewTable = 0;
 
       $scope.changeFlow = function (flow) {
           $scope.chartFlow=flow;
@@ -227,50 +228,9 @@ angular.module('ricardo.controllers.matrix', [])
             d.years=d.values.length
           })
           $scope.entities=$scope.flowEntities.map(function(d){return d.values[0].reporting_id;})
-
-        //   //reporting by continent
-        //   var reportingContinent=d3.nest()
-        //                         .key(function(d) { return d.continent; })
-        //                         .key(function(d) { return +d.year; })
-        //                         .rollup(function(v){ return {
-        //                             reportings: v.length
-        //                           }
-        //                         })
-        //                         .entries(flow);
-
-        // //extend missing points with 0 values
-        // reportingContinent.forEach(function(d){
-        //     for (var i = $scope.rawMinDate; i<=$scope.rawMaxDate;i++){
-        //       var years=d.values.map(function(year){ return year.key});
-        //       if (years.indexOf(i.toString())=== -1){
-        //         d.values.push({
-        //           key:i,
-        //           values:{
-        //             reportings:0
-        //           }
-        //         })
-        //       }
-        //     }
-        //   //sort by year ascending
-        //   d.values.sort(function(a,b){
-        //     return a.key-b.key;
-        //   });
-        // })//add missing with 0
-
-        // $scope.flatContinent=[]
-        // reportingContinent.forEach(function(d){
-        //   d.values.forEach(function(v){
-        //     $scope.flatContinent.push(
-        //       {
-        //         "continent":d.key,
-        //         "year":+v.key,
-        //         "values":v.values
-        //       }
-        //     )
-        //   })
-        // })
-        //syncurve
-        // group_reporting($scope.flow,$scope.matrixColorBy.type.value)
+          $scope.tableData =flowEntities_uniq
+          setPagingData($scope.tableData,$scope.pagingOptions.pageSize,
+                $scope.pagingOptions.currentPage);
       }//end reprocess
 
       function init() {
@@ -288,29 +248,111 @@ angular.module('ricardo.controllers.matrix', [])
 
         init()
 
-        $scope.export = function () {
-          var dataExported = [];
-            $scope.data.forEach(function (d) {
-                dataExported.push({
-                  reporting_id:d.reporting_id,
-                  reporting:d.reporting,
-                  year:d.year,
-                  expimp:d.expimp,
-                  flow:d.flow,
-                  partners:d.partners,
-                  partnertype:d.partnertype,
-                  source:d.source,
-                  sourcetype:d.sourcetype,
-                  continent:d.continent,
-                  type:d.type,
-                  partners_mirror:d.partners_mirror
-                })
-              });
+        /*
+        * Display and sort table data + download csv
+        */
 
-              var headers = ["reporting_id","reporting", "year", "expimp", "flow", "partners","partnertype","source","sourcetype","continent","type","partners_mirror"],
-                  order = "",
-                  filename = "metadata";
+        $scope.totalServerItems = 0;
+        $scope.pagingOptions = {
+            pageSizes: [50],
+            pageSize: 50,
+            currentPage: 1
+        };
 
-          utils.downloadCSV(dataExported, headers, order, filename);
+        $scope.tablePagedData = []
+        $scope.gridOptions = {
+          data: 'tablePagedData',
+          enablePaging: true,
+          showFooter: true,
+          totalServerItems:'totalServerItems',
+          pagingOptions: $scope.pagingOptions,
+          enableRowSelection: false,
+          footerRowHeight: 45,
+          columnDefs: METADATA_TABLE_HEADERS,
+          showFilter: true,
+          sortInfo: {
+            fields: ["year", "partner"],
+            directions: ["asc"]
+          }
         }
+
+        function setPagingData(data, pageSize, page){
+              var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
+              $scope.tablePagedData = pagedData;
+              $scope.totalServerItems = data.length;
+              $scope.loading = false;
+              if (!$scope.$$phase) {
+                  $scope.$apply();
+              }
+          }
+
+        /*
+         * Trigger user interaction on table data
+         */
+
+        // $scope.$watch('tableData', function (newVal, oldVal) {
+        //     if (newVal !== oldVal) {
+        //       setPagingData($scope.tableData,$scope.pagingOptions.pageSize,
+        //         $scope.pagingOptions.currentPage);
+        //     }
+        // }, true);
+
+        $scope.$watch('pagingOptions', function (newVal, oldVal) {
+            if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
+              setPagingData($scope.tableData,$scope.pagingOptions.pageSize,
+                $scope.pagingOptions.currentPage);
+            }
+        }, true);
+
+        /*
+         * Watch filter on colomn and changed data
+         */
+        
+        $scope.$watch('gridOptions.sortInfo', function (newVal, oldVal) {
+            if ($scope.tableData) {
+              dataTableService.sortData($scope.tableData, newVal.fields[0], newVal.directions[0])
+              setPagingData($scope.tableData,$scope.pagingOptions.pageSize,
+                $scope.pagingOptions.currentPage);
+              $scope.pagingOptions.currentPage = $scope.pagingOptions.currentPage;
+            }
+        }, true);
+
+        $scope.download=function(){
+          var fileName = "RICardo - Metadata"
+          var headers = METADATA_TABLE_HEADERS.map(function(h) {
+            return h.displayName;
+          });
+          var order = METADATA_TABLE_HEADERS.map(function(h) {
+              return h.field;
+          });
+          utils.downloadCSV($scope.tableData, headers, order, fileName);
+        }
+        // /*
+        //  * Trigger user interaction on table data
+        //  */
+        // $scope.export = function () {
+        //   var dataExported = [];
+        //     $scope.tableData.forEach(function (d) {
+        //         dataExported.push({
+        //           reporting_id:d.reporting_id,
+        //           reporting:d.reporting,
+        //           year:d.year,
+        //           expimp:d.expimp,
+        //           flow:d.flow,
+        //           partners:d.partners,
+        //           partnertype:d.partnertype,
+        //           source:d.source,
+        //           sourcetype:d.sourcetype,
+        //           continent:d.continent,
+        //           type:d.type,
+        //           partners_mirror:d.partners_mirror
+        //         })
+        //       });
+
+        //       var headers = ["reporting_id","reporting", "year", "expimp", "flow", "partners","partnertype","source","sourcetype","continent","type","partners_mirror"],
+        //           order = "",
+        //           filename = "metadata";
+
+        //   utils.downloadCSV(dataExported, headers, order, filename);
+        // }
  }])

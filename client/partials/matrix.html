@@ -18,6 +18,7 @@
 			        </choices>
 			      </ui-select>
 		   		</div>
+		   	<br>
 	   		{{ 'METADATA_VIEW_CTL1' | translate }}
 	   		<div class="inline-select">
 		        <ui-select ng-model="matrixLayout" theme="bootstrap" ng-change="changeMatrixLayout(matrixLayout)">
@@ -68,8 +69,20 @@
 			>
 			</reporting-entities>
 		</div>
-		<div>
-			<button id="export-btn" class="btn" ng-click="export()">Export Metadata</button>
-		</div>
-	</dsiv>
+		  <div class="row">
+			    <div class="col-xs-12 col-sm-12 text-center shdt">
+			      <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
+			          {{ 'DOWNLOAD_1' | translate }}
+			      </button>
+			      <button type="button" ng-click="download()" class="btn">
+			          {{ 'DOWNLOAD_2' | translate }}
+			      </button>
+			    </div>
+			  </div>
+			  <div ng-if="viewTable" class="row table-cont">
+			    <div class="col-xs-12 col-sm-12 grid-cont">
+			      <div class="gridStyle" ng-grid="gridOptions"></div>
+			    </div>
+			  </div>
+	</div>
 </div>

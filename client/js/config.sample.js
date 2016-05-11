@@ -27,3 +27,15 @@ angular.module('ricardo')
     {'field': 'currency', 'displayName': 'currency'},
     {'field': 'sources', 'displayName': 'source'},
   ])
+  .constant('METADATA_TABLE_HEADERS', [
+    {'field': 'reporting', 'displayName': 'reporting'},
+    {'field': 'year', 'displayName': 'year'},
+    {'field': 'expimp', 'displayName': 'expimp'},
+    {'field': 'partner', 'displayName': 'partners'},
+    {'field': 'reference', 'displayName': 'world partner'},
+    {'field': 'partner_mirror', 'displayName': 'bilateral partners'},
+    {'field': 'source', 'displayName': 'source'},
+    {'field': 'sourcetype', 'displayName': 'sourcetype'},
+    {'field': 'continent', 'displayName': 'continent'},
+    {'field': 'type', 'displayName': 'reporting type'},
+  ])
