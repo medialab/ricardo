@@ -739,7 +739,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                         Math.max(0, (d3.event.pageX)))-wid/2) + "px")
                     .style("top",(d3.event.pageY+40)+"px")
                       // .style("width", wid + "px");
-                    gradientLabel(v.year)
+                    gradientHighlight(v.year)
                 });
 
               // z.domain(d3.extent(d.values,function(v){ return  +v[yValue];}));
@@ -855,8 +855,8 @@ angular.module('ricardo.directives.reportingEntities', [])
                     tooltipContext(tooltip,dotSelected.datum())
                     tooltip.style("display","block")
                            .style("left",nodePos.left-wid/2+"px")
-                           .style("top",nodePos.top+40+"px")
-                    gradientLabel(yearSelected)
+                           .style("top",nodePos.top+window.scrollY+40+"px")
+                    gradientHighlight(yearSelected)
                   }
                   else tooltip.style("display","none")
                 }
@@ -955,7 +955,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                   +d3.round(v.mirror_rate,2)+"</td></tr></table>")
               }
             }
-            function gradientLabel(year){
+            function gradientHighlight(year){
               var svg_axis=d3.select("#reporting-synth-container").select(".synth_svg")
               var axis_height=100
                //tick highlighting
