@@ -691,6 +691,7 @@ angular.module('ricardo.directives.reportingEntities', [])
               //   .style("fill", "lightgrey")
               e.append("rect")
                 .attr("class","overlay")
+                // .attr("x",-5)
                 .attr("width",width+gridWidth/2)
                 .attr("height",gridHeight-gridGap)
                 .style("fill","none")
@@ -714,6 +715,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                .attr("r", gridWidth/2)
                .style("fill",function(v){
                   if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(v[colorBy])
+                  else if(colorBy==="mirror_rate") return scaleColor(v[colorBy])
                   else return scaleColor(v[colorBy].length)
                  })
                .style("opacity",0.7)
@@ -757,25 +759,19 @@ angular.module('ricardo.directives.reportingEntities', [])
                     d3.select(this.parentNode.parentNode).selectAll(".rlabel").style("opacity",0)
                     d3.select(this.parentNode).selectAll(".coverage_rect,.barLabel")
                                               .style("opacity",1)
-                    d3.select(this.parentNode).select(".barLabel")
-                      .attr("x",function(d){ return marginScale(d[layout])})
-                      .attr("text-anchor",function(d){
-                                      return marginScale(d[layout])>margin.left/2 ? "end":"start"
-                      })
-                      .text(valueFormat(d[layout]))
-                    tooltip_margin.style("display", "block").style("opacity", .9).html(
-                    "<h5>"+d.key +"</h5><hr>"+layoutName+": "+d[layout])
+                    // tooltip_margin.style("display", "block").style("opacity", .9).html(
+                    // "<h5>"+d.key +"</h5><hr>"+layoutName+": "+d[layout])
                   })
-                  .on('mousemove', function() {
-                    // var wid = tooltip.style("width").replace("px", "");
-                    tooltip_margin.style("left", (Math.min(window.innerWidth,
-                        Math.max(0, (d3.event.pageX)))) + "px")
-                    // .style("left",(margin.left-offset)/2+"px")
-                    .style("top", (d3.event.pageY+40) + "px")
-                      // .style("width", wid + "px");
-                  })
+                  // .on('mousemove', function() {
+                  //   // var wid = tooltip.style("width").replace("px", "");
+                  //   tooltip_margin.style("left", (Math.min(window.innerWidth,
+                  //       Math.max(0, (d3.event.pageX))))-75 + "px")
+                  //   // .style("left",(margin.left-offset)/2+"px")
+                  //   .style("top", (d3.event.pageY+40) + "px")
+                  //     // .style("width", wid + "px");
+                  // })
                   .on("mouseout",function(d){
-                    tooltip_margin.style("display", "none")
+                    // tooltip_margin.style("display", "none")
                     d3.select(this.parentNode.parentNode).selectAll(".rlabel").style("opacity",1)
                     d3.select(this.parentNode).select(".coverage_rect")
                                               .style("opacity",0.7)
@@ -785,8 +781,11 @@ angular.module('ricardo.directives.reportingEntities', [])
 
               sideChart.append("text")
                          .attr("class","barLabel")
-                         .attr("y",8)
-                         .attr("font-size",11)
+                         .attr("x",function(d){ return d3.min([marginScale(d[layout]),margin.left-offset-10])})
+                         .text(valueFormat(d[layout]))
+                         .attr("text-anchor","end")
+                         .attr("y",15)
+                         .attr("font-size",14)
                          .style("stroke","black")
                          .style("opacity",0)
                          .attr("pointer-events","none")
@@ -950,8 +949,8 @@ angular.module('ricardo.directives.reportingEntities', [])
                 tooltip.select(".table").style("display","block");
                 tooltip.select(".table").select("table").remove();
                 tooltip.select(".table").html("<table><tr><td>Number of Partners (A)</td><td style='text-align:right'>"
-                  +v.partner.length+"</td></tr><tr><td>Number of Bilateral Partners (A &cap; B)</td><td style='text-align:right'>"
-                  +v.partner_intersect.length+"</td></tr><tr><td>Bilateral Rate</td><td style='text-align:right'>"
+                  +v.partner.length+"</td></tr><tr><td>Number of Mirror Partners (B)</td><td style='text-align:right'>"
+                  +v.partner_intersect.length+"</td></tr><tr><td>Mirror Rate</td><td style='text-align:right'>"
                   +d3.round(v.mirror_rate,2)+"</td></tr></table>")
               }
             }

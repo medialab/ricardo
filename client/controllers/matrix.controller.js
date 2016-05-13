@@ -34,7 +34,7 @@ angular.module('ricardo.controllers.matrix', [])
              {type: {value: "partner",writable: true},
              name: {value: "Number of Partners",writable: true}},
              {type: {value: "mirror_rate",writable: true},
-             name: {value: "Bilateral Rate",writable: true}},
+             name: {value: "Mirror Rate",writable: true}},
              {type: {value: "sourcetype",writable: true},
              name: {value: "Source Type",writable: true}},
              {type: {value: "type",writable: true},
@@ -117,17 +117,31 @@ angular.module('ricardo.controllers.matrix', [])
         $scope.search+=1;
       }
       function reprocess(data){
+
+        // var worldData=data.filter(function(d){return d.partnertype==="world"})
+
+        // var worldEntities=d3.nest()
+        //       .key(function(d) { return d.reporting; })
+        //       .key(function(d) { return d.year; })
+        //       .entries(worldData);
+        // console.log(worldEntities)
+
         //data manipulation
         $scope.rawMinDate = d3.min(data, function(d) { return +d.year; })
         $scope.rawMaxDate = d3.max(data, function(d) { return +d.year; })
-          var flow=data.filter(function(d){return d.expimp===$scope.chartFlow.type.value});
-          var actualData=flow.filter(function(d){return d.partnertype==="actual"})
-          var worldData=flow.filter(function(d){return d.partnertype==="world"})
-          //actualData proc
-          actualData.forEach(function(d){
+        var flow=data.filter(function(d){return d.expimp===$scope.chartFlow.type.value});
+        var actualData=flow.filter(function(d){return d.partnertype==="actual"})
+        var worldData=flow.filter(function(d){return d.partnertype==="world"})
+        worldData.forEach(function(d){
+          d.partner=[]
+        })
+        //actualData proc
+        actualData.forEach(function(d){
             d.year=+d.year;
             d.partner=[]
             d.partner_continent=[]
+            // d.partners.split(",").forEach(function(p){
+            if(d.partners===undefined) console.log(d)
             d.partners.forEach(function(p){
               d.partner_continent.push(p.split("+")[1])
               d.partner.push(p.split("+")[0])
@@ -150,36 +164,28 @@ angular.module('ricardo.controllers.matrix', [])
             d.reference="Actual Reported"
             d.partner_continent=continents.sort(function(a,b){return b.number-a.number;});
           });
-          //worldData proc
-          var worldEntities=d3.nest()
-                .key(function(d) { return d.reporting; })
-                .key(function(d) { return d.year; })
-                .entries(worldData);
+          // //worldData proc
+          // var worldEntities=d3.nest()
+          //       .key(function(d) { return d.reporting; })
+          //       .key(function(d) { return d.year; })
+          //       .entries(worldData);
 
-          var worldbestguess=[]
-          worldEntities.forEach(function(d){
-            d.values.forEach(function(e){
-              e.values.forEach(function(p){
-                 if (p.partners==="World_best_guess") e.worldbestguess=p
-              })
-              if(e.values.length===2){
-                e.values.forEach(function(p){
-                  if (p.partners!=="World_best_guess") {
-                    e.worldbestguess.reference=p.partners
-                  }
-                })
-              }
-              else{
-                e.values.forEach(function(p,i){
-                  if (p.partners!=="World_best_guess" && p.flow===e.worldbestguess.flow) e.worldbestguess.reference=p.partners
-                })
-              }
-              e.worldbestguess.partner=[];
-              worldbestguess.push(e.worldbestguess)
-            })
-          })
+          // var worldbestguess=[]
+          // worldEntities.forEach(function(d){
+          //   d.values.forEach(function(e){
+          //     e.worldbestguess=e.values.filter(function(p){return p.partners==="World_best_guess"})[0]
+          //     // console.log(e.values.filter(function(p){return p.partners==="World_best_guess"}))
+          //     var worldpaterner=e.values.map(function(p){return p.partners})
+          //     if(worldpaterner.indexOf("World estimated") > -1) e.worldbestguess.reference= "World estimated"
+          //     else if (worldpaterner.indexOf("World as reported") > -1) e.worldbestguess.reference= "World as reported"
+          //     else if (worldpaterner.indexOf("World sum partners") > -1) e.worldbestguess.reference= "World sum partners"
+          //     else e.worldbestguess.reference="undefined"
+          //     e.worldbestguess.partner=[];
+          //     worldbestguess.push(e.worldbestguess)
+          //   })
+          // })
 
-          flow=actualData.concat(worldbestguess)
+          flow=actualData.concat(worldData)
           var flowEntities=d3.nest()
                 .key(function(d) { return d.reporting; })
                 .key(function(d) { return d.year; })
@@ -204,13 +210,13 @@ angular.module('ricardo.controllers.matrix', [])
           })
 
           flowEntities_uniq.forEach(function(d){
-            if(d.partners_mirror.length>0){
+            if(d.partners_mirror.length>0 && d.partner.length>0 ){
+              // d.partner_mirror=d.partners_mirror.split(",")
               d.partner_mirror=d.partners_mirror
               d.partner_intersect = d.partner.filter(function(value) {
                                      return d.partner_mirror.indexOf(value) > -1;
                                  });
-              // d.mirror_rate=d.partner_intersect.length/d.partner.length
-              d.mirror_rate=d.partner_intersect.length/(d.partner.length+d.partner_mirror.length)
+              d.mirror_rate=d.partner_intersect.length/d.partner.length
             }
             else {
               d.partner_mirror=[]
@@ -237,7 +243,7 @@ angular.module('ricardo.controllers.matrix', [])
            apiService
             .getReportingsAvailableByYear()
             .then(function (data){
-              $scope.data=data
+              $scope.data=data.slice();
               reprocess(data)
             })
             // d3.csv("../metadata.csv",function(data){

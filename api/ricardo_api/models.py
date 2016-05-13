@@ -246,31 +246,52 @@ def get_reportings_available_by_year():
                     ON r.reporting_id=t1.partner_slug and r.year =t1.year and r.expimp!=t1.expimp) tot
                     GROUP BY  tot.reporting_id, tot.year
                     UNION ALL
-                    SELECT reporting_id,reporting as reporting, group_concat(flow,"|") as flow, group_concat(expimp,"|") as expimp, partner,
+                    SELECT reporting_id,reporting as reporting, group_concat(flow,"|") as flow, group_concat(expimp,"|") as expimp, group_concat(partner,"|") as partner,
                     year,group_concat(type,"|") as type,group_concat(source,"|")as source, count(distinct source)as source_count,
                     reporting_continent, reporting_type, "world" as partnertype,group_concat(mirror_partner,"|") as mirror_partner
                     FROM
                     (SELECT t.reporting_slug as reporting_id, reporting, flow,  t.expimp as expimp,
-                    partner as partner, t.year as year, type, source, reporting_continent, reporting_type,(t1.reportings ||"+"|| t1.expimp) as mirror_partner
+                    t.partner as partner, t.year as year, type, source, reporting_continent, reporting_type,(t1.reportings ||"+"|| t1.expimp) as mirror_partner
                     FROM
-                    (SELECT reporting, reporting_slug, flow*Unit/rate as flow, partner, year, source, type, reporting_continent,reporting_type, expimp
+                    (SELECT reporting, reporting_slug, flow*Unit/rate as flow, group_concat(partner,"+") as partner, year,group_concat(source,"+") as source, group_concat(type,"+") as type, reporting_continent,reporting_type, expimp
                     FROM flow_joined
                     WHERE flow*Unit/rate is not NULL
                     AND reporting_continent is not 'World'
-                    AND( partner_slug like 'Worldbestguess'
-                    OR partner_slug like 'Worldestimated'
+                    AND(partner_slug like 'Worldestimated'
                     OR partner_slug like 'Worldasreported'
                     OR partner_slug like 'Worldsumpartners')
-                    GROUP BY  reporting_slug, partner,year,expimp) t
+                    GROUP BY  reporting_slug,year,expimp) t
                     LEFT JOIN
                     (SELECT group_concat(distinct replace(reporting_slug,",","")) as reportings,partner_slug,year,expimp
                     FROM flow_joined
                     Where flow*Unit/rate is not NULL
                     GROUP BY  partner_slug, year,expimp) t1
                     ON t.reporting_slug=t1.partner_slug and t.year =t1.year and t.expimp!=t1.expimp)
-                    Group by reporting_id,partner, year
+                    Group by reporting_id, year
                     """)
-
+        # SELECT reporting_id,reporting as reporting, group_concat(flow,"|") as flow, group_concat(expimp,"|") as expimp, partner,
+        #             year,group_concat(type,"|") as type,group_concat(source,"|")as source, count(distinct source)as source_count,
+        #             reporting_continent, reporting_type, "world" as partnertype,group_concat(mirror_partner,"|") as mirror_partner
+        #             FROM
+        #             (SELECT t.reporting_slug as reporting_id, reporting, flow,  t.expimp as expimp,
+        #             partner as partner, t.year as year, type, source, reporting_continent, reporting_type,(t1.reportings ||"+"|| t1.expimp) as mirror_partner
+        #             FROM
+        #             (SELECT reporting, reporting_slug, flow*Unit/rate as flow, partner, year, source, type, reporting_continent,reporting_type, expimp
+        #             FROM flow_joined
+        #             WHERE flow*Unit/rate is not NULL
+        #             AND reporting_continent is not 'World'
+        #             AND( partner_slug like 'Worldbestguess'
+        #             OR partner_slug like 'Worldestimated'
+        #             OR partner_slug like 'Worldasreported'
+        #             OR partner_slug like 'Worldsumpartners')
+        #             GROUP BY  reporting_slug, partner,year,expimp) t
+        #             LEFT JOIN
+        #             (SELECT group_concat(distinct replace(reporting_slug,",","")) as reportings,partner_slug,year,expimp
+        #             FROM flow_joined
+        #             Where flow*Unit/rate is not NULL
+        #             GROUP BY  partner_slug, year,expimp) t1
+        #             ON t.reporting_slug=t1.partner_slug and t.year =t1.year and t.expimp!=t1.expimp)
+        #             Group by reporting_id,partner, year
   json_response=[]
   table = [list(r) for r in cursor]
   for row in table:
@@ -320,9 +341,35 @@ def get_reportings_available_by_year():
         })
     else:
       total_source=row[7].split("|")[0] if row[8]==1 else row[7]
+      total_partner=[]
+      total_source=[]
+      total_sourcetype=[]
       total_partner_mirror=[]
       for i in range(len(row[3].split("|"))):
         total+=float(row[2].split("|")[i])
+        partnerlist=row[4].split("|")[i].split("+")
+        if "World estimated" in partnerlist:
+          partner="World estimated"
+        elif "World as reported" in partnerlist:
+          partner="World as reported"
+        else:
+          partner="World sum partners"
+        total_partner.append(partner)
+
+        sourcetypelist=row[6].split("|")[i].split("+")
+        if "primary" in sourcetypelist:
+          sourcetype="primary"
+        elif "secondary" in sourcetypelist:
+          sourcetype="secondary"
+        else:
+          sourcetype="estimation"
+        sourceIndex=sourcetypelist.index(sourcetype)
+        total_sourcetype.append(sourcetype)
+
+        sourcelist=row[7].split("|")[i].split("+")
+        source=sourcelist[sourceIndex]
+        total_source.append(source)
+
         if row[12] is not None and len(row[12].split("|"))==len(row[3].split("|")):
           partner_mirror=row[12].split("|")[i].split("+")[0].split(",")
           total_partner_mirror+=partner_mirror
@@ -336,10 +383,11 @@ def get_reportings_available_by_year():
           "reporting": row[1],
           "flow": float(row[2].split("|")[i]),
           "expimp":row[3].split("|")[i],
-          "partners":row[4],
+          "partner":[],
+          "reference":partner,
           "year":row[5],
-          "sourcetype":row[6].split("|")[i],
-          "source":row[7].split("|")[i],
+          "sourcetype":sourcetype,
+          "source":source,
           "continent":row[9],
           "type":row[10],
           "partnertype":row[11],
@@ -351,10 +399,11 @@ def get_reportings_available_by_year():
           "reporting": row[1],
           "flow": total,
           "expimp":"total",
-          "partners":row[4],
+          "partner":[],
+          "reference":("|").join(list(set(total_partner))),
           "year":row[5],
-          "sourcetype": ("|").join(list(set(row[6].split("|")))),
-          "source":total_source,
+          "sourcetype": ("|").join(list(set(total_sourcetype))),
+          "source": ("|").join(list(set(total_source))),
           "continent":row[9],
           "type":row[10],
           "partnertype":row[11],
