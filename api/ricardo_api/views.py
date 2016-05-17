@@ -152,6 +152,15 @@ def nations_network():
         abort(500)
     return Response(json_data, status=200, mimetype='application/json')
 
+@app.route('/nb_flows_by_year')
+def nb_flows_by_year():
+    try:
+        json_data=models.get_nb_flows()
+    except:
+        app.logger.exception("exception in flows available")
+        abort(500)
+    return Response(json_data, status=200, mimetype='application/json')
+
 @app.route('/reportings_available_by_years')
 def reportings_available_by_years():
     try:

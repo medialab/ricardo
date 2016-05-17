@@ -18,5 +18,6 @@ angular.module('ricardo.directives', [
 	'ricardo.directives.reportingContinent',
 	'ricardo.directives.reportingEntities',
 	'ricardo.directives.reportingWorld',
-	'ricardo.directives.reportingSynth'
+	'ricardo.directives.reportingSynth',
+	'ricardo.directives.numberFlows'
 ])

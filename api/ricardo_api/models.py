@@ -186,6 +186,32 @@ def get_world_flows(from_year,to_year):
 
     return json.dumps(json_response,encoding="UTF8")
 
+def get_nb_flows():
+  cursor=get_db().cursor()
+  cursor.execute("""
+    SELECT year , count(*), "bilateral" as partner
+    FROM flow_joined
+    WHERE partner_slug not like "World%"
+    GROUP BY year
+    union
+    SELECT year , count(*), "world" as partner
+    FROM flow_joined
+    WHERE (
+     partner_slug like 'Worldestimated'
+     OR partner_slug like 'Worldasreported'
+     OR partner_slug like 'Worldasreported2'
+     OR partner_slug like 'Worldsumpartners')
+    GROUP BY year
+    """)
+  json_response=[]
+  for (year, nb_flows, partner) in cursor:
+    json_response.append({
+      "year":year,
+      "nb_flows": nb_flows,
+      "partner":partner
+      })
+  return json.dumps(json_response,encoding="UTF8")
+  
 def get_reportings_available_by_year():
   cursor = get_db().cursor()
   # cursor.execute("""SELECT tot.reporting_id as reporting_id, tot.reporting as reporting, group_concat(tot.flow,"|") as flow,  group_concat(tot.expimp,"|") as expimp,

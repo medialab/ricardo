@@ -82,9 +82,9 @@ config(['$routeProvider', function($routeProvider) {
       reportingByYear: function(apiService){
         return apiService.getReportingsAvailableByYear()
       },
-      // flowsByYear: function(apiService){
-      //   return apiService.getNumberFlows()
-      // }
+      flowsByYear: function(apiService){
+        return apiService.getNumberFlows()
+      }
     }
   });
   $routeProvider.otherwise({redirectTo: '/'});

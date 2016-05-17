@@ -4,9 +4,10 @@
 
 angular.module('ricardo.controllers.matrix', [])
 
-  .controller('matrix', [ "$scope", "$location", "apiService", "dataTableService","utils","reportingByYear","METADATA_TABLE_HEADERS",
-    function ($scope, $location, apiService, dataTableService, utils,reportingByYear,METADATA_TABLE_HEADERS) {
-
+  .controller('matrix', [ "$scope", "$location", "apiService", "dataTableService","utils","reportingByYear","flowsByYear","METADATA_TABLE_HEADERS",
+    function ($scope, $location, apiService, dataTableService, utils,reportingByYear,flowsByYear,METADATA_TABLE_HEADERS) {
+ // .controller('matrix', [ "$scope", "$location", "apiService", "dataTableService","utils","flowsByYear","METADATA_TABLE_HEADERS",
+ //    function ($scope, $location, apiService, dataTableService, utils,flowsByYear,METADATA_TABLE_HEADERS) {
       var yearsDelta = d3.range(1787, 1940)
 
       $scope.multichartLayoutChoices = [
@@ -264,6 +265,7 @@ angular.module('ricardo.controllers.matrix', [])
       }//end reprocess
 
       function init() {
+          $scope.nbFlows=flowsByYear;
           $scope.data=reportingByYear;
           reprocess(reportingByYear)
            // apiService

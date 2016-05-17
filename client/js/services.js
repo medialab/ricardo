@@ -261,6 +261,21 @@ angular.module('ricardo.services', [])
 
        return deferred.promise;
      },
+     getNumberFlows: function(params){
+       var deferred = $q.defer();
+       var serviceUrl = '/nb_flows_by_year'
+       $http({
+          method: 'GET',
+          url: BASE_API_URL + serviceUrl,
+          params: params,
+          cache: true,
+        }).success(function(data){
+         deferred.resolve(data);
+       }).error(function(){
+         deferred.reject("An error occured while fetching data");
+       });
+       return deferred.promise;
+     },
      getReportingsAvailableByYear: function(params){
        var deferred = $q.defer();
        var serviceUrl = '/reportings_available_by_years'
