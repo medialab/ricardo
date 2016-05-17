@@ -369,7 +369,7 @@ def get_reportings_available_by_year():
       total_source=row[7].split("|")[0] if row[8]==1 else row[7]
       total_partner=[]
       total_source=[]
-      total_sourcetype=[]
+      total_sourcetypelist=[]
       total_partner_mirror=[]
       for i in range(len(row[3].split("|"))):
         total+=float(row[2].split("|")[i])
@@ -390,7 +390,14 @@ def get_reportings_available_by_year():
         else:
           sourcetype="estimation"
         sourceIndex=sourcetypelist.index(sourcetype)
-        total_sourcetype.append(sourcetype)
+        total_sourcetypelist.append(sourcetype)
+
+        if "primary" in total_sourcetypelist:
+          total_sourcetype="primary"
+        elif "secondary" in total_sourcetypelist:
+          total_sourcetype="secondary"
+        else:
+          total_sourcetype="estimation"
 
         sourcelist=row[7].split("|")[i].split("+")
         source=sourcelist[sourceIndex]
@@ -428,7 +435,8 @@ def get_reportings_available_by_year():
           "partner":[],
           "reference":("|").join(list(set(total_partner))),
           "year":row[5],
-          "sourcetype": ("|").join(list(set(total_sourcetype))),
+          # "sourcetype": ("|").join(list(set(total_sourcetypelist))),
+          "sourcetype": total_sourcetype,
           "source": ("|").join(list(set(total_source))),
           "continent":row[9],
           "type":row[10],
