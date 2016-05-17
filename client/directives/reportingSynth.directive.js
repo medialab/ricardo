@@ -149,7 +149,7 @@ angular.module('ricardo.directives.reportingSynth', [])
           "World as reported":1,
           "World sum partners":2,
           "World estimated|World as reported":3,
-          "World estimated|World sum partners":4,
+          "World sum partners|World estimated":4,
           "World sum partners|World as reported":5
         }
         var source_map={

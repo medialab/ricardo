@@ -33,7 +33,7 @@ angular.module('ricardo')
     {'field': 'expimp', 'displayName': 'expimp'},
     {'field': 'partner', 'displayName': 'partners'},
     {'field': 'reference', 'displayName': 'world partner'},
-    {'field': 'partner_mirror', 'displayName': 'bilateral partners'},
+    {'field': 'partner_intersect', 'displayName': 'bilateral partners'},
     {'field': 'source', 'displayName': 'source'},
     {'field': 'sourcetype', 'displayName': 'sourcetype'},
     {'field': 'continent', 'displayName': 'continent'},
