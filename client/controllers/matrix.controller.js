@@ -4,8 +4,8 @@
 
 angular.module('ricardo.controllers.matrix', [])
 
-  .controller('matrix', [ "$scope", "$location", "apiService", "dataTableService","utils","METADATA_TABLE_HEADERS",
-    function ($scope, $location, apiService, dataTableService, utils,METADATA_TABLE_HEADERS) {
+  .controller('matrix', [ "$scope", "$location", "apiService", "dataTableService","utils","reportingByYear","METADATA_TABLE_HEADERS",
+    function ($scope, $location, apiService, dataTableService, utils,reportingByYear,METADATA_TABLE_HEADERS) {
 
       var yearsDelta = d3.range(1787, 1940)
 
@@ -86,6 +86,30 @@ angular.module('ricardo.controllers.matrix', [])
               }
             })
       $scope.viewTable = 0;
+
+      $scope.totalServerItems = 0;
+        $scope.pagingOptions = {
+            pageSizes: [50],
+            pageSize: 50,
+            currentPage: 1
+        };
+
+        $scope.tablePagedData = []
+        $scope.gridOptions = {
+          data: 'tablePagedData',
+          enablePaging: true,
+          showFooter: true,
+          totalServerItems:'totalServerItems',
+          pagingOptions: $scope.pagingOptions,
+          enableRowSelection: false,
+          footerRowHeight: 45,
+          columnDefs: METADATA_TABLE_HEADERS,
+          showFilter: true,
+          sortInfo: {
+            fields: ["year", "partner"],
+            directions: ["asc"]
+          }
+        }
 
       $scope.changeFlow = function (flow) {
           $scope.chartFlow=flow;
@@ -240,12 +264,14 @@ angular.module('ricardo.controllers.matrix', [])
       }//end reprocess
 
       function init() {
-           apiService
-            .getReportingsAvailableByYear()
-            .then(function (data){
-              $scope.data=data.slice();
-              reprocess(data)
-            })
+          $scope.data=reportingByYear;
+          reprocess(reportingByYear)
+           // apiService
+           //  .getReportingsAvailableByYear()
+           //  .then(function (data){
+           //    $scope.data=data.slice();
+           //    reprocess(data)
+           //  })
             // d3.csv("../metadata.csv",function(data){
             //   $scope.data=data;
             //   reprocess(data);
@@ -257,30 +283,6 @@ angular.module('ricardo.controllers.matrix', [])
         /*
         * Display and sort table data + download csv
         */
-
-        $scope.totalServerItems = 0;
-        $scope.pagingOptions = {
-            pageSizes: [50],
-            pageSize: 50,
-            currentPage: 1
-        };
-
-        $scope.tablePagedData = []
-        $scope.gridOptions = {
-          data: 'tablePagedData',
-          enablePaging: true,
-          showFooter: true,
-          totalServerItems:'totalServerItems',
-          pagingOptions: $scope.pagingOptions,
-          enableRowSelection: false,
-          footerRowHeight: 45,
-          columnDefs: METADATA_TABLE_HEADERS,
-          showFilter: true,
-          sortInfo: {
-            fields: ["year", "partner"],
-            directions: ["asc"]
-          }
-        }
 
         function setPagingData(data, pageSize, page){
               var pagedData = data.slice((page - 1) * pageSize, page * pageSize);

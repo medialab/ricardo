@@ -10,7 +10,6 @@ angular.module('ricardo.directives.navbar', [])
       replace: false,
       templateUrl: 'partials/navbar.html',
       link: function(scope, element, attrs) {
-
       }
     }
   }])

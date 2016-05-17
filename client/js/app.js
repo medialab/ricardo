@@ -75,9 +75,17 @@ config(['$routeProvider', function($routeProvider) {
       }
     }
   });
-  $routeProvider.when('/reportings_by_year', {
+  $routeProvider.when('/metadata', {
     templateUrl: 'partials/matrix.html',
-    controller: 'matrix'
+    controller: 'matrix',
+    resolve:{
+      reportingByYear: function(apiService){
+        return apiService.getReportingsAvailableByYear()
+      },
+      // flowsByYear: function(apiService){
+      //   return apiService.getNumberFlows()
+      // }
+    }
   });
   $routeProvider.otherwise({redirectTo: '/'});
 }])
