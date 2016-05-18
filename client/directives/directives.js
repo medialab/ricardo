@@ -15,7 +15,6 @@ angular.module('ricardo.directives', [
 	'ricardo.directives.barChart',
 	'ricardo.directives.linechartWorld',
 	'ricardo.directives.collapseLegend',
-	'ricardo.directives.reportingContinent',
 	'ricardo.directives.reportingEntities',
 	'ricardo.directives.reportingWorld',
 	'ricardo.directives.reportingSynth',
