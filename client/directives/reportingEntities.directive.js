@@ -902,16 +902,17 @@ angular.module('ricardo.directives.reportingEntities', [])
               tooltip.select(".title").html(
               "<h5>"+v.reporting +" ("+v.type.split("/")[0]+" in "+v.continent+")"+ " in " + v.year +"</h5>")
               tooltip.selectAll(".source,.reference").html("")
+              
               if (colorBy==="reference") tooltip.select(".reference").html("<hr><p style='font-weight:bold'>World Partner: "+v.reference+"</p>")             
               else if (colorBy==="sourcetype") tooltip.select(".source").html(
-                  "<div><span style='font-weight:bold'>Source("+v.sourcetype+"):</span>"+v.source+"</div>")
-                
+                  "<hr><div><span style='font-weight:bold'>Source("+v.sourcetype+"):</span>"+v.source+"</div>")
+
               tooltip.select(".tip_svg").style("display","none");
               tooltip.select(".table").style("display","none");
               if(colorBy==="partner") {
                 tooltip.select(".tip_svg").style("display","block");
                 tooltip.select(".tip_svg").selectAll("*").remove()
-                tooltip.select(".tip_svg").html(v.partner.length===0 ? "<p>World Partner Only</p>":"<p>Number of partners: "+v.partner.length+"</p>")
+                tooltip.select(".tip_svg").html(v.partner.length===0 ? "<hr><p>World Partner Only</p>":"<hr><p>Number of partners: "+v.partner.length+"</p>")
                 if(v.partnertype==="actual"){
                   tooltip.select(".tip_svg").append("p").text("By continent:")
                   tooltip.select(".tip_svg").append("svg")
