@@ -53,6 +53,21 @@ angular.module('ricardo.directives.reportingEntities', [])
           if (newValue) {
             var offsetDiv=$("#reporting-entities-container").offset().top;
             var offsetTop=d3.select("#r_"+scope.reporting).node().getCTM().f;
+
+            //clear hightlight
+            d3.selectAll(".entities").selectAll(".rlabel")
+                                    .style("stroke","none")
+                                    .attr("y",8).attr("font-size","11px");
+            d3.selectAll(".entities").selectAll(".overlay").style("fill","none")
+            d3.selectAll(".entities").selectAll(".overlay,.coverage_rect")
+                           .attr("height",gridHeight-gridGap)
+            d3.selectAll(".entities").selectAll(".available").selectAll("circle")
+                    .attr("cy",function(v) { return gridHeight/2;})
+            d3.selectAll(".entities").selectAll(".available").selectAll("rect")
+                           .attr("height",gridHeight-gridGap)
+            d3.selectAll(".entities").attr("transform", function(d){ return "translate(0 ,"+ y(d.key) + ")"});
+            
+            //highlight searched
             d3.select("#r_"+scope.reporting).selectAll(".rlabel").style("stroke","black")
                            .attr("y",15)
                            .attr("font-size","14px");
