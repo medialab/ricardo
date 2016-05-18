@@ -126,7 +126,6 @@ angular.module('ricardo.directives.reportingSynth', [])
                     .attr("class","synth_svg")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
         var line = d3.svg.line()
                     .interpolate("basis")
                     .defined(function(d) { return d.values.nb_reporting!==0; })
@@ -134,7 +133,7 @@ angular.module('ricardo.directives.reportingSynth', [])
                     .y(function(d) { return y(d.values.nb_reporting); });
 
         var partner_map={
-          0:"no partner",
+          0:"world parnter only",
           1:"1 - 10",
           10:"10 - 50",
           50:"more than 50"
@@ -149,8 +148,8 @@ angular.module('ricardo.directives.reportingSynth', [])
           "World as reported":1,
           "World sum partners":2,
           "World estimated|World as reported":3,
-          "World sum partners|World estimated":4,
-          "World sum partners|World as reported":5
+          "World sum partners|World estimated":3,
+          "World sum partners|World as reported":3
         }
         var source_map={
           "primary":0,
@@ -188,11 +187,17 @@ angular.module('ricardo.directives.reportingSynth', [])
           }
           return color_domain;
         }
-        function group_reporting(data,curveBy){
+        function group_reporting(_data,curveBy){
 
+          //duplicate the array of object
+          var data = JSON.parse(JSON.stringify(_data))
+
+          data.forEach(function(d){
+            d.reference=d.reference.split("|").length===1 ? d.reference:"Multiple world partners"
+          })
           minDate=d3.min(data,function(d){return +d.year});
           maxDate=d3.max(data,function(d){return +d.year});
-         if(curveBy==="partner"){
+          if(curveBy==="partner"){
             // var max=d3.max(data,function(d){return d.partner.length});
             // var threshold_out=["less than 10","10 to 50","50 to 100","more than 100"]
             var threshold_out=[0,1,10,50]
@@ -204,6 +209,7 @@ angular.module('ricardo.directives.reportingSynth', [])
             var threshold_in=[0.01,0.5]
             data=data.filter(function(d){return d[curveBy]!==undefined})
           }
+
           var thresScale=d3.scale.threshold()
                             .domain(threshold_in)
                             .range(threshold_out)
@@ -263,7 +269,6 @@ angular.module('ricardo.directives.reportingSynth', [])
                     .append("g")
                     .attr("class","legend")
 
-
             legend.append("rect")
                   .attr("width",10)
                   .attr("height",10)
@@ -303,12 +308,13 @@ angular.module('ricardo.directives.reportingSynth', [])
           });
 
           var color_domain=data.map(function(d){return d.key;})
-          // if(category==="partner" || category==="mirror_rate")
-          //                       .sort(function(a, b){return (category==="partner"||category==="mirror_rate")? d3.ascending(+a, +b):d3.ascending(a, b);})//need sorted
 
           if(category==="partner" || category==="mirror_rate") {
             color_domain.sort(function(a,b){return d3.ascending(+a, +b);})
             scaleColor.domain(color_domain)
+          }
+          else if(category==="reference"){
+            categoryColor.domain(color_domain).range(['#393b79', '#bd9e39','#ad494a', '#637939','#637939','#637939'])
           }
           else {
             color_domain=sort_color(category,color_domain)
@@ -332,6 +338,7 @@ angular.module('ricardo.directives.reportingSynth', [])
              .attr("text-anchor","end")
              .attr("font-size","11px")
              .attr("transform","translate(-10,"+(height+10)+")")
+          
           var backbar=svg.append("g").selectAll(".background")
                       .data(d3.range(minDate,maxDate+1)).enter()
                       .append("rect")

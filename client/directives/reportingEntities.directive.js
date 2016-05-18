@@ -137,13 +137,13 @@ angular.module('ricardo.directives.reportingEntities', [])
                   if (topping) return topping*5;
                 })
         }
-        var world_partner_map={
+         var world_partner_map={
           "World estimated":0,
           "World as reported":1,
           "World sum partners":2,
           "World estimated|World as reported":3,
-          "World sum partners|World estimated":4,
-          "World sum partners|World as reported":5
+          "World sum partners|World estimated":3,
+          "World sum partners|World as reported":3
         }
         var source_map={
           "primary":0,
@@ -308,7 +308,7 @@ angular.module('ricardo.directives.reportingEntities', [])
         tooltip.append("div").attr("class","tip_svg");
         tooltip.append("div").attr("class","table");
         // tooltip.append("div").attr("class","tip_venn")
-
+        tooltip.append("div").attr("class","reference")
         tooltip.append("div").attr("class","source")
         // var tip_max=d3.max(data,function(d){
         //   return d3.max(d.values,function(v){
@@ -497,9 +497,11 @@ angular.module('ricardo.directives.reportingEntities', [])
               })
             })
             color_domain=sort_color(colorBy,d3.set(color_domain).values())
-            categoryColor.domain(color_domain)
+            if(colorBy==="reference"){
+              categoryColor.domain(color_domain).range(['#393b79', '#bd9e39','#ad494a', '#637939','#637939','#637939'])
+            }
+            else categoryColor.domain(color_domain).range(['#393b79',  '#bd9e39', '#ad494a',  '#637939', '#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
           }
-
         }
         function recolor(colorBy,data){
           // recolor_legend(colorBy,data)
@@ -898,63 +900,63 @@ angular.module('ricardo.directives.reportingEntities', [])
             }
             function tooltipContext(tooltip,v){
               tooltip.select(".title").html(
-              "<h5>"+v.reporting +" ("+v.type.split("/")[0]+" in "+v.continent+")"+ " in " + v.year +"</h5><hr>"+
-              "<p style='font-weight:bold'>World Partner: "+v.reference+"</p>")
-            tooltip.select(".source").html(
-              "<div><span style='font-weight:bold'>Source("+v.sourcetype+"):</span>"+v.source+"</div>"
-            )
-            tooltip.select(".tip_svg").style("display","none");
-            tooltip.select(".table").style("display","none");
-            if(colorBy==="partner") {
+              "<h5>"+v.reporting +" ("+v.type.split("/")[0]+" in "+v.continent+")"+ " in " + v.year +"</h5>")
+              tooltip.selectAll(".source,.reference").html("")
+              if (colorBy==="reference") tooltip.select(".reference").html("<hr><p style='font-weight:bold'>World Partner: "+v.reference+"</p>")             
+              else if (colorBy==="sourcetype") tooltip.select(".source").html(
+                  "<div><span style='font-weight:bold'>Source("+v.sourcetype+"):</span>"+v.source+"</div>")
+                
+              tooltip.select(".tip_svg").style("display","none");
+              tooltip.select(".table").style("display","none");
+              if(colorBy==="partner") {
+                tooltip.select(".tip_svg").style("display","block");
+                tooltip.select(".tip_svg").selectAll("*").remove()
+                tooltip.select(".tip_svg").html(v.partner.length===0 ? "<p>World Partner Only</p>":"<p>Number of partners: "+v.partner.length+"</p>")
+                if(v.partnertype==="actual"){
+                  tooltip.select(".tip_svg").append("p").text("By continent:")
+                  tooltip.select(".tip_svg").append("svg")
+                             .attr("width",tip_width)
+                             .attr("height",20*v.partner_continent.length+tip_margin.top+tip_margin.bottom+20)
+                             .append("g")
+                             .attr("class","tip_group")
+                             .attr("transform", "translate(" + tip_margin.left + "," + tip_margin.top + ")");
+                  x_tip.domain([0,d3.max(v.partner_continent,function(d){return d.number})])
 
-              tooltip.select(".tip_svg").style("display","block");
-              tooltip.select(".tip_svg").selectAll("*").remove()
-              tooltip.select(".tip_svg").html("<p>Number of partners: "+v.partner.length+"</p>")
-              if(v.partnertype==="actual"){
-                tooltip.select(".tip_svg").append("p").text("By continent:")
-                tooltip.select(".tip_svg").append("svg")
-                           .attr("width",tip_width)
-                           .attr("height",20*v.partner_continent.length+tip_margin.top+tip_margin.bottom+20)
-                           .append("g")
-                           .attr("class","tip_group")
-                           .attr("transform", "translate(" + tip_margin.left + "," + tip_margin.top + ")");
-                x_tip.domain([0,d3.max(v.partner_continent,function(d){return d.number})])
-
-                // y_tip.domain(v.partner_continent.map(function(d){return d.continent}))
-                var tip_partner=tooltip.select(".tip_group")
-                       .selectAll(".tip_partner")
-                       .data(v.partner_continent)
-                       .enter().append("g")
-                       .attr("class","tip_partner")
-                       .attr("transform",function(d,i){
-                          return "translate(0,"+2*i*(gridHeight+2)+")"})
-                tip_partner.append("rect")
-                           .attr("width",function(d){return x_tip(d.number)})
-                           .attr("height",10)
-                           .attr("fill",function(d){return continentColors[d.continent]});
-                tip_partner.append("text")
-                           .text(function(d){return d.continent})
-                           .attr("class","continentLabel")
-                           .attr("y",-2)
-                           .attr("fill","#fff")
-                           .attr("font-size",11)
-                tip_partner.append("text")
-                           .text(function(d){return d.number})
-                           .attr("x",function(d){return x_tip(d.number)+2})
-                           .attr("y",9)
-                           .attr("text-anchor","start")
-                           .attr("fill","#fff")
-                           .attr("font-size",12)
+                  // y_tip.domain(v.partner_continent.map(function(d){return d.continent}))
+                  var tip_partner=tooltip.select(".tip_group")
+                         .selectAll(".tip_partner")
+                         .data(v.partner_continent)
+                         .enter().append("g")
+                         .attr("class","tip_partner")
+                         .attr("transform",function(d,i){
+                            return "translate(0,"+2*i*(gridHeight+2)+")"})
+                  tip_partner.append("rect")
+                             .attr("width",function(d){return x_tip(d.number)})
+                             .attr("height",10)
+                             .attr("fill",function(d){return continentColors[d.continent]});
+                  tip_partner.append("text")
+                             .text(function(d){return d.continent})
+                             .attr("class","continentLabel")
+                             .attr("y",-2)
+                             .attr("fill","#fff")
+                             .attr("font-size",11)
+                  tip_partner.append("text")
+                             .text(function(d){return d.number})
+                             .attr("x",function(d){return x_tip(d.number)+2})
+                             .attr("y",9)
+                             .attr("text-anchor","start")
+                             .attr("fill","#fff")
+                             .attr("font-size",12)
+                  }
                 }
-              }
-              else if(colorBy==="mirror_rate") {
-                tooltip.select(".table").style("display","block");
-                tooltip.select(".table").select("table").remove();
-                tooltip.select(".table").html("<table><tr><td>Number of Partners (A)</td><td style='text-align:right'>"
-                  +v.partner.length+"</td></tr><tr><td>Number of Mirror Partners (B)</td><td style='text-align:right'>"
-                  +v.partner_intersect.length+"</td></tr><tr><td>Mirror Rate</td><td style='text-align:right'>"
-                  +d3.round(v.mirror_rate,2)+"</td></tr></table>")
-              }
+                else if(colorBy==="mirror_rate") {
+                  tooltip.select(".table").style("display","block");
+                  tooltip.select(".table").select("table").remove();
+                  tooltip.select(".table").html("<table><tr><td>Number of Partners (A)</td><td style='text-align:right'>"
+                    +v.partner.length+"</td></tr><tr><td>Number of Mirror Partners (B)</td><td style='text-align:right'>"
+                    +v.partner_intersect.length+"</td></tr><tr><td>Mirror Rate</td><td style='text-align:right'>"
+                    +d3.round(v.mirror_rate,2)+"</td></tr></table>")
+                }
             }
             function gradientHighlight(year){
               var svg_axis=d3.select("#reporting-synth-container").select(".synth_svg")

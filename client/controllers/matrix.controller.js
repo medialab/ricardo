@@ -223,6 +223,7 @@ angular.module('ricardo.controllers.matrix', [])
                 v.values.forEach(function(e,i){
                   if (e.partnertype==="actual"){
                     var attribute=e
+                    // attribute.reference=v.values[1].reference.split("|").length===1 ?  v.values[1].reference : "Multiple world partners"
                     attribute.reference=v.values[1].reference
                     attribute.sourcetype=v.values[1].sourcetype
                     attribute.source=v.values[1].source
