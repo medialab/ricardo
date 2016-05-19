@@ -66,7 +66,7 @@ angular.module('ricardo.directives.reportingEntities', [])
             d3.selectAll(".entities").selectAll(".available").selectAll("rect")
                            .attr("height",gridHeight-gridGap)
             d3.selectAll(".entities").attr("transform", function(d){ return "translate(0 ,"+ y(d.key) + ")"});
-            
+
             //highlight searched
             d3.select("#r_"+scope.reporting).selectAll(".rlabel").style("stroke","black")
                            .attr("y",15)
@@ -584,9 +584,27 @@ angular.module('ricardo.directives.reportingEntities', [])
           d3.select("#reporting-entities-container").selectAll(".entities")
             .transition().duration(500)
             .attr("transform", function(d){ return "translate(0 ,"+ y(d.key) + ")"})
-          d3.select("#reporting-entities-container").selectAll(".entities").selectAll(".coverage_rect")
-             .attr("x",function(d){ return d3.min([marginScale(d[layout]),margin.left-offset-10])})
-             .attr("width",function(d){ return d3.max([margin.left-offset-marginScale(d[layout]),10])})
+          if (layout==="alphabet") {
+            d3.select("#reporting-entities-container").selectAll(".entities")
+              .selectAll(".rlabel")
+              .attr('pointer-events',"all")
+            d3.select("#reporting-entities-container").selectAll(".entities")
+              .selectAll(".coverage_rect")
+              .style("display","none")
+            }
+          else{
+            d3.select("#reporting-entities-container").selectAll(".entities")
+              .selectAll(".rlabel")
+              .attr('pointer-events',"none")
+            d3.select("#reporting-entities-container").selectAll(".entities").selectAll(".coverage_rect")
+              .style("display","block")
+              .attr("x",function(d){ return d3.min([marginScale(d[layout]),margin.left-offset-10])})
+              .attr("width",function(d){ return d3.max([margin.left-offset-marginScale(d[layout]),10])})
+            d3.select("#reporting-entities-container").selectAll(".entities")
+              .selectAll(".barLabel")
+              .attr("x",function(d){ return d3.min([marginScale(d[layout]),margin.left-offset-10])})
+              .text(function(d){return valueFormat(d[layout])})
+          } 
         }
         function draw(data){
           data=order(layout,data);
@@ -820,7 +838,6 @@ angular.module('ricardo.directives.reportingEntities', [])
                   .attr("y",8)
                   .attr("font-size",11)
                   .attr("cursor","default")
-                  .attr("pointer-events","none")
 
             d3.select("body")
               .on("keydown",function(){

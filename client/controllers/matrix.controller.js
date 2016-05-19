@@ -26,6 +26,8 @@ angular.module('ricardo.controllers.matrix', [])
              name: {value: "Number of Reporting Years",writable: true}},
              {type: {value: "partnerAvg",writable: true},
              name: {value: "Partners in Average",writable: true}},
+             {type: {value: "alphabet",writable: true},
+             name: {value: "Reporting Name",writable: true}},
             ];
       $scope.matrixLayout = $scope.matrixLayoutChoices[0]
 
