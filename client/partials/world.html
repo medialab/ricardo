@@ -6,7 +6,7 @@
     </p>
 
     <div class="col-sm-12">
-      <h4>Flow by World Partner in
+      <h4>{{ 'WORLD_COMPARE_TITLE' | translate }} in
         <div class="inline-select">
             <ui-select ng-model="multichartLayout" theme="bootstrap" ng-change="changeMultiLayout(multichartLayout)">
               <match placeholder="Select grouped or multiple layout">{{$select.selected.name.value}}</match>

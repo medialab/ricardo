@@ -8,14 +8,17 @@
 			</p>
 		</div>
 		<div class="col-md-12">
-			<h4>Number of Flows by Year</h4>
+			<h4>{{ 'METADATA_NBFLOW_TITLE' | translate }}</h4>
+			<p class="paragraphPage">
+				{{ 'METADATA_NBFLOW_INTRO' | translate }}
+			</p>
 			<number-flows
 				ng-data="nbFlows">
 			</number-flows>
 		</div>
 		<div class="col-md-12">
 			<h4>
-			 {{ 'METADATA_VIEW_TITLE' | translate }}
+			 {{ 'METADATA_MATRIX_TITLE' | translate }} in 
 			 <div class="inline-select">
 			      <ui-select ng-model="chartFlow" theme="bootstrap" ng-change="changeFlow(chartFlow)">
 			        <match placeholder="Select flow type">{{$select.selected.name.value}}</match>
@@ -25,7 +28,7 @@
 			      </ui-select>
 		   		</div>
 		   	<br>
-	   		{{ 'METADATA_VIEW_CTL1' | translate }}
+	   		{{ 'METADATA_MATRIX_CTL1' | translate }}
 	   		<div class="inline-select">
 		        <ui-select ng-model="matrixLayout" theme="bootstrap" ng-change="changeMatrixLayout(matrixLayout)">
 		          <match placeholder="Order By">{{$select.selected.name.value}}</match>
@@ -34,7 +37,7 @@
 		          </choices>
 		        </ui-select>
 		    </div>
-		    {{ 'METADATA_VIEW_CTL2' | translate }}
+		    {{ 'METADATA_MATRIX_CTL2' | translate }}
 		    <div class="inline-select">
 		        <ui-select ng-model="matrixColorBy" theme="bootstrap" ng-change="changeMatrixColor(matrixColorBy)">
 		          <match placeholder="Color By">{{$select.selected.name.value}}</match>
@@ -52,13 +55,41 @@
 		        </ui-select>
 		    </div>
 			</h4>
-			<div ng-show="showBilateralTip" class="legend pull-right" >
+
+			<!-- <div>
+				<ul class="listIntro">
+	                <li>
+	                 Reporting type: {{ "METADATA_MATRIX_INTRO_1" | translate}}
+	                </li>
+	                <li>
+	                 Reporting continent: {{ "METADATA_MATRIX_INTRO_2"| translate}}	
+	                </li>
+	                <li>
+	                Source type:{{ "METADATA_MATRIX_INTRO_3" | translate}}
+	                </li> 
+	                <li>
+	                World partner: {{ "METADATA_MATRIX_INTRO_4"| translate}}
+	                </li> 
+	                <li>
+	                Number of partners: {{"METADATA_MATRIX_INTRO_5" | translate}}
+	                </li> 
+	                <li>
+	                Mirror rate: {{ "METADATA_MATRIX_INTRO_6" | translate}}
+	                </li> 
+	             </ul>
+			</div> -->
+			<div>
+				<p class="matrixIntro"><strong>Number of Reportings Color by {{ matrixColorBy.name.value}}</strong>
+				<br>
+				<strong>{{ matrixColorBy.name.value}}: </strong>{{"METADATA_MATRIX_INTRO_"+colorByIndex | translate}}</p>
+			</div>
+			<!-- <div ng-show="showBilateralTip" class="legend pull-right" >
 		        <div class="legend-item" >
 		          <div><strong>A:</strong> Number of partners reported by <strong>R</strong></div>
 		          <div><strong>B:</strong> Number of mirror partners of <strong>R</strong></div>
 		          <div><strong>Mirror Rate:</strong> B/A</div>
 		        </div>
-		     </div>
+		     </div> -->
 		    <reporting-synth
 				ng-data="flow"
 				flow-type="chartFlow"
