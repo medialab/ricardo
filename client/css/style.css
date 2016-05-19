@@ -417,7 +417,11 @@ li.storyline {
   width:66%;
   font-size: 12px;
 }
-
+.matrixIntro {
+  margin-left: 180px;
+  margin-bottom: 0;
+  font-size: 11px;
+}
 .paragraphViz {
   width:66%;
   font-size: 11px;

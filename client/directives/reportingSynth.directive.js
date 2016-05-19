@@ -115,9 +115,10 @@ angular.module('ricardo.directives.reportingSynth', [])
 
         var svg_legend = d3.select("#reporting-synth-axis").append("svg")
             .attr("width",width + margin.left + margin.right)
-            .attr("height",50)
+            .attr("height",20)
             .append("g")
-            .attr("transform", "translate(" + margin.left + ","+margin.top+")");
+            .attr("transform","translate(" + margin.left+",0)")
+            // .attr("transform", "translate(" + margin.left + ","+margin.top+")");
 
         var svg = d3.select("#reporting-synth-container").append("svg")
                     .attr("height", height + margin.top + margin.bottom)
@@ -259,23 +260,23 @@ angular.module('ricardo.directives.reportingSynth', [])
         }
         function draw_legend(color_domain){
           svg_legend.selectAll("*").remove()
-          var title=svg_legend.append("text")
-                    .text("Number of Reportings Color by "+categoryName)
-                    .attr("font-size",11)
+          // var title=svg_legend.append("text")
+          //           .text("Number of Reportings Color by "+categoryName)
+          //           .attr("font-size",11)
 
           var legend=svg_legend.selectAll(".legend")
                     .data(color_domain)
                     .enter()
                     .append("g")
                     .attr("class","legend")
-
             legend.append("rect")
                   .attr("width",10)
                   .attr("height",10)
+                  .attr("y",-5)
                   .style("fill",function(d){return category==="partner" || category==="mirror_rate"? scaleColor(d):categoryColor(d)})
             legend.append("text")
                   .attr("x",15)
-                  .attr("y",10)
+                  .attr("y",5)
                   .text(function(d){
                     if (category==="partner") return partner_map[d];
                     else if(category==="mirror_rate") return mirror_map[d];
@@ -319,6 +320,7 @@ angular.module('ricardo.directives.reportingSynth', [])
           else {
             color_domain=sort_color(category,color_domain)
             categoryColor.domain(color_domain)
+                        .range(['#393b79',  '#bd9e39', '#ad494a',  '#637939', '#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
           }
 
           draw_legend(color_domain)

@@ -45,6 +45,7 @@ angular.module('ricardo.controllers.matrix', [])
             ];
 
       $scope.matrixColorBy=$scope.matrixColorChoices[0]
+      $scope.colorByIndex=0
       $scope.showBilateralTip=false;
 
       $scope.synCurveChoices = [
@@ -122,16 +123,17 @@ angular.module('ricardo.controllers.matrix', [])
         // group_reporting($scope.flow,curveBy.type.value)
 
       }
-
-      $scope.changeMultiLayout = function (layout) {
-        $scope.multichartLayout = layout;
-      }
+      // $scope.changeMultiLayout = function (layout) {
+      //   $scope.multichartLayout = layout;
+      // }
       $scope.changeMatrixLayout = function (layout) {
         $scope.matrixLayout = layout;
       }
       $scope.changeMatrixColor = function (colorBy) {
         $scope.matrixColorBy = colorBy;
         $scope.showBilateralTip= colorBy.type.value==="mirror_rate" ? true:false
+        $scope.colorByIndex=$scope.matrixColorChoices.indexOf(colorBy);
+        console.log($scope.colorByIndex)
       }
 
       //quick nav
