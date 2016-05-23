@@ -108,7 +108,6 @@ angular.module('ricardo.controllers.world', [])
 
     $scope.changeWorldPartner = function (worldPartner) {
         $scope.worldPartner=worldPartner;
-        console.log(reportingWorldFlows)
         worldFlows_filtered=reportingWorldFlows
                             .filter(function(d){return d.partner===worldPartner.type.value})
         $scope.nbReportings = worldFlows_filtered;

@@ -68,9 +68,9 @@ angular.module('ricardo.controllers.matrix', [])
       {type: {value: "total",writable: true},
        name: {value: "Total",writable: true}},
       {type: {value: "Exp",writable: true},
-       name: {value: "Exports",writable: true}},
+       name: {value: "Export",writable: true}},
       {type: {value: "Imp",writable: true},
-       name: {value: "Imports",writable: true}
+       name: {value: "Import",writable: true}
       }];
 
       $scope.chartFlow = $scope.flowChoices[0]
@@ -135,7 +135,6 @@ angular.module('ricardo.controllers.matrix', [])
         $scope.matrixColorBy = colorBy;
         $scope.showBilateralTip= colorBy.type.value==="mirror_rate" ? true:false
         $scope.colorByIndex=$scope.matrixColorChoices.indexOf(colorBy);
-        console.log($scope.colorByIndex)
       }
 
       //quick nav

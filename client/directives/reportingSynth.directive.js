@@ -148,9 +148,10 @@ angular.module('ricardo.directives.reportingSynth', [])
           "World estimated":0,
           "World as reported":1,
           "World sum partners":2,
-          "World estimated|World as reported":3,
-          "World sum partners|World estimated":3,
-          "World sum partners|World as reported":3
+          "Multiple world partners":3
+          // "World estimated|World as reported":3,
+          // "World sum partners|World estimated":3,
+          // "World sum partners|World as reported":3
         }
         var source_map={
           "primary":0,
@@ -368,7 +369,7 @@ angular.module('ricardo.directives.reportingSynth', [])
                           key:"Total",
                           value: d3.sum(selectBar,function(d){return d.value})
                         })
-                        tooltip_title.html("<h5>Number of Reportings in "+d+"</h5")
+                        tooltip_title.html("<h5>Number of "+yName+" Reportings in "+d+"</h5")
                         // create table
                         tooltip_table.html("<p>By "+categoryName+"</p>")
                         tooltip_table.select("table").remove()
