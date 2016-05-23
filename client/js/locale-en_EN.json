@@ -74,6 +74,7 @@
 	"METADATA_NBFLOW_TITLE":"Total number of flows in the database",
 	"METADATA_NBFLOW_INTRO":"This graph presents the total number of flows registered each year by differentiating total/bilateral trade flows (recall: 'total trade flow' for 'partner entity = world').",
 	"METADATA_MATRIX_TITLE": "Reporting entities table ",
+	"METADATA_MATRIX_INTRO": "This graph provides detailed information for each reporting entity/year.",
 	"METADATA_MATRIX_INTRO_0": "it specifies what type of ‘World’ is used to calculate the World best guess for this reporting/year.",
 	"METADATA_MATRIX_INTRO_1": "total number of partners by reporting/year distributed by continent.",
 	"METADATA_MATRIX_INTRO_2": "proportion of partners for which mirror flows can be estimated. It is calculated by dividing...",

@@ -117,7 +117,7 @@ angular.module('ricardo.controllers.matrix', [])
 
       $scope.changeFlow = function (flow) {
           $scope.chartFlow=flow;
-          reprocess($scope.data)
+          reprocess(reportingByYear,flowsByYear)
       }
 
       $scope.changeSynCurve = function (curveBy) {
@@ -145,8 +145,7 @@ angular.module('ricardo.controllers.matrix', [])
         $scope.reporting=reporting;
         $scope.search+=1;
       }
-      function reprocess(data){
-
+      function reprocess(data,nbFlows){
         // var worldData=data.filter(function(d){return d.partnertype==="world"})
 
         // var worldEntities=d3.nest()
@@ -154,7 +153,7 @@ angular.module('ricardo.controllers.matrix', [])
         //       .key(function(d) { return d.year; })
         //       .entries(worldData);
         // console.log(worldEntities)
-
+        $scope.nbFlows=nbFlows.filter(function(d){return d.expimp===$scope.chartFlow.type.value})
         //data manipulation
         $scope.rawMinDate = d3.min(data, function(d) { return +d.year; })
         $scope.rawMaxDate = d3.max(data, function(d) { return +d.year; })
@@ -270,9 +269,10 @@ angular.module('ricardo.controllers.matrix', [])
       }//end reprocess
 
       function init() {
-          $scope.nbFlows=flowsByYear;
-          $scope.data=reportingByYear;
-          reprocess(reportingByYear)
+          // $scope.nbFlows=flowsByYear;
+          // $scope.data=reportingByYear;
+          reprocess(reportingByYear,flowsByYear);
+
            // apiService
            //  .getReportingsAvailableByYear()
            //  .then(function (data){

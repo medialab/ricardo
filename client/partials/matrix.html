@@ -8,26 +8,39 @@
 			</p>
 		</div>
 		<div class="col-md-12">
-			<h4>{{ 'METADATA_NBFLOW_TITLE' | translate }}</h4>
+			<h4>{{ 'METADATA_NBFLOW_TITLE' | translate }} of 
+			<div class="inline-select">
+		      <ui-select ng-model="chartFlow" theme="bootstrap" ng-change="changeFlow(chartFlow)">
+		        <match placeholder="Select flow type">{{$select.selected.name.value}}</match>
+		        <choices repeat="item in flowChoices | filter: $select.search">
+		          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+		        </choices>
+		      </ui-select>
+		   	</div>
+			</h4>
 			<p class="paragraphPage">
 				{{ 'METADATA_NBFLOW_INTRO' | translate }}
 			</p>
 			<number-flows
 				ng-data="nbFlows">
 			</number-flows>
-		</div>
+			<div class="legend pull right">
+		        <div class="legend-item">
+		          <div class="square world"></div> World flows
+		        </div>
+		          <div class="legend-item">
+		            <div class="square bilateral"></div> Bilateral trade flows 
+		          </div>
+		        </div>
+			</div>
 		<div class="col-md-12">
 			<h4>
-			 {{ 'METADATA_MATRIX_TITLE' | translate }} in 
-			 <div class="inline-select">
-			      <ui-select ng-model="chartFlow" theme="bootstrap" ng-change="changeFlow(chartFlow)">
-			        <match placeholder="Select flow type">{{$select.selected.name.value}}</match>
-			        <choices repeat="item in flowChoices | filter: $select.search">
-			          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-			        </choices>
-			      </ui-select>
-		   		</div>
-		   	<br>
+			 {{ 'METADATA_MATRIX_TITLE' | translate }} 
+		   	</h4>
+		   	<p class="paragraphPage">
+		   	{{ 'METADATA_MATRIX_INTRO' | translate }} 
+		   	</p>
+		   	<h4>
 	   		{{ 'METADATA_MATRIX_CTL1' | translate }}
 	   		<div class="inline-select">
 		        <ui-select ng-model="matrixLayout" theme="bootstrap" ng-change="changeMatrixLayout(matrixLayout)">

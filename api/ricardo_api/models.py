@@ -194,26 +194,45 @@ def get_world_flows(from_year,to_year):
 def get_nb_flows():
   cursor=get_db().cursor()
   cursor.execute("""
-    SELECT year , count(*), "bilateral" as partner
+    SELECT year , count(*), "bilateral" as partner,expimp
     FROM flow_joined
     WHERE partner_slug not like "World%"
-    GROUP BY year
+    AND flow*Unit/rate is not NULL
+    GROUP BY year, expimp
     union
-    SELECT year , count(*), "world" as partner
+    SELECT year , count(*), "world" as partner,expimp
     FROM flow_joined
     WHERE (
-     partner_slug like 'Worldestimated'
-     OR partner_slug like 'Worldasreported'
-     OR partner_slug like 'Worldasreported2'
-     OR partner_slug like 'Worldsumpartners')
+    partner_slug like 'Worldestimated'
+    OR partner_slug like 'Worldasreported'
+    OR partner_slug like 'Worldasreported2'
+    OR partner_slug like 'Worldsumpartners')
+    AND flow*Unit/rate is not NULL
+    GROUP BY year,expimp
+    UNION
+    SELECT year , count(*), "bilateral" as partner,"total" as expimp
+    FROM flow_joined
+    WHERE partner_slug not like "World%"
+    AND flow*Unit/rate is not NULL
+    GROUP BY year
+    union
+    SELECT year , count(*), "world" as partner,  "total" as expimp
+    FROM flow_joined
+    WHERE (
+    partner_slug like 'Worldestimated'
+    OR partner_slug like 'Worldasreported'
+    OR partner_slug like 'Worldasreported2'
+    OR partner_slug like 'Worldsumpartners')
+    AND flow*Unit/rate is not NULL
     GROUP BY year
     """)
   json_response=[]
-  for (year, nb_flows, partner) in cursor:
+  for (year, nb_flows, partner,expimp) in cursor:
     json_response.append({
       "year":year,
       "nb_flows": nb_flows,
-      "partner":partner
+      "partner":partner,
+      "expimp":expimp
       })
   return json.dumps(json_response,encoding="UTF8")
   
@@ -264,7 +283,7 @@ def get_reportings_available_by_year():
                     FROM
                     (SELECT reporting, reporting_slug, flow*Unit/rate as flow, (replace(partner_slug,",","")||"+"||partner_continent) as partner_slug, year, source, type,reporting_continent,reporting_type, expimp
                     FROM flow_joined
-                    WHERE partner_slug NOT LIKE 'World%' AND reporting_continent is not 'World'
+                    WHERE partner_slug NOT LIKE 'World%' 
                     AND flow*Unit/rate is not NULL
                     AND partner_continent is not NULL
                     GROUP BY  reporting_slug, partner_slug,year,expimp) t
@@ -287,7 +306,6 @@ def get_reportings_available_by_year():
                     (SELECT reporting, reporting_slug, flow*Unit/rate as flow, group_concat(partner,"+") as partner, year,group_concat(source,"+") as source, group_concat(type,"+") as type, reporting_continent,reporting_type, expimp
                     FROM flow_joined
                     WHERE flow*Unit/rate is not NULL
-                    AND reporting_continent is not 'World'
                     AND(partner_slug like 'Worldestimated'
                     OR partner_slug like 'Worldasreported'
                     OR partner_slug like 'Worldsumpartners')

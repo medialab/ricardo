@@ -74,6 +74,7 @@
 	"METADATA_NBFLOW_TITLE":"Nombre total de flux dans la base",
 	"METADATA_NBFLOW_INTRO":"Ce graph indique le nombre total de flux enregistrés par année en distinguant les données de flux total / bilatéral. (rappel : 'flux de commerce total' pour 'partner entity = world')",
 	"METADATA_MATRIX_TITLE": "Tableau des entités déclarantes ",
+	"METADATA_MATRIX_INTRO": "Ce graph donne des renseignements détaillés pour chaque entité déclarante/année (reporting/year).",
 	"METADATA_MATRIX_INTRO_0": "précise quel ‘World type’ est utilisé pour estimer le World best guess de ce reporting/year.",
 	"METADATA_MATRIX_INTRO_1": "nombre total de partenaires réparti par continent.",
 	"METADATA_MATRIX_INTRO_2": "proportion d’entités partenaires pour laquelle on peut estimer les flux miroirs. Le mirror rate est obtenu en divisant...",	
