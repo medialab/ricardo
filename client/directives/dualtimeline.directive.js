@@ -16,13 +16,14 @@ angular.module('ricardo.directives.dualTimeline', [])
         ,endDate: '='
       }
       ,link: function(scope, element, attrs){
+
         scope.$watchCollection('[ngData, endDate, startDate]', function(newValue, oldValue) {
           if (newValue[0]) {
             scope.$apply()
             // $timeout(function(){
             //   scope.$apply()
             // },0)
-            draw(scope.ngData)
+            draw(newValue[0])
           }
         })
 

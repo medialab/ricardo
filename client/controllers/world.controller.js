@@ -12,28 +12,8 @@ angular.module('ricardo.controllers.world', [])
     // data process for multilinechart
     var worldpartnerData=reportingWorldPartner.filter(function(d){return d.partner!=="World_best_guess"})
     initWorldMultiChart(worldpartnerData)
-
-    $scope.nbReportings = reportingWorldFlows;
-    var data
-    var worldFlowsYears = d3.nest()
-      .key(function (d) { return d.year})
-      .entries(reportingWorldFlows);
-
-    var worldFlowsYearsFormat = [];
-    worldFlowsYears.forEach( function (d) {
-      if (d.key)
-        worldFlowsYearsFormat.push({
-          reporting_id: null,
-          type: null,
-          partner_id: "Worldbestguess",
-          year: d.key,
-          imp:d.values[1].flows,
-          exp:d.values[0].flows,
-          total: d.values[1].flows + d.values[0].flows,
-          currency: "sterling",
-          sources: d.values[0].sources
-        });
-    })
+    
+    $scope.worldFlows=reportingWorldFlows;
 
     //duplication??
     // $scope.dualtimeline = [];
@@ -111,6 +91,50 @@ angular.module('ricardo.controllers.world', [])
 
     $scope.multichartFlow = $scope.multiFlowChoices[0]
 
+    $scope.worldPartnerChoices = [
+      {type: {value: "Worldbestguess",writable: true},
+       name: {value: "World best guess",writable: true}},
+      {type: {value: "Worldestimated",writable: true},
+       name: {value: "World estimated",writable: true}},
+      {type: {value: "Worldasreported",writable: true},
+       name: {value: "World as reported",writable: true}},
+      {type: {value: "Worldsumpartners",writable: true},
+       name: {value: "World sum partners",writable: true}},
+    ];
+
+    $scope.worldPartner = $scope.worldPartnerChoices[0]
+    var worldFlowsYearsFormat,worldFlows_filtered;
+    
+
+    $scope.changeWorldPartner = function (worldPartner) {
+        $scope.worldPartner=worldPartner;
+        console.log(reportingWorldFlows)
+        worldFlows_filtered=reportingWorldFlows
+                            .filter(function(d){return d.partner===worldPartner.type.value})
+        $scope.nbReportings = worldFlows_filtered;
+        
+        var worldFlowsYears = d3.nest()
+          .key(function (d) { return d.year})
+          .entries(worldFlows_filtered);
+        worldFlowsYearsFormat = [];
+        worldFlowsYears.forEach( function (d) {
+          if (d.key)
+            worldFlowsYearsFormat.push({
+              reporting_id: null,
+              type: null,
+              partner_id: d.values[0].partner,
+              year: d.key,
+              imp:d.values[1].flows,
+              exp:d.values[0].flows,
+              total: d.values[1].flows + d.values[0].flows,
+              currency: "sterling",
+              sources: d.values[0].sources
+            });
+        })
+        init();
+    }
+    $scope.changeWorldPartner($scope.worldPartner)
+
     $scope.changeMultiFlow = function (flow) {
         $scope.multichartFlow=flow;
     }
@@ -159,7 +183,7 @@ angular.module('ricardo.controllers.world', [])
      *  Init the timelines
      */
 
-    init();
+    // init();
 
     function init() {
 
@@ -176,8 +200,8 @@ angular.module('ricardo.controllers.world', [])
       $scope.reporting = []
       $scope.entities.sourceCountryEntity = {}
 
-      $scope.rawMinDate = d3.min( reportingWorldFlows, function(d) { return d.year; })
-      $scope.rawMaxDate = d3.max( reportingWorldFlows, function(d) { return d.year; })
+      $scope.rawMinDate = d3.min(worldFlows_filtered, function(d) { return d.year; })
+      $scope.rawMaxDate = d3.max(worldFlows_filtered, function(d) { return d.year; })
 
       /*
        * Check if dates were in localstorage
@@ -347,7 +371,7 @@ angular.module('ricardo.controllers.world', [])
                   yearSelected = initTabLineChart(result, yearSelected, d.type,
                     d.RICid)
 
-                  var tab = pct(reportingWorldFlows, yearSelected, yValue, d.color);
+                  var tab = pct(worldFlows_filtered, yearSelected, yValue, d.color);
                   tab.key = d.RICid;
                   partnersPct.push(tab);
                   partnersPct.forEach ( function (d) {
@@ -369,7 +393,7 @@ angular.module('ricardo.controllers.world', [])
                   yearSelected = initTabLineChart(result, yearSelected, d.type,
                     d.RICid)
 
-                  var tab = pct(reportingWorldFlows, yearSelected, yValue, d.color);
+                  var tab = pct(worldFlows_filtered, yearSelected, yValue, d.color);
                   tab.key = d.RICname;
                   partnersPct.push(tab);
                   var linechartData = [];

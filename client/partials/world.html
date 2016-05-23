@@ -24,6 +24,10 @@
               </choices>
             </ui-select>
           </div>
+          {{ 'FROM' | translate }}
+          <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf"></inline-select-year>
+          {{ 'TO' | translate }}
+          <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup"></inline-select-year>
         </h4>
         <reporting-world
               ng-data="flowWorld"
@@ -51,16 +55,18 @@
       <div class="col-xs-12 col-sm-12">
         <h4>
           {{ 'WORLD_VIEW_TITLE' | translate }}
-
-          {{ 'FROM' | translate }}
-          <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf"></inline-select-year>
-          {{ 'TO' | translate }}
-          <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup"></inline-select-year>
-
+          with
+          <div class="inline-select">
+            <ui-select ng-model="worldPartner" theme="bootstrap" ng-change="changeWorldPartner(worldPartner)">
+              <match placeholder="Select world partner">{{$select.selected.name.value}}</match>
+              <choices repeat="item in worldPartnerChoices | filter: $select.search">
+                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+              </choices>
+            </ui-select>
+          </div>
         </h4>
         <p class="paragraphViz">
          {{ 'WORLD_VIEW_1' | translate }} <a href="/#/#worldTrade">World trade / Total trade</a>
-
         </p>
         <dual-timeline
           ng-data="timelineData"
