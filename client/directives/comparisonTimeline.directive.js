@@ -49,7 +49,6 @@ angular.module('ricardo.directives.comparisonTimeline', [])
 
 
         function draw(data){
-          console.log(data)
           diffSource = function(d){
             if (!isNaN(d.exp) && !isNaN(d.imp) && d.imp !== null && d.exp !== null ) {
               // return ( d.imp_mirror - d.exp ) / d.exp ;
