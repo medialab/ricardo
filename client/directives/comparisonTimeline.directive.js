@@ -17,23 +17,23 @@ angular.module('ricardo.directives.comparisonTimeline', [])
         ,endDate: '='
       }
       ,link: function(scope, element, attrs){
-        scope.$watch('ngData', function(newValue, oldValue) {
-          if ( newValue ) {
+        scope.$watchCollection('[ngData, startDate,endDate]', function(newValue, oldValue) {
+          if (scope.ngData) {
             draw(scope.ngData)
           }
         })
 
-        scope.$watch('endDate', function(newValue, oldValue) {
-          if ( newValue && scope.ngData) {
-            draw(scope.ngData)
-          }
-        })
+        // scope.$watch('endDate', function(newValue, oldValue) {
+        //   if ( newValue && scope.ngData) {
+        //     draw(scope.ngData)
+        //   }
+        // })
 
-        scope.$watch('startDate', function(newValue, oldValue) {
-          if ( newValue && scope.ngData) {
-            draw(scope.ngData)
-          }
-        })
+        // scope.$watch('startDate', function(newValue, oldValue) {
+        //   if ( newValue && scope.ngData) {
+        //     draw(scope.ngData)
+        //   }
+        // })
 
         var x
           , y
@@ -57,7 +57,7 @@ angular.module('ricardo.directives.comparisonTimeline', [])
           }
 
           diffSourceDefined = function(d){
-            return d.imp_mirror !== null && d.exp !== null && d.exp !== 0;
+            return  d.exp_mirror !== null && d.imp !== null && d.imp !== 0;
           }
 
           diffTarget = function(d){
@@ -69,7 +69,7 @@ angular.module('ricardo.directives.comparisonTimeline', [])
           }
 
           diffTargetDefined = function(d){
-            return d.exp_mirror !== null && d.imp !== null && d.exp_mirror !== 0;
+            return d.imp_mirror !== null  && d.exp !== null && d.exp !== 0;
           }
 
           document.querySelector('#comparison-timeline-container').innerHTML = null;
