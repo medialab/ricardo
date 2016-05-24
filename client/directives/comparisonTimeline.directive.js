@@ -49,7 +49,6 @@ angular.module('ricardo.directives.comparisonTimeline', [])
 
 
         function draw(data){
-          console.log(data)
           diffSource = function(d){
             if (!isNaN(d.exp) && !isNaN(d.imp) && d.imp !== null && d.exp !== null ) {
               // return ( d.imp_mirror - d.exp ) / d.exp ;
@@ -142,7 +141,6 @@ angular.module('ricardo.directives.comparisonTimeline', [])
               .attr("height", height + margin.top + margin.bottom)
             .append("g")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
           data.forEach(function(d){
             d.date = new Date(d.year, 0, 1)
           })
@@ -165,6 +163,55 @@ angular.module('ricardo.directives.comparisonTimeline', [])
               .attr("class", "line-compare-alt")
               .attr("d", diffTargetLine)
 
+          // add discrete points
+          var spoint_g=svg.selectAll(".spoint")
+                        .data(data.filter(function(d,i) {
+                          if(d.exp_mirror !== null && d.imp !== null && d.imp !== 0){
+                            if (i===0) {
+                              if (data[i+1].exp_mirror===null || data[i+1].imp == null || data[i+1].imp == 0) return d;
+                            }
+                            else if(i===data.length-1){
+                              if (data[i-1].exp_mirror===null || data[i-1].imp === null || data[i-1].imp === 0) return d;
+                            }
+                            else{
+                              if ((data[i+1].exp_mirror===null || data[i+1].imp === null || data[i+1].imp === 0) && (data[i-1].exp_mirror===null || data[i-1].imp === null || data[i-1].imp === 0)) return d;
+                            }
+                          }
+                        }))
+                        .enter()
+                        .append("g")
+                        .attr("class", "spoint")
+            spoint_g.append("circle")
+            .attr("cx", diffSourceLine.x())
+            .attr("cy", diffSourceLine.y())
+            .attr("r", 1.5)
+            .attr("fill","#cc6666");
+
+
+            var tpoint_g=svg.selectAll(".tpoint")
+            .data(data.filter(function(d,i) {
+                if(d.imp_mirror !== null && d.exp !== null && d.exp !== 0){
+                  if (i===0) {
+                    if (data[i+1].imp_mirror===null || data[i+1].exp == null || data[i+1].exp == 0) return d;
+                  }
+                  else if(i===data.length-1){
+                    if (data[i-1].imp_mirror===null || data[i-1].exp === null || data[i-1].exp === 0) return d;
+                  }
+                  else{
+                    if ((data[i+1].imp_mirror===null || data[i+1].exp === null || data[i+1].exp === 0) && (data[i-1].imp_mirror===null || data[i-1].exp === null || data[i-1].exp === 0)) return d;
+                  }
+                }
+            }))
+            .enter()
+            .append("g")
+            .attr("class", "tpoint")
+
+            tpoint_g.append("circle")
+            .attr("class", "tpoint")
+            .attr("cx", diffTargetLine.x())
+            .attr("cy", diffTargetLine.y())
+            .attr("r", 1.5)
+            .attr("fill","#663333");
           /*
            * Zero line
            */
