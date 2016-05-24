@@ -15,7 +15,7 @@
 			  </div>
 			  	for
 				<div class="inline-select">
-			      <ui-select ng-model="networkFlow" theme="bootstrap">
+			      <ui-select ng-model="networkFlow" theme="bootstrap" ng-change="changeFlow(networkFlow)">
 			        <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
 			        <choices repeat="item in networkFlowChoices | filter: $select.search">
 			          <div ng-bind-html="item.name.value | highlight: $select.search"></div>

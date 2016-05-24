@@ -15,7 +15,7 @@ angular.module('ricardo.directives.collapseLegend', [])
           filter: '='
       }
       ,link: function(scope, element, attrs){
-        
+
         var margin = {top: 20, right: 20, bottom: 30, left: 10},
             width = 250 - margin.left - margin.right,
             barHeight = 20,
@@ -37,7 +37,7 @@ angular.module('ricardo.directives.collapseLegend', [])
                           .append("g")
                           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var colorBy;    
+        var colorBy;
        	scope.$watch('legend', function(newValue, oldValue) {
           if (newValue && newValue!=oldValue && scope.ngData) drawLegend(scope.ngData);
         });
@@ -51,7 +51,7 @@ angular.module('ricardo.directives.collapseLegend', [])
           var itemRadius = 8;
           var padding = 10;
 
-          colorBy=scope.legend.name.value; 
+          colorBy=scope.legend.name.value;
           var nodes_data=data.graph.nodes();
           var legend_data=nodes_data.map(function(d) { return d.attributes[colorBy]; });
           legend_data=d3.set(legend_data).values();
@@ -64,7 +64,7 @@ angular.module('ricardo.directives.collapseLegend', [])
             moveChildren(d);
           });
           update(root = flare);
-          
+
           //regular legend
           // var svg_height=legend_data.length*20;
           // legend_svg.attr("height",svg_height);
@@ -94,6 +94,7 @@ angular.module('ricardo.directives.collapseLegend', [])
         }
 
         function getFlare(category,nodes){
+
           var flare={};
           flare.label="Color by "+colorBy;
           flare.color="#636363"
@@ -149,7 +150,7 @@ angular.module('ricardo.directives.collapseLegend', [])
               // .attr("width", barWidth)
               .style("fill", function(d){ return d.color;})
               .style("stroke", function(d){ return d.color;})
-    
+
 
           nodeEnter.append("text")
               .attr("class","legend_text")
@@ -246,7 +247,7 @@ angular.module('ricardo.directives.collapseLegend', [])
             }
           }
         }
-        
+
 
         function color(d) {
           return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
@@ -265,7 +266,7 @@ angular.module('ricardo.directives.collapseLegend', [])
             filterNode.forEach(function(d){
               d.color="#eee";
             });
-           
+
           }
           if(legend.depth===2) {
             var filterNode=scope.ngData.graph.nodes().filter(function(d){return d.label!==legend.label});
@@ -276,7 +277,7 @@ angular.module('ricardo.directives.collapseLegend', [])
           // scope.filter.undo("neighbors","legend")
           //      .nodesBy(function(n){
           //       data.forEach(function(d){
-          //         if(d.children && n.attributes[colorBy].toString()===d.label) filterNode.push(n);  
+          //         if(d.children && n.attributes[colorBy].toString()===d.label) filterNode.push(n);
           //       })
           //       if (filterNode.length>0) return filterNode;
           //      },"legend")
@@ -288,7 +289,7 @@ angular.module('ricardo.directives.collapseLegend', [])
               d.color=scope.legend.color_domain(d.attributes[colorBy].toString());
             });
             scope.$apply();
-          
+
         }
 
         function elbow(d, i) {

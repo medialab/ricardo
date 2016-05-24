@@ -25,15 +25,16 @@ angular.module('ricardo.controllers.network', [])
 
     $scope.colored;
 
-    $scope.networkFlow = {}
+    
     $scope.networkFlowChoices = [
       {type: {value: "total",writable: true},
        name: {value: "Total",writable: true}},
-      {type: {value: "exp",writable: true},
+      {type: {value: "Exp",writable: true},
        name: {value: "Exports",writable: true}},
-      {type: {value: "imp",writable: true},
+      {type: {value: "Imp",writable: true},
        name: {value: "Imports",writable: true}
     }];
+    $scope.networkFlow = $scope.networkFlowChoices[0]
 
     var communityColors;
     // var continentColors = { "Europe":"#7ED27C",
@@ -121,8 +122,10 @@ angular.module('ricardo.controllers.network', [])
           return nodes;
     }
 
-    function initGraph (trades) {
-        $scope.trades=trades;
+    function initGraph (trades,networkFlow) {
+        trades=trades.filter(function(d){
+          return networkFlow==="total" ? d : d.expimp===networkFlow;
+        })
         var listNations = [];
         var listOfNations = [];
         var pairs=[]
@@ -224,6 +227,134 @@ angular.module('ricardo.controllers.network', [])
         data.nodes = nodes;
         data.edges = edges;
 
+        var PARAMS = {
+                graph: data,
+                container: 'network',
+                renderer: {
+                  container: document.getElementById('network'),
+                  type: 'canvas'
+                },
+                settings: {
+                    minNodeSize: 4,
+                    maxNodeSize: 8,
+                    maxEdgeSize: 5,
+                    defaultNodeColor: '#ec5148',
+                    edgeColor: 'default',
+                    defaultEdgeColor: '#d1d1d1',
+                    // defaultEdgeType: "curve",
+                    labelSize: 'fixed',
+                    labelSizeRatio: 1,
+                    labelThreshold: 5,
+                    enableCamera: true,
+                    enableHovering: true,
+                    enableEdgeHovering: true,
+                    edgeHoverColor: 'edge',
+                    defaultEdgeHoverColor: '#000',
+                    edgeHoverSizeRatio: 1,
+                    edgeHoverExtremities: true,
+                },
+              }
+
+                // delete graph if exist
+                if ($scope.sigma) $scope.sigma.kill()
+
+                // instantiate graph
+                $scope.sigma  = new sigma(PARAMS);
+
+                // Initialize the Filter API
+                $scope.filter = new sigma.plugins.filter($scope.sigma);
+                updatePane($scope.sigma.graph, $scope.filter);
+                // console.log($scope.sigma.graph.nodes())
+                $scope.changeColor($scope.colored);
+
+                $scope.sigma.bind('clickNode', function(e) {
+
+                  var nodeId = e.data.node.id,
+                      toKeep = $scope.sigma.graph.neighbors(nodeId);
+                  toKeep[nodeId] = e.data.node;
+
+                  $scope.filter.undo("neighbors","legend")
+                        .neighborsOf(nodeId,"neighbors")
+                        .apply();
+                  // $scope.listNations = []
+                  // $scope.sigma.graph.nodes().forEach(function(n) {
+                  //   // console.log("n", n);
+                  //   if (toKeep[n.id]) {
+                  //     $scope.listNations.push({
+                  //       id: n.id,
+                  //       color: n.color,
+                  //       community: n.community,
+                  //       expimp: n.attributes.expimp
+                  //     })
+                  //     // n.color = n.originalColor;
+                  //   }
+                  //   else
+                  //     n.color = '#eee';
+                  // });
+
+
+                  // // Since the data has been modified, we need to
+                  // // call the refresh method to make the colors
+                  // // update effective.
+                  // $scope.sigma.refresh();
+                  $scope.nodeSelected = true;
+                  $scope.$apply();
+                });
+
+                // When the stage is clicked, we just color each
+                // node and edge with its original color.
+                $scope.sigma.bind('clickStage', function(e) {
+                    // $scope.reset();
+                });
+                $scope.reset=function(){
+                    $scope.filter.undo("neighbors","legend")
+                          .apply();
+                    $scope.nodeSelected = false;
+                    // $scope.$apply();
+                }
+                // $scope.sigma.bind("overEdge",function(e){
+                //     console.log(e.data.edge);
+                // })
+                // change size with degree
+                var nodes = $scope.sigma.graph.nodes();
+                // second create size for every node
+                for(var i = 0; i < nodes.length; i++) {
+                  var degree = $scope.sigma.graph.degree(nodes[i].id);
+                  nodes[i].size = degree;
+                }
+
+                // Start the ForceAtlas2 algorithm:
+                $scope.sigma.startForceAtlas2(LAYOUT_SETTINGS);
+
+                // Relaunch function with (issue)
+                $scope.relaunch = function() {
+                  var listNationsIndexed = indexNodes($scope.listNations);
+                  var listOfEdges = filterOnEdges(listNationsIndexed, data.edges)
+
+                  data = {}
+                  $scope.listNations.forEach(function (d) {
+                    d.x = Math.random()
+                    d.y = Math.random()
+                  })
+                  data.nodes = $scope.listNations
+                  data.edges = listOfEdges
+
+                  console.log("data", data)
+
+                  $scope.sigma.killForceAtlas2();
+                          // delete graph if exist
+                  $scope.sigma.graph.clear()//(issue)
+                  // $scope.sigma.graph.read(data)
+                  // $scope.sigma.refresh();
+                  // $scope.sigma.startForceAtlas2(LAYOUT_SETTINGS);
+                  // console.log("$scope.sigma", $scope.sigma);
+                    drawGraph($scope.sigma, data);
+                  }
+
+                 _.$('min-degree').addEventListener("input", applyMinDegreeFilter);  // for Chrome and FF
+                 _.$('min-flow').addEventListener("input", applyMinFlowFilter);  // for Chrome and FF
+                 _.$('min-degree').addEventListener("change", applyMinDegreeFilter); // for IE10+, that sucks
+                 //_.$('node-category').addEventListener("change", applyCategoryFilter);
         return data;
     }
 
@@ -534,137 +665,10 @@ angular.module('ricardo.controllers.network', [])
             if (trades.length === 0)
                 alert("There is no value for this year")
             else {
-                var data = initGraph(trades);
+              $scope.trades=trades;
+              var data = initGraph(trades,$scope.networkFlow.type.value);
                 //drawGraph($scope.sigma, data);
                 // params to sigma
-            	var PARAMS = {
-            		graph: data,
-    			      container: 'network',
-                renderer: {
-                  container: document.getElementById('network'),
-                  type: 'canvas'
-                },
-                settings: {
-                    minNodeSize: 4,
-                    maxNodeSize: 8,
-                    maxEdgeSize: 5,
-                    defaultNodeColor: '#ec5148',
-                    edgeColor: 'default',
-                    defaultEdgeColor: '#d1d1d1',
-                    // defaultEdgeType: "curve",
-                    labelSize: 'fixed',
-                    labelSizeRatio: 1,
-                    labelThreshold: 5,
-                    enableCamera: true,
-                    enableHovering: true,
-                    enableEdgeHovering: true,
-                    edgeHoverColor: 'edge',
-                    defaultEdgeHoverColor: '#000',
-                    edgeHoverSizeRatio: 1,
-                    edgeHoverExtremities: true,
-                },
-    			    }
-
-                // delete graph if exist
-                if ($scope.sigma) $scope.sigma.kill()
-
-                // instantiate graph
-            	  $scope.sigma  = new sigma(PARAMS);
-
-                // Initialize the Filter API
-                $scope.filter = new sigma.plugins.filter($scope.sigma);
-                updatePane($scope.sigma.graph, $scope.filter);
-                // console.log($scope.sigma.graph.nodes())
-                $scope.changeColor($scope.colored);
-
-                $scope.sigma.bind('clickNode', function(e) {
-
-                  var nodeId = e.data.node.id,
-                      toKeep = $scope.sigma.graph.neighbors(nodeId);
-                  toKeep[nodeId] = e.data.node;
-
-                  $scope.filter.undo("neighbors","legend")
-                        .neighborsOf(nodeId,"neighbors")
-                        .apply();
-                  // $scope.listNations = []
-                  // $scope.sigma.graph.nodes().forEach(function(n) {
-                  //   // console.log("n", n);
-                  //   if (toKeep[n.id]) {
-                  //     $scope.listNations.push({
-                  //       id: n.id,
-                  //       color: n.color,
-                  //       community: n.community,
-                  //       expimp: n.attributes.expimp
-                  //     })
-                  //     // n.color = n.originalColor;
-                  //   }
-                  //   else
-                  //     n.color = '#eee';
-                  // });
-
-
-                  // // Since the data has been modified, we need to
-                  // // call the refresh method to make the colors
-                  // // update effective.
-                  // $scope.sigma.refresh();
-                  $scope.nodeSelected = true;
-                  $scope.$apply();
-                });
-
-                // When the stage is clicked, we just color each
-                // node and edge with its original color.
-                $scope.sigma.bind('clickStage', function(e) {
-                    // $scope.reset();
-                });
-                $scope.reset=function(){
-                    $scope.filter.undo("neighbors","legend")
-                          .apply();
-                    $scope.nodeSelected = false;
-                    // $scope.$apply();
-                }
-                // $scope.sigma.bind("overEdge",function(e){
-                //     console.log(e.data.edge);
-                // })
-                // change size with degree
-                var nodes = $scope.sigma.graph.nodes();
-                // second create size for every node
-                for(var i = 0; i < nodes.length; i++) {
-                  var degree = $scope.sigma.graph.degree(nodes[i].id);
-                  nodes[i].size = degree;
-                }
-
-                // Start the ForceAtlas2 algorithm:
-                $scope.sigma.startForceAtlas2(LAYOUT_SETTINGS);
-
-                // Relaunch function with (issue)
-                $scope.relaunch = function() {
-                  var listNationsIndexed = indexNodes($scope.listNations);
-                  var listOfEdges = filterOnEdges(listNationsIndexed, data.edges)
-
-                  data = {}
-                  $scope.listNations.forEach(function (d) {
-                    d.x = Math.random()
-                    d.y = Math.random()
-                  })
-                  data.nodes = $scope.listNations
-                  data.edges = listOfEdges
-
-                  console.log("data", data)
-
-                  $scope.sigma.killForceAtlas2();
-                          // delete graph if exist
-                  $scope.sigma.graph.clear()//(issue)
-                  // $scope.sigma.graph.read(data)
-                  // $scope.sigma.refresh();
-                  // $scope.sigma.startForceAtlas2(LAYOUT_SETTINGS);
-                  // console.log("$scope.sigma", $scope.sigma);
-                    drawGraph($scope.sigma, data);
-                  }
-
-                 _.$('min-degree').addEventListener("input", applyMinDegreeFilter);  // for Chrome and FF
-                 _.$('min-flow').addEventListener("input", applyMinFlowFilter);  // for Chrome and FF
-                 _.$('min-degree').addEventListener("change", applyMinDegreeFilter); // for IE10+, that sucks
-                 //_.$('node-category').addEventListener("change", applyCategoryFilter);
             }
         })
       }
@@ -762,7 +766,11 @@ angular.module('ricardo.controllers.network', [])
       //     drawGraph($scope.sigma, data);
       // }
 
-
+      $scope.$watch('networkFlow', function (newVal, oldVal) {
+        if (newVal !== oldVal ) {
+            initGraph($scope.trades,newVal.type.value)
+        }
+    }, true);
       $scope.$watch('selectedDate', function (newVal, oldVal) {
         if (newVal !== oldVal ) {
             if(!$scope.showlegend) $scope.showlegend=true;
