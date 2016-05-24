@@ -215,13 +215,13 @@ angular.module('ricardo.directives.comparisonTimeline', [])
           /*
            * Zero line
            */
-          svg.append("line")
-               .attr("x1", 0)
-               .attr("y1", y(0))
-               .attr("x2", width)
-               .attr("y2", y(0))
-               .attr("stroke-width", 1)
-               .attr("stroke", "#663333");
+          // svg.append("line")
+          //      .attr("x1", 0)
+          //      .attr("y1", y(0))
+          //      .attr("x2", width)
+          //      .attr("y2", y(0))
+          //      .attr("stroke-width", 1)
+          //      .attr("stroke", "#663333");
 
           /*
            * Axis
@@ -338,6 +338,7 @@ angular.module('ricardo.directives.comparisonTimeline', [])
             focus.append("text")
                 .attr("y", -10)
                 .attr("text-anchor", "middle")
+                .attr("pointer-events","none")
 
             var format = d3.format("0,000");
 
@@ -348,9 +349,75 @@ angular.module('ricardo.directives.comparisonTimeline', [])
                   focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
                   focus.select("text").attr("fill", colorPoint).text(format(Math.round(d[yValue] * 100) / 100 ));
                 }
+                /*
+                 * Add date
+                 */
+                var text = svg.append("text")
+                     .attr("class", "lineDateText")
+                     .attr("x", x(new Date(d.year, 0, 1)) - 15)
+                     .attr("y", 157)
+                     .attr("font-size", "0.85em")
+                     .text(d.year)
+                     .attr("pointer-events","none");
+
+                /*
+                 *  Define the gradient
+                 */
+                var gradient = svg.append("svg:defs")
+                    .append("svg:linearGradient")
+                    .attr("id", "gradient")
+                    .attr("x1", "0%")
+                    .attr("y1", "100%")
+                    .attr("x2", "100%")
+                    .attr("y2", "100%")
+                    .attr("spreadMethod", "pad");
+
+                /*
+                 *  Define the gradient colors
+                 */
+                gradient.append("svg:stop")
+                    .attr("offset", "0%")
+                    .attr("stop-color", "#f5f5f5")
+                    .attr("stop-opacity", 0.1);
+
+                gradient.append("svg:stop")
+                    .attr("offset", "50%")
+                    .attr("stop-color", "#f5f5f5")
+                    .attr("stop-opacity", 1);
+
+                gradient.append("svg:stop")
+                    .attr("offset", "100%")
+                    .attr("stop-color", "#f5f5f5")
+                    .attr("stop-opacity", 0.1);
+
+                /*
+                 *  Add rect as background to hide date display in
+                 */
+                var bbox = text.node().getBBox();
+                var rect = svg.append("svg:rect")
+                    .attr("class", "lineDateText")
+                    .attr("x", bbox.x - 50)
+                    .attr("y", bbox.y)
+                    .attr("width", bbox.width + 100)
+                    .attr("height", bbox.height)
+                    .style("fill", 'url(#gradient)')
+                    .attr("pointer-events","none");
+
+                /*
+                 * Add date
+                 */
+                var textDate = svg.append("text")
+                     .attr("class", "lineDateText")
+                     .attr("x", x(new Date(d.year, 0, 1)) - 14)
+                     .attr("y", 157)
+                     .attr("font-size", "0.85em")
+                     .text(d.year)
+                     .attr("pointer-events","none");
               }
 
             function mouseout(d) {
+                svg.selectAll("text.lineDateText").remove();
+                svg.selectAll("rect.lineDateText").remove();
                 focus.attr("transform", "translate(-100,-100)");
               }
           }
