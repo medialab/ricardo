@@ -1141,7 +1141,8 @@ div #reporting-entities-container{
   border-top: 1px solid #D1D1D1;
   font-size: 11px;
 }
-.matrix-tooltip .reference,.matrix-tooltip .source,.synth-tooltip .table{
+/*.matrix-tooltip .reference,.matrix-tooltip .source*/
+.synth-tooltip .table{
  font-size: 11px;
 }
 

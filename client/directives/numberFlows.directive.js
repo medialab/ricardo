@@ -99,7 +99,8 @@ angular.module('ricardo.directives.numberFlows', [])
         function customAxis(g) {
           g.selectAll("text")
             .attr("text-anchor","start")
-            .attr("x",4)
+            .style("opacity",function(d,i){return i===0 ?0:1})
+            .attr("x",2)
             .attr("dy", -4)
             .attr("font-size", "0.85em");
           g.selectAll("line")

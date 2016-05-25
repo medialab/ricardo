@@ -932,10 +932,10 @@ angular.module('ricardo.directives.reportingEntities', [])
             }
             function tooltipContext(tooltip,v){
               tooltip.select(".title").html(
-              "<h5>"+v.reporting +" ("+v.type.split("/")[0]+" in "+v.continent+")"+ " in " + v.year +"</h5>")
+              "<h5>"+v.reporting +"<br> ("+v.type.split("/")[0]+" in "+v.continent+")<br>"+ " in " + v.year +"</h5>")
               tooltip.selectAll(".source,.reference").html("")
               
-              if (colorBy==="reference") tooltip.select(".reference").html("<hr><p style='font-weight:bold'>World Partner: "+v.reference+"</p>")             
+              if (colorBy==="reference") tooltip.select(".reference").html("<hr><p style='font-weight:bold'>World Partner: <br>"+v.reference+"</p>")             
               else if (colorBy==="sourcetype") tooltip.select(".source").html(
                   "<hr><div><span style='font-weight:bold'>Source("+v.sourcetype+"):</span>"+v.source+"</div>")
 
@@ -944,7 +944,7 @@ angular.module('ricardo.directives.reportingEntities', [])
               if(colorBy==="partner") {
                 tooltip.select(".tip_svg").style("display","block");
                 tooltip.select(".tip_svg").selectAll("*").remove()
-                tooltip.select(".tip_svg").html(v.partner.length===0 ? "<hr><p>World Partner Only</p>":"<hr><p>Number of partners: "+v.partner.length+"</p>")
+                tooltip.select(".tip_svg").html(v.partner.length===0 ? "<hr><strong>World Partner Only</strong>":"<hr><strong>Number of partners: "+v.partner.length+"</strong>")
                 if(v.partnertype==="actual"){
                   tooltip.select(".tip_svg").append("p").text("By continent:")
                   tooltip.select(".tip_svg").append("svg")
@@ -987,7 +987,8 @@ angular.module('ricardo.directives.reportingEntities', [])
                   tooltip.select(".table").select("table").remove();
                   tooltip.select(".table").html("<table><tr><td>Number of Partners (A)</td><td style='text-align:right'>"
                     +v.partner.length+"</td></tr><tr><td>Number of Mirror Partners (B)</td><td style='text-align:right'>"
-                    +v.partner_intersect.length+"</td></tr><tr><td>Mirror Rate</td><td style='text-align:right'>"
+                    +v.partner_intersect.length+"</td></tr><tr><td>Weight</td><td style='text-align:right'>"
+                    +d3.round(v.mirror_weight,2)+"</td></tr><tr><td>Mirror Rate</td><td style='text-align:right'>"
                     +d3.round(v.mirror_rate,2)+"</td></tr></table>")
                 }
             }

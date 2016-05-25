@@ -21,18 +21,18 @@
 			<p class="paragraphPage">
 				{{ 'METADATA_NBFLOW_INTRO' | translate }}
 			</p>
-			<number-flows
-				ng-data="nbFlows"
-				flow-type="chartFlow">
-			</number-flows>
-			<div class="legend pull-right">
+			<div class="legend">
 		        <div class="legend-item">
 		          <div class="square world"></div> World trade flows
 		        </div>
 		          <div class="legend-item">
 		            <div class="square bilateral"></div> Bilateral trade flows 
 		          </div>
-		        </div>
+		    </div>
+			<number-flows
+				ng-data="nbFlows"
+				flow-type="chartFlow">
+			</number-flows>
 			</div>
 		<div class="col-md-12">
 			<h4>
@@ -94,7 +94,7 @@
 	             </ul>
 			</div> -->
 			<div>
-				<p class="matrixIntro"><strong>Number of Reportings Color by {{ matrixColorBy.name.value}}</strong>
+				<p class="matrixIntro"><strong>Number of Reportings Color by</strong>
 				<br>
 				<strong>{{ matrixColorBy.name.value}}: </strong>{{"METADATA_MATRIX_INTRO_"+colorByIndex | translate}}</p>
 			</div>
