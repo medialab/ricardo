@@ -244,11 +244,29 @@ angular.module('ricardo.controllers.matrix', [])
               d.partner_intersect = d.partner.filter(function(value) {
                                      return d.partner_mirror.indexOf(value) > -1;
                                  });
-              d.mirror_rate=d.partner_intersect.length/d.partner.length
+              // d.mirror_rate=d.partner_intersect.length/d.partner.length
             }
             else {
               d.partner_mirror=[]
               d.partner_intersect=[]
+              // d.mirror_rate=0
+            }
+          })
+          var mirror_rateMax=d3.nest()
+                               .key(function(d){return d.year})
+                               .rollup(function(d){
+                                  return d3.max(d,function(g){
+                                    return g.partner_intersect.length
+                                  })
+                                })
+                               .map(flowEntities_uniq)
+          flowEntities_uniq.forEach(function(d){
+            if(mirror_rateMax[d.year]>0 && d.partners_mirror.length>0 && d.partner.length>0 ){
+              d.mirror_weight=d.partner_intersect.length/mirror_rateMax[d.year];
+              d.mirror_rate=(d.partner_intersect.length/d.partner.length) * d.mirror_weight;
+            } 
+            else {
+              d.mirror_weight=0
               d.mirror_rate=0
             }
           })
