@@ -262,11 +262,11 @@ angular.module('ricardo.controllers.matrix', [])
                                .map(flowEntities_uniq)
           flowEntities_uniq.forEach(function(d){
             if(mirror_rateMax[d.year]>0 && d.partners_mirror.length>0 && d.partner.length>0 ){
-              d.mirror_weight=d.partner_intersect.length/mirror_rateMax[d.year];
-              d.mirror_rate=(d.partner_intersect.length/d.partner.length) * d.mirror_weight;
+              d.mirror_max=mirror_rateMax[d.year];
+              d.mirror_rate=(d.partner_intersect.length/d.partner.length) * (d.partner_intersect.length/d.mirror_max);
             } 
             else {
-              d.mirror_weight=0
+              d.mirror_max=0
               d.mirror_rate=0
             }
           })

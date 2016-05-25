@@ -93,18 +93,20 @@
 	                </li> 
 	             </ul>
 			</div> -->
-			<div>
-				<p class="matrixIntro"><strong>Number of Reportings Color by</strong>
-				<br>
-				<strong>{{ matrixColorBy.name.value}}: </strong>{{"METADATA_MATRIX_INTRO_"+colorByIndex | translate}}</p>
+			<div class="matrixIntro">
+				<div>
+					<p><strong>Number of Reportings Color by</strong>
+					<br>
+					<strong>{{ matrixColorBy.name.value}}: </strong>{{"METADATA_MATRIX_INTRO_"+colorByIndex | translate}}</p>
+				</div>
+				<div ng-show="showBilateralTip">
+				      <div><strong>A:</strong> Number of partners reported by <strong>R</strong></div>
+				      <div><strong>B (mirror partners):</strong> Number of reporting which reports <strong>R</strong> as partner </div>
+				      <div><strong>M:</strong> Maximum number of mirror partners reported by a reporting/year</div>
+				      <div><strong>Mirror Rate: (B/A) x (B/M)</strong></div>
+				</div>
 			</div>
-			<!-- <div ng-show="showBilateralTip" class="legend pull-right" >
-		        <div class="legend-item" >
-		          <div><strong>A:</strong> Number of partners reported by <strong>R</strong></div>
-		          <div><strong>B:</strong> Number of mirror partners of <strong>R</strong></div>
-		          <div><strong>Mirror Rate:</strong> B/A</div>
-		        </div>
-		     </div> -->
+			
 		    <reporting-synth
 				ng-data="flow"
 				flow-type="chartFlow"

@@ -1132,7 +1132,7 @@ div #reporting-entities-container{
   margin-bottom: 0 !important;
 }
 
-.matrix-tooltip table,.synth-tooltip table{
+.matrix-tooltip table,.synth-tooltip table,.mirror_cal{
   margin: 0 auto;
 }
 .matrix-tooltip td,.synth-tooltip td{
