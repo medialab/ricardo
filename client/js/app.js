@@ -26,8 +26,19 @@ angular.module('ricardo', [
   'ricardo.controllers.world',
   'ricardo.controllers.network',
   'ricardo.controllers.matrix'
-  ]).
-config(['$routeProvider', function($routeProvider) {
+  ])
+
+.run(function($rootScope, $location, $anchorScroll,$timeout) {
+  $rootScope.$on('$routeChangeSuccess',
+    function(event, toState, toParams, fromState, fromParams) {
+      $timeout(function() {
+        if ($location.hash()) {
+          $anchorScroll();
+        }
+      });
+    });
+})
+.config(['$routeProvider', function($routeProvider) {
 
   $routeProvider.when('/', {
   	templateUrl: 'partials/home.html'

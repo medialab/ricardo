@@ -66,7 +66,8 @@
           </div>
         </h4>
         <p class="paragraphViz">
-         {{ 'WORLD_VIEW_1' | translate }} <a href="/#/#worldTrade">World trade / Total trade</a>
+         {{ 'WORLD_VIEW_1' | translate }} <!-- <a href="/#/#worldTrade">World trade / Total trade</a> -->
+         <a href="" ng-click="goTo('/#worldTrade')">world trade</a>
         </p>
         <dual-timeline
           ng-data="timelineData"
@@ -153,7 +154,8 @@
     </div>
       </h4>
         <p class="paragraphViz">
-          {{ 'WORLD_LINES_1' | translate }} <a href="/#/#worldTrade">World trade / Total trade</a> {{ 'WORLD_LINES_2' | translate }} <a href="/#/#worldbestguess">World best guess</a>
+          {{ 'WORLD_LINES_1' | translate }} 
+          <a href="" ng-click="goTo('/#worldTrade')">World trade / Total trade</a> {{ 'WORLD_LINES_2' | translate }} <a href="" ng-click="goTo('/#worldTrade')">World best guess</a>
         </p>
         <div ng-show="messagePercent">
          <p>

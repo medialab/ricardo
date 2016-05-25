@@ -4,8 +4,8 @@
 
 angular.module('ricardo.controllers.world', [])
 
-  .controller('world', [ "$scope", "$location", "apiService","dataTableService",
-    "utils", "reportingEntities", "reportingWorldFlows", "reportingWorldPartner","WORLD_TABLE_HEADERS", function ($scope, $location, apiService, dataTableService,
+  .controller('world', [ "$scope", "$location","$anchorScroll", "apiService","dataTableService",
+    "utils", "reportingEntities", "reportingWorldFlows", "reportingWorldPartner","WORLD_TABLE_HEADERS", function ($scope, $location,$anchorScroll, apiService, dataTableService,
     utils, reportingEntities, reportingWorldFlows,reportingWorldPartner,WORLD_TABLE_HEADERS) {
 
 
@@ -171,6 +171,9 @@ angular.module('ricardo.controllers.world', [])
       name: {value:"Total",writable: true}
     };
 
+    $scope.goTo = function(url) {
+      $location.url(url);
+    }
     /*
      * Init the list of entities for linechart
      */
