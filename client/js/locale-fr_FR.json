@@ -67,7 +67,7 @@
 	"FROM": " de ",
 	"TO": " à ",
 	"AND": " et ",
-	"DOWNLOAD_1": "Montrer/cacher tableau des données Télécharger les données",
+	"DOWNLOAD_1": "Montrer/cacher tableau des données",
 	"DOWNLOAD_2": "Télécherger les données",
 	"DOWNLOAD_3": "Télécharger les données en monnaie originale",
 	"METADATA_VIEW_INTRO": "La Metadata vue offre une synthèse de toute l’information disponible dans la base de données. Elle donne le nombre total de données dans la base (par année) et détaille les informations disponibles par entité déclarante.",
