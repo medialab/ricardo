@@ -180,21 +180,30 @@ angular.module('ricardo.directives.reportingEntities', [])
            "America":1,
            "Africa":2,
            "Asia":3,
-           "Oceania":4
+           "Oceania":4,
+           "World":5,
+           "Pacific":6,
+           "Mediterranean":7,
+           "Baltic":8,
+           "Antarctic":9,
+           "Atlantic Ocean":10
         }
         var continentColors = {
-                    "Europe":"#bf6969",
-                     "Asia":"#bfbf69" ,
-                     "Africa":"#69bfbf",
-                     "America":"#69bf69",
-                     "World":"#bf69bf",
-                     "Oceania":"#6969bf",
-                     "Pacific":"lightgrey",
-                     "Mediterranean":"lightblue",
-                     "Baltic":"white",
-                     "Antarctic":"grey",
-                     "Atlantic Ocean":"blue"
-                    }
+          "Europe":"#bf6969",
+           "Asia":"#bfbf69" ,
+           "Africa":"#69bfbf",
+           "America":"#69bf69",
+           "World":"#bf69bf",
+           "Oceania":"#6969bf",
+           "Pacific":"#637939",
+           "Mediterranean":"#7b4173",
+           "Baltic":"#35978f",
+           "Antarctic":"#bf812d",
+           "Atlantic Ocean":"#ce6dbd"
+          }
+        // var colorByContinent=d3.scale.ordinal()
+        //                     .domain(["Europe","America","Africa","Asia","Oceania","World","Pacific","Mediterranean","Baltic","Antarctic","Atlantic Ocean"])
+        //                     .range(['#393b79',  '#bd9e39', '#ad494a',  '#637939', '#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
 
 
         // var categoryColor=d3.scale.category10()
@@ -966,7 +975,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                   tip_partner.append("rect")
                              .attr("width",function(d){return x_tip(d.number)})
                              .attr("height",10)
-                             .attr("fill",function(d){return continentColors[d.continent]});
+                             .attr("fill",function(d){return colorByContinent(d.continent)});
                   tip_partner.append("text")
                              .text(function(d){return d.continent})
                              .attr("class","continentLabel")
@@ -987,8 +996,8 @@ angular.module('ricardo.directives.reportingEntities', [])
                   tooltip.select(".table").select("table").remove();
                   tooltip.select(".table").html("<table><tr><td>Number of Partners (A)</td><td style='text-align:right'>"
                     +v.partner.length+"</td></tr><tr><td>Number of Mirror Partners (B)</td><td style='text-align:right'>"
-                    +v.partner_intersect.length+"</td></tr><tr><td>Weight</td><td style='text-align:right'>"
-                    +d3.round(v.mirror_weight,2)+"</td></tr><tr><td>Mirror Rate</td><td style='text-align:right'>"
+                    +v.partner_intersect.length+"</td></tr><tr><td>Max Number of Mirror Partners (M) in "+v.year+"</td><td style='text-align:right'>"
+                    +v.mirror_max+"</td></tr><tr><td>Mirror Rate</td><td style='text-align:right'>"
                     +d3.round(v.mirror_rate,2)+"</td></tr></table>")
                 }
             }
