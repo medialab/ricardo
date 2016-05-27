@@ -9,6 +9,7 @@ from csv_unicode import UnicodeReader
 from csv_unicode import UnicodeWriter
 import unicodedata
 import re
+import utils
 
 ################################################################################
 ##          MDB to SQLite
@@ -44,17 +45,8 @@ print "\_| \_|\___/ \____/\_| |_/\_| \_|___/  \___/ "
 ################################################################################
 print "-------------------------------------------------------------------------"
 print "Read the old schema of the data base to transfert access base into sqlite"
-with open(conf["sqlite_schema"],"r") as schema:
+with open(conf["access_toconversion_schema"],"r") as schema:
 	c.executescript(schema.read())
-
-################################################################################
-##          Schema SQLite with good tables
-################################################################################
-print "-------------------------------------------------------------------------"
-print "Read the schema of the new data base"
-with open(conf["new_sqlite_schema"],"r") as new_schema:
-	c.executescript(new_schema.read())
-
 
 print "-------------------------------------------------------------------------"
 print "Copy access tables into sqlite"
@@ -74,15 +66,44 @@ for table in ["Entity_Names v1","RawData v1","Currency Name v1","Exchange Rate v
 print "-------------------------------------------------------------------------"
 print "inserts into sqlite done"
 print "-------------------------------------------------------------------------"
-c.execute("ALTER TABLE `RawData v1` RENAME TO old_flow")
-c.execute("ALTER TABLE `Currency Name v1` RENAME TO old_currency")
-c.execute("ALTER TABLE `Exchange Rate v1` RENAME TO old_rate")
-c.execute("ALTER TABLE `Entity_Names v1` RENAME TO old_entity_names_cleaning")
-c.execute("ALTER TABLE `Exp-Imp-Standard v1` RENAME TO `old_Exp-Imp-Standard`")
-c.execute("ALTER TABLE `RICentities v1` RENAME TO old_RICentities")
-c.execute("ALTER TABLE `RICentities_groups v1` RENAME TO old_RICentities_groups")
-print "renaming table done 1"
+
+c.execute("ALTER TABLE `RawData v1` RENAME TO flows")
+c.execute("ALTER TABLE `Currency Name v1` RENAME TO currencies")
+c.execute("ALTER TABLE `Exchange Rate v1` RENAME TO exchange_rates")
+c.execute("ALTER TABLE `Entity_Names v1` RENAME TO entity_names")
+c.execute("ALTER TABLE `Exp-Imp-Standard v1` RENAME TO expimp_spegen")
+c.execute("ALTER TABLE `RICentities v1` RENAME TO RICentities")
+c.execute("ALTER TABLE `RICentities_groups v1` RENAME TO RICentities_groups")
+print "renaming table done"
 print "-------------------------------------------------------------------------"
+
+
+
+#export access version to csv
+print "-------------------------------------------------------------------------"
+print "exports Access version to csv"
+print "-------------------------------------------------------------------------"
+utils.sqlitedatabase2csv(mdb_sqlite_filename,"out_data/access_version_csvs")
+
+c.execute("ALTER TABLE flow RENAME TO old_flow")
+c.execute("ALTER TABLE currency RENAME TO old_currency")
+c.execute("ALTER TABLE rate RENAME TO old_rate")
+c.execute("ALTER TABLE entity_names_cleaning RENAME TO old_entity_names_cleaning")
+c.execute("ALTER TABLE expimp_spegen RENAME TO `old_Exp-Imp-Standard`")
+c.execute("ALTER TABLE RICentities RENAME TO old_RICentities")
+c.execute("ALTER TABLE RICentities_groups RENAME TO old_RICentities_groups")
+
+
+################################################################################
+##          Schema SQLite with good tables
+################################################################################
+print "-------------------------------------------------------------------------"
+print "Read the schema of the new data base"
+with open(conf["sqlite_schema"],"r") as new_schema:
+	c.executescript(new_schema.read())
+
+
+
 
 print "cleaning dups in to-be-joined tables"
 print "-------------------------------------------------------------------------"
@@ -396,56 +417,39 @@ with open('in_data/patchs/patch_sources.csv', 'r') as patch:
 # c.execute("""CREATE UNIQUE INDEX i_re_id ON RICentities (id)""")
 # c.execute("""CREATE INDEX i_re_rn ON RICentities (RICname)""")
 
-# c.execute("""DROP TABLE IF EXISTS old_rate;""")
-# print "drop old_rate"
-# print "-------------------------------------------------------------------------"
-# c.execute("""DROP TABLE IF EXISTS old_RICentities;""")
-# print "drop old_RICentities"
-# print "-------------------------------------------------------------------------"
-# c.execute("""DROP TABLE IF EXISTS RICentities_backup;""")
-# print "drop RICentities_backup"
-# print "-------------------------------------------------------------------------"
-# c.execute("""DROP TABLE IF EXISTS old_currency;""")
-# print "drop old_currency"
-# print "-------------------------------------------------------------------------"
-# c.execute("""DROP TABLE IF EXISTS old_flow;""")
-# print "drop old_flow"
-# print "-------------------------------------------------------------------------"
-# c.execute("""DROP TABLE IF EXISTS old_RICentities_groups;""")
-# print "drop old_RICentities_groups"
-# print "-------------------------------------------------------------------------"
-# c.execute("""DROP TABLE IF EXISTS old_entity_names_cleaning;""")
-# print "drop old_entity_names_cleaning"
-# print "-------------------------------------------------------------------------"
-# c.execute("""DROP TABLE IF EXISTS 'old_Exp-Imp-Standard';""")
-# print "drop old_Exp-Imp-Standard"
-# print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS old_rate;""")
+print "drop old_rate"
+print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS old_RICentities;""")
+print "drop old_RICentities"
+print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS RICentities_backup;""")
+print "drop RICentities_backup"
+print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS old_currency;""")
+print "drop old_currency"
+print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS old_flow;""")
+print "drop old_flow"
+print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS old_RICentities_groups;""")
+print "drop old_RICentities_groups"
+print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS old_entity_names_cleaning;""")
+print "drop old_entity_names_cleaning"
+print "-------------------------------------------------------------------------"
+c.execute("""DROP TABLE IF EXISTS 'old_Exp-Imp-Standard';""")
+print "drop old_Exp-Imp-Standard"
+print "-------------------------------------------------------------------------"
 
 print "cleaning done"
 conn.commit()
 print "commited"
 print "-------------------------------------------------------------------------"
 
-################################################################################
-##			Export all tables in csv files
-################################################################################
 
-tables = [
-		"sources",
-		"source_types",
-		"entity_names",
-		"RICentities",
-		"exchange_rates",
-		"currencies",
-		"expimp_spegen",
-		"RICentities_groups",
-		"flows"
-		]
-
-for item in tables:
-	c.execute("select * from " + item)
-	writer = UnicodeWriter(open(os.path.join("out_data/sources", item + ".csv"), "wb"))
-	writer.writerow([description[0] for description in c.description])
-	writer.writerows(c)
-	print "export " + item + ".csv done"
-	print "-------------------------------------------------------------------------"
+#export access version to csv
+print "-------------------------------------------------------------------------"
+print "exports Access version to csv"
+print "-------------------------------------------------------------------------"
+utils.sqlitedatabase2csv(mdb_sqlite_filename,"out_data/csv_data")
