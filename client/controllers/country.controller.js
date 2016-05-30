@@ -175,9 +175,9 @@ angular.module('ricardo.controllers.country', [])
     function initTabLineChart(result, yearSelected, type, ric) {
       for (var i = $scope.rawMinDate; i<=$scope.rawMaxDate;i++){
         yearSelected.push({
-          reporting_id: ric,
+          reporting_id:$scope.entities.sourceEntity.selected.RICid,
           type: type,
-          partner_id:"Worldbestguess",
+          partner_id:ric,
           year: i,
           imp: null,
           exp: null,
@@ -800,16 +800,16 @@ angular.module('ricardo.controllers.country', [])
             apiService
               .getFlows({
                 reporting_ids: $scope.entities.sourceEntity.selected.RICid,
-                partner_ids: d.RICid
+                partner_ids: d.RICid,
+                with_sources:1
               })
               .then(function (result) {
                 var yearSelected = [];
                 // yearSelected = lineChartService.initTabLineChart(result,
                 //   yearSelected, d.type, d.RICid, $scope.selectedMinDate,
                 //   $scope.selectedMaxDate)
-                 yearSelected = initTabLineChart(result, yearSelected, d.type,
+                yearSelected = initTabLineChart(result, yearSelected, d.type,
                     d.RICid)
-
                 var linechartData=initLineChart2(linechart_flows, yearSelected,
                     d.RICid, yValue, d.color)
                 if(linechartData.length===partners.length) $scope.linechartData=linechartData;
@@ -847,7 +847,7 @@ angular.module('ricardo.controllers.country', [])
         })
         }
 
-        var partnersPct = [];
+        // var partnersPct = [];
         var linechartData=[];
         if (partners.length>0  && conversion === "value")
         {
@@ -856,7 +856,8 @@ angular.module('ricardo.controllers.country', [])
               apiService
                   .getFlows({
                     reporting_ids: $scope.entities.sourceEntity.selected.RICid,
-                    partner_ids:d.RICid
+                    partner_ids:d.RICid,
+                    with_sources:1
                   })
                   .then(function (result) {
                     var yearSelected = [];
@@ -865,16 +866,13 @@ angular.module('ricardo.controllers.country', [])
                     //   $scope.selectedMaxDate)
                     yearSelected = initTabLineChart(result, yearSelected, d.type,
                       d.RICid)
-                    changeInPercent($scope.entities.sourceEntity.selected.RICid,
-                      yearSelected, yValue, d.color, function(tab) {
-
-                    tab.key = d.RICid;
-                    partnersPct.push(tab);
-                    partnersPct.forEach ( function (d) {
-                      linechartData.push(d);
-                    });
+                    changeInPercent($scope.entities.sourceEntity.selected.RICid,yValue,
+                      yearSelected, d.color,function(tab) {
+                      tab.key = d.RICid;
+                      linechartData.push(tab)
+                     
                     if(linechartData.length===partners.length) $scope.linechartData=linechartData;
-
+                    // console.log($scope.linechartData)
                     $scope.yValue = yValue;
                     $scope.linechartCurrency = {
                       type: {value :"value",writable: true},
@@ -899,13 +897,14 @@ angular.module('ricardo.controllers.country', [])
                     yearSelected = initTabLineChart(result, yearSelected, d.type,
                     d.RICid)
 
-                    changeInPercent($scope.entities.sourceEntity.selected.RICid,
-                      yearSelected, yValue, d.color, function(tab) {
+                    changeInPercent($scope.entities.sourceEntity.selected.RICid,yValue,
+                      yearSelected, d.color, function(tab) {
                     tab.key = d.RICid;
-                    partnersPct.push(tab);
-                    partnersPct.forEach ( function (d) {
-                      linechartData.push(d);
-                    });
+                    linechartData.push(tab)
+                    // partnersPct.push(tab);
+                    // partnersPct.forEach ( function (d) {
+                    //   linechartData.push(d);
+                    // });
                     if(linechartData.length===partners.length) $scope.linechartData=linechartData;
                     $scope.yValue = yValue;
                     $scope.linechartCurrency = {
@@ -920,11 +919,11 @@ angular.module('ricardo.controllers.country', [])
         }
     }
 
-    function changeInPercent(partner_ids, data, yValue, color, callback) {
+    function changeInPercent(reporting_id,yValue,data, color, callback) {
       var percentArrayInit = {};  // object to save pct arrays
         apiService
           .getFlows({
-            reporting_ids: partner_ids,
+            reporting_ids: reporting_id,
             partner_ids:"Worldsumpartners"
           })
           .then(function (result) {
@@ -932,44 +931,42 @@ angular.module('ricardo.controllers.country', [])
             // we could don't need this array if api data have good format
             var worldFlowsYears = result.flows;
 
-            var worldFlowsYearsFormat = [];
-            worldFlowsYears.forEach( function (d) {
-              worldFlowsYearsFormat.push({
-                reporting_id: d.reporting_id,
-                type: null,
-                partner_id: d.partner_id,
-                year: d.year,
-                imp:d.imp,
-                exp:d.exp,
-                total:d.total,
-                currency: "sterling",
-                sources: d.sources
-              });
-            })
+            // var worldFlowsYearsFormat = [];
+            // worldFlowsYears.forEach( function (d) {
+            //   worldFlowsYearsFormat.push({
+            //     reporting_id: d.reporting_id,
+            //     type: null,
+            //     partner_id: partner_id,
+            //     year: d.year,
+            //     imp:d.imp,
+            //     exp:d.exp,
+            //     total:d.total,
+            //     currency: "sterling",
+            //     sources: d.sources
+            //   });
+            // })
 
-
-            worldFlowsYearsFormat = lineChartService.adjustArrayTime(
-              worldFlowsYearsFormat, $scope.selectedMinDate, $scope.selectedMaxDate)
+            // console.log(worldFlowsYears)
+            // worldFlowsYearsFormat = lineChartService.adjustArrayTime(
+            //   worldFlowsYearsFormat, $scope.selectedMinDate, $scope.selectedMaxDate)
 
             // need a new algo to delete two forEach
             var pctArray = [];
             data.forEach( function (data) {
-              worldFlowsYearsFormat.forEach(function (d) {
+              worldFlowsYears.forEach(function (d) {
                 if (data.year == d.year) // == because it's str vs integer
                 {
-                  var ratio ;
-                  if (data[yValue] === null || data[yValue] === 0
-                      || d[yValue] === null || d[yValue] === 0)
-                  {
-                    ratio = null;
-                  }
-                  else {
-                    ratio = data[yValue] / d[yValue] * 100;
-                  }
                   pctArray.push({
                     reporting_id: data.reporting_id,
+                    type: data.type,
+                    partner_id: data.partner_id,
                     year: data.year,
-                    value: ratio});
+                    imp:getRatio(data,d,"imp"),
+                    exp:getRatio(data,d,"exp"),
+                    total:getRatio(data,d,"total"),
+                    currency: "percent",
+                    sources: data.sources
+                  });
                 }
               })
             })
@@ -980,6 +977,19 @@ angular.module('ricardo.controllers.country', [])
 
             callback(percentArrayInit)
           })
+    }
+
+    function getRatio(a,b,yValue){
+      var ratio ;
+      if (a[yValue] === null || a[yValue] === 0
+          || b[yValue] === null || b[yValue] === 0)
+      {
+        ratio = null;
+      }
+      else {
+        ratio = a[yValue] / b[yValue] * 100;
+      }
+      return ratio;
     }
 
     /*

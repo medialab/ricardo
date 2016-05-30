@@ -375,10 +375,11 @@ angular.module('ricardo.controllers.world', [])
 
                   var tab = pct(worldFlows_filtered, yearSelected, yValue, d.color);
                   tab.key = d.RICid;
-                  partnersPct.push(tab);
-                  partnersPct.forEach ( function (d) {
-                    linechartData.push(d);
-                  });
+                  // partnersPct.push(tab);
+                  // partnersPct.forEach ( function (d) {
+                  //   linechartData.push(d);
+                  // });
+                  linechartData.push(tab)
                   if(linechartData.length===partners.length) $scope.linechartData=linechartData;
                   $scope.yValue = yValue;
                   $scope.conversion = "value";
@@ -398,10 +399,11 @@ angular.module('ricardo.controllers.world', [])
                   var tab = pct(worldFlows_filtered, yearSelected, yValue, d.color);
                   tab.key = d.RICname;
                   partnersPct.push(tab);
-                  var linechartData = [];
-                  partnersPct.forEach ( function (d) {
-                    linechartData.push(d);
-                  });
+                  // var linechartData = [];
+                  // partnersPct.forEach ( function (d) {
+                  //   linechartData.push(d);
+                  // });
+                  linechartData.push(tab)
                   if(linechartData.length===partners.length) $scope.linechartData=linechartData;
                   $scope.yValue = yValue;
                   $scope.conversion = "value";
@@ -439,16 +441,27 @@ angular.module('ricardo.controllers.world', [])
         worldFlowsYearsFormat.forEach(function (d) {
           if (data.year == d.year) // == because it's str vs integer
           {
-            var ratio ;
-            if (data[yValue] === null || data[yValue] === 0)
-              ratio = null;
-            else {
-              ratio = data[yValue] / d[yValue] * 100;
-            }
-            pctArray.push({
-              reporting_id: data.reporting_id,
-              year: data.year, value:ratio
-            });
+            // var ratio ;
+            // if (data[yValue] === null || data[yValue] === 0)
+            //   ratio = null;
+            // else {
+            //   ratio = data[yValue] / d[yValue] * 100;
+            // }
+            // pctArray.push({
+            //   reporting_id: data.reporting_id,
+            //   year: data.year, value:ratio
+            // });
+             pctArray.push({
+                    reporting_id: data.reporting_id,
+                    type: data.type,
+                    partner_id: "Worldbestguess",
+                    year: data.year,
+                    imp:getRatio(data,d,"imp"),
+                    exp:getRatio(data,d,"exp"),
+                    total:getRatio(data,d,"total"),
+                    currency: "percent",
+                    sources: data.sources
+                  });
           }
         })
       })
@@ -458,6 +471,19 @@ angular.module('ricardo.controllers.world', [])
       pctArrayInit.type = "value";
       pctArrayInit.flowType = yValue;
       return pctArrayInit;
+    }
+
+    function getRatio(a,b,yValue){
+      var ratio ;
+      if (a[yValue] === null || a[yValue] === 0
+          || b[yValue] === null || b[yValue] === 0)
+      {
+        ratio = null;
+      }
+      else {
+        ratio = a[yValue] / b[yValue] * 100;
+      }
+      return ratio;
     }
 
     /*
