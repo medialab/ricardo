@@ -43,7 +43,7 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
     source_field = """,group_concat(Source,"|")""" if with_sources else ""
 
     if group_reporting_by=="":
-        cursor.execute("""SELECT reporting_slug,partner_slug,year,group_concat(expimp,"|"),group_concat(%s,"|"),currency%s
+        cursor.execute("""SELECT reporting_slug,partner,year,group_concat(expimp,"|"),group_concat(%s,"|"),currency%s
                       FROM flow_joined
                       where reporting_slug IN ("%s")
                       %s
@@ -66,7 +66,7 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
                       """%(flow_field,source_field,'","'.join(partner_ids),'","'.join(reporting_ids),from_year_clause+to_year_clause,flow_field)
                 )
         else:
-            cursor.execute("""SELECT reporting_continent,partner_slug,year,group_concat(expimp,"|"),group_concat(%s,"|"),currency%s
+            cursor.execute("""SELECT reporting_continent,partner,year,group_concat(expimp,"|"),group_concat(%s,"|"),currency%s
                       FROM flow_joined
                       where reporting_continent IN ("%s") AND partner_continent NOT IN ("%s")
                       %s
