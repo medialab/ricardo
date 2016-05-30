@@ -102,16 +102,7 @@
 <div class="container">
   <br>
   <br>
-  <h4>  {{ 'PARTNER_HISTO_1' | translate }}
-  <div class="inline-select">
-      <ui-select ng-model="grouped" theme="bootstrap" ng-change="changeGroup(grouped)">
-        <match placeholder="Group by...">{{$select.selected.name.value}}</match>
-        <choices repeat="item in groups | filter: $select.search">
-          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-        </choices>
-      </ui-select>
-  </div>
-     {{ 'PARTNER_HISTO_2' | translate }}
+  <h4>  {{ 'PARTNER_HISTO_1' | translate }} Order by
   <div class="inline-select">
       <ui-select ng-model="ordered" theme="bootstrap" ng-change="changeOrder(ordered)">
       <match placeholder="Order by...">{{$select.selected.name.value}}</match>
@@ -120,16 +111,27 @@
       </choices>
       </ui-select>
   </div>
-     {{ 'PARTNER_HISTO_3' | translate }}
+  <br>
+     <!-- {{ 'PARTNER_HISTO_3' | translate }} -->
+     Filter on 
   <div class="inline-select">
     <ui-select ng-model="filtered" theme="bootstrap" ng-change="changeFilter(filtered)">
-      <match placeholder="Filter by...">{{$select.selected.name.value}}</match>
+      <match placeholder="Filter on...">{{$select.selected.name.value}}</match>
       <choices repeat="item in filters | filter: $select.search">
         <div ng-bind-html="item.name.value | highlight: $select.search"></div>
       </choices>
     </ui-select>
   </div>
-     {{ 'PARTNER_HISTO_4' | translate }}
+  Group by
+  <div class="inline-select">
+      <ui-select ng-model="grouped" theme="bootstrap" ng-change="changeGroup(grouped)">
+        <match placeholder="Group by...">{{$select.selected.name.value}}</match>
+        <choices repeat="item in groups | filter: $select.search">
+          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+        </choices>
+      </ui-select>
+  </div>
+ <!--     {{ 'PARTNER_HISTO_4' | translate }}
   <div class="inline-select">
     <ui-select ng-model="sorted" theme="bootstrap" ng-change="changeSort(sorted)">
       <match placeholder="Sort by...">{{$select.selected.name.value}}</match>
@@ -137,8 +139,7 @@
         <div ng-bind-html="item.name.value | highlight: $select.search"></div>
       </choices>
     </ui-select>
-  </div>
-
+  </div> -->
   </h4>
   <div class="row">
     <div class="col-md-12">

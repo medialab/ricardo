@@ -54,8 +54,10 @@ angular.module('ricardo.controllers.country', [])
       {type: {value: "imp",writable: true},
        name: {value: "Average share on Imports",writable: true}},
       {type: {value: "exp",writable: true},
-       name: {value: "Average share on Exports",writable: true}
-      }];
+       name: {value: "Average share on Exports",writable: true}},
+      {type: {value: "name",writable: true},
+       name: {value: "Name",writable: true}}
+      ];
 
 
     $scope.groups = [
@@ -67,13 +69,13 @@ angular.module('ricardo.controllers.country', [])
     $scope.grouped =  $scope.groups[0];
 
 
-    $scope.sorts = [
-      {type: {value: "name",writable: true},
-       name: {value: "Name",writable: true}},
-      {type: {value: "average",writable: true},
-       name: {value: "Average share",writable: true}
-    }];
-    $scope.sorted = $scope.sorts[1];
+    // $scope.sorts = [
+    //   {type: {value: "name",writable: true},
+    //    name: {value: "Name",writable: true}},
+    //   {type: {value: "average",writable: true},
+    //    name: {value: "Average share",writable: true}
+    // }];
+    // $scope.sorted = $scope.sorts[1];
 
     $scope.linechartCurrency = {}
     $scope.linechartCurrencyChoices = [
@@ -341,8 +343,8 @@ angular.module('ricardo.controllers.country', [])
                             name: {value:"None",writable: true}};
           $scope.filtered = {type: {value :"all",writable: true},
                             name: {value:"All",writable: true}};
-          $scope.sorted = { type: {value :"average",writable: true},
-                            name: {value:"Average share",writable: true}};
+          // $scope.sorted = { type: {value :"average",writable: true},
+          //                   name: {value:"Average share",writable: true}};
 
           initPartnerHisto($scope.tableData)
 
@@ -548,13 +550,12 @@ angular.module('ricardo.controllers.country', [])
         partners = partners.filter(function (d) {
           return d.type === $scope.filtered.type.value
         })
-
       partners = partners.sort(function(a,b){
-        if ($scope.sorted === 'name')
+        if ($scope.ordered.type.value === 'name')
           return d3.ascending(a.key, b.key);
         else {
-          return d3.descending(a["avg_" + $scope.ordered],
-                               b["avg_" + $scope.ordered]);
+          return d3.descending(a["avg_" + $scope.ordered.type.value ],
+                               b["avg_" + $scope.ordered.type.value ]);
         }
       });
 
@@ -588,7 +589,7 @@ angular.module('ricardo.controllers.country', [])
         })
 
       partners = partners.sort(function(a,b){
-        if ($scope.sorted.type.value === 'name')
+        if ($scope.ordered.type.value === 'name')
           return d3.ascending(a.key, b.key);
         else {
           return d3.descending(a["avg_" + $scope.ordered.type.value],
@@ -602,51 +603,52 @@ angular.module('ricardo.controllers.country', [])
         $scope.missingPartner = 1;
     }
 
-    $scope.changeSort = function (sort) {
-        $scope.sorted = sort;
-        var data = [];
+    //conflict with changeOrder
+    // $scope.changeSort = function (sort) {
+    //     $scope.sorted = sort;
+    //     var data = [];
 
-        var temp = $scope.tableData;
+    //     var temp = $scope.tableData;
 
-        temp.forEach( function (d) {
-          if (d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate) {
-            data.push(d);
-          }
-        })
-        var indexYears = buildIndexYears(data);
-        $scope.indexYears = indexYears;
+    //     temp.forEach( function (d) {
+    //       if (d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate) {
+    //         data.push(d);
+    //       }
+    //     })
+    //     var indexYears = buildIndexYears(data);
+    //     $scope.indexYears = indexYears;
 
-        data=data.filter(function(p){ return !/^World/.test(p.partner_id)})
+    //     data=data.filter(function(p){ return !/^World/.test(p.partner_id)})
 
-        var partners = d3.nest()
-          .key(function(d){
-            return d[$scope.grouped.type.value ? "continent" : "partner_id"]
-          })
-          .key(function(d){ return d.year })
-          .rollup(countryService.rollupYears)
-          .entries(data)
+    //     var partners = d3.nest()
+    //       .key(function(d){
+    //         return d[$scope.grouped.type.value ? "continent" : "partner_id"]
+    //       })
+    //       .key(function(d){ return d.year })
+    //       .rollup(countryService.rollupYears)
+    //       .entries(data)
 
-        partners = countryService.addTypePartner(partners, data);
-        partners = countryService.valuesToPartners(partners, indexYears);
+    //     partners = countryService.addTypePartner(partners, data);
+    //     partners = countryService.valuesToPartners(partners, indexYears);
 
-        if ($scope.filtered.type.value !== "all")
-          partners = partners.filter(function (d) {
-            return d.type === $scope.filtered.type.value
-          })
+    //     if ($scope.filtered.type.value !== "all")
+    //       partners = partners.filter(function (d) {
+    //         return d.type === $scope.filtered.type.value
+    //       })
 
-        partners = partners.sort(function(a,b){
-          if (sort.type.value === 'name')
-            return d3.ascending(a.key, b.key);
-          else {
-            return d3.descending(a["avg_" + $scope.ordered.type.value],
-                                 b["avg_" + $scope.ordered.type.value]);
-          }
-        });
+    //     partners = partners.sort(function(a,b){
+    //       if (sort.type.value === 'name')
+    //         return d3.ascending(a.key, b.key);
+    //       else {
+    //         return d3.descending(a["avg_" + $scope.ordered.type.value],
+    //                              b["avg_" + $scope.ordered.type.value]);
+    //       }
+    //     });
 
-        $scope.partnersData = partners
-        if (partners.length === 0)
-          $scope.missingPartner = 1;
-    }
+    //     $scope.partnersData = partners
+    //     if (partners.length === 0)
+    //       $scope.missingPartner = 1;
+    // }
 
     $scope.changeOrder = function (order) {
         $scope.ordered = order;
@@ -675,7 +677,7 @@ angular.module('ricardo.controllers.country', [])
           })
 
         partners = partners.sort(function(a,b){
-          if ($scope.sorted.type.value === 'name')
+          if ($scope.ordered.type.value === 'name')
             return d3.ascending(a.key, b.key);
           else {
             return d3.descending(a["avg_" + order.type.value],
@@ -714,7 +716,7 @@ angular.module('ricardo.controllers.country', [])
           })
 
         partners = partners.sort(function(a,b){
-          if ($scope.sorted.type.value === 'name')
+          if ($scope.ordered.type.value === 'name')
             return d3.ascending(a.key, b.key);
           else {
             return d3.descending(a["avg_" + $scope.ordered.type.value],
