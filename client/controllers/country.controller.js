@@ -212,12 +212,10 @@ angular.module('ricardo.controllers.country', [])
           with_sources:1
         })
         .then(function (data) {
-
           var dates = data.flows.map(function (d) { return d.year})
 
           $scope.selectedMinDate = d3.min(dates);
           $scope.selectedMaxDate = d3.max(dates);
-
           data.flows = data.flows.filter(function (d) { if (d.imp || d.exp !== 0) return d})
           $scope.tableData = data.flows;
 
@@ -228,7 +226,6 @@ angular.module('ricardo.controllers.country', [])
 
           $scope.actualCurrency = data.flows[0].currency;
           $scope.RICentities = {};
-
           data.RICentities.partners.forEach(function(d){
             $scope.RICentities[""+d.RICid] = {
               RICname : d.RICname,
@@ -519,7 +516,6 @@ angular.module('ricardo.controllers.country', [])
     function initPartnerHisto(data) {
       var data = [];
       var temp = $scope.tableData;
-
       // Select data between date selected
       temp.forEach( function (d) {
         if (d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate) {
@@ -538,7 +534,7 @@ angular.module('ricardo.controllers.country', [])
        */
 
       var partners = d3.nest()
-        .key(function(d){ return d[$scope.grouped.type.value ? "continent" : "partner_id"] })
+        .key(function(d){ return d[$scope.grouped.type.value ? "continent" : "partner_name"] })
         .key(function(d){ return d.year })
         .rollup(countryService.rollupYears)
         .entries(data)
@@ -558,7 +554,6 @@ angular.module('ricardo.controllers.country', [])
                                b["avg_" + $scope.ordered.type.value ]);
         }
       });
-
       $scope.partnersData = partners
     }
 
