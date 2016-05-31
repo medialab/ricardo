@@ -914,11 +914,19 @@ font-size: 1.1em;
   margin-top: 10px;
 }
 
-.list h3, .subtitle{
+.list h3{
   font-family: 'montserrat', Arial, sans-serif;
   font-weight: bold;
   font-size: 0.8em;
   text-transform: uppercase;
+}
+
+.subtitle{
+  font-family: 'montserrat', Arial, sans-serif;
+  font-weight: bold;
+  font-size: 11px;
+  text-transform: uppercase;
+  margin: 10px 0 0 0;
 }
 
 .alert-custom {

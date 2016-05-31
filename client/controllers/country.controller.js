@@ -110,12 +110,12 @@ angular.module('ricardo.controllers.country', [])
       sourceWorldEntity : {}
     }
 
-    $scope.RICentities = {}
-    $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
-        if(a.RICname < b.RICname) return -1;
-        if(a.RICname > b.RICname) return 1;
-        return 0;
-    })
+    // $scope.RICentities = {}
+    // $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
+    //     if(a.RICname < b.RICname) return -1;
+    //     if(a.RICname > b.RICname) return 1;
+    //     return 0;
+    // })
 
     /*
      * Arrays of entities for linechart
@@ -226,6 +226,7 @@ angular.module('ricardo.controllers.country', [])
 
           $scope.actualCurrency = data.flows[0].currency;
           $scope.RICentities = {};
+
           data.RICentities.partners.forEach(function(d){
             $scope.RICentities[""+d.RICid] = {
               RICname : d.RICname,
@@ -233,18 +234,22 @@ angular.module('ricardo.controllers.country', [])
               RICid: d.RICid,
               continent: d.continent }
             })
-          $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
-              if(a.RICname < b.RICname) return -1;
-              if(a.RICname > b.RICname) return 1;
-              return 0;
+          $scope.RICentitiesDD=[...data.RICentities.partners]
+          $scope.RICentitiesDD.forEach(function(d){
+            d.display=d.RICname+"["+d.type+"]";
           })
+          // $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
+          //     if(a.RICname < b.RICname) return -1;
+          //     if(a.RICname > b.RICname) return 1;
+          //     return 0;
+          // })  
 
           /*
            *  Init all entities by types filters for linechart viz
            */
 
           $scope.reportingCountryEntities = $scope.RICentitiesDD.filter(function(d){
-            return d.type === "country" || d.type === "group"})
+            return d.type === "country"})
           $scope.reportingColonialEntities = $scope.RICentitiesDD.filter(function(d){
             return d.type === "colonial_area"})
           $scope.reportingGeoEntities = $scope.RICentitiesDD.filter(function(d){
@@ -486,13 +491,14 @@ angular.module('ricardo.controllers.country', [])
      */
 
     $scope.resetDD = function(t){
-      if(t === "country"){$scope.entities.sourceCountryEntity.selected = undefined}
-      if(t === "colonial_area"){$scope.entities.sourceColonialEntity.selected = undefined}
-      if(t === "geographical_area"){
-        $scope.entities.sourceGeoEntity.selected = undefined
-        $scope.entities.sourceWorldEntity.selected = undefined
-      }
-      if(t === "continent"){$scope.entities.sourceContinentEntity.selected = undefined}
+      $scope.entities.sourceCountryEntity1.selected = undefined
+      // if(t === "country"){$scope.entities.sourceCountryEntity.selected = undefined}
+      // if(t === "colonial_area"){$scope.entities.sourceColonialEntity.selected = undefined}
+      // if(t === "geographical_area"){
+      //   $scope.entities.sourceGeoEntity.selected = undefined
+      //   $scope.entities.sourceWorldEntity.selected = undefined
+      // }
+      // if(t === "continent"){$scope.entities.sourceContinentEntity.selected = undefined}
     }
 
 
@@ -568,7 +574,7 @@ angular.module('ricardo.controllers.country', [])
 
       var partners = d3.nest()
         .key(function(d){
-          return d[group.type.value ? "continent" : "partner_id"]
+          return d[group.type.value ? "continent" : "partner_name"]
         })
         .key(function(d){ return d.year })
         .rollup(countryService.rollupYears)
@@ -657,7 +663,7 @@ angular.module('ricardo.controllers.country', [])
 
         var partners = d3.nest()
           .key(function(d){
-            return d[$scope.grouped.type.value ? "continent" : "partner_id"]
+            return d[$scope.grouped.type.value ? "continent" : "partner_name"]
           })
           .key(function(d){ return d.year })
           .rollup(countryService.rollupYears)
@@ -742,6 +748,9 @@ angular.module('ricardo.controllers.country', [])
     //   }
     // }, true)
 
+    $scope.change = function (item) {
+      $scope.pushReporting(item)
+    }
     $scope.changeCountry = function (country) {
       $scope.pushReporting(country)
     }
@@ -766,6 +775,7 @@ angular.module('ricardo.controllers.country', [])
       initLinechart($scope.reporting, $scope.linechartFlow.type.value,
         currency.type.value);
       $scope.linechartCurrency = currency;
+      $scope.messagePercent= currency.type.value==="value";
     }
 
     $scope.changeFlow = function (flow) {
@@ -793,6 +803,7 @@ angular.module('ricardo.controllers.country', [])
 
     function initLinechart(partners, yValue, conversion){
         var linechart_flows=[]
+        $scope.yValue = yValue;
         if(partners.length>0 && conversion === "sterling" )
         {
           partners.forEach( function (d) {
@@ -815,11 +826,10 @@ angular.module('ricardo.controllers.country', [])
                 if(linechartData.length===partners.length) $scope.linechartData=linechartData;
              });
             // factorise these lines
-            $scope.yValue = yValue;
-            $scope.linechartCurrency= {
-              type: {value :"sterling",writable: true},
-              name: {value:"Sterling",writable: true}};
-            $scope.messagePercent = 0;
+            // $scope.yValue = yValue;
+            // $scope.linechartCurrency= {
+            //   type: {value :"sterling",writable: true},
+            //   name: {value:"Sterling",writable: true}};
           }
           else {
              apiService
@@ -838,14 +848,15 @@ angular.module('ricardo.controllers.country', [])
                if(linechartData.length===partners.length) $scope.linechartData=linechartData;
 
              });
-            $scope.yValue = yValue;
-            $scope.linechartCurrency = {
-              type: {value :"sterling",writable: true},
-            name: {value:"Sterling",writable: true}};
-            $scope.messagePercent = 0;
+            // $scope.yValue = yValue;
+            // $scope.linechartCurrency = {
+            //   type: {value :"sterling",writable: true},
+            // name: {value:"Sterling",writable: true}};
+            // $scope.messagePercent = 0;
           }
         })
-        }
+    
+      }
 
         // var partnersPct = [];
         var linechartData=[];
@@ -873,13 +884,13 @@ angular.module('ricardo.controllers.country', [])
                      
                     if(linechartData.length===partners.length) $scope.linechartData=linechartData;
                     // console.log($scope.linechartData)
-                    $scope.yValue = yValue;
-                    $scope.linechartCurrency = {
-                      type: {value :"value",writable: true},
-                      name: {value:"Percent",writable: true}
-                    };
-                    $scope.actualCurrency = "percent";
-                    $scope.messagePercent = 1;
+                    // $scope.yValue = yValue;
+                    // $scope.linechartCurrency = {
+                    //   type: {value :"value",writable: true},
+                    //   name: {value:"Percent",writable: true}
+                    // };
+                    // $scope.actualCurrency = "percent";
+                    // $scope.messagePercent = 1;
                   });
                 })
             }
@@ -906,16 +917,23 @@ angular.module('ricardo.controllers.country', [])
                     //   linechartData.push(d);
                     // });
                     if(linechartData.length===partners.length) $scope.linechartData=linechartData;
-                    $scope.yValue = yValue;
-                    $scope.linechartCurrency = {
-                      type: {value :"value",writable: true},
-                      name: {value:"Percent",writable: true}};
-                    $scope.actualCurrency = "percent";
-                    $scope.messagePercent = 1;
+                    // $scope.yValue = yValue;
+                    // $scope.linechartCurrency = {
+                    //   type: {value :"value",writable: true},
+                    //   name: {value:"Percent",writable: true}};
+                    // $scope.actualCurrency = "percent";
+                    // $scope.messagePercent = 1;
                 });
               })
             }
           })
+          // $scope.yValue = yValue;
+          // $scope.linechartCurrency = {
+          //   type: {value :"value",writable: true},
+          //   name: {value:"Percent",writable: true}
+          // };
+          // $scope.actualCurrency = "percent";
+          // $scope.messagePercent = 1;
         }
     }
 

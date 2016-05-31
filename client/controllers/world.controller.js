@@ -234,8 +234,8 @@ angular.module('ricardo.controllers.world', [])
     function initWorldMultiChart(data){
         // console.log(data)
         $scope.flowWorld=d3.nest()
-                              .key(function(d) { return d.partner; })
-                              .entries(data);
+                          .key(function(d) { return d.partner; })
+                          .entries(data);
         //extend missing points with null values
         $scope.flowWorld.forEach(function(d){
             // for (var i = $scope.rawMinDate; i<=$scope.rawMaxDate;i++){
@@ -312,6 +312,7 @@ angular.module('ricardo.controllers.world', [])
 
     function initLinechart(partners, yValue, conversion){
       var linechart_flows=[]
+      $scope.yValue = yValue;
       if (partners.length>0  && conversion === "sterling") {
         partners.forEach( function (d) {
              if (d.type !== "continent" ) {
@@ -331,9 +332,9 @@ angular.module('ricardo.controllers.world', [])
                     d.RICid, yValue, d.color)
                   if(linechartData.length===partners.length) $scope.linechartData=linechartData;
               });
-              $scope.yValue = yValue;
-              $scope.conversion = "sterling";
-              $scope.actualCurrency = "sterling pound";
+              // $scope.yValue = yValue;
+              // $scope.conversion = "sterling";
+              // $scope.actualCurrency = "sterling pound";
             }
             else {
                apiService
@@ -342,7 +343,7 @@ angular.module('ricardo.controllers.world', [])
                   partner_ids:"Worldbestguess",
                   with_sources:1})
                 .then(function (result) {
-                 var yearSelected = [];
+                  var yearSelected = [];
                   // yearSelected = initTabLineChart(result, yearSelected, d.type,
                   //   d.RICname, $scope.selectedMinDate, $scope.selectedMaxDate)
                   yearSelected = initTabLineChart(result, yearSelected, d.type,
@@ -351,9 +352,9 @@ angular.module('ricardo.controllers.world', [])
                     d.RICid, yValue, d.color)
                   if(linechartData.length===partners.length) $scope.linechartData=linechartData;
                });
-              $scope.yValue = yValue;
-              $scope.conversion = "sterling";
-              $scope.actualCurrency = "sterling pound";
+              // $scope.yValue = yValue;
+              // $scope.conversion = "sterling";
+              // $scope.actualCurrency = "sterling pound";
             }
           })
         }
@@ -381,9 +382,7 @@ angular.module('ricardo.controllers.world', [])
                   // });
                   linechartData.push(tab)
                   if(linechartData.length===partners.length) $scope.linechartData=linechartData;
-                  $scope.yValue = yValue;
-                  $scope.conversion = "value";
-                  $scope.actualCurrency = "percent";
+                  
                });
             }
             else {
@@ -405,11 +404,10 @@ angular.module('ricardo.controllers.world', [])
                   // });
                   linechartData.push(tab)
                   if(linechartData.length===partners.length) $scope.linechartData=linechartData;
-                  $scope.yValue = yValue;
-                  $scope.conversion = "value";
-                  $scope.actualCurrency = "percent";
+                  // $scope.yValue = yValue;
+                  // $scope.conversion = "value";
+                  // $scope.actualCurrency = "percent";
                 });
-
             }
           })
         }
@@ -607,6 +605,9 @@ angular.module('ricardo.controllers.world', [])
     $scope.changeCurrency = function (currency) {
       initLinechart($scope.reporting, $scope.linechartFlow.type.value, currency.type.value);
       $scope.linechartCurrency = currency;
+      // $scope.conversion = "value";
+      // $scope.actualCurrency = "percent";
+      // $scope.messagePercent= currency.type.value==="value";
     }
 
     $scope.changeFlow = function (flow) {
