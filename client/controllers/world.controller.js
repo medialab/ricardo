@@ -543,14 +543,14 @@ angular.module('ricardo.controllers.world', [])
       }
     })
 
-    $scope.$watch('reporting', function (newValue, oldValue){
-      if(newValue !== oldValue && newValue){
-        initLinechart($scope.reporting, $scope.linechartFlow.type.value,
-          $scope.linechartCurrency.type.value);
-        updateTableData();
-        //updateDateRange();
-      }
-    }, true)
+    // $scope.$watch('reporting', function (newValue, oldValue){
+    //   if(newValue !== oldValue && newValue){
+    //     initLinechart($scope.reporting, $scope.linechartFlow.type.value,
+    //       $scope.linechartCurrency.type.value);
+    //     updateTableData();
+    //     //updateDateRange();
+    //   }
+    // }, true)
 
     $scope.$watch('linechartData', function (newValue, oldValue){
        if(newValue !== oldValue){
@@ -572,6 +572,7 @@ angular.module('ricardo.controllers.world', [])
 
       initLinechart($scope.reporting, $scope.linechartFlow.type.value,
         $scope.linechartCurrency.type.value);
+      updateTableData();
     }
 
     $scope.removeReporting = function(elm){
@@ -584,6 +585,7 @@ angular.module('ricardo.controllers.world', [])
       }
       initLinechart($scope.reporting, $scope.linechartFlow.type.value,
         $scope.linechartCurrency.type.value);
+      updateTableData();
     }
 
     /*

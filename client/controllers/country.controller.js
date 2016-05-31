@@ -107,7 +107,9 @@ angular.module('ricardo.controllers.country', [])
       sourceColonialEntity : {},
       sourceGeoEntity : {},
       sourceContinentEntity : {},
-      sourceWorldEntity : {}
+      sourceWorldEntity : {},
+      sourceCountryEntity1 : {},
+
     }
 
     // $scope.RICentities = {}
@@ -127,6 +129,7 @@ angular.module('ricardo.controllers.country', [])
     $scope.reportingGeoEntities = [];
     $scope.reportingContinentEntities = [];
     $scope.reportingWorldEntities = [];
+    $scope.reportingCountryEntities1 = [];
 
     /*
      * Linecharts default config
@@ -236,7 +239,7 @@ angular.module('ricardo.controllers.country', [])
             })
           $scope.RICentitiesDD=[...data.RICentities.partners]
           $scope.RICentitiesDD.forEach(function(d){
-            d.display=d.RICname+"["+d.type+"]";
+            if(d.RICname.indexOf("World ")!== 0) d.RICname=d.RICname+"["+d.type+"]";
           })
           // $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
           //     if(a.RICname < b.RICname) return -1;
@@ -256,6 +259,9 @@ angular.module('ricardo.controllers.country', [])
             return d.type === "geographical_area" && d.RICname.indexOf("World ") !== 0})
           $scope.reportingWorldEntities = $scope.RICentitiesDD.filter(function(d){
             return d.type === "geographical_area" && d.RICname.indexOf("World ") === 0})
+
+           $scope.reportingCountryEntities1= $scope.RICentitiesDD.filter(function(d){
+            return d.RICname.indexOf("World ") !== 0})
 
           /*
            * Special methods for continent
@@ -413,16 +419,29 @@ angular.module('ricardo.controllers.country', [])
 
     function updateTableData(){
       //filter tableData by date
-      $scope.tableDataSources=$scope.tableData.filter(function(d){
+      var tableData=$scope.tableData.filter(function(d){
          return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
       });
 
       var partner_selected=$scope.reporting.map(function(d){return d.RICid})
+      var tableDataSources=tableData;
       if(partner_selected.length>0){
-        $scope.tableDataSources=$scope.tableDataSources.filter(function(d){
-          return partner_selected.indexOf(d.partner_id) > -1;
-        });
+        tableDataSources=[]
+        $scope.reporting.forEach(function(r){
+          if(r.type!=="continent") var dataFiltered=tableData.filter(function(d){ return d.partner_id===r.RICid});
+          else var dataFiltered=tableData.filter(function(d){
+            return $scope.RICentities[""+d.partner_id].continent===r.RICid});
+          tableDataSources=tableDataSources.concat(dataFiltered)
+        })
       }
+      $scope.tableDataSources=tableDataSources;
+      //remove duplicates of array of objects
+
+      // if(partner_selected.length>0){
+      //   $scope.tableDataSources=$scope.tableDataSources.filter(function(d){
+      //     if()return partner_selected.indexOf(d.partner_id) > -1;
+      //   });
+      // }
 
       var missing;
       var allExpNull = $scope.tableDataSources.every(function (d) {
@@ -440,12 +459,12 @@ angular.module('ricardo.controllers.country', [])
         missing = "0";
       }
 
-      var onlyWorld = $scope.tableDataSources.every(function (d) {
-        return d.continent === "World";
-      })
+      // var onlyWorld = $scope.tableDataSources.every(function (d) {
+      //   return d.continent === "World";
+      // })
 
-      if (onlyWorld)
-        missing = "1";
+      // if (onlyWorld)
+      //   missing = "1";
       $scope.missing = missing;
 
       // if ($scope.linechartData) {
@@ -471,6 +490,7 @@ angular.module('ricardo.controllers.country', [])
       $scope.resetDD(elm.type)
       initLinechart($scope.reporting, $scope.linechartFlow.type.value,
         $scope.linechartCurrency.type.value);
+      updateTableData();
     }
 
     /*
@@ -484,6 +504,7 @@ angular.module('ricardo.controllers.country', [])
       d3.select("#linechart-world-container > svg").remove();
       initLinechart($scope.reporting, $scope.linechartFlow.type.value,
         $scope.linechartCurrency.type.value);
+      updateTableData();
     }
 
     /*
@@ -492,6 +513,8 @@ angular.module('ricardo.controllers.country', [])
 
     $scope.resetDD = function(t){
       $scope.entities.sourceCountryEntity1.selected = undefined
+      $scope.entities.sourceWorldEntity.selected = undefined
+      $scope.entities.sourceContinentEntity.selected = undefined
       // if(t === "country"){$scope.entities.sourceCountryEntity.selected = undefined}
       // if(t === "colonial_area"){$scope.entities.sourceColonialEntity.selected = undefined}
       // if(t === "geographical_area"){
@@ -734,13 +757,13 @@ angular.module('ricardo.controllers.country', [])
      *  Linechart triggers
      */
 
-    $scope.$watch('reporting', function (newValue, oldValue){
-      if(newValue !== oldValue && newValue){
-        initLinechart($scope.reporting, $scope.linechartFlow.type.value,
-          $scope.linechartCurrency.type.value);
-        updateTableData()
-      }
-    }, true)
+    // $scope.$watch('reporting', function (newValue, oldValue){
+    //   if(newValue !== oldValue && newValue){
+    //     initLinechart($scope.reporting, $scope.linechartFlow.type.value,
+    //       $scope.linechartCurrency.type.value);
+    //     updateTableData()
+    //   }
+    // }, true)
 
     // $scope.$watch('linechartData', function (newValue, oldValue){
     //    if(newValue !== oldValue){

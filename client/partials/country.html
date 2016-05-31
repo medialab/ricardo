@@ -235,12 +235,29 @@
       <h4 class="titleDualTL">{{ 'LINE_CHART_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'LINE_CHART_2' | translate }}
       <div class="inline-select">
         <ui-select ng-model="entities.sourceCountryEntity1.selected" theme="bootstrap" ng-change="change(entities.sourceCountryEntity1.selected)">
-          <match placeholder="Partners" ng-style="{color:elm.color}"></match>
-          <choices repeat="item in RICentitiesDD | filter: $select.search">
-            <div ng-bind-html="item.display | highlight: $select.search"></div>
+          <match placeholder="Entities" ng-style="{color:elm.color}"></match>
+          <choices repeat="item in reportingCountryEntities1 | filter: $select.search">
+            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
           </choices>
         </ui-select>
       </div>
+      <div class="inline-select">
+        <ui-select  ng-model="entities.sourceContinentEntity.selected" theme="bootstrap" ng-show="reportingContinentEntities.length" ng-change="changeContinent(entities.sourceContinentEntity.selected)">
+          <match placeholder="Continents"></match>
+          <choices repeat="item in reportingContinentEntities | filter: $select.search">
+            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
+      </div>
+      <div class="inline-select">
+        <ui-select  ng-model="entities.sourceWorldEntity.selected" theme="bootstrap" ng-show="reportingWorldEntities.length" ng-change="changeWorld(entities.sourceWorldEntity.selected)">
+          <match placeholder="World trade"></match>
+          <choices repeat="item in reportingWorldEntities | filter: $select.search">
+            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
+      </div>
+
       </br>
       {{selectedMinDate}} – {{selectedMaxDate}}, in
       <div class="inline-select">
@@ -261,7 +278,7 @@
       </ui-select>
     </div>
     <div class="subtitle">{{'LINE_CHART_SELECT' | translate }} </div></br>
-    <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.display}}
+    <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
       <span class="close-btn">
        <i class="fa fa-times-circle"></i>
       </span>
