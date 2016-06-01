@@ -380,8 +380,10 @@ angular.module('ricardo.controllers.country', [])
         // update local storage
         localStorage.removeItem('selectedMinDate');
         localStorage.removeItem('selectedMaxDate');
-        localStorage.selectedMinDate = newValue[0];
-        localStorage.selectedMaxDate = newValue[1];
+        localStorage.setItem('selectedMinDate', newValue[0]);
+        localStorage.setItem('selectedMaxDate', newValue[1]);
+        // localStorage.selectedMinDate = newValue[0];
+        // localStorage.selectedMaxDate = newValue[1];
 
         updateDateRange();
         // initLinechart($scope.reporting, $scope.linechartFlow.type.value,
@@ -395,7 +397,7 @@ angular.module('ricardo.controllers.country', [])
       if(newValue !== oldValue && newValue){
         // update local storage
         localStorage.removeItem('sourceEntitySelected');
-        localStorage.sourceEntitySelected = JSON.stringify(newValue);
+        localStorage.setItem("sourceEntitySelected",newValue)
 
         init(newValue.RICid, $scope.currency)
         updateDateRange()

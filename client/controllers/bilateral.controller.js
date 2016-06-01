@@ -79,7 +79,6 @@ angular.module('ricardo.controllers.bilateral', [])
       }
       else if (localStorage.sourceEntitySelected && !localStorage.targetEntitySelected) 
       {
-        console.log("here2")
         $scope.entities.sourceEntity.selected = JSON.parse(localStorage.getItem('sourceEntitySelected'));
         apiService
           .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
@@ -94,8 +93,7 @@ angular.module('ricardo.controllers.bilateral', [])
               }
               i++;
             }
-            console.log(result)
-            localStorage.targetEntitySelected = $scope.entities.targetEntity.selected
+            localStorage.setItem("targetEntitySelected",$scope.entities.targetEntity.selected)
             // $scope.selectedMinDate = JSON.parse(localStorage.getItem('selectedMinDate'))
             // $scope.selectedMaxDate = JSON.parse(localStorage.getItem('selectedMaxDate'))
             if ($scope.entities.targetEntity.selected !== undefined)
@@ -171,10 +169,10 @@ angular.module('ricardo.controllers.bilateral', [])
             /*
              * Save source & target in localStorage
              */
-            localStorage.selectedMinDate = JSON.stringify($scope.selectedMinDate);
-            localStorage.selectedMaxDate = JSON.stringify($scope.selectedMaxDate);
-            localStorage.sourceEntitySelected = JSON.stringify($scope.entities.sourceEntity.selected);
-            localStorage.targetEntitySelected = JSON.stringify($scope.entities.targetEntity.selected);
+            localStorage.setItem("selectedMinDate",JSON.stringify($scope.selectedMinDate));
+            localStorage.setItem("selectedMaxDate",JSON.stringify($scope.selectedMaxDate));
+            localStorage.setItem("sourceEntitySelected",JSON.stringify($scope.entities.sourceEntity.selected));
+            localStorage.setItem("targetEntitySelected",JSON.stringify($scope.entities.targetEntity.selected));
           
             // call function to send data to tableData
             updateDateRange();
@@ -203,7 +201,7 @@ angular.module('ricardo.controllers.bilateral', [])
       if(newValue !== oldValue && newValue){
         // set data in local storage
         localStorage.removeItem('sourceEntitySelected');
-        localStorage.sourceEntitySelected = JSON.stringify(newValue);
+        localStorage.setItem("sourceEntitySelected",JSON.stringify(newValue))
         // init(newValue.RICid, $scope.entities.targetEntity.selected.RICid, $scope.selectedMinDate, $scope.selectedMaxDate);
         init(newValue.RICid, $scope.entities.targetEntity.selected.RICid)
       }
@@ -213,7 +211,7 @@ angular.module('ricardo.controllers.bilateral', [])
       if(newValue !== oldValue && newValue){
         // set data in local storage
         localStorage.removeItem('targetEntitySelected');
-        localStorage.targetEntitySelected = JSON.stringify(newValue);
+        localStorage.setItem("targetEntitySelected",JSON.stringify(newValue)) 
         // init($scope.entities.sourceEntity.selected.RICid, newValue.RICid, $scope.selectedMinDate, $scope.selectedMaxDate);
         init($scope.entities.sourceEntity.selected.RICid, newValue.RICid)
       }
@@ -224,8 +222,8 @@ angular.module('ricardo.controllers.bilateral', [])
         // set data in local storage
         localStorage.removeItem('selectedMinDate');
         localStorage.removeItem('selectedMaxDate');
-        localStorage.selectedMinDate = newValue[0];
-        localStorage.selectedMaxDate = newValue[1];
+        localStorage.setItem("selectedMinDate",newValue[0]);
+        localStorage.setItem("selectedMaxDate",newValue[1]);
         updateDateRange()
       }
     })
