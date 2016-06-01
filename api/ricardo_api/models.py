@@ -28,6 +28,7 @@ def ric_entities_data(ids=[]):
             "type":t,
             "continent":continent
             })
+    rics=sorted(rics, key=lambda k: k['RICid']) 
     return rics
 
 
@@ -824,6 +825,7 @@ def get_reporting_entities(types=[],to_partner_ids=[]):
             "type":t,
             "continent":continent
             })
+    json_response=sorted(json_response, key=lambda k: k['RICid']) 
     return json.dumps(json_response,encoding="UTF8")
 
 
