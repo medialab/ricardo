@@ -162,7 +162,7 @@ angular.module('ricardo.directives.dualTimeline', [])
                         .data(data.filter(function(d,i) {
                           if(d.imp!==null){
                             if (i===0) {
-                              if (data[i+1].imp===null) return d;
+                              if (data[i+1] && data[i+1].imp===null) return d;
                             }
                             else if(i===data.length-1){
                               if (data[i-1].imp===null) return d;
@@ -194,7 +194,7 @@ angular.module('ricardo.directives.dualTimeline', [])
             .data(data.filter(function(d,i) {
               if(d.exp!==null){
                 if (i===0) {
-                  if (data[i+1].exp===null) return d;
+                  if (data[i+1] && data[i+1].exp===null) return d;
                 }
                 else if(i===data.length-1){
                   if (data[i-1].exp===null) return d;
