@@ -266,6 +266,7 @@ angular.module('ricardo.directives.dualTimeline', [])
           /*
            * Select only imp & exp data from country selected
            */
+
           var ImpExp = [];
           data.forEach(function (data) {
             if (data.year >= scope.startDate && data.year <= scope.endDate) {
@@ -273,7 +274,6 @@ angular.module('ricardo.directives.dualTimeline', [])
               ImpExp.push({type:"exp", points: data.exp, year: data.year});
             }
           })
-
           voronoi(ImpExp, "points", svg, margin, height, width);
         }
           /*
@@ -297,11 +297,11 @@ angular.module('ricardo.directives.dualTimeline', [])
 
             var voronoiGraph = voronoiGroup.selectAll("path")
                 .data(voronoi(data.filter(function(d){ return d[yValue] !== null})))
-
+            
             voronoiGraph
                   .enter().append("path")
-                  .attr("d", function(data) { return "M" + data.join("L") + "Z"; })
-                  .datum(function(d) { return d.point; })
+                  .attr("d", function(d) { if(d!==undefined) return "M" + d.join("L") + "Z"; })
+                  .datum(function(d) { if(d!==undefined) return d.point; })
                   .on("mouseover", mouseover)
                   .on("mouseout", mouseout);
 
