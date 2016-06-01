@@ -262,7 +262,7 @@ angular.module('ricardo.controllers.country', [])
 
            $scope.reportingCountryEntities1= $scope.RICentitiesDD.filter(function(d){
             return d.RICname.indexOf("World ") !== 0})
-
+           
           /*
            * Special methods for continent
            */
@@ -300,12 +300,12 @@ angular.module('ricardo.controllers.country', [])
           /*
            * Check if dates were in localstorage
            */
-          var minDate = parseInt(localStorage.getItem('selectedMinDate'));
-          var maxDate = parseInt(localStorage.getItem('selectedMaxDate'));
-          $scope.selectedMinDate = minDate ?
-            minDate : Math.max( $scope.selectedMinDate, $scope.rawMinDate );
-          $scope.selectedMaxDate = maxDate ?
-            maxDate : Math.min( $scope.selectedMaxDate, $scope.rawMaxDate );
+          // var minDate = parseInt(localStorage.getItem('selectedMinDate'));
+          // var maxDate = parseInt(localStorage.getItem('selectedMaxDate'));
+          // $scope.selectedMinDate = minDate ?
+          //   minDate : Math.max( $scope.selectedMinDate, $scope.rawMinDate );
+          // $scope.selectedMaxDate = maxDate ?
+          //   maxDate : Math.min( $scope.selectedMaxDate, $scope.rawMaxDate );
 
           $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
           $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
