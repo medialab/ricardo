@@ -79,6 +79,7 @@ angular.module('ricardo.controllers.bilateral', [])
       }
       else if (localStorage.sourceEntitySelected && !localStorage.targetEntitySelected) 
       {
+        console.log("here2")
         $scope.entities.sourceEntity.selected = JSON.parse(localStorage.getItem('sourceEntitySelected'));
         apiService
           .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
@@ -93,17 +94,20 @@ angular.module('ricardo.controllers.bilateral', [])
               }
               i++;
             }
+            console.log(result)
             localStorage.targetEntitySelected = $scope.entities.targetEntity.selected
-            $scope.selectedMinDate = JSON.parse(localStorage.getItem('selectedMinDate'))
-            $scope.selectedMaxDate = JSON.parse(localStorage.getItem('selectedMaxDate'))
+            // $scope.selectedMinDate = JSON.parse(localStorage.getItem('selectedMinDate'))
+            // $scope.selectedMaxDate = JSON.parse(localStorage.getItem('selectedMaxDate'))
             if ($scope.entities.targetEntity.selected !== undefined)
-              init($scope.entities.sourceEntity.selected.RICid, 
-                $scope.entities.targetEntity.selected.RICid, 
-                $scope.selectedMinDate, $scope.selectedMaxDate);
+              init($scope.entities.sourceEntity.selected.RICid,$scope.entities.targetEntity.selected.RICid)
+              // init($scope.entities.sourceEntity.selected.RICid, 
+              //   $scope.entities.targetEntity.selected.RICid, 
+              //   $scope.selectedMinDate, $scope.selectedMaxDate);
           })
       }
       else 
       {
+        console.log("here3")
         $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
         return e.RICid===DEFAULT_REPORTING})[0]
         $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){
@@ -112,7 +116,7 @@ angular.module('ricardo.controllers.bilateral', [])
       }
     }
     catch (e) {
-      console.log("e", e);
+      console.log("error bilateral", e);
       // $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
       //   return e.RICid===DEFAULT_REPORTING})[0]
       // $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){
@@ -200,7 +204,8 @@ angular.module('ricardo.controllers.bilateral', [])
         // set data in local storage
         localStorage.removeItem('sourceEntitySelected');
         localStorage.sourceEntitySelected = JSON.stringify(newValue);
-        init(newValue.RICid, $scope.entities.targetEntity.selected.RICid, $scope.selectedMinDate, $scope.selectedMaxDate);
+        // init(newValue.RICid, $scope.entities.targetEntity.selected.RICid, $scope.selectedMinDate, $scope.selectedMaxDate);
+        init(newValue.RICid, $scope.entities.targetEntity.selected.RICid)
       }
     })
 
@@ -209,7 +214,8 @@ angular.module('ricardo.controllers.bilateral', [])
         // set data in local storage
         localStorage.removeItem('targetEntitySelected');
         localStorage.targetEntitySelected = JSON.stringify(newValue);
-        init($scope.entities.sourceEntity.selected.RICid, newValue.RICid, $scope.selectedMinDate, $scope.selectedMaxDate);
+        // init($scope.entities.sourceEntity.selected.RICid, newValue.RICid, $scope.selectedMinDate, $scope.selectedMaxDate);
+        init($scope.entities.sourceEntity.selected.RICid, newValue.RICid)
       }
     })
 
