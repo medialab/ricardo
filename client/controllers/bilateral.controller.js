@@ -215,16 +215,6 @@ angular.module('ricardo.controllers.bilateral', [])
           
             // call function to send data to tableData
             updateDateRange();
-            apiService
-              .getFlows({reporting_ids:sourceID})
-              .then(function (result) {
-                $scope.partnerEntities=result.RICentities.partners.filter(function(d){return RICids.indexOf(d.RICid)!==-1});
-                if($scope.partnerEntities.length===0) $scope.missingBilateral="1";
-                // else{
-                //   $scope.entities.targetEntity.selected=$scope.partnerEntities[0]
-                //   init(newValue.RICid, $scope.entities.targetEntity.selected.RICid)
-                // }
-              })
           },function (res){
             if (res[1] === 500)
             {
@@ -235,16 +225,6 @@ angular.module('ricardo.controllers.bilateral', [])
               else {
                 $scope.message = "Missing Target " + $scope.entities.targetEntity.selected.RICname
               }
-              apiService
-              .getFlows({reporting_ids:sourceID})
-              .then(function (result) {
-                $scope.partnerEntities=result.RICentities.partners.filter(function(d){return RICids.indexOf(d.RICid)!==-1});
-                if($scope.partnerEntities.length===0) $scope.missingBilateral="1";
-                // else{
-                //   $scope.entities.targetEntity.selected=$scope.partnerEntities[0]
-                //   init(newValue.RICid, $scope.entities.targetEntity.selected.RICid)
-                // }
-              })
             }
           }
         )
@@ -262,6 +242,16 @@ angular.module('ricardo.controllers.bilateral', [])
         localStorage.setItem("sourceEntitySelected",JSON.stringify(newValue))
         // init(newValue.RICid, $scope.entities.targetEntity.selected.RICid, $scope.selectedMinDate, $scope.selectedMaxDate);
         if($scope.entities.targetEntity.selected!==undefined){
+          apiService
+              .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
+              .then(function (result) {
+                $scope.partnerEntities=result.RICentities.partners.filter(function(d){return RICids.indexOf(d.RICid)!==-1});
+                if($scope.partnerEntities.length===0) $scope.missingBilateral="1";
+                // else{
+                //   $scope.entities.targetEntity.selected=$scope.partnerEntities[0]
+                //   init(newValue.RICid, $scope.entities.targetEntity.selected.RICid)
+                // }
+          })
           init(newValue.RICid, $scope.entities.targetEntity.selected.RICid)
         } 
         else{
