@@ -25,10 +25,14 @@ angular.module('ricardo', [
   'ricardo.controllers.country',
   'ricardo.controllers.world',
   'ricardo.controllers.network',
-  'ricardo.controllers.matrix'
+  'ricardo.controllers.matrix',
   ])
 
-.run(function($rootScope, $location, $anchorScroll,$timeout) {
+.run(function($rootScope, $location, $anchorScroll,$timeout,cfpLoadingBar) {
+  
+  $rootScope.$on('$routeChangeStart', function() {
+    cfpLoadingBar.start();
+  })
   $rootScope.$on('$routeChangeSuccess',
     function(event, toState, toParams, fromState, fromParams) {
       $timeout(function() {
@@ -36,7 +40,7 @@ angular.module('ricardo', [
           $anchorScroll();
         }
       });
-    });
+  });
 })
 .config(['$routeProvider', function($routeProvider) {
 
@@ -101,6 +105,7 @@ angular.module('ricardo', [
   $routeProvider.otherwise({redirectTo: '/'});
 }])
   .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
+    cfpLoadingBarProvider.includeSpinner = true;
     cfpLoadingBarProvider.includeBar = false;
   }])
   .config(function($translateProvider) {

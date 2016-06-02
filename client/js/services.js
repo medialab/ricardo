@@ -118,9 +118,7 @@ angular.module('ricardo.services', [])
     }
   })
   .factory('apiService', ['$http', '$q', '$rootScope', 'BASE_API_URL', function($http, $q, $rootScope, BASE_API_URL) {
-
    return {
-
      getReportingEntities: function(params){
        var deferred = $q.defer();
        var serviceUrl = '/reporting_entities'
@@ -134,7 +132,6 @@ angular.module('ricardo.services', [])
        }).error(function(){
          deferred.reject("Error 500 : An error occured while fetching data");
        });
-
        return deferred.promise;
      },
      getReportingYears: function(params){
@@ -237,7 +234,6 @@ angular.module('ricardo.services', [])
           params : params,
           cache: true
         }).success(function(data){
-          console.log(data);
          deferred.resolve(data);
        }).error(function(){
          deferred.reject("An error occured while fetching data");
