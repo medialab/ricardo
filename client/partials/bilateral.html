@@ -34,6 +34,20 @@
           <button class="btn btn-default" ng-click="fieldsByDefault()">Set fields by default</button>
       </div>
     </div>
+    <div ng-show="missingBilateral" class="alert">
+      <div class="modal-body" >
+      <h4> {{message}} </h4>
+       <p>
+          There is <strong>no bilateral partner available</strong> in the database for {{entities.sourceEntity.selected.RICname}}
+       </p>
+        <p>
+          Choose another reporting, thank you !
+       </p>
+      </div>
+      <div class="modal-footer">
+          <button class="btn btn-default" ng-click="okBilateral()">Change fields manually</button>
+      </div>
+    </div>
   <div class="row">
     <div class="col-md-12">
     <p class="paragraphPage">
@@ -46,7 +60,7 @@
   {{ 'BILATERAL_1' | translate }}
   <inline-select-country ng-model="entities.sourceEntity.selected" list="reportingEntities" analytics-on="click" analytics-event="Bilateral source" ></inline-select-country>
   {{ 'AND' | translate }}
-  <inline-select-country ng-model="entities.targetEntity.selected" list="reportingEntities" analytics-on="click" analytics-event="Bilateral target" ></inline-select-country>
+  <inline-select-country ng-model="entities.targetEntity.selected" list="partnerEntities" analytics-on="click" analytics-event="Bilateral target" ></inline-select-country>
   - {{ 'FROM' | translate }}
   <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf" ></inline-select-year>
   {{ 'TO' | translate }}
