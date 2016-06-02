@@ -21,12 +21,12 @@ angular.module('ricardo.controllers.bilateral', [])
 
     $scope.okTarget = function () {
       $scope.missingTarget = "0";
-      $scope.partnerEntities=reportingEntities;
+      // $scope.partnerEntities=reportingEntities;
       
     };
     $scope.okBilateral = function () {
       $scope.missingBilateral = "0";
-      
+      $scope.missingTarget = "0";//test on Benin(Dahomey)
     };
 
     $scope.fieldsByDefault = function () {
@@ -215,7 +215,16 @@ angular.module('ricardo.controllers.bilateral', [])
           
             // call function to send data to tableData
             updateDateRange();
-
+            apiService
+              .getFlows({reporting_ids:sourceID})
+              .then(function (result) {
+                $scope.partnerEntities=result.RICentities.partners.filter(function(d){return RICids.indexOf(d.RICid)!==-1});
+                if($scope.partnerEntities.length===0) $scope.missingBilateral="1";
+                // else{
+                //   $scope.entities.targetEntity.selected=$scope.partnerEntities[0]
+                //   init(newValue.RICid, $scope.entities.targetEntity.selected.RICid)
+                // }
+              })
           },function (res){
             if (res[1] === 500)
             {
@@ -226,6 +235,16 @@ angular.module('ricardo.controllers.bilateral', [])
               else {
                 $scope.message = "Missing Target " + $scope.entities.targetEntity.selected.RICname
               }
+              apiService
+              .getFlows({reporting_ids:sourceID})
+              .then(function (result) {
+                $scope.partnerEntities=result.RICentities.partners.filter(function(d){return RICids.indexOf(d.RICid)!==-1});
+                if($scope.partnerEntities.length===0) $scope.missingBilateral="1";
+                // else{
+                //   $scope.entities.targetEntity.selected=$scope.partnerEntities[0]
+                //   init(newValue.RICid, $scope.entities.targetEntity.selected.RICid)
+                // }
+              })
             }
           }
         )
@@ -242,7 +261,9 @@ angular.module('ricardo.controllers.bilateral', [])
         localStorage.removeItem('sourceEntitySelected');
         localStorage.setItem("sourceEntitySelected",JSON.stringify(newValue))
         // init(newValue.RICid, $scope.entities.targetEntity.selected.RICid, $scope.selectedMinDate, $scope.selectedMaxDate);
-        if($scope.entities.targetEntity.selected!==undefined) init(newValue.RICid, $scope.entities.targetEntity.selected.RICid)
+        if($scope.entities.targetEntity.selected!==undefined){
+          init(newValue.RICid, $scope.entities.targetEntity.selected.RICid)
+        } 
         else{
           apiService
             .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
