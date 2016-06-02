@@ -35,12 +35,20 @@ angular.module('ricardo', [
   })
   $rootScope.$on('$routeChangeSuccess',
     function(event, toState, toParams, fromState, fromParams) {
+      cfpLoadingBar.complete();
       $timeout(function() {
         if ($location.hash()) {
           $anchorScroll();
         }
       });
   });
+  // $rootScope.$on('cfpLoadingBar:started', function() {
+  //     console.log('started', Date.now());
+  // });
+  // $rootScope.$on('cfpLoadingBar:completed', function(){
+  //     console.log('completed', Date.now());
+  // });
+    
 })
 .config(['$routeProvider', function($routeProvider) {
 

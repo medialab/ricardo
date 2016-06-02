@@ -217,7 +217,6 @@ angular.module('ricardo.services', [])
           params : params,
           cache: true
         }).success(function(data){
-          console.log(data)
          deferred.resolve(data);
        }).error(function(){
          deferred.reject("An error occured while fetching data");
