@@ -85,10 +85,10 @@ print "exports Access version to csv"
 print "-------------------------------------------------------------------------"
 utils.sqlitedatabase2csv(mdb_sqlite_filename,"out_data/access_version_csvs")
 
-c.execute("ALTER TABLE flow RENAME TO old_flow")
-c.execute("ALTER TABLE currency RENAME TO old_currency")
-c.execute("ALTER TABLE rate RENAME TO old_rate")
-c.execute("ALTER TABLE entity_names_cleaning RENAME TO old_entity_names_cleaning")
+c.execute("ALTER TABLE flows RENAME TO old_flow")
+c.execute("ALTER TABLE currencies RENAME TO old_currency")
+c.execute("ALTER TABLE exchange_rates RENAME TO old_rate")
+c.execute("ALTER TABLE entity_names RENAME TO old_entity_names_cleaning")
 c.execute("ALTER TABLE expimp_spegen RENAME TO `old_Exp-Imp-Standard`")
 c.execute("ALTER TABLE RICentities RENAME TO old_RICentities")
 c.execute("ALTER TABLE RICentities_groups RENAME TO old_RICentities_groups")
