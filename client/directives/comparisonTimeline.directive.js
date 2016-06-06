@@ -50,9 +50,9 @@ angular.module('ricardo.directives.comparisonTimeline', [])
 
         function draw(data){
           diffSource = function(d){
-            if (!isNaN(d.exp) && !isNaN(d.imp) && d.imp !== null && d.exp !== null ) {
+            if (!isNaN(d.exp_mirror) && !isNaN(d.imp) && d.imp !== null && d.exp_mirror !== null ) {
               // return ( d.imp_mirror - d.exp ) / d.exp ;
-               return ( d.imp - d.exp_mirror ) / d.imp  ;
+              return ( d.imp - d.exp_mirror ) / d.imp  ;
             }
           }
 
@@ -61,7 +61,7 @@ angular.module('ricardo.directives.comparisonTimeline', [])
           }
 
           diffTarget = function(d){
-            if (!isNaN(d.exp_mirror) && !isNaN(d.imp_mirror) && d.exp_mirror !== null && d.imp_mirror !== null) {
+            if (!isNaN(d.exp) && !isNaN(d.imp_mirror) && d.exp !== null && d.imp_mirror !== null) {
               // return ( d.imp - d.exp_mirror ) / d.exp_mirror ;
              return ( d.exp-d.imp_mirror ) / d.exp ;
 
@@ -139,8 +139,14 @@ angular.module('ricardo.directives.comparisonTimeline', [])
           var svg = d3.select("#comparison-timeline-container").append("svg")
               .attr("width", width + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+              .append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+          // svg.append("clipPath")
+          //   .attr("id", "clip")
+          //   .append("rect")
+          //   .attr("width", width)
+          //   .attr("height", height);
+          
           data.forEach(function(d){
             d.date = new Date(d.year, 0, 1)
           })
@@ -212,6 +218,9 @@ angular.module('ricardo.directives.comparisonTimeline', [])
             .attr("cy", diffTargetLine.y())
             .attr("r", 1.5)
             .attr("fill","#663333");
+
+          // //add clip
+          // svg.selectAll("path,circle").attr("clip-path", "url(#clip)");
           /*
            * Zero line
            */

@@ -120,6 +120,12 @@ angular.module('ricardo.directives.dualTimeline', [])
               .append("g")
               .attr("class","dualTimeline")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+          // svg.append("clipPath")
+          //   .attr("id", "clip")
+          //   .append("rect")
+          //   .attr("width", width)
+          //   .attr("height", height);
           
           data.forEach(function(d){
             d.date = new Date(d.year, 0, 1)
@@ -162,7 +168,7 @@ angular.module('ricardo.directives.dualTimeline', [])
                         .data(data.filter(function(d,i) {
                           if(d.imp!==null){
                             if (i===0) {
-                              if (data[i+1].imp===null) return d;
+                              if (data[i+1] && data[i+1].imp===null) return d;
                             }
                             else if(i===data.length-1){
                               if (data[i-1].imp===null) return d;
@@ -194,7 +200,7 @@ angular.module('ricardo.directives.dualTimeline', [])
             .data(data.filter(function(d,i) {
               if(d.exp!==null){
                 if (i===0) {
-                  if (data[i+1].exp===null) return d;
+                  if (data[i+1] && data[i+1].exp===null) return d;
                 }
                 else if(i===data.length-1){
                   if (data[i-1].exp===null) return d;
@@ -222,6 +228,8 @@ angular.module('ricardo.directives.dualTimeline', [])
                      .attr("y2",areaExp.y1())
                      .attr("stroke-width",1)
                      .attr("stroke","rgba(230, 230, 230, 0.4)");
+
+          // svg.selectAll("path,circle").attr("clip-path", "url(#clip)");
           /*
            * Add axis to svg
            */
@@ -266,6 +274,7 @@ angular.module('ricardo.directives.dualTimeline', [])
           /*
            * Select only imp & exp data from country selected
            */
+
           var ImpExp = [];
           data.forEach(function (data) {
             if (data.year >= scope.startDate && data.year <= scope.endDate) {
@@ -273,7 +282,6 @@ angular.module('ricardo.directives.dualTimeline', [])
               ImpExp.push({type:"exp", points: data.exp, year: data.year});
             }
           })
-
           voronoi(ImpExp, "points", svg, margin, height, width);
         }
           /*
@@ -285,6 +293,7 @@ angular.module('ricardo.directives.dualTimeline', [])
             .x(function(d) { return x(new Date(d.year, 0, 1)); })
             .y(function(d) { return y(d[yValue]); })
             .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]]);
+            // .clipExtent([[0,0],[width,height]])
 
             var voronoiGroup = svg.select(".voronoi")
 
@@ -297,11 +306,11 @@ angular.module('ricardo.directives.dualTimeline', [])
 
             var voronoiGraph = voronoiGroup.selectAll("path")
                 .data(voronoi(data.filter(function(d){ return d[yValue] !== null})))
-
+            
             voronoiGraph
                   .enter().append("path")
-                  .attr("d", function(data) { return "M" + data.join("L") + "Z"; })
-                  .datum(function(d) { return d.point; })
+                  .attr("d", function(d) { if(d!==undefined) return "M" + d.join("L") + "Z"; })
+                  .datum(function(d) { if(d!==undefined) return d.point; })
                   .on("mouseover", mouseover)
                   .on("mouseout", mouseout);
 

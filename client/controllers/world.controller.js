@@ -234,8 +234,8 @@ angular.module('ricardo.controllers.world', [])
     function initWorldMultiChart(data){
         // console.log(data)
         $scope.flowWorld=d3.nest()
-                              .key(function(d) { return d.partner; })
-                              .entries(data);
+                          .key(function(d) { return d.partner; })
+                          .entries(data);
         //extend missing points with null values
         $scope.flowWorld.forEach(function(d){
             // for (var i = $scope.rawMinDate; i<=$scope.rawMaxDate;i++){
@@ -312,6 +312,7 @@ angular.module('ricardo.controllers.world', [])
 
     function initLinechart(partners, yValue, conversion){
       var linechart_flows=[]
+      $scope.yValue = yValue;
       if (partners.length>0  && conversion === "sterling") {
         partners.forEach( function (d) {
              if (d.type !== "continent" ) {
@@ -331,9 +332,9 @@ angular.module('ricardo.controllers.world', [])
                     d.RICid, yValue, d.color)
                   if(linechartData.length===partners.length) $scope.linechartData=linechartData;
               });
-              $scope.yValue = yValue;
-              $scope.conversion = "sterling";
-              $scope.actualCurrency = "sterling pound";
+              // $scope.yValue = yValue;
+              // $scope.conversion = "sterling";
+              // $scope.actualCurrency = "sterling pound";
             }
             else {
                apiService
@@ -342,7 +343,7 @@ angular.module('ricardo.controllers.world', [])
                   partner_ids:"Worldbestguess",
                   with_sources:1})
                 .then(function (result) {
-                 var yearSelected = [];
+                  var yearSelected = [];
                   // yearSelected = initTabLineChart(result, yearSelected, d.type,
                   //   d.RICname, $scope.selectedMinDate, $scope.selectedMaxDate)
                   yearSelected = initTabLineChart(result, yearSelected, d.type,
@@ -351,9 +352,9 @@ angular.module('ricardo.controllers.world', [])
                     d.RICid, yValue, d.color)
                   if(linechartData.length===partners.length) $scope.linechartData=linechartData;
                });
-              $scope.yValue = yValue;
-              $scope.conversion = "sterling";
-              $scope.actualCurrency = "sterling pound";
+              // $scope.yValue = yValue;
+              // $scope.conversion = "sterling";
+              // $scope.actualCurrency = "sterling pound";
             }
           })
         }
@@ -375,14 +376,13 @@ angular.module('ricardo.controllers.world', [])
 
                   var tab = pct(worldFlows_filtered, yearSelected, yValue, d.color);
                   tab.key = d.RICid;
-                  partnersPct.push(tab);
-                  partnersPct.forEach ( function (d) {
-                    linechartData.push(d);
-                  });
+                  // partnersPct.push(tab);
+                  // partnersPct.forEach ( function (d) {
+                  //   linechartData.push(d);
+                  // });
+                  linechartData.push(tab)
                   if(linechartData.length===partners.length) $scope.linechartData=linechartData;
-                  $scope.yValue = yValue;
-                  $scope.conversion = "value";
-                  $scope.actualCurrency = "percent";
+                  
                });
             }
             else {
@@ -398,16 +398,16 @@ angular.module('ricardo.controllers.world', [])
                   var tab = pct(worldFlows_filtered, yearSelected, yValue, d.color);
                   tab.key = d.RICname;
                   partnersPct.push(tab);
-                  var linechartData = [];
-                  partnersPct.forEach ( function (d) {
-                    linechartData.push(d);
-                  });
+                  // var linechartData = [];
+                  // partnersPct.forEach ( function (d) {
+                  //   linechartData.push(d);
+                  // });
+                  linechartData.push(tab)
                   if(linechartData.length===partners.length) $scope.linechartData=linechartData;
-                  $scope.yValue = yValue;
-                  $scope.conversion = "value";
-                  $scope.actualCurrency = "percent";
+                  // $scope.yValue = yValue;
+                  // $scope.conversion = "value";
+                  // $scope.actualCurrency = "percent";
                 });
-
             }
           })
         }
@@ -439,16 +439,27 @@ angular.module('ricardo.controllers.world', [])
         worldFlowsYearsFormat.forEach(function (d) {
           if (data.year == d.year) // == because it's str vs integer
           {
-            var ratio ;
-            if (data[yValue] === null || data[yValue] === 0)
-              ratio = null;
-            else {
-              ratio = data[yValue] / d[yValue] * 100;
-            }
-            pctArray.push({
-              reporting_id: data.reporting_id,
-              year: data.year, value:ratio
-            });
+            // var ratio ;
+            // if (data[yValue] === null || data[yValue] === 0)
+            //   ratio = null;
+            // else {
+            //   ratio = data[yValue] / d[yValue] * 100;
+            // }
+            // pctArray.push({
+            //   reporting_id: data.reporting_id,
+            //   year: data.year, value:ratio
+            // });
+             pctArray.push({
+                    reporting_id: data.reporting_id,
+                    type: data.type,
+                    partner_id: "Worldbestguess",
+                    year: data.year,
+                    imp:getRatio(data,d,"imp"),
+                    exp:getRatio(data,d,"exp"),
+                    total:getRatio(data,d,"total"),
+                    currency: "percent",
+                    sources: data.sources
+                  });
           }
         })
       })
@@ -458,6 +469,19 @@ angular.module('ricardo.controllers.world', [])
       pctArrayInit.type = "value";
       pctArrayInit.flowType = yValue;
       return pctArrayInit;
+    }
+
+    function getRatio(a,b,yValue){
+      var ratio ;
+      if (a[yValue] === null || a[yValue] === 0
+          || b[yValue] === null || b[yValue] === 0)
+      {
+        ratio = null;
+      }
+      else {
+        ratio = a[yValue] / b[yValue] * 100;
+      }
+      return ratio;
     }
 
     /*
@@ -519,14 +543,14 @@ angular.module('ricardo.controllers.world', [])
       }
     })
 
-    $scope.$watch('reporting', function (newValue, oldValue){
-      if(newValue !== oldValue && newValue){
-        initLinechart($scope.reporting, $scope.linechartFlow.type.value,
-          $scope.linechartCurrency.type.value);
-        updateTableData();
-        //updateDateRange();
-      }
-    }, true)
+    // $scope.$watch('reporting', function (newValue, oldValue){
+    //   if(newValue !== oldValue && newValue){
+    //     initLinechart($scope.reporting, $scope.linechartFlow.type.value,
+    //       $scope.linechartCurrency.type.value);
+    //     updateTableData();
+    //     //updateDateRange();
+    //   }
+    // }, true)
 
     $scope.$watch('linechartData', function (newValue, oldValue){
        if(newValue !== oldValue){
@@ -548,6 +572,7 @@ angular.module('ricardo.controllers.world', [])
 
       initLinechart($scope.reporting, $scope.linechartFlow.type.value,
         $scope.linechartCurrency.type.value);
+      updateTableData();
     }
 
     $scope.removeReporting = function(elm){
@@ -560,6 +585,7 @@ angular.module('ricardo.controllers.world', [])
       }
       initLinechart($scope.reporting, $scope.linechartFlow.type.value,
         $scope.linechartCurrency.type.value);
+      updateTableData();
     }
 
     /*
@@ -581,6 +607,9 @@ angular.module('ricardo.controllers.world', [])
     $scope.changeCurrency = function (currency) {
       initLinechart($scope.reporting, $scope.linechartFlow.type.value, currency.type.value);
       $scope.linechartCurrency = currency;
+      // $scope.conversion = "value";
+      // $scope.actualCurrency = "percent";
+      // $scope.messagePercent= currency.type.value==="value";
     }
 
     $scope.changeFlow = function (flow) {
@@ -609,7 +638,7 @@ angular.module('ricardo.controllers.world', [])
       enableRowSelection: false,
       footerRowHeight: 45,
       columnDefs: WORLD_TABLE_HEADERS,
-      showFilter: true,
+      // showFilter: true,
       sortInfo: {
         fields: ["year", "partner"],
         directions: ["asc"]

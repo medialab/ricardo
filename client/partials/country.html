@@ -102,16 +102,7 @@
 <div class="container">
   <br>
   <br>
-  <h4>  {{ 'PARTNER_HISTO_1' | translate }}
-  <div class="inline-select">
-      <ui-select ng-model="grouped" theme="bootstrap" ng-change="changeGroup(grouped)">
-        <match placeholder="Group by...">{{$select.selected.name.value}}</match>
-        <choices repeat="item in groups | filter: $select.search">
-          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-        </choices>
-      </ui-select>
-  </div>
-     {{ 'PARTNER_HISTO_2' | translate }}
+  <h4>  {{ 'PARTNER_HISTO_1' | translate }} Order by
   <div class="inline-select">
       <ui-select ng-model="ordered" theme="bootstrap" ng-change="changeOrder(ordered)">
       <match placeholder="Order by...">{{$select.selected.name.value}}</match>
@@ -120,16 +111,27 @@
       </choices>
       </ui-select>
   </div>
-     {{ 'PARTNER_HISTO_3' | translate }}
+  <br>
+     <!-- {{ 'PARTNER_HISTO_3' | translate }} -->
+     Filter on 
   <div class="inline-select">
     <ui-select ng-model="filtered" theme="bootstrap" ng-change="changeFilter(filtered)">
-      <match placeholder="Filter by...">{{$select.selected.name.value}}</match>
+      <match placeholder="Filter on...">{{$select.selected.name.value}}</match>
       <choices repeat="item in filters | filter: $select.search">
         <div ng-bind-html="item.name.value | highlight: $select.search"></div>
       </choices>
     </ui-select>
   </div>
-     {{ 'PARTNER_HISTO_4' | translate }}
+  Group by
+  <div class="inline-select">
+      <ui-select ng-model="grouped" theme="bootstrap" ng-change="changeGroup(grouped)">
+        <match placeholder="Group by...">{{$select.selected.name.value}}</match>
+        <choices repeat="item in groups | filter: $select.search">
+          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+        </choices>
+      </ui-select>
+  </div>
+ <!--     {{ 'PARTNER_HISTO_4' | translate }}
   <div class="inline-select">
     <ui-select ng-model="sorted" theme="bootstrap" ng-change="changeSort(sorted)">
       <match placeholder="Sort by...">{{$select.selected.name.value}}</match>
@@ -137,8 +139,7 @@
         <div ng-bind-html="item.name.value | highlight: $select.search"></div>
       </choices>
     </ui-select>
-  </div>
-
+  </div> -->
   </h4>
   <div class="row">
     <div class="col-md-12">
@@ -232,14 +233,32 @@
       <br/>
       <br/>
       <h4 class="titleDualTL">{{ 'LINE_CHART_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'LINE_CHART_2' | translate }}
-      <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
+      <div class="inline-select">
+        <ui-select ng-model="entities.sourceCountryEntity1.selected" theme="bootstrap" ng-change="change(entities.sourceCountryEntity1.selected)">
+          <match placeholder="Entities" ng-style="{color:elm.color}"></match>
+          <choices repeat="item in reportingCountryEntities1 | filter: $select.search">
+            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
+      </div>
+      <div class="inline-select">
+        <ui-select  ng-model="entities.sourceContinentEntity.selected" theme="bootstrap" ng-show="reportingContinentEntities.length" ng-change="changeContinent(entities.sourceContinentEntity.selected)">
+          <match placeholder="Continents"></match>
+          <choices repeat="item in reportingContinentEntities | filter: $select.search">
+            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
+      </div>
+      <div class="inline-select">
+        <ui-select  ng-model="entities.sourceWorldEntity.selected" theme="bootstrap" ng-show="reportingWorldEntities.length" ng-change="changeWorld(entities.sourceWorldEntity.selected)">
+          <match placeholder="World trade"></match>
+          <choices repeat="item in reportingWorldEntities | filter: $select.search">
+            <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+          </choices>
+        </ui-select>
+      </div>
 
-      <span class="close-btn">
-       <i class="fa fa-times-circle"></i>
-      </span>
-      <span ng-if="!$last">, </span>
-      </span>,
-      <br/>
+      </br>
       {{selectedMinDate}} – {{selectedMaxDate}}, in
       <div class="inline-select">
         <ui-select ng-model="linechartCurrency" theme="bootstrap" ng-change="changeCurrency(linechartCurrency)">
@@ -258,20 +277,34 @@
         </choices>
       </ui-select>
     </div>
+    <div class="subtitle">{{'LINE_CHART_SELECT' | translate }} </div></br>
+    <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
+      <span class="close-btn">
+       <i class="fa fa-times-circle"></i>
+      </span>
+      <span ng-if="!$last">, </span>
+      </span>
+<!--     <div>
+      <span class="subtitle">{{ 'LINE_CHART_SELECT' | translate }} </span>
+      <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
+
+      <span class="close-btn">
+       <i class="fa fa-times-circle"></i>
+      </span>
+      <span ng-if="!$last">, </span>
+      </span>
+    </div> -->
       </h4>
         <div ng-show="messagePercent">
-         <p>
-             <a href="/#worldTrade">world sum partners</a>
-             {{entities.sourceEntity.selected.RICname}}
+         <p class="paragraphViz">
+             The percentages are based on<a href="/#worldTrade">world sum partners</a> of {{entities.sourceEntity1.selected.RICname}}
          </p>
         </div>
     </div>
   </div>
-  <div id="select-lineChart">
-    <div>
-      <h4 class="subtitle col-md-2" style="width:190px;">{{ 'LINE_CHART_SELECT' | translate }}</h4>
-    </div>
-  <div class="col-md-9">
+
+<div id="select-lineChart">
+ <!--  <div class="col-md-9">
 
     <div class="inline-select" >
       <ui-select   ng-model="entities.sourceCountryEntity.selected" theme="bootstrap"  ng-change="changeCountry(entities.sourceCountryEntity.selected)">
@@ -318,7 +351,7 @@
       </ui-select>
     </div>
 
-  </div>
+  </div> -->
 
   <div class="row">
     <div class="col-sm-12">

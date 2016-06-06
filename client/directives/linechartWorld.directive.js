@@ -14,7 +14,8 @@ angular.module('ricardo.directives.linechartWorld', [])
         ngData: '=',
         currency: '=',
         startDate: '=',
-        endDate: '='
+        endDate: '=',
+        flowType: '='
       },
       link: function(scope, element, attrs) {
 
@@ -29,6 +30,9 @@ angular.module('ricardo.directives.linechartWorld', [])
             })
         }
 
+        // scope.$watch("flowType",function(newValue,oldValue){
+        //   updateLineChart(newValue)
+        // })
         scope.$watchCollection('[ngData,startDate,endDate]', function(newValue, oldValue) {
           if(newValue[0] && newValue[0].length > 0){
             newValue[0].forEach(function (e) {
@@ -36,12 +40,11 @@ angular.module('ricardo.directives.linechartWorld', [])
                 e.color=scope.reporting.filter(function(r){return r.RICid===e.key})[0]["color"]
             })
             // var yValueSterling;
-            var yValueSelect;
-            yValueSelect = newValue[0][0].flowType
+            yValue = newValue[0][0].flowType
             var minDate=newValue[1]
             var maxDate=newValue[2]
             currency=scope.currency.name.value
-            linechart(newValue[0], yValueSelect, minDate,maxDate);
+            linechart(newValue[0], yValue, minDate,maxDate);
           }
           else{
             d3.select("#linechart-world-container").select("svg").remove()
@@ -64,6 +67,7 @@ angular.module('ricardo.directives.linechartWorld', [])
 
         var y = d3.scale.linear()
               .range([chartHeight, 0]);
+        // var yValue=scope.ngData[0].flowType
         /*
         * Lines
         */
@@ -118,7 +122,7 @@ angular.module('ricardo.directives.linechartWorld', [])
             .attr("dy", -4)
             .attr("font-size", "0.85em");
           }
-
+       
         function linechart(data,yValue,minDate,maxDate){
           var dataFlatten=[];
           data.forEach(function(d){
@@ -154,7 +158,6 @@ angular.module('ricardo.directives.linechartWorld', [])
                 .call(customAxis);
           }
           else{
-
             var chart = d3.select("#linechart-world-container").select('.chart')
             // chart.selectAll(".line")
             //      .attr("d", function(d) { return line(d.values); })
@@ -168,21 +171,27 @@ angular.module('ricardo.directives.linechartWorld', [])
                 .call(yAxis)
                 .call(customAxis);
           }
-          chart.selectAll(".country").remove() 
-            var entities=chart.selectAll(".country")
+
+          // chart.append("clipPath")
+          //   .attr("id", "clip")
+          //   .append("rect")
+          //   .attr("width", width)
+          //   .attr("height", height);
+          chart.selectAll(".country").remove()
+          var entities=chart.selectAll(".country")
                             .data(data)
                             .enter()
                             .append("g")
                             .attr("class","country")
 
-            entities.append("path")
+          entities.append("path")
                     .attr("class","line")
                     .attr("d", function(d) { return line(d.values); })
                     .attr("stroke", function(d,i) { return d["color"]; })
-                    .attr("fill", "none")
+                    .attr("fill","none")
                     .attr("stroke-width", "2px")
 
-            var point=entities.selectAll(".point")
+          var point=entities.selectAll(".point")
                             .data(function(d){
                                   return d.values.filter(function(e,i) {
                                     // return e[yValue];
@@ -208,7 +217,8 @@ angular.module('ricardo.directives.linechartWorld', [])
                             .attr("fill", function() {return d3.select(this.parentNode).datum().color;})
                             .attr("stroke", function() {return d3.select(this.parentNode).datum().color;});
 
-          
+          // //add clip path
+          // chart.selectAll("path,circle").attr("clip-path", "url(#clip)");
 
           // var entities = chart.selectAll(".line")
           //                     .data(data, function(d){return d.key});
@@ -304,7 +314,7 @@ angular.module('ricardo.directives.linechartWorld', [])
               {
                 var colorPoint = colorLine(d.reporting_id);
                 focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
-                if (d.value)
+                if (currency==="Percent")
                   focus.select("text").attr("fill", colorPoint).text(d3.round(d[yValue], 2) + ' %');
                 else
                   focus.select("text").attr("fill", colorPoint).text(format(Math.round(d[yValue])) + ' £');

@@ -60,7 +60,7 @@ angular.module('ricardo.directives.numberFlows', [])
           })//add missing with 0
           return nbFlows.sort(function(a,b){ return d3.ascending(a.key,b.key)})
         }
-        var margin = {top: 20, right: 10, bottom: 20, left: 20 },
+        var margin = {top: 20, right: 20, bottom: 20, left: 20 },
             width = document.querySelector('#number-flows-container').offsetWidth-margin.left-margin.right,
             height=100,
             offsetHeight=10;

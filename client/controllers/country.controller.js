@@ -54,8 +54,10 @@ angular.module('ricardo.controllers.country', [])
       {type: {value: "imp",writable: true},
        name: {value: "Average share on Imports",writable: true}},
       {type: {value: "exp",writable: true},
-       name: {value: "Average share on Exports",writable: true}
-      }];
+       name: {value: "Average share on Exports",writable: true}},
+      {type: {value: "name",writable: true},
+       name: {value: "Name",writable: true}}
+      ];
 
 
     $scope.groups = [
@@ -67,13 +69,13 @@ angular.module('ricardo.controllers.country', [])
     $scope.grouped =  $scope.groups[0];
 
 
-    $scope.sorts = [
-      {type: {value: "name",writable: true},
-       name: {value: "Name",writable: true}},
-      {type: {value: "average",writable: true},
-       name: {value: "Average share",writable: true}
-    }];
-    $scope.sorted = $scope.sorts[1];
+    // $scope.sorts = [
+    //   {type: {value: "name",writable: true},
+    //    name: {value: "Name",writable: true}},
+    //   {type: {value: "average",writable: true},
+    //    name: {value: "Average share",writable: true}
+    // }];
+    // $scope.sorted = $scope.sorts[1];
 
     $scope.linechartCurrency = {}
     $scope.linechartCurrencyChoices = [
@@ -105,15 +107,17 @@ angular.module('ricardo.controllers.country', [])
       sourceColonialEntity : {},
       sourceGeoEntity : {},
       sourceContinentEntity : {},
-      sourceWorldEntity : {}
+      sourceWorldEntity : {},
+      sourceCountryEntity1 : {},
+
     }
 
-    $scope.RICentities = {}
-    $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
-        if(a.RICname < b.RICname) return -1;
-        if(a.RICname > b.RICname) return 1;
-        return 0;
-    })
+    // $scope.RICentities = {}
+    // $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
+    //     if(a.RICname < b.RICname) return -1;
+    //     if(a.RICname > b.RICname) return 1;
+    //     return 0;
+    // })
 
     /*
      * Arrays of entities for linechart
@@ -125,6 +129,7 @@ angular.module('ricardo.controllers.country', [])
     $scope.reportingGeoEntities = [];
     $scope.reportingContinentEntities = [];
     $scope.reportingWorldEntities = [];
+    $scope.reportingCountryEntities1 = [];
 
     /*
      * Linecharts default config
@@ -173,9 +178,9 @@ angular.module('ricardo.controllers.country', [])
     function initTabLineChart(result, yearSelected, type, ric) {
       for (var i = $scope.rawMinDate; i<=$scope.rawMaxDate;i++){
         yearSelected.push({
-          reporting_id: ric,
+          reporting_id:$scope.entities.sourceEntity.selected.RICid,
           type: type,
-          partner_id:"Worldbestguess",
+          partner_id:ric,
           year: i,
           imp: null,
           exp: null,
@@ -210,12 +215,10 @@ angular.module('ricardo.controllers.country', [])
           with_sources:1
         })
         .then(function (data) {
-
           var dates = data.flows.map(function (d) { return d.year})
 
           $scope.selectedMinDate = d3.min(dates);
           $scope.selectedMaxDate = d3.max(dates);
-
           data.flows = data.flows.filter(function (d) { if (d.imp || d.exp !== 0) return d})
           $scope.tableData = data.flows;
 
@@ -234,18 +237,28 @@ angular.module('ricardo.controllers.country', [])
               RICid: d.RICid,
               continent: d.continent }
             })
-          $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
-              if(a.RICname < b.RICname) return -1;
-              if(a.RICname > b.RICname) return 1;
-              return 0;
+          // $scope.RICentitiesDD=[...data.RICentities.partners]
+          $scope.RICentitiesDD=[];
+          data.RICentities.partners.forEach(function(d){
+            $scope.RICentitiesDD.push(d)
+            if($scope.RICentitiesDD[$scope.RICentitiesDD.length-1].RICname.indexOf("World ")!== 0) 
+              $scope.RICentitiesDD[$scope.RICentitiesDD.length-1].RICname=d.RICname+"["+d.type+"]";
           })
+          // $scope.RICentitiesDD.forEach(function(d){
+          //   if(d.RICname.indexOf("World ")!== 0) d.RICname=d.RICname+"["+d.type+"]";
+          // })
+          // $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
+          //     if(a.RICname < b.RICname) return -1;
+          //     if(a.RICname > b.RICname) return 1;
+          //     return 0;
+          // })  
 
           /*
            *  Init all entities by types filters for linechart viz
            */
 
           $scope.reportingCountryEntities = $scope.RICentitiesDD.filter(function(d){
-            return d.type === "country" || d.type === "group"})
+            return d.type === "country"})
           $scope.reportingColonialEntities = $scope.RICentitiesDD.filter(function(d){
             return d.type === "colonial_area"})
           $scope.reportingGeoEntities = $scope.RICentitiesDD.filter(function(d){
@@ -253,6 +266,9 @@ angular.module('ricardo.controllers.country', [])
           $scope.reportingWorldEntities = $scope.RICentitiesDD.filter(function(d){
             return d.type === "geographical_area" && d.RICname.indexOf("World ") === 0})
 
+           $scope.reportingCountryEntities1= $scope.RICentitiesDD.filter(function(d){
+            return d.RICname.indexOf("World ") !== 0})
+           
           /*
            * Special methods for continent
            */
@@ -290,12 +306,12 @@ angular.module('ricardo.controllers.country', [])
           /*
            * Check if dates were in localstorage
            */
-          var minDate = parseInt(localStorage.getItem('selectedMinDate'));
-          var maxDate = parseInt(localStorage.getItem('selectedMaxDate'));
-          $scope.selectedMinDate = minDate ?
-            minDate : Math.max( $scope.selectedMinDate, $scope.rawMinDate );
-          $scope.selectedMaxDate = maxDate ?
-            maxDate : Math.min( $scope.selectedMaxDate, $scope.rawMaxDate );
+          // var minDate = parseInt(localStorage.getItem('selectedMinDate'));
+          // var maxDate = parseInt(localStorage.getItem('selectedMaxDate'));
+          // $scope.selectedMinDate = minDate ?
+          //   minDate : Math.max( $scope.selectedMinDate, $scope.rawMinDate );
+          // $scope.selectedMaxDate = maxDate ?
+          //   maxDate : Math.min( $scope.selectedMaxDate, $scope.rawMaxDate );
 
           $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
           $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
@@ -341,8 +357,8 @@ angular.module('ricardo.controllers.country', [])
                             name: {value:"None",writable: true}};
           $scope.filtered = {type: {value :"all",writable: true},
                             name: {value:"All",writable: true}};
-          $scope.sorted = { type: {value :"average",writable: true},
-                            name: {value:"Average share",writable: true}};
+          // $scope.sorted = { type: {value :"average",writable: true},
+          //                   name: {value:"Average share",writable: true}};
 
           initPartnerHisto($scope.tableData)
 
@@ -370,8 +386,10 @@ angular.module('ricardo.controllers.country', [])
         // update local storage
         localStorage.removeItem('selectedMinDate');
         localStorage.removeItem('selectedMaxDate');
-        localStorage.selectedMinDate = newValue[0];
-        localStorage.selectedMaxDate = newValue[1];
+        localStorage.setItem('selectedMinDate', newValue[0]);
+        localStorage.setItem('selectedMaxDate', newValue[1]);
+        // localStorage.selectedMinDate = newValue[0];
+        // localStorage.selectedMaxDate = newValue[1];
 
         updateDateRange();
         // initLinechart($scope.reporting, $scope.linechartFlow.type.value,
@@ -385,7 +403,7 @@ angular.module('ricardo.controllers.country', [])
       if(newValue !== oldValue && newValue){
         // update local storage
         localStorage.removeItem('sourceEntitySelected');
-        localStorage.sourceEntitySelected = JSON.stringify(newValue);
+        localStorage.setItem("sourceEntitySelected",newValue)
 
         init(newValue.RICid, $scope.currency)
         updateDateRange()
@@ -409,16 +427,29 @@ angular.module('ricardo.controllers.country', [])
 
     function updateTableData(){
       //filter tableData by date
-      $scope.tableDataSources=$scope.tableData.filter(function(d){
+      var tableData=$scope.tableData.filter(function(d){
          return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
       });
 
       var partner_selected=$scope.reporting.map(function(d){return d.RICid})
+      var tableDataSources=tableData;
       if(partner_selected.length>0){
-        $scope.tableDataSources=$scope.tableDataSources.filter(function(d){
-          return partner_selected.indexOf(d.partner_id) > -1;
-        });
+        tableDataSources=[]
+        $scope.reporting.forEach(function(r){
+          if(r.type!=="continent") var dataFiltered=tableData.filter(function(d){ return d.partner_id===r.RICid});
+          else var dataFiltered=tableData.filter(function(d){
+            return $scope.RICentities[""+d.partner_id].continent===r.RICid});
+          tableDataSources=tableDataSources.concat(dataFiltered)
+        })
       }
+      $scope.tableDataSources=tableDataSources;
+      //remove duplicates of array of objects
+
+      // if(partner_selected.length>0){
+      //   $scope.tableDataSources=$scope.tableDataSources.filter(function(d){
+      //     if()return partner_selected.indexOf(d.partner_id) > -1;
+      //   });
+      // }
 
       var missing;
       var allExpNull = $scope.tableDataSources.every(function (d) {
@@ -436,12 +467,12 @@ angular.module('ricardo.controllers.country', [])
         missing = "0";
       }
 
-      var onlyWorld = $scope.tableDataSources.every(function (d) {
-        return d.continent === "World";
-      })
+      // var onlyWorld = $scope.tableDataSources.every(function (d) {
+      //   return d.continent === "World";
+      // })
 
-      if (onlyWorld)
-        missing = "1";
+      // if (onlyWorld)
+      //   missing = "1";
       $scope.missing = missing;
 
       // if ($scope.linechartData) {
@@ -467,6 +498,7 @@ angular.module('ricardo.controllers.country', [])
       $scope.resetDD(elm.type)
       initLinechart($scope.reporting, $scope.linechartFlow.type.value,
         $scope.linechartCurrency.type.value);
+      updateTableData();
     }
 
     /*
@@ -480,6 +512,7 @@ angular.module('ricardo.controllers.country', [])
       d3.select("#linechart-world-container > svg").remove();
       initLinechart($scope.reporting, $scope.linechartFlow.type.value,
         $scope.linechartCurrency.type.value);
+      updateTableData();
     }
 
     /*
@@ -487,13 +520,16 @@ angular.module('ricardo.controllers.country', [])
      */
 
     $scope.resetDD = function(t){
-      if(t === "country"){$scope.entities.sourceCountryEntity.selected = undefined}
-      if(t === "colonial_area"){$scope.entities.sourceColonialEntity.selected = undefined}
-      if(t === "geographical_area"){
-        $scope.entities.sourceGeoEntity.selected = undefined
-        $scope.entities.sourceWorldEntity.selected = undefined
-      }
-      if(t === "continent"){$scope.entities.sourceContinentEntity.selected = undefined}
+      $scope.entities.sourceCountryEntity1.selected = undefined
+      $scope.entities.sourceWorldEntity.selected = undefined
+      $scope.entities.sourceContinentEntity.selected = undefined
+      // if(t === "country"){$scope.entities.sourceCountryEntity.selected = undefined}
+      // if(t === "colonial_area"){$scope.entities.sourceColonialEntity.selected = undefined}
+      // if(t === "geographical_area"){
+      //   $scope.entities.sourceGeoEntity.selected = undefined
+      //   $scope.entities.sourceWorldEntity.selected = undefined
+      // }
+      // if(t === "continent"){$scope.entities.sourceContinentEntity.selected = undefined}
     }
 
 
@@ -517,7 +553,6 @@ angular.module('ricardo.controllers.country', [])
     function initPartnerHisto(data) {
       var data = [];
       var temp = $scope.tableData;
-
       // Select data between date selected
       temp.forEach( function (d) {
         if (d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate) {
@@ -536,7 +571,7 @@ angular.module('ricardo.controllers.country', [])
        */
 
       var partners = d3.nest()
-        .key(function(d){ return d[$scope.grouped.type.value ? "continent" : "partner_id"] })
+        .key(function(d){ return d[$scope.grouped.type.value ? "continent" : "partner_name"] })
         .key(function(d){ return d.year })
         .rollup(countryService.rollupYears)
         .entries(data)
@@ -548,16 +583,14 @@ angular.module('ricardo.controllers.country', [])
         partners = partners.filter(function (d) {
           return d.type === $scope.filtered.type.value
         })
-
       partners = partners.sort(function(a,b){
-        if ($scope.sorted === 'name')
+        if ($scope.ordered.type.value === 'name')
           return d3.ascending(a.key, b.key);
         else {
-          return d3.descending(a["avg_" + $scope.ordered],
-                               b["avg_" + $scope.ordered]);
+          return d3.descending(a["avg_" + $scope.ordered.type.value ],
+                               b["avg_" + $scope.ordered.type.value ]);
         }
       });
-
       $scope.partnersData = partners
     }
 
@@ -572,7 +605,7 @@ angular.module('ricardo.controllers.country', [])
 
       var partners = d3.nest()
         .key(function(d){
-          return d[group.type.value ? "continent" : "partner_id"]
+          return d[group.type.value ? "continent" : "partner_name"]
         })
         .key(function(d){ return d.year })
         .rollup(countryService.rollupYears)
@@ -588,7 +621,7 @@ angular.module('ricardo.controllers.country', [])
         })
 
       partners = partners.sort(function(a,b){
-        if ($scope.sorted.type.value === 'name')
+        if ($scope.ordered.type.value === 'name')
           return d3.ascending(a.key, b.key);
         else {
           return d3.descending(a["avg_" + $scope.ordered.type.value],
@@ -602,51 +635,52 @@ angular.module('ricardo.controllers.country', [])
         $scope.missingPartner = 1;
     }
 
-    $scope.changeSort = function (sort) {
-        $scope.sorted = sort;
-        var data = [];
+    //conflict with changeOrder
+    // $scope.changeSort = function (sort) {
+    //     $scope.sorted = sort;
+    //     var data = [];
 
-        var temp = $scope.tableData;
+    //     var temp = $scope.tableData;
 
-        temp.forEach( function (d) {
-          if (d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate) {
-            data.push(d);
-          }
-        })
-        var indexYears = buildIndexYears(data);
-        $scope.indexYears = indexYears;
+    //     temp.forEach( function (d) {
+    //       if (d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate) {
+    //         data.push(d);
+    //       }
+    //     })
+    //     var indexYears = buildIndexYears(data);
+    //     $scope.indexYears = indexYears;
 
-        data=data.filter(function(p){ return !/^World/.test(p.partner_id)})
+    //     data=data.filter(function(p){ return !/^World/.test(p.partner_id)})
 
-        var partners = d3.nest()
-          .key(function(d){
-            return d[$scope.grouped.type.value ? "continent" : "partner_id"]
-          })
-          .key(function(d){ return d.year })
-          .rollup(countryService.rollupYears)
-          .entries(data)
+    //     var partners = d3.nest()
+    //       .key(function(d){
+    //         return d[$scope.grouped.type.value ? "continent" : "partner_id"]
+    //       })
+    //       .key(function(d){ return d.year })
+    //       .rollup(countryService.rollupYears)
+    //       .entries(data)
 
-        partners = countryService.addTypePartner(partners, data);
-        partners = countryService.valuesToPartners(partners, indexYears);
+    //     partners = countryService.addTypePartner(partners, data);
+    //     partners = countryService.valuesToPartners(partners, indexYears);
 
-        if ($scope.filtered.type.value !== "all")
-          partners = partners.filter(function (d) {
-            return d.type === $scope.filtered.type.value
-          })
+    //     if ($scope.filtered.type.value !== "all")
+    //       partners = partners.filter(function (d) {
+    //         return d.type === $scope.filtered.type.value
+    //       })
 
-        partners = partners.sort(function(a,b){
-          if (sort.type.value === 'name')
-            return d3.ascending(a.key, b.key);
-          else {
-            return d3.descending(a["avg_" + $scope.ordered.type.value],
-                                 b["avg_" + $scope.ordered.type.value]);
-          }
-        });
+    //     partners = partners.sort(function(a,b){
+    //       if (sort.type.value === 'name')
+    //         return d3.ascending(a.key, b.key);
+    //       else {
+    //         return d3.descending(a["avg_" + $scope.ordered.type.value],
+    //                              b["avg_" + $scope.ordered.type.value]);
+    //       }
+    //     });
 
-        $scope.partnersData = partners
-        if (partners.length === 0)
-          $scope.missingPartner = 1;
-    }
+    //     $scope.partnersData = partners
+    //     if (partners.length === 0)
+    //       $scope.missingPartner = 1;
+    // }
 
     $scope.changeOrder = function (order) {
         $scope.ordered = order;
@@ -660,7 +694,7 @@ angular.module('ricardo.controllers.country', [])
 
         var partners = d3.nest()
           .key(function(d){
-            return d[$scope.grouped.type.value ? "continent" : "partner_id"]
+            return d[$scope.grouped.type.value ? "continent" : "partner_name"]
           })
           .key(function(d){ return d.year })
           .rollup(countryService.rollupYears)
@@ -675,7 +709,7 @@ angular.module('ricardo.controllers.country', [])
           })
 
         partners = partners.sort(function(a,b){
-          if ($scope.sorted.type.value === 'name')
+          if ($scope.ordered.type.value === 'name')
             return d3.ascending(a.key, b.key);
           else {
             return d3.descending(a["avg_" + order.type.value],
@@ -699,7 +733,7 @@ angular.module('ricardo.controllers.country', [])
 
         var partners = d3.nest()
           .key(function(d){
-            return d[$scope.grouped.type.value ? "continent" : "partner_id"]
+            return d[$scope.grouped.type.value ? "continent" : "partner_name"]
           })
           .key(function(d){ return d.year })
           .rollup(countryService.rollupYears)
@@ -714,7 +748,7 @@ angular.module('ricardo.controllers.country', [])
           })
 
         partners = partners.sort(function(a,b){
-          if ($scope.sorted.type.value === 'name')
+          if ($scope.ordered.type.value === 'name')
             return d3.ascending(a.key, b.key);
           else {
             return d3.descending(a["avg_" + $scope.ordered.type.value],
@@ -731,13 +765,13 @@ angular.module('ricardo.controllers.country', [])
      *  Linechart triggers
      */
 
-    $scope.$watch('reporting', function (newValue, oldValue){
-      if(newValue !== oldValue && newValue){
-        initLinechart($scope.reporting, $scope.linechartFlow.type.value,
-          $scope.linechartCurrency.type.value);
-        updateTableData()
-      }
-    }, true)
+    // $scope.$watch('reporting', function (newValue, oldValue){
+    //   if(newValue !== oldValue && newValue){
+    //     initLinechart($scope.reporting, $scope.linechartFlow.type.value,
+    //       $scope.linechartCurrency.type.value);
+    //     updateTableData()
+    //   }
+    // }, true)
 
     // $scope.$watch('linechartData', function (newValue, oldValue){
     //    if(newValue !== oldValue){
@@ -745,6 +779,9 @@ angular.module('ricardo.controllers.country', [])
     //   }
     // }, true)
 
+    $scope.change = function (item) {
+      $scope.pushReporting(item)
+    }
     $scope.changeCountry = function (country) {
       $scope.pushReporting(country)
     }
@@ -769,6 +806,7 @@ angular.module('ricardo.controllers.country', [])
       initLinechart($scope.reporting, $scope.linechartFlow.type.value,
         currency.type.value);
       $scope.linechartCurrency = currency;
+      $scope.messagePercent= currency.type.value==="value";
     }
 
     $scope.changeFlow = function (flow) {
@@ -796,6 +834,7 @@ angular.module('ricardo.controllers.country', [])
 
     function initLinechart(partners, yValue, conversion){
         var linechart_flows=[]
+        $scope.yValue = yValue;
         if(partners.length>0 && conversion === "sterling" )
         {
           partners.forEach( function (d) {
@@ -803,26 +842,25 @@ angular.module('ricardo.controllers.country', [])
             apiService
               .getFlows({
                 reporting_ids: $scope.entities.sourceEntity.selected.RICid,
-                partner_ids: d.RICid
+                partner_ids: d.RICid,
+                with_sources:1
               })
               .then(function (result) {
                 var yearSelected = [];
                 // yearSelected = lineChartService.initTabLineChart(result,
                 //   yearSelected, d.type, d.RICid, $scope.selectedMinDate,
                 //   $scope.selectedMaxDate)
-                 yearSelected = initTabLineChart(result, yearSelected, d.type,
+                yearSelected = initTabLineChart(result, yearSelected, d.type,
                     d.RICid)
-
                 var linechartData=initLineChart2(linechart_flows, yearSelected,
                     d.RICid, yValue, d.color)
                 if(linechartData.length===partners.length) $scope.linechartData=linechartData;
              });
             // factorise these lines
-            $scope.yValue = yValue;
-            $scope.linechartCurrency= {
-              type: {value :"sterling",writable: true},
-              name: {value:"Sterling",writable: true}};
-            $scope.messagePercent = 0;
+            // $scope.yValue = yValue;
+            // $scope.linechartCurrency= {
+            //   type: {value :"sterling",writable: true},
+            //   name: {value:"Sterling",writable: true}};
           }
           else {
              apiService
@@ -841,16 +879,17 @@ angular.module('ricardo.controllers.country', [])
                if(linechartData.length===partners.length) $scope.linechartData=linechartData;
 
              });
-            $scope.yValue = yValue;
-            $scope.linechartCurrency = {
-              type: {value :"sterling",writable: true},
-            name: {value:"Sterling",writable: true}};
-            $scope.messagePercent = 0;
+            // $scope.yValue = yValue;
+            // $scope.linechartCurrency = {
+            //   type: {value :"sterling",writable: true},
+            // name: {value:"Sterling",writable: true}};
+            // $scope.messagePercent = 0;
           }
         })
-        }
+    
+      }
 
-        var partnersPct = [];
+        // var partnersPct = [];
         var linechartData=[];
         if (partners.length>0  && conversion === "value")
         {
@@ -859,7 +898,8 @@ angular.module('ricardo.controllers.country', [])
               apiService
                   .getFlows({
                     reporting_ids: $scope.entities.sourceEntity.selected.RICid,
-                    partner_ids:d.RICid
+                    partner_ids:d.RICid,
+                    with_sources:1
                   })
                   .then(function (result) {
                     var yearSelected = [];
@@ -868,23 +908,20 @@ angular.module('ricardo.controllers.country', [])
                     //   $scope.selectedMaxDate)
                     yearSelected = initTabLineChart(result, yearSelected, d.type,
                       d.RICid)
-                    changeInPercent($scope.entities.sourceEntity.selected.RICid,
-                      yearSelected, yValue, d.color, function(tab) {
-
-                    tab.key = d.RICid;
-                    partnersPct.push(tab);
-                    partnersPct.forEach ( function (d) {
-                      linechartData.push(d);
-                    });
+                    changeInPercent($scope.entities.sourceEntity.selected.RICid,yValue,
+                      yearSelected, d.color,function(tab) {
+                      tab.key = d.RICid;
+                      linechartData.push(tab)
+                     
                     if(linechartData.length===partners.length) $scope.linechartData=linechartData;
-
-                    $scope.yValue = yValue;
-                    $scope.linechartCurrency = {
-                      type: {value :"value",writable: true},
-                      name: {value:"Percent",writable: true}
-                    };
-                    $scope.actualCurrency = "percent";
-                    $scope.messagePercent = 1;
+                    // console.log($scope.linechartData)
+                    // $scope.yValue = yValue;
+                    // $scope.linechartCurrency = {
+                    //   type: {value :"value",writable: true},
+                    //   name: {value:"Percent",writable: true}
+                    // };
+                    // $scope.actualCurrency = "percent";
+                    // $scope.messagePercent = 1;
                   });
                 })
             }
@@ -902,32 +939,40 @@ angular.module('ricardo.controllers.country', [])
                     yearSelected = initTabLineChart(result, yearSelected, d.type,
                     d.RICid)
 
-                    changeInPercent($scope.entities.sourceEntity.selected.RICid,
-                      yearSelected, yValue, d.color, function(tab) {
+                    changeInPercent($scope.entities.sourceEntity.selected.RICid,yValue,
+                      yearSelected, d.color, function(tab) {
                     tab.key = d.RICid;
-                    partnersPct.push(tab);
-                    partnersPct.forEach ( function (d) {
-                      linechartData.push(d);
-                    });
+                    linechartData.push(tab)
+                    // partnersPct.push(tab);
+                    // partnersPct.forEach ( function (d) {
+                    //   linechartData.push(d);
+                    // });
                     if(linechartData.length===partners.length) $scope.linechartData=linechartData;
-                    $scope.yValue = yValue;
-                    $scope.linechartCurrency = {
-                      type: {value :"value",writable: true},
-                      name: {value:"Percent",writable: true}};
-                    $scope.actualCurrency = "percent";
-                    $scope.messagePercent = 1;
+                    // $scope.yValue = yValue;
+                    // $scope.linechartCurrency = {
+                    //   type: {value :"value",writable: true},
+                    //   name: {value:"Percent",writable: true}};
+                    // $scope.actualCurrency = "percent";
+                    // $scope.messagePercent = 1;
                 });
               })
             }
           })
+          // $scope.yValue = yValue;
+          // $scope.linechartCurrency = {
+          //   type: {value :"value",writable: true},
+          //   name: {value:"Percent",writable: true}
+          // };
+          // $scope.actualCurrency = "percent";
+          // $scope.messagePercent = 1;
         }
     }
 
-    function changeInPercent(partner_ids, data, yValue, color, callback) {
+    function changeInPercent(reporting_id,yValue,data, color, callback) {
       var percentArrayInit = {};  // object to save pct arrays
         apiService
           .getFlows({
-            reporting_ids: partner_ids,
+            reporting_ids: reporting_id,
             partner_ids:"Worldsumpartners"
           })
           .then(function (result) {
@@ -935,44 +980,42 @@ angular.module('ricardo.controllers.country', [])
             // we could don't need this array if api data have good format
             var worldFlowsYears = result.flows;
 
-            var worldFlowsYearsFormat = [];
-            worldFlowsYears.forEach( function (d) {
-              worldFlowsYearsFormat.push({
-                reporting_id: d.reporting_id,
-                type: null,
-                partner_id: d.partner_id,
-                year: d.year,
-                imp:d.imp,
-                exp:d.exp,
-                total:d.total,
-                currency: "sterling",
-                sources: d.sources
-              });
-            })
+            // var worldFlowsYearsFormat = [];
+            // worldFlowsYears.forEach( function (d) {
+            //   worldFlowsYearsFormat.push({
+            //     reporting_id: d.reporting_id,
+            //     type: null,
+            //     partner_id: partner_id,
+            //     year: d.year,
+            //     imp:d.imp,
+            //     exp:d.exp,
+            //     total:d.total,
+            //     currency: "sterling",
+            //     sources: d.sources
+            //   });
+            // })
 
-
-            worldFlowsYearsFormat = lineChartService.adjustArrayTime(
-              worldFlowsYearsFormat, $scope.selectedMinDate, $scope.selectedMaxDate)
+            // console.log(worldFlowsYears)
+            // worldFlowsYearsFormat = lineChartService.adjustArrayTime(
+            //   worldFlowsYearsFormat, $scope.selectedMinDate, $scope.selectedMaxDate)
 
             // need a new algo to delete two forEach
             var pctArray = [];
             data.forEach( function (data) {
-              worldFlowsYearsFormat.forEach(function (d) {
+              worldFlowsYears.forEach(function (d) {
                 if (data.year == d.year) // == because it's str vs integer
                 {
-                  var ratio ;
-                  if (data[yValue] === null || data[yValue] === 0
-                      || d[yValue] === null || d[yValue] === 0)
-                  {
-                    ratio = null;
-                  }
-                  else {
-                    ratio = data[yValue] / d[yValue] * 100;
-                  }
                   pctArray.push({
                     reporting_id: data.reporting_id,
+                    type: data.type,
+                    partner_id: data.partner_id,
                     year: data.year,
-                    value: ratio});
+                    imp:getRatio(data,d,"imp"),
+                    exp:getRatio(data,d,"exp"),
+                    total:getRatio(data,d,"total"),
+                    currency: "percent",
+                    sources: data.sources
+                  });
                 }
               })
             })
@@ -983,6 +1026,19 @@ angular.module('ricardo.controllers.country', [])
 
             callback(percentArrayInit)
           })
+    }
+
+    function getRatio(a,b,yValue){
+      var ratio ;
+      if (a[yValue] === null || a[yValue] === 0
+          || b[yValue] === null || b[yValue] === 0)
+      {
+        ratio = null;
+      }
+      else {
+        ratio = a[yValue] / b[yValue] * 100;
+      }
+      return ratio;
     }
 
     /*
@@ -1023,7 +1079,7 @@ angular.module('ricardo.controllers.country', [])
       enableRowSelection: false,
       footerRowHeight: 45,
       columnDefs: TABLE_HEADERS,
-      showFilter: true,
+      // showFilter: true,
       sortInfo: {
         fields: ["year", "partner"],
         directions: ["asc"]
