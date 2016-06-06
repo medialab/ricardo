@@ -2,7 +2,7 @@
 import subprocess
 import os
 #ensure dependency to csvkit
-#import csvkit
+import csvkit
 
 import sqlite3
 

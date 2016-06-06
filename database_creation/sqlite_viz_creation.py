@@ -7,6 +7,8 @@ import json
 import itertools
 from csv_unicode import UnicodeReader
 from csv_unicode import UnicodeWriter
+import utils
+import FredericoTena
 
 try :
 	conf=json.load(open("config.json","r"))
@@ -14,8 +16,22 @@ except :
 	print "couldn't load config.json database"
 	exit(1)
 
-conn=sqlite3.connect("out_data/RICardo_visualisation.sqlite")
+try:
+	if os.path.isfile(conf["sqlite_viz"]):
+		os.remove(conf["sqlite_viz"])
+except:
+	print "couldn't delete target sqlite database file"
+	exit(1)
+
+print "building sqlite database from CSV" 
+utils.csv2sqlite("out_data/csv_data/*.csv",conf["sqlite_viz"],conf["sqlite_schema"])
+
+
+conn=sqlite3.connect(conf["sqlite_viz"])
 c=conn.cursor()
+
+print "importing Frederico Tena from csv"
+FredericoTena.import_fredericotena(c)
 
 ################################################################################
 ##			Create table flow_joined
