@@ -237,10 +237,16 @@ angular.module('ricardo.controllers.country', [])
               RICid: d.RICid,
               continent: d.continent }
             })
-          $scope.RICentitiesDD=[...data.RICentities.partners]
-          $scope.RICentitiesDD.forEach(function(d){
-            if(d.RICname.indexOf("World ")!== 0) d.RICname=d.RICname+"["+d.type+"]";
+          // $scope.RICentitiesDD=[...data.RICentities.partners]
+          $scope.RICentitiesDD=[];
+          data.RICentities.partners.forEach(function(d){
+            $scope.RICentitiesDD.push(d)
+            if($scope.RICentitiesDD[$scope.RICentitiesDD.length-1].RICname.indexOf("World ")!== 0) 
+              $scope.RICentitiesDD[$scope.RICentitiesDD.length-1].RICname=d.RICname+"["+d.type+"]";
           })
+          // $scope.RICentitiesDD.forEach(function(d){
+          //   if(d.RICname.indexOf("World ")!== 0) d.RICname=d.RICname+"["+d.type+"]";
+          // })
           // $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
           //     if(a.RICname < b.RICname) return -1;
           //     if(a.RICname > b.RICname) return 1;
@@ -1073,7 +1079,7 @@ angular.module('ricardo.controllers.country', [])
       enableRowSelection: false,
       footerRowHeight: 45,
       columnDefs: TABLE_HEADERS,
-      showFilter: true,
+      // showFilter: true,
       sortInfo: {
         fields: ["year", "partner"],
         directions: ["asc"]
