@@ -201,7 +201,6 @@ ids_to_remove=[]
 rps=[]
 for n,sb,ids,r,p in c :
 	if n==2 :
-		print sb
 		i=sb.split("|").index("S")
 		id=ids.split("|")[i]
 		ids_to_remove.append(id)
@@ -233,7 +232,6 @@ for n, spe_gens, sb, ids, reporting, partner, year, e_i, f in lines :
 	dup_found=True
 	if spe_gens and "Gen" in spe_gens.split("|") and "Spe" in spe_gens.split("|") :
 		spe_indeces=[k for k,v in enumerate(spe_gens.split("|")) if v =="Spe"]
-		print len(spe_indeces)
 		if len(spe_indeces)>1 and sb != None:
 			#if we have more than 1 Spe as dups
 			speNS_indeces=[k for k,v in enumerate(sb.split("|")) if v =="NS" and k in spe_indeces]
@@ -263,9 +261,12 @@ for n, spe_gens, sb, ids, reporting, partner, year, e_i, f in lines :
 	if not dup_found:
 		# flows are dups but not on GEN/SPE distinction or some null values in the groupings
 		gen_remove +=1
-		print gen_remove, ("duplicate found :%s flows for %s,%s,%s,%s,%s,%s"%(n,year,reporting,
-			partner,e_i,spe_gens,sb)).encode("utf8")
+		#print gen_remove, ("duplicate found :%s flows for %s,%s,%s,%s,%s,%s"%(n,year,reporting,
+		#	partner,e_i,spe_gens,sb)).encode("utf8")
 print "-------------------------------------------------------------------------"
+
+if gen_remove>0:
+	print "We found %s duplicate flows but not on GEN/SPE distinction..."%gen_remove
 
 if ids_to_remove:
 	for r, ids in ids_to_remove.iteritems():
@@ -320,7 +321,7 @@ c.execute("""SELECT year, expimp, partner, reporting, partner_slug, reporting_sl
 	WHERE partner LIKE "World%"  """)
 data=list(c)
 data.sort(key=lambda _:(_[3],_[0],_[1]))
-i = 0
+
 world_best_guess_added = 0
 for g,d in itertools.groupby(data,lambda _:(_[3],_[0],_[1])):
 	dd=list(d)
@@ -331,8 +332,7 @@ for g,d in itertools.groupby(data,lambda _:(_[3],_[0],_[1])):
 	if len(world_best_guess)==0:
 		world_best_guess=[sd for sd in dd if sd[4]==u"Worldsumpartners"]
 	if len(world_best_guess)==0:
-		print i, "ARG no best guess world flow found ?"
-		i += 1
+		pass
 	else:
 		world_best_guess=list(world_best_guess[0])
 		world_best_guess[2]=u"World_best_guess"
