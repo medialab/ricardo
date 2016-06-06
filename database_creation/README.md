@@ -9,12 +9,13 @@ sqlite3
 brew install mdbtools
 ```
 
-# Usage
+# Moving Ricardo from Microsoft Access to SQLITE
 ```
 * put the access database in the folder in_data
 * python mdb_to_sqlite.py
 * => output sqlite in the folder out_data
 ```
+# 
 
 # Scripts to export csv files
 ```
@@ -34,7 +35,7 @@ sqlite_viz_creation.py
 ```
 
 # Tests
-The tests check data integrity and delete duplicates information
+The tests check data integrity
 
 # Tools
 * csv_unicode.py to facilitate trad unicode <-> utf8
