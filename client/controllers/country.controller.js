@@ -727,7 +727,7 @@ angular.module('ricardo.controllers.country', [])
 
         var partners = d3.nest()
           .key(function(d){
-            return d[$scope.grouped.type.value ? "continent" : "partner_id"]
+            return d[$scope.grouped.type.value ? "continent" : "partner_name"]
           })
           .key(function(d){ return d.year })
           .rollup(countryService.rollupYears)
