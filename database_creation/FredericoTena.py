@@ -19,8 +19,8 @@ def import_flows(filename,imp_exp,c):
 						continue
 					# remove 0 values
 					if reporting!="year" and flow!=0.0:
-						data=["FREDERICO-TENA",flow,"1000000","sterling pound",int(year),reporting,"World FredericoTena",imp_exp,"total_fredericaotena"]
-						c.execute("INSERT INTO flows (source, flow, unit, currency, year, reporting, partner, export_import, world_trade_type) VALUES (?,?,?,?,?,?,?,?,?)",data)
+						data=["FREDERICO-TENA",flow,"1000000","sterling pound",int(year),reporting,"World FredericoTena",imp_exp,"gen","total_fredericotena"]
+						c.execute("INSERT INTO flows (source, flow, unit, currency, year, reporting, partner, export_import, special_general, world_trade_type) VALUES (?,?,?,?,?,?,?,?,?,?)",data)
 
 
 def import_fredericotena(c):
@@ -61,6 +61,6 @@ def import_fredericotena(c):
 	c.execute("""INSERT OR IGNORE INTO RICentities (RICname,type,continent,slug) VALUES ("World FredericoTena","geographical_area","World", "WorldFredericoTena")""")
 			
 	# read import
-	import_flows(os.path.join(FT_PATH,IMPORTS_CSV),"Imp",c)
+	import_flows(os.path.join(FT_PATH,IMPORTS_CSV),"imp",c)
 	# read export
-	import_flows(os.path.join(FT_PATH,EXPORTS_CSV),"Exp",c)
+	import_flows(os.path.join(FT_PATH,EXPORTS_CSV),"exp",c)
