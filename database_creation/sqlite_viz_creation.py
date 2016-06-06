@@ -12,22 +12,23 @@ import FredericoTena
 
 try :
 	conf=json.load(open("config.json","r"))
+	database_filename=os.path.join('out_data',conf["sqlite_viz"])
 except :
 	print "couldn't load config.json database"
 	exit(1)
 
 try:
-	if os.path.isfile(conf["sqlite_viz"]):
-		os.remove(conf["sqlite_viz"])
+	if os.path.isfile(database_filename):
+		os.remove(database_filename)
 except:
 	print "couldn't delete target sqlite database file"
 	exit(1)
 
 print "building sqlite database from CSV" 
-utils.csv2sqlite("out_data/csv_data/*.csv",conf["sqlite_viz"],conf["sqlite_schema"])
+utils.csv2sqlite("out_data/csv_data/*.csv",database_filename,conf["sqlite_schema"])
 
 
-conn=sqlite3.connect(conf["sqlite_viz"])
+conn=sqlite3.connect(database_filename)
 c=conn.cursor()
 
 print "importing Frederico Tena from csv"
