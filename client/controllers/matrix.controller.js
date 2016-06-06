@@ -108,7 +108,7 @@ angular.module('ricardo.controllers.matrix', [])
           enableRowSelection: false,
           footerRowHeight: 45,
           columnDefs: METADATA_TABLE_HEADERS,
-          showFilter: true,
+          // showFilter: true,
           sortInfo: {
             fields: ["year", "partner"],
             directions: ["asc"]

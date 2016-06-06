@@ -638,7 +638,7 @@ angular.module('ricardo.controllers.world', [])
       enableRowSelection: false,
       footerRowHeight: 45,
       columnDefs: WORLD_TABLE_HEADERS,
-      showFilter: true,
+      // showFilter: true,
       sortInfo: {
         fields: ["year", "partner"],
         directions: ["asc"]
