@@ -120,6 +120,12 @@ angular.module('ricardo.directives.dualTimeline', [])
               .append("g")
               .attr("class","dualTimeline")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+          // svg.append("clipPath")
+          //   .attr("id", "clip")
+          //   .append("rect")
+          //   .attr("width", width)
+          //   .attr("height", height);
           
           data.forEach(function(d){
             d.date = new Date(d.year, 0, 1)
@@ -222,6 +228,8 @@ angular.module('ricardo.directives.dualTimeline', [])
                      .attr("y2",areaExp.y1())
                      .attr("stroke-width",1)
                      .attr("stroke","rgba(230, 230, 230, 0.4)");
+
+          // svg.selectAll("path,circle").attr("clip-path", "url(#clip)");
           /*
            * Add axis to svg
            */
@@ -285,6 +293,7 @@ angular.module('ricardo.directives.dualTimeline', [])
             .x(function(d) { return x(new Date(d.year, 0, 1)); })
             .y(function(d) { return y(d[yValue]); })
             .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]]);
+            // .clipExtent([[0,0],[width,height]])
 
             var voronoiGroup = svg.select(".voronoi")
 

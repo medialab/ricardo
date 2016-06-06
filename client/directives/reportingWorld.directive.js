@@ -108,11 +108,11 @@ angular.module('ricardo.directives.reportingWorld', [])
                     .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        svg.append("clipPath")
-            .attr("id", "clip")
-            .append("rect")
-            .attr("width", width)
-            .attr("height", height);
+        // svg.append("clipPath")
+        //     .attr("id", "clip")
+        //     .append("rect")
+        //     .attr("width", width)
+        //     .attr("height", height);
 
 
         var line = d3.svg.line()
@@ -346,7 +346,9 @@ angular.module('ricardo.directives.reportingWorld', [])
                   // svg.selectAll(".multiple").selectAll("text")
                   //     .transition().duration(duration)
                   //     .style("opacity",1)
-                  // svg.select(".x.axis").call(xAxis);
+                 svg.select(".x.axis")
+                  .transition().duration(duration)
+                  .call(xAxis);
                 }
               }//if multiple layout
 
@@ -483,147 +485,146 @@ angular.module('ricardo.directives.reportingWorld', [])
                           .call(xAxis);
 
                     }
-
              }//if single layout
-                svg.select('.overlay').remove();
-                if (svg.select('.overlay').empty()){
-                  svg.append("rect")
-                    .attr('class', 'overlay')
-                    .attr('width', width)
-                    .attr('height', height)
-                    .attr("fill","none")
-                    .style("pointer-events","all")
-                    .on("mouseover", function(d){
-                      tooltip.transition().style("opacity", .9);
+            svg.select('.overlay').remove();
+              if (svg.select('.overlay').empty()){
+                svg.append("rect")
+                  .attr('class', 'overlay')
+                  .attr('width', width)
+                  .attr('height', height)
+                  .attr("fill","none")
+                  .style("pointer-events","all")
+                  .on("mouseover", function(d){
+                    tooltip.transition().style("opacity", .9);
+                  })
+                  .on("mousemove", function(){
+                    tooltip.style("opacity", .9)
+                    .style("left", d3.event.pageX+20 + "px")
+                    // .style("left", function(){
+                    //   if (d3.event.pageX-margin.left<width/2) return (d3.event.pageX+20)+ "px";
+                    //   else return (d3.event.pageX-220)+ "px"
+                    //   // var tooltip_position=(d3.event.pageX-margin.left)<width/2 ? (d3.event.pageX+20):(d3.event.pageX-220) + "px"
+                    //   // return tooltip_position
+                    // })
+                    // .style("top", (d3.event.pageY+75) + "px")
+                    .style("top", "400px")
+
+                    var mouse = d3.mouse(this),
+                        mouseDate=x.invert(mouse[0]),
+                        mouseYear = mouseDate.getFullYear(),
+                        d0 = new Date(mouseYear,0,1),
+                        d1 = new Date(mouseYear+1,0,1),
+                        d = mouse - d0 > d1 - mouse ? d1 : d0;
+                    // console.log(d)
+                    var selectData=data_flatten.filter(function(e){return e.year===d.getFullYear()})
+
+                    if(selectData.length>0){
+                      selectData.sort(function(a,b){return b.values[yValue]-a.values[yValue] })
+                      tooltip.select(".title").html(
+                          "<h5>"+yName+" in "+d.getFullYear() +"</h5><hr>"
+                      )
+
+                      x_tip.domain([0,d3.max(selectData,function(d){return d.values[yValue]})])
+
+                      // y_tip.domain(v.exp_continent.map(function(d){return d.continent}))
+                      tooltip.select(".tip_group").selectAll("g").remove()
+                      var tip_partner=tooltip.select(".tip_group")
+                             .selectAll(".tip_partner")
+                             .data(selectData)
+                             .enter().append("g")
+                             .attr("class","tip_flow")
+                             .attr("transform",function(d,i){
+                                return "translate(0,"+2*i*(offsetHeight+2)+")"})
+                      tip_partner.append("rect")
+                                 .attr("width",function(d){return d.values[yValue]!==null ? x_tip(d.values[yValue]):0})
+                                 .attr("height",10)
+                                 .attr("fill",function(d){return partnerColors(d.partner)});
+                      tip_partner.append("text")
+                                 .text(function(d){return d.partner})
+                                 .attr("class","partnerLabel")
+                                 .attr("y",-2)
+                                 .attr("fill","#fff")
+                                 .attr("font-size",11)
+                      tip_partner.append("text")
+                                 .text(function(d){
+                                    return d[yValue]!==null ? format(Math.round(d.values[yValue]))+" £" : "N/A";
+                                  })
+                                 .attr("x",function(d){return d.values[yValue]!==null ? x_tip(d.values[yValue])+2: 2})
+                                 .attr("y",9)
+                                 .attr("text-anchor",function(d,i){
+                                   if(i===0 && d.values[yValue]!==null) return "end"
+                                   else if(d.values[yValue]>selectData[0].values[yValue]/2) return "end"
+                                   else return "start"
+                                 })
+                                 .attr("fill","#fff")
+                                 .attr("font-size",12)
+
+                      svg.selectAll(".baseline").selectAll("circle,line")
+                          .filter(function(d){return d[yValue]!==null;})
+                          .style("opacity", function(e) {
+                            return e.year != d.getFullYear() ? 0 : 1;
+                          })
+                    }
+                    //tick highlighting
+                    svg.selectAll(".highlight").remove();
+                    var text = svg.append("text")
+                           .attr("class", "highlight")
+                           .attr("x", x(d))
+                           .attr("y", height+17)
+                           .attr("font-size", "0.85em")
+                           .attr("text-anchor","middle")
+                           .text(d.getFullYear());
+
+                    // Define the gradient
+                    var gradient = svg.append("svg:defs")
+                          .append("svg:linearGradient")
+                          .attr("id", "gradient")
+                          .attr("x1", "0%")
+                          .attr("y1", "100%")
+                          .attr("x2", "100%")
+                          .attr("y2", "100%")
+                          .attr("spreadMethod", "pad");
+
+                      // Define the gradient colors
+                      gradient.append("svg:stop")
+                          .attr("offset", "0%")
+                          .attr("stop-color", "#f5f5f5")
+                          .attr("stop-opacity", 0.1);
+
+                      gradient.append("svg:stop")
+                          .attr("offset", "50%")
+                          .attr("stop-color", "#f5f5f5")
+                          .attr("stop-opacity", 1);
+
+                      gradient.append("svg:stop")
+                          .attr("offset", "100%")
+                          .attr("stop-color", "#f5f5f5")
+                          .attr("stop-opacity", 0.1);
+
+                      // add rect as background to hide date display in
+                      var bbox = text.node().getBBox();
+                      var rect = svg.append("svg:rect")
+                          .attr("class", "highlight")
+                          .attr("x", bbox.x - 50)
+                          .attr("y", bbox.y)
+                          .attr("width", bbox.width + 100)
+                          .attr("height", bbox.height)
+                          .style("fill", 'url(#gradient)')
+                      svg.append("text")
+                           .attr("class", "highlight")
+                           .attr("x", x(d))
+                           .attr("y", height+17)
+                           .attr("font-size", "0.85em")
+                           .attr("text-anchor","middle")
+                           .text(d.getFullYear());
                     })
-                    .on("mousemove", function(){
-                      tooltip.style("opacity", .9)
-                      .style("left", d3.event.pageX+20 + "px")
-                      // .style("left", function(){
-                      //   if (d3.event.pageX-margin.left<width/2) return (d3.event.pageX+20)+ "px";
-                      //   else return (d3.event.pageX-220)+ "px"
-                      //   // var tooltip_position=(d3.event.pageX-margin.left)<width/2 ? (d3.event.pageX+20):(d3.event.pageX-220) + "px"
-                      //   // return tooltip_position
-                      // })
-                      // .style("top", (d3.event.pageY+75) + "px")
-                      .style("top", "400px")
-
-                      var mouse = d3.mouse(this),
-                          mouseDate=x.invert(mouse[0]),
-                          mouseYear = mouseDate.getFullYear(),
-                          d0 = new Date(mouseYear,0,1),
-                          d1 = new Date(mouseYear+1,0,1),
-                          d = mouse - d0 > d1 - mouse ? d1 : d0;
-                      // console.log(d)
-                      var selectData=data_flatten.filter(function(e){return e.year===d.getFullYear()})
-
-                      if(selectData.length>0){
-                        selectData.sort(function(a,b){return b.values[yValue]-a.values[yValue] })
-                        tooltip.select(".title").html(
-                            "<h5>"+yName+" in "+d.getFullYear() +"</h5><hr>"
-                        )
-
-                        x_tip.domain([0,d3.max(selectData,function(d){return d.values[yValue]})])
-
-                        // y_tip.domain(v.exp_continent.map(function(d){return d.continent}))
-                        tooltip.select(".tip_group").selectAll("g").remove()
-                        var tip_partner=tooltip.select(".tip_group")
-                               .selectAll(".tip_partner")
-                               .data(selectData)
-                               .enter().append("g")
-                               .attr("class","tip_flow")
-                               .attr("transform",function(d,i){
-                                  return "translate(0,"+2*i*(offsetHeight+2)+")"})
-                        tip_partner.append("rect")
-                                   .attr("width",function(d){return d.values[yValue]!==null ? x_tip(d.values[yValue]):0})
-                                   .attr("height",10)
-                                   .attr("fill",function(d){return partnerColors(d.partner)});
-                        tip_partner.append("text")
-                                   .text(function(d){return d.partner})
-                                   .attr("class","partnerLabel")
-                                   .attr("y",-2)
-                                   .attr("fill","#fff")
-                                   .attr("font-size",11)
-                        tip_partner.append("text")
-                                   .text(function(d){
-                                      return d[yValue]!==null ? format(Math.round(d.values[yValue]))+" £" : "N/A";
-                                    })
-                                   .attr("x",function(d){return d.values[yValue]!==null ? x_tip(d.values[yValue])+2: 2})
-                                   .attr("y",9)
-                                   .attr("text-anchor",function(d,i){
-                                     if(i===0 && d.values[yValue]!==null) return "end"
-                                     else if(d.values[yValue]>selectData[0].values[yValue]/2) return "end"
-                                     else return "start"
-                                   })
-                                   .attr("fill","#fff")
-                                   .attr("font-size",12)
-
+                    .on("mouseout",function(d){
+                        tooltip.transition().style("opacity", 0);
                         svg.selectAll(".baseline").selectAll("circle,line")
-                            .filter(function(d){return d[yValue]!==null;})
-                            .style("opacity", function(e) {
-                              return e.year != d.getFullYear() ? 0 : 1;
-                            })
-                      }
-                      //tick highlighting
-                      svg.selectAll(".highlight").remove();
-                      var text = svg.append("text")
-                             .attr("class", "highlight")
-                             .attr("x", x(d))
-                             .attr("y", height+17)
-                             .attr("font-size", "0.85em")
-                             .attr("text-anchor","middle")
-                             .text(d.getFullYear());
-
-                      // Define the gradient
-                      var gradient = svg.append("svg:defs")
-                            .append("svg:linearGradient")
-                            .attr("id", "gradient")
-                            .attr("x1", "0%")
-                            .attr("y1", "100%")
-                            .attr("x2", "100%")
-                            .attr("y2", "100%")
-                            .attr("spreadMethod", "pad");
-
-                        // Define the gradient colors
-                        gradient.append("svg:stop")
-                            .attr("offset", "0%")
-                            .attr("stop-color", "#f5f5f5")
-                            .attr("stop-opacity", 0.1);
-
-                        gradient.append("svg:stop")
-                            .attr("offset", "50%")
-                            .attr("stop-color", "#f5f5f5")
-                            .attr("stop-opacity", 1);
-
-                        gradient.append("svg:stop")
-                            .attr("offset", "100%")
-                            .attr("stop-color", "#f5f5f5")
-                            .attr("stop-opacity", 0.1);
-
-                        // add rect as background to hide date display in
-                        var bbox = text.node().getBBox();
-                        var rect = svg.append("svg:rect")
-                            .attr("class", "highlight")
-                            .attr("x", bbox.x - 50)
-                            .attr("y", bbox.y)
-                            .attr("width", bbox.width + 100)
-                            .attr("height", bbox.height)
-                            .style("fill", 'url(#gradient)')
-                        svg.append("text")
-                             .attr("class", "highlight")
-                             .attr("x", x(d))
-                             .attr("y", height+17)
-                             .attr("font-size", "0.85em")
-                             .attr("text-anchor","middle")
-                             .text(d.getFullYear());
-                      })
-                      .on("mouseout",function(d){
-                          tooltip.transition().style("opacity", 0);
-                          svg.selectAll(".baseline").selectAll("circle,line")
-                              .style("opacity",0)
-                          svg.selectAll(".highlight").remove();
-                      });
-                }
+                            .style("opacity",0)
+                        svg.selectAll(".highlight").remove();
+                    });
+              }
         }//end draw function
       }
     }

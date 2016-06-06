@@ -171,6 +171,12 @@ angular.module('ricardo.directives.linechartWorld', [])
                 .call(yAxis)
                 .call(customAxis);
           }
+
+          // chart.append("clipPath")
+          //   .attr("id", "clip")
+          //   .append("rect")
+          //   .attr("width", width)
+          //   .attr("height", height);
           chart.selectAll(".country").remove()
           var entities=chart.selectAll(".country")
                             .data(data)
@@ -211,7 +217,8 @@ angular.module('ricardo.directives.linechartWorld', [])
                             .attr("fill", function() {return d3.select(this.parentNode).datum().color;})
                             .attr("stroke", function() {return d3.select(this.parentNode).datum().color;});
 
-          
+          // //add clip path
+          // chart.selectAll("path,circle").attr("clip-path", "url(#clip)");
 
           // var entities = chart.selectAll(".line")
           //                     .data(data, function(d){return d.key});
