@@ -32,6 +32,6 @@ def csv2sqlite(csv_path, sqlite_filename, sqlite_schema_filename=None):
             c.executescript(schema.read())
         conn.commit()
         conn.close()
-        create_options="--no-inference --no-create"
+        create_options="--no-create"
     commandline="""csvsql --db sqlite:///%s %s --insert %s"""%(sqlite_filename,create_options,csv_path)
     subprocess.call(commandline,shell=True)
