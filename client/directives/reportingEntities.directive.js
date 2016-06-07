@@ -155,10 +155,15 @@ angular.module('ricardo.directives.reportingEntities', [])
          var world_partner_map={
           "World estimated":0,
           "World as reported":1,
-          "World sum partners":2,
-          "World estimated|World as reported":3,
-          "World sum partners|World estimated":3,
-          "World sum partners|World as reported":3
+          "World FredericoTena":2,
+          "World sum partners":3,
+          "World estimated|World as reported":4,
+          "World sum partners|World estimated":4,
+          "World sum partners|World as reported":4,
+          "World as reported|World FredericoTena":4,
+          "World sum partners|World FredericoTena":4,
+          "World estimated|World FredericoTena":4,
+          "World FredericoTena|World as reported":4
         }
         var source_map={
           "primary":0,
@@ -522,7 +527,7 @@ angular.module('ricardo.directives.reportingEntities', [])
             })
             color_domain=sort_color(colorBy,d3.set(color_domain).values())
             if(colorBy==="reference"){
-              categoryColor.domain(color_domain).range(['#393b79', '#bd9e39','#ad494a', '#637939','#637939','#637939'])
+              categoryColor.domain(color_domain).range(['#393b79', '#bd9e39','#ad494a', '#637939','#7b4173'])
             }
             else categoryColor.domain(color_domain).range(['#393b79',  '#bd9e39', '#ad494a',  '#637939', '#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
           }

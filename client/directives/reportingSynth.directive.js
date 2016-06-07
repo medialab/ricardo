@@ -148,8 +148,9 @@ angular.module('ricardo.directives.reportingSynth', [])
         var world_partner_map={
           "World estimated":0,
           "World as reported":1,
-          "World sum partners":2,
-          "Multiple world partners":3
+          "World FredericoTena":2,
+          "World sum partners":3,
+          "Multiple world partners":4
           // "World estimated|World as reported":3,
           // "World sum partners|World estimated":3,
           // "World sum partners|World as reported":3
@@ -317,7 +318,7 @@ angular.module('ricardo.directives.reportingSynth', [])
             scaleColor.domain(color_domain)
           }
           else if(category==="reference"){
-            categoryColor.domain(color_domain).range(['#393b79', '#bd9e39','#ad494a', '#637939','#637939','#637939'])
+            categoryColor.domain(color_domain).range(['#393b79', '#bd9e39','#ad494a', '#637939', '#7b4173'])
           }
           else {
             color_domain=sort_color(category,color_domain)
@@ -464,8 +465,8 @@ angular.module('ricardo.directives.reportingSynth', [])
                 .attr("class", "layer")
                 .style("fill", function(d) { return category==="partner" || category==="mirror_rate"? scaleColor(d.key):categoryColor(d.key) })
           
-          var indexIter=d3.range(0,153).map(function(d){return d*0;});
-          var indexIterH=d3.range(0,153).map(function(d){return d*0;});
+          var indexIter=d3.range(0,154).map(function(d){return d*0;});
+          var indexIterH=d3.range(0,154).map(function(d){return d*0;});
 
           layer.each(function(data,index){
             var e=d3.select(this)
