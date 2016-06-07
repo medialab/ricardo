@@ -31,6 +31,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                "World sum partners":"#526ca9" ,
                "World as reported":"#a67f48",
                "World estimated":"#75792f",
+               "World FredericoTena":"#663333",
         }
         // var partnerColors=d3.scale.category10()
 
@@ -40,7 +41,7 @@ angular.module('ricardo.directives.reportingWorld', [])
 
         var margin = {top: 20, right: 0, bottom: 40, left: 0 },
             width = document.querySelector('#reporting-world-container').offsetWidth-margin.left-margin.right,
-            height=300,
+            height=400,
             offsetHeight=10;
         var bisector = d3.bisector(function(d) {return d.year;}).left;
 
@@ -202,17 +203,17 @@ angular.module('ricardo.directives.reportingWorld', [])
 
           if(layout==="multiple"){
             yAxis.ticks(2)
-            y.range([height/3, margin.top]);
-            area.y0(height/3)
+            y.range([height/4, margin.top]);
+            area.y0(height/4)
                 .y1(function(d) {return y(d[yValue]); });
 
             if (svg.select('g').empty()){
               var multi_g=svg.selectAll(".multiple")
                       .data(data)
                       .enter().append("g")
-                      .attr("height", height/3)
+                      .attr("height", height/4)
                       .attr("width", width)
-                      .attr("transform", function(d, i) { return "translate(0," + ((2-i) * height/3) + ")"; })
+                      .attr("transform", function(d, i) { return "translate(0," + ((3-i) * height/4) + ")"; })
                       .attr("class", "multiple")
 
                   multi_g.each(function(d,i) {
@@ -246,7 +247,7 @@ angular.module('ricardo.directives.reportingWorld', [])
 
                     baselineEnter.append("line")
                           .attr("x1", function(d){return x(new Date(d.year,0,1))})
-                          .attr("y1", height/3)
+                          .attr("y1", height/4)
                           .attr("x2", function(d){return x(new Date(d.year,0,1))})
                           .attr("y2", function(d){return y(d[yValue]);})
                           .attr("stroke","grey")
@@ -297,7 +298,7 @@ angular.module('ricardo.directives.reportingWorld', [])
             else{
                   svg.selectAll(".multiple")
                       .data(data)
-                      .attr("transform", function(d, i) { return "translate(0," + ((2-i) * height/3) + ")"; })
+                      .attr("transform", function(d, i) { return "translate(0," + ((3-i) * height/4) + ")"; })
                       .each(function(d) {
                         var e = d3.select(this);
 
@@ -321,7 +322,7 @@ angular.module('ricardo.directives.reportingWorld', [])
 
                       baselineEnter.append("line")
                           .attr("x1", function(d){return x(new Date(d.year,0,1))})
-                          .attr("y1", height/3)
+                          .attr("y1", height/4)
                           .attr("x2", function(d){return x(new Date(d.year,0,1))})
                           .attr("y2", function(d){return y(d[yValue]);})
                           .attr("stroke","grey")
@@ -385,7 +386,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                           .attr("class","partner")
                           .text(function(d){ return d.key})
                           .attr("text-anchor","start")
-                          .attr("y",height/3-margin.top)
+                          .attr("y",height/4-margin.top)
                           .attr("font-size",15)
                           .style("opacity",0)
 
@@ -474,7 +475,7 @@ angular.module('ricardo.directives.reportingWorld', [])
 
                             e.select(".y.axis")
                               .transition().duration(duration)
-                              .style("opacity", i!=2 ? 0:1)
+                              .style("opacity", i!=3 ? 0:1)
                               .call(yAxis)
                               .call(customAxis)
 

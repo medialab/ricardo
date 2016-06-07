@@ -100,6 +100,8 @@ angular.module('ricardo.controllers.world', [])
        name: {value: "World as reported",writable: true}},
       {type: {value: "Worldsumpartners",writable: true},
        name: {value: "World sum partners",writable: true}},
+        {type: {value: "WorldFredericoTena",writable: true},
+       name: {value: "World FedericoTena",writable: true}},
     ];
 
     $scope.worldPartner = $scope.worldPartnerChoices[0]
