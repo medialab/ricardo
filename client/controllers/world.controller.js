@@ -113,7 +113,6 @@ angular.module('ricardo.controllers.world', [])
         worldFlows_filtered=reportingWorldFlows
                             .filter(function(d){return d.partner===worldPartner.type.value})
         $scope.nbReportings = worldFlows_filtered;
-        
         var worldFlowsYears = d3.nest()
           .key(function (d) { return d.year})
           .entries(worldFlows_filtered);

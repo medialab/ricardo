@@ -82,7 +82,6 @@ angular.module('ricardo.directives.barChart', [])
 
           var endStart = (end-start);
           var barWidth = Math.floor(width / endStart);
-
           // var expNbReportings = data.filter(function (d) { return d.type === "Exp"});
           // var impNbReportings = data.filter(function (d) { return d.type === "Imp"});
 
@@ -131,8 +130,8 @@ angular.module('ricardo.directives.barChart', [])
              svg.selectAll(".bar")
                 .data(data)
                 .transition().duration(500)
-                // .attr("x", function(d) { return x(new Date(d.year, 0, 1)) })
-                // .attr("width", barWidth)
+                .attr("x", function(d) { return x(new Date(d.year, 0, 1)) })
+                .attr("width", barWidth)
                 .attr("y", function(d) { return y(d.nb_reporting); })
                 .attr("height", function(d) { return height - y(d.nb_reporting); })
 
@@ -150,7 +149,6 @@ angular.module('ricardo.directives.barChart', [])
                 .attr("y1", y(100))
                 .attr("y2", y(100))
           }
-
 
           function type(d) {
             d.nb_reporting = +d.nb_reporting;
