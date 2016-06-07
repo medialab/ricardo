@@ -13,7 +13,6 @@ from difflib import SequenceMatcher
 
 def ric_entities_data(ids=[]):
     cursor = get_db().cursor()
-
     where_clause="""WHERE slug in ("%s")"""%("\",\"".join(ids)) if len(ids)>0 else ""
 
     cursor.execute("""SELECT slug,RICname,type,continent
@@ -40,7 +39,7 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
     to_year_clause = """ AND year<%s"""%to_year if to_year!="" else ""
 
     print original_currency
-    flow_field = "Flow*Unit/rate" if not original_currency else "Flow*Unit"
+    flow_field = "Flow*Unit/ifnull(rate,1)" if not original_currency else "Flow*Unit"
     source_field = """,group_concat(Source,"|")""" if with_sources else ""
 
     if group_reporting_by=="":
@@ -48,11 +47,11 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
                       FROM flow_joined
                       where reporting_slug IN ("%s")
                       %s
-                      and  %s is not null
-                      and partner_slug is not "NA"
+                      and flow is not null
+                      and partner_slug is not null
                       GROUP BY reporting,partner,year
                       ORDER BY  year ASC
-                      """%(flow_field, source_field,'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause,flow_field)
+                      """%(flow_field, source_field,'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause)
                 )
     elif group_reporting_by=="continent": # in these 2 usecases, reporting_ids are continents
         if search_by_reporting:  # In this usecase, partner_ids are actually reporting_ids
@@ -60,22 +59,22 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
                       FROM flow_joined
                       WHERE reporting_slug IN ("%s") AND partner_continent IN ("%s")
                       %s
-                      AND ( %s IS NOT null)
-                      and partner_slug is not "NA"
+                      AND ( flow IS NOT null)
+                      and partner_slug is not null
                       GROUP BY partner_continent, reporting_slug, year
                       ORDER BY year ASC
-                      """%(flow_field,source_field,'","'.join(partner_ids),'","'.join(reporting_ids),from_year_clause+to_year_clause,flow_field)
+                      """%(flow_field,source_field,'","'.join(partner_ids),'","'.join(reporting_ids),from_year_clause+to_year_clause)
                 )
         else:
             cursor.execute("""SELECT reporting_continent,partner_slug,partner,year,group_concat(expimp,"|"),group_concat(%s,"|"),currency%s
                       FROM flow_joined
                       where reporting_continent IN ("%s") AND partner_continent NOT IN ("%s")
                       %s
-                      AND ( %s IS NOT null)
-                      and partner_slug is not "NA"
+                      AND ( flow IS NOT null)
+                      and partner_slug is not null
                       GROUP BY reporting_continentt, partner, year
                       ORDER BY year ASC
-                      """%(flow_field,source_field,'","'.join(reporting_ids),'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause,flow_field)
+                      """%(flow_field,source_field,'","'.join(reporting_ids),'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause)
                 )
 
     flows=[]
@@ -168,13 +167,14 @@ def get_world_flows(from_year,to_year):
     from_year_clause = """ AND year>%s"""%from_year if from_year!="" else ""
     to_year_clause = """ AND year<%s"""%to_year if to_year!="" else ""
     # print from_year_clause, to_year_clause
-    cursor.execute("""SELECT SUM(flow*Unit/rate), partner_slug,year, COUNT(*), expimp, Source
+    cursor.execute("""SELECT SUM(flow*Unit/ifnull(rate,1)), partner_slug,year, COUNT(*), expimp, Source
                       FROM flow_joined
                       WHERE (
                        partner_slug like 'Worldestimated'
                        OR partner_slug like 'Worldasreported'
                        OR partner_slug like 'Worldbestguess'
-                       OR partner_slug like 'Worldsumpartners')
+                       OR partner_slug like 'Worldsumpartners'
+                       OR partner_slug like 'WorldFredericoTena')
                       %s
                       GROUP BY year, expimp,partner_slug
                       ORDER BY year ASC
@@ -200,7 +200,7 @@ def get_nb_flows():
     SELECT year , count(*), "bilateral" as partner,expimp
     FROM flow_joined
     WHERE partner_slug not like "World%"
-    AND flow*Unit/rate is not NULL
+    AND flow is not NULL
     GROUP BY year, expimp
     union
     SELECT year , count(*), "world" as partner,expimp
@@ -210,13 +210,13 @@ def get_nb_flows():
     OR partner_slug like 'Worldasreported'
     OR partner_slug like 'Worldasreported2'
     OR partner_slug like 'Worldsumpartners')
-    AND flow*Unit/rate is not NULL
+    AND flow is not NULL
     GROUP BY year,expimp
     UNION
     SELECT year , count(*), "bilateral" as partner,"total" as expimp
     FROM flow_joined
     WHERE partner_slug not like "World%"
-    AND flow*Unit/rate is not NULL
+    AND flow is not NULL
     GROUP BY year
     union
     SELECT year , count(*), "world" as partner,  "total" as expimp
@@ -226,7 +226,7 @@ def get_nb_flows():
     OR partner_slug like 'Worldasreported'
     OR partner_slug like 'Worldasreported2'
     OR partner_slug like 'Worldsumpartners')
-    AND flow*Unit/rate is not NULL
+    AND flow is not NULL
     GROUP BY year
     """)
   json_response=[]
@@ -273,54 +273,55 @@ def get_reportings_available_by_year():
   #                   GROUP BY  reporting_slug, partner,year,expimp) t
   #                   Group by t.reporting_slug, partner,t.year
   #                   """)
-  cursor.execute("""SELECT tot.reporting_id as reporting_id, tot.reporting as reporting, group_concat(tot.flow,"|") as flow,  group_concat(tot.expimp,"|") as expimp,
-                    group_concat(tot.partner,"|") as partner, tot.year as year,
-                    group_concat(tot.type,"|") as sourcetype,  group_concat(tot.source,"|")  as source,count(distinct tot.source) as source_count,
-                    tot.reporting_continent as reporting_continent, tot.reporting_type as reporting_type,"actual" as partnertype,group_concat(mirror_partner,"|") as mirror_partner
-                    from
-                    (SELECT reporting_id, reporting, flow, r.expimp as expimp,
-                    partner as partner, r.year as year, type, source, reporting_continent, reporting_type,(t1.reportings ||"+"|| t1.expimp) as mirror_partner
-                    FROM
-                    (select t.reporting_slug as reporting_id,t.reporting as reporting, sum(t.flow) as flow, t.expimp as expimp, group_concat(t.partner_slug) as partner,
-                    t.year as year, t.reporting_continent as reporting_continent, t.reporting_type as reporting_type,group_concat(distinct t.type) as type,group_concat(distinct t.source)  as source
-                    FROM
-                    (SELECT reporting, reporting_slug, flow*Unit/rate as flow, (replace(partner_slug,",","")||"+"||partner_continent) as partner_slug, year, source, type,reporting_continent,reporting_type, expimp
-                    FROM flow_joined
-                    WHERE partner_slug NOT LIKE 'World%' 
-                    AND flow*Unit/rate is not NULL
-                    AND partner_continent is not NULL
-                    GROUP BY  reporting_slug, partner_slug,year,expimp) t
-                    Group by t.reporting_slug, t.year, t.expimp) r
-                    LEFT JOIN
-                    (SELECT group_concat(distinct replace(reporting_slug,",","")) as reportings,partner_slug,year,expimp
-                    FROM flow_joined
-                    Where flow*Unit/rate is not NULL
-                    GROUP BY  partner_slug, year,expimp) t1
-                    ON r.reporting_id=t1.partner_slug and r.year =t1.year and r.expimp!=t1.expimp) tot
-                    GROUP BY  tot.reporting_id, tot.year
-                    UNION ALL
-                    SELECT reporting_id,reporting as reporting, group_concat(flow,"|") as flow, group_concat(expimp,"|") as expimp, group_concat(partner,"|") as partner,
-                    year,group_concat(type,"|") as type,group_concat(source,"|")as source, count(distinct source)as source_count,
-                    reporting_continent, reporting_type, "world" as partnertype,group_concat(mirror_partner,"|") as mirror_partner
-                    FROM
-                    (SELECT t.reporting_slug as reporting_id, reporting, flow,  t.expimp as expimp,
-                    t.partner as partner, t.year as year, type, source, reporting_continent, reporting_type,(t1.reportings ||"+"|| t1.expimp) as mirror_partner
-                    FROM
-                    (SELECT reporting, reporting_slug, flow*Unit/rate as flow, group_concat(partner,"+") as partner, year,group_concat(source,"+") as source, group_concat(type,"+") as type, reporting_continent,reporting_type, expimp
-                    FROM flow_joined
-                    WHERE flow*Unit/rate is not NULL
-                    AND(partner_slug like 'Worldestimated'
-                    OR partner_slug like 'Worldasreported'
-                    OR partner_slug like 'Worldsumpartners')
-                    GROUP BY  reporting_slug,year,expimp) t
-                    LEFT JOIN
-                    (SELECT group_concat(distinct replace(reporting_slug,",","")) as reportings,partner_slug,year,expimp
-                    FROM flow_joined
-                    Where flow*Unit/rate is not NULL
-                    GROUP BY  partner_slug, year,expimp) t1
-                    ON t.reporting_slug=t1.partner_slug and t.year =t1.year and t.expimp!=t1.expimp)
-                    Group by reporting_id, year
-                    """)
+  # cursor.execute("""SELECT tot.reporting_id as reporting_id, tot.reporting as reporting, group_concat(tot.flow,"|") as flow,  group_concat(tot.expimp,"|") as expimp,
+  #                   group_concat(tot.partner,"|") as partner, tot.year as year,
+  #                   group_concat(tot.type,"|") as sourcetype,  group_concat(tot.source,"|")  as source,count(distinct tot.source) as source_count,
+  #                   tot.reporting_continent as reporting_continent, tot.reporting_type as reporting_type,"actual" as partnertype,group_concat(mirror_partner,"|") as mirror_partner
+  #                   from
+  #                   (SELECT reporting_id, reporting, flow, r.expimp as expimp,
+  #                   partner as partner, r.year as year, type, source, reporting_continent, reporting_type,(t1.reportings ||"+"|| t1.expimp) as mirror_partner
+  #                   FROM
+  #                   (select t.reporting_slug as reporting_id,t.reporting as reporting, sum(t.flow) as flow, t.expimp as expimp, group_concat(t.partner_slug) as partner,
+  #                   t.year as year, t.reporting_continent as reporting_continent, t.reporting_type as reporting_type,group_concat(distinct t.type) as type,group_concat(distinct t.source)  as source
+  #                   FROM
+  #                   (SELECT reporting, reporting_slug, flow*Unit/rate as flow, (replace(partner_slug,",","")||"+"||partner_continent) as partner_slug, year, source, type,reporting_continent,reporting_type, expimp
+  #                   FROM flow_joined
+  #                   WHERE partner_slug NOT LIKE 'World%' 
+  #                   AND flow*Unit/rate is not NULL
+  #                   AND partner_continent is not NULL
+  #                   GROUP BY  reporting_slug, partner_slug,year,expimp) t
+  #                   Group by t.reporting_slug, t.year, t.expimp) r
+  #                   LEFT JOIN
+  #                   (SELECT group_concat(distinct replace(reporting_slug,",","")) as reportings,partner_slug,year,expimp
+  #                   FROM flow_joined
+  #                   Where flow*Unit/rate is not NULL
+  #                   GROUP BY  partner_slug, year,expimp) t1
+  #                   ON r.reporting_id=t1.partner_slug and r.year =t1.year and r.expimp!=t1.expimp) tot
+  #                   GROUP BY  tot.reporting_id, tot.year
+  #                   UNION ALL
+  #                   SELECT reporting_id,reporting as reporting, group_concat(flow,"|") as flow, group_concat(expimp,"|") as expimp, group_concat(partner,"|") as partner,
+  #                   year,group_concat(type,"|") as type,group_concat(source,"|")as source, count(distinct source)as source_count,
+  #                   reporting_continent, reporting_type, "world" as partnertype,group_concat(mirror_partner,"|") as mirror_partner
+  #                   FROM
+  #                   (SELECT t.reporting_slug as reporting_id, reporting, flow,  t.expimp as expimp,
+  #                   t.partner as partner, t.year as year, type, source, reporting_continent, reporting_type,(t1.reportings ||"+"|| t1.expimp) as mirror_partner
+  #                   FROM
+  #                   (SELECT reporting, reporting_slug, flow*Unit/rate as flow, group_concat(partner,"+") as partner, year,group_concat(source,"+") as source, group_concat(type,"+") as type, reporting_continent,reporting_type, expimp
+  #                   FROM flow_joined
+  #                   WHERE flow*Unit/rate is not NULL
+  #                   AND(partner_slug like 'Worldestimated'
+  #                   OR partner_slug like 'Worldasreported'
+  #                   OR partner_slug like 'Worldsumpartners')
+  #                   GROUP BY  reporting_slug,year,expimp) t
+  #                   LEFT JOIN
+  #                   (SELECT group_concat(distinct replace(reporting_slug,",","")) as reportings,partner_slug,year,expimp
+  #                   FROM flow_joined
+  #                   Where flow*Unit/rate is not NULL
+  #                   GROUP BY  partner_slug, year,expimp) t1
+  #                   ON t.reporting_slug=t1.partner_slug and t.year =t1.year and t.expimp!=t1.expimp)
+  #                   Group by reporting_id, year
+  #                   """)
+
         # SELECT reporting_id,reporting as reporting, group_concat(flow,"|") as flow, group_concat(expimp,"|") as expimp, partner,
         #             year,group_concat(type,"|") as type,group_concat(source,"|")as source, count(distinct source)as source_count,
         #             reporting_continent, reporting_type, "world" as partnertype,group_concat(mirror_partner,"|") as mirror_partner
@@ -344,6 +345,7 @@ def get_reportings_available_by_year():
         #             GROUP BY  partner_slug, year,expimp) t1
         #             ON t.reporting_slug=t1.partner_slug and t.year =t1.year and t.expimp!=t1.expimp)
         #             Group by reporting_id,partner, year
+  cursor.execute("""Select * From metadata""")
   json_response=[]
   table = [list(r) for r in cursor]
   for row in table:
@@ -478,13 +480,14 @@ def get_world_available():
                     from
                     (SELECT sum(t.flow) as flow, partner, year, expimp,source
                     from
-                    (SELECT flow*Unit/rate as flow, partner, year, expimp,source
+                    (SELECT flow*Unit/ifnull(rate,1) as flow, partner, year, expimp,source
                     FROM flow_joined
-                    WHERE flow*Unit/rate is not NULL
+                    WHERE flow is not NULL
                     AND(partner_slug like 'Worldbestguess'
                     OR partner_slug like 'Worldestimated'
                     OR partner_slug like 'Worldasreported'
-                    OR partner_slug like 'Worldsumpartners')
+                    OR partner_slug like 'Worldsumpartners'
+                    OR partner_slug like 'WorldFredericoTena')
                     GROUP BY  reporting_slug, partner,year,expimp) t
                     group by partner,year,expimp) tot
                     group by partner,year
@@ -623,14 +626,14 @@ def get_reportings_overview(partner_ids):
 
 def get_nations_network_by_year(year):
   cursor = get_db().cursor()
-  cursor.execute("""SELECT reporting, reporting_slug, partner, partner_slug, (flow*Unit/rate) as flow, expimp,
+  cursor.execute("""SELECT reporting, reporting_slug, partner, partner_slug, (flow*Unit/ifnull(rate,1) as flow, expimp,
                     reporting_continent, partner_continent,reporting_type,partner_type
                     FROM flow_joined
                     WHERE reporting NOT LIKE "Worl%%"
                     AND partner NOT LIKE "Worl%%"
                     AND partner_slug IS NOT "NA"
                     AND partner_slug IS NOT "Unknown"
-                    AND (flow*Unit/rate) != "null"
+                    AND flow is not NULL
                     AND year = %s
                     """%(year)
               )
