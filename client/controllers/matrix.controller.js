@@ -264,7 +264,6 @@ angular.module('ricardo.controllers.matrix', [])
             d.mirror_max=mirror_rateMax[d.year];
             if(mirror_rateMax[d.year]>0 && d.partners_mirror.length>0 && d.partner.length>0)
               d.mirror_rate=(d.partner_intersect.length/d.partner.length) * (d.partner_intersect.length/d.mirror_max);
-              // d.mirror_rate=(d.partner_intersect.length/d.partner.length)
             else d.mirror_rate=0
             
           })
