@@ -34,6 +34,7 @@ def import_correction():
         slugs_to_keep=[]
         for new_slug,lines in itertools.groupby(corrections,sort_newslug):
             correction_lines = list(lines)
+            # keep
             index_to_keep=[i for i,l in enumerate(correction_lines) if l["keep"]=="x"]
             if len(index_to_keep)>1:
                 print "WARNING: multiple keep order for group %s"%new_slug
@@ -47,30 +48,19 @@ def import_correction():
                     psfw.writerows(slugs_to_replace)
                     print "added %s in patch to be removed"%" | ".join(s["Source"] for s in slugs_to_replace)
                 slugs_to_keep.append((slug_to_keep,index_to_keep[0]))
-        
-        # # update values in refine_source_merge
-        # refine_source_merge=[]
-        # print "correcting refine_source_merge.csv with value edited in corrections"
-        # with open("in_data/patchs/refine_source_merge.csv","r") as rsf:
-        #     refine_source_merge=DictReader(rsf)
-        #     headers=refine_source_merge.fieldnames
-        #     refine_source_merge=list(refine_source_merge)
-        # if refine_source_merge!=[]:
-        #     with open("in_data/patchs/refine_source_merge.csv","w") as rsf:
-        #         rsfw=DictWriter(rsf,headers)
-        #         rsfw.writeheader()
-        #         for line in refine_source_merge:
-        #             slug_to_keep=[s for s in slugs_to_keep if s[0]==line["id"]]
-        #             if len(slug_to_keep)>0:
-        #                 l=correction_lines[slug_to_keep[0][1]]
-        #                 l["id"]=l["slug"]
-        #                 del(l["keep"])
-        #                 del(l["slug"])
-        #                 del(l["source_name"])
-        #                 del(l["new_slug"])
-        #                 rsfw.writerow(l)
-        #             else:
-        #                 rsfw.writerow(line)
+            # check if index_to_keep not empty
 
-export_report()
+            
+            # output a SQL script patch
+
+            # by copy_notes lines
+            ## UPDATE ON flows/echange_rates SET notes=%notes% WHERE source=%slug% 
+            ## UPDATE ON sourcse SET notes="" WHERE slug=%slug%
+
+            # by remove notes
+            ## UPDATE ON sourcse SET notes="" WHERE slug=%slug%
+            
+
+
+#export_report()
 #import_correction()
