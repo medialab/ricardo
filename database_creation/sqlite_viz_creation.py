@@ -394,7 +394,7 @@ c.execute("""CREATE TABLE IF NOT EXISTS metadata AS
                     AND(partner_slug like 'Worldestimated'
                     OR partner_slug like 'Worldasreported'
                     OR partner_slug like 'Worldsumpartners'
-                    OR partner_slug like 'WorldFredericoTena')
+                    OR partner_slug like 'WorldFedericoTena')
                     GROUP BY  reporting_slug,year,expimp) t
                     LEFT JOIN
                     (SELECT group_concat(distinct replace(reporting_slug,",","")) as reportings,partner_slug,year,expimp

@@ -32,18 +32,18 @@ angular.module('ricardo.controllers.matrix', [])
       $scope.matrixLayout = $scope.matrixLayoutChoices[0]
 
       $scope.matrixColorChoices = [
-             {type: {value: "reference",writable: true},
-             name: {value: "World Partner",writable: true}},
-             {type: {value: "partner",writable: true},
-             name: {value: "Number of Partners",writable: true}},
-             {type: {value: "mirror_rate",writable: true},
-             name: {value: "Mirror Rate",writable: true}},
-             {type: {value: "sourcetype",writable: true},
+            {type: {value: "sourcetype",writable: true},
              name: {value: "Source Type",writable: true}},
              {type: {value: "type",writable: true},
              name: {value: "Reporting Type",writable: true}},
              {type: {value: "continent",writable: true},
              name: {value: "Reporting Continent",writable: true}},
+             {type: {value: "reference",writable: true},
+             name: {value: "World Partner",writable: true}},
+             {type: {value: "partner",writable: true},
+             name: {value: "Number of Partners",writable: true}},
+             {type: {value: "mirror_rate",writable: true},
+             name: {value: "Mirror Rate",writable: true}}
             ];
 
       $scope.matrixColorBy=$scope.matrixColorChoices[0]

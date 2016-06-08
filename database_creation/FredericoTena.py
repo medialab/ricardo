@@ -19,7 +19,7 @@ def import_flows(filename,imp_exp,c):
 						continue
 					# remove 0 values
 					if reporting!="year" and flow!=0.0:
-						data=["FREDERICO-TENA",flow,"1000000","sterling pound",int(year),reporting,"World FredericoTena",imp_exp,"gen","total_fredericotena"]
+						data=["FREDERICO-TENA",flow,"1000000","sterling pound",int(year),reporting,"World Federico-Tena",imp_exp,"gen","total_federicotena"]
 						c.execute("INSERT INTO flows (source, flow, unit, currency, year, reporting, partner, export_import, special_general, world_trade_type) VALUES (?,?,?,?,?,?,?,?,?,?)",data)
 
 
@@ -57,8 +57,8 @@ def import_fredericotena(c):
 			c.execute("INSERT OR IGNORE INTO entity_names (original_name,RICname) VALUES (?,?) ",(entity["Polity Federico-Tena"],entity["ricname"]))
 
 	# add World Frederico Tena entity
-	c.execute("INSERT OR IGNORE INTO entity_names (original_name,RICname) VALUES (?,?) ",("World FredericoTena","World FredericoTena"))
-	c.execute("""INSERT OR IGNORE INTO RICentities (RICname,type,continent,slug) VALUES ("World FredericoTena","geographical_area","World", "WorldFredericoTena")""")
+	c.execute("INSERT OR IGNORE INTO entity_names (original_name,RICname) VALUES (?,?) ",("World Federico-Tena","World Federico-Tena"))
+	c.execute("""INSERT OR IGNORE INTO RICentities (RICname,type,continent,slug) VALUES ("World Federico-Tena","geographical_area","World", "WorldFedericoTena")""")
 			
 	# read import
 	import_flows(os.path.join(FT_PATH,IMPORTS_CSV),"imp",c)
