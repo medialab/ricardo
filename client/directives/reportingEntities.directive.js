@@ -155,15 +155,15 @@ angular.module('ricardo.directives.reportingEntities', [])
          var world_partner_map={
           "World estimated":0,
           "World as reported":1,
-          "World FredericoTena":2,
+          "World Federico-Tena":2,
           "World sum partners":3,
           "World estimated|World as reported":4,
           "World sum partners|World estimated":4,
           "World sum partners|World as reported":4,
-          "World as reported|World FredericoTena":4,
-          "World sum partners|World FredericoTena":4,
-          "World estimated|World FredericoTena":4,
-          "World FredericoTena|World as reported":4
+          "World as reported|World Federico-Tena":4,
+          "World sum partners|World Federico-Tena":4,
+          "World estimated|World Federico-Tena":4,
+          "World Federico-Tena|World as reported":4
         }
         var source_map={
           "primary":0,

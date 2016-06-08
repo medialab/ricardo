@@ -31,7 +31,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                "World sum partners":"#526ca9" ,
                "World as reported":"#a67f48",
                "World estimated":"#75792f",
-               "World FredericoTena":"#663333",
+               "World Federico-Tena":"#663333",
         }
         // var partnerColors=d3.scale.category10()
 

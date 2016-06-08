@@ -148,7 +148,7 @@ angular.module('ricardo.directives.reportingSynth', [])
         var world_partner_map={
           "World estimated":0,
           "World as reported":1,
-          "World FredericoTena":2,
+          "World Federico-Tena":2,
           "World sum partners":3,
           "Multiple world partners":4
           // "World estimated|World as reported":3,
