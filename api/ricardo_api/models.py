@@ -174,7 +174,7 @@ def get_world_flows(from_year,to_year):
                        OR partner_slug like 'Worldasreported'
                        OR partner_slug like 'Worldbestguess'
                        OR partner_slug like 'Worldsumpartners'
-                       OR partner_slug like 'WorldFredericoTena')
+                       OR partner_slug like 'WorldFedericoTena')
                       %s
                       GROUP BY year, expimp,partner_slug
                       ORDER BY year ASC
@@ -210,7 +210,7 @@ def get_nb_flows():
     OR partner_slug like 'Worldasreported'
     OR partner_slug like 'Worldasreported2'
     OR partner_slug like 'Worldsumpartners'
-    OR partner_slug like 'WorldFredericoTena')
+    OR partner_slug like 'WorldFedericoTena')
     AND flow is not NULL
     GROUP BY year,expimp
     UNION
@@ -227,7 +227,7 @@ def get_nb_flows():
     OR partner_slug like 'Worldasreported'
     OR partner_slug like 'Worldasreported2'
     OR partner_slug like 'Worldsumpartners'
-    OR partner_slug like 'WorldFredericoTena')
+    OR partner_slug like 'WorldFedericoTena')
     AND flow is not NULL
     GROUP BY year
     """)
@@ -411,7 +411,7 @@ def get_reportings_available_by_year():
         elif "World sum partners" in partnerlist:
           partner="World sum partners"
         else:
-          partner="World FredericoTena"
+          partner="World Federico-Tena"
         total_partner.append(partner)
 
         sourcetypelist=row[6].split("|")[i].split("+")
@@ -491,7 +491,7 @@ def get_world_available():
                     OR partner_slug like 'Worldestimated'
                     OR partner_slug like 'Worldasreported'
                     OR partner_slug like 'Worldsumpartners'
-                    OR partner_slug like 'WorldFredericoTena')
+                    OR partner_slug like 'WorldFedericoTena')
                     GROUP BY  reporting_slug, partner,year,expimp) t
                     group by partner,year,expimp) tot
                     group by partner,year
