@@ -381,22 +381,49 @@ c.execute("""INSERT INTO flows(id, source, flow, unit, currency, year, reporting
 print "flows created"
 print "-------------------------------------------------------------------------"
 print "apply sources patch"
-with open('in_data/patchs/patch_sources.csv', 'r') as patch:
+##copy notes to rate,source,flows first
+with open('in_data/patchs/patch_sources_copy.csv', 'r') as patch:
 	patch=UnicodeReader(patch)
-	patch.next()
+	# patch.next()
 	patch = [list(r) for r in patch]
-	
 	patch_number = 0
 	for r in patch:
-		patch_number +=1
-
-		c.execute("""DELETE FROM sources WHERE slug=?""",[r[0]])
-		c.execute("""UPDATE flows set source=? WHERE source=?""",[r[1].strip(), r[0]])
 		if "\n" in r[0]:
 			r[0]=re.sub("\n","\r\n",r[0],re.M)
-		c.execute("""UPDATE exchange_rates set source=? WHERE source=?""",[r[1].strip(), r[0]])
+		c.execute("""UPDATE flows SET notes=? WHERE source=?""",[r[1].strip(), r[0]])
+		c.execute("""UPDATE exchange_rates SET notes=? WHERE source=?""",[r[1].strip(), r[0]])
+		c.execute("""UPDATE sources SET notes=? WHERE slug=?""",[r[1].strip(), r[0]])
+		patch_number +=1
+	print "copy source nodes to flow,exchange_rates,sources patches : ", len(patch)
 
-	print "patch : ", len(patch)
+##remove notes from sources
+
+with open('in_data/patchs/patch_sources_remove.csv', 'r') as patch:
+	patch=UnicodeReader(patch)
+	# patch.next()
+	patch = [list(r) for r in patch]
+	patch_number = 0
+	for r in patch:
+		if "\n" in r[0]:
+			r[0]=re.sub("\n","\r\n",r[0],re.M)
+		c.execute("""UPDATE sources SET notes='' WHERE slug=?""",[r[0]])
+		patch_number +=1
+	print "remove notes from sources patches : ", len(patch)
+
+##replace sources
+with open('in_data/patchs/patch_sources.csv', 'r') as patch:
+	patch=UnicodeReader(patch)
+	# patch.next()
+	patch = [list(r) for r in patch]
+	patch_number = 0
+	for r in patch:
+		if "\n" in r[0]:
+			r[0]=re.sub("\n","\r\n",r[0],re.M)
+		c.execute("""DELETE FROM sources WHERE slug=?""",[r[0]])
+		c.execute("""UPDATE flows set source=? WHERE source=?""",[r[1].strip(), r[0]])
+		c.execute("""UPDATE exchange_rates set source=? WHERE source=?""",[r[1].strip(), r[0]])
+		patch_number +=1
+	print "replace sources patch : ", len(patch)
 
 # c.execute("""SELECT distinct(source) from flows""")
 # table = [list(r) for r in c]

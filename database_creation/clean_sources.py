@@ -52,15 +52,25 @@ def import_correction():
 
             
             # output a SQL script patch
-
             # by copy_notes lines
+            notes_to_copy=[{"Source":line["slug"],"Target":line["notes"]} for line in correction_lines if line["copy_notes_to_rate"]=="x"]
+            # add correction_lines in patch_sources.csv
+            with open("in_data/patchs/patch_sources_copy.csv","a") as psfc:
+                psfcw=DictWriter(psfc,["Source","Target"])
+                psfcw.writerows(notes_to_copy)
+                print "added %s in patch to be copied"%" | ".join(s["Source"] for s in notes_to_copy)
             ## UPDATE ON flows/echange_rates SET notes=%notes% WHERE source=%slug% 
             ## UPDATE ON sourcse SET notes="" WHERE slug=%slug%
-
             # by remove notes
+            notes_to_remove=[{"Source":line["slug"],"Target":line["notes"]} for line in correction_lines if line["remove_notes_from_source"]=="x"]
+            # add correction_lines in patch_sources.csv
+            with open("in_data/patchs/patch_sources_remove.csv","a") as psfr:
+                psfrw=DictWriter(psfr,["Source","Target"])
+                psfrw.writerows(notes_to_remove)
+                print "added %s in patch to be removed"%" | ".join(s["Source"] for s in notes_to_remove)
             ## UPDATE ON sourcse SET notes="" WHERE slug=%slug%
             
 
 
 #export_report()
-#import_correction()
+import_correction()
