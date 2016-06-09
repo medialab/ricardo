@@ -10,8 +10,8 @@ angular.module('ricardo.controllers.world', [])
 
 
     // data process for multilinechart
-    var worldpartnerData=reportingWorldPartner.filter(function(d){return d.partner!=="World_best_guess"})
-    initWorldMultiChart(worldpartnerData)
+    // var worldpartnerData=reportingWorldPartner.filter(function(d){return d.partner!=="World_best_guess"})
+    initWorldMultiChart(reportingWorldPartner)
     
     $scope.worldFlows=reportingWorldFlows;
 

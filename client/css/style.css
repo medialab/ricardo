@@ -716,7 +716,8 @@ h4 {
 .legend .square.worldsum{ background-color: #526ca9; }
 .legend .square.worldreport{ background-color: #a67f48; }
 .legend .square.worldestimate{ background-color: #75792f; }
-.legend .square.worldfederico{ background-color: #663333; }
+.legend .square.worldfederico{ background-color: #7b4173; }
+.legend .square.worldbestguess{ background-color: #663333; }
 .legend .square.world{ background-color: #75792f; }
 .legend .square.bilateral{ background-color: #993333; }
 

@@ -31,7 +31,8 @@ angular.module('ricardo.directives.reportingWorld', [])
                "World sum partners":"#526ca9" ,
                "World as reported":"#a67f48",
                "World estimated":"#75792f",
-               "World Federico-Tena":"#663333",
+               "World Federico-Tena":"#7b4173",
+               "World_best_guess":"#663333",
         }
         // var partnerColors=d3.scale.category10()
 
@@ -41,8 +42,9 @@ angular.module('ricardo.directives.reportingWorld', [])
 
         var margin = {top: 20, right: 0, bottom: 40, left: 0 },
             width = document.querySelector('#reporting-world-container').offsetWidth-margin.left-margin.right,
-            height=400,
-            offsetHeight=10;
+            height=500,
+            offsetHeight=10,
+            partners=5;
         var bisector = d3.bisector(function(d) {return d.year;}).left;
 
         var yValue=scope.flowType.type.value;
@@ -52,6 +54,7 @@ angular.module('ricardo.directives.reportingWorld', [])
         var color = d3.scale.category10();
         var format = d3.format("0,000");
         var duration=300;
+
 
         var x = d3.time.scale()
                   .range([0, width]);
@@ -203,17 +206,17 @@ angular.module('ricardo.directives.reportingWorld', [])
 
           if(layout==="multiple"){
             yAxis.ticks(2)
-            y.range([height/4, margin.top]);
-            area.y0(height/4)
+            y.range([height/partners, margin.top]);
+            area.y0(height/partners)
                 .y1(function(d) {return y(d[yValue]); });
 
             if (svg.select('g').empty()){
               var multi_g=svg.selectAll(".multiple")
                       .data(data)
                       .enter().append("g")
-                      .attr("height", height/4)
+                      .attr("height", height/partners)
                       .attr("width", width)
-                      .attr("transform", function(d, i) { return "translate(0," + ((3-i) * height/4) + ")"; })
+                      .attr("transform", function(d, i) { return "translate(0," + ((partners-1-i) * height/partners) + ")"; })
                       .attr("class", "multiple")
 
                   multi_g.each(function(d,i) {
@@ -247,7 +250,7 @@ angular.module('ricardo.directives.reportingWorld', [])
 
                     baselineEnter.append("line")
                           .attr("x1", function(d){return x(new Date(d.year,0,1))})
-                          .attr("y1", height/4)
+                          .attr("y1", height/partners)
                           .attr("x2", function(d){return x(new Date(d.year,0,1))})
                           .attr("y2", function(d){return y(d[yValue]);})
                           .attr("stroke","grey")
@@ -298,7 +301,7 @@ angular.module('ricardo.directives.reportingWorld', [])
             else{
                   svg.selectAll(".multiple")
                       .data(data)
-                      .attr("transform", function(d, i) { return "translate(0," + ((3-i) * height/4) + ")"; })
+                      .attr("transform", function(d, i) { return "translate(0," + ((partners-1-i) * height/partners) + ")"; })
                       .each(function(d) {
                         var e = d3.select(this);
 
@@ -322,7 +325,7 @@ angular.module('ricardo.directives.reportingWorld', [])
 
                       baselineEnter.append("line")
                           .attr("x1", function(d){return x(new Date(d.year,0,1))})
-                          .attr("y1", height/4)
+                          .attr("y1", height/partners)
                           .attr("x2", function(d){return x(new Date(d.year,0,1))})
                           .attr("y2", function(d){return y(d[yValue]);})
                           .attr("stroke","grey")
@@ -386,7 +389,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                           .attr("class","partner")
                           .text(function(d){ return d.key})
                           .attr("text-anchor","start")
-                          .attr("y",height/4-margin.top)
+                          .attr("y",height/partners-margin.top)
                           .attr("font-size",15)
                           .style("opacity",0)
 
@@ -475,7 +478,7 @@ angular.module('ricardo.directives.reportingWorld', [])
 
                             e.select(".y.axis")
                               .transition().duration(duration)
-                              .style("opacity", i!=3 ? 0:1)
+                              .style("opacity", i!=partners-1 ? 0:1)
                               .call(yAxis)
                               .call(customAxis)
 
