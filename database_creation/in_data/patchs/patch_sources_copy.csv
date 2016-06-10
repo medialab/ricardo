@@ -14,4 +14,8 @@ currency_1 Serbian Dinar = 1 French Franc. Cf. Statesman's Yearbook.,1 Serbian D
 "currency_Schneider et al (1991), vol I, II, London on Madrid, 3 months, pp. 43-46 and parity 1 Peseta=4 reales","London on Madrid, 3 months and parity 1 Peseta=4 reales"
 "currency_Schneider et al (1991), vol I, II, London on Madrid, 3 months, pp. 43-46, and parities: 1 Ecu=10 reales; 1 Peseta=4 reales","London on Madrid, 3 months and parities: 1 Ecu=10 reales; 1 Peseta=4 reales"
 "currency_Schneider et al (1991), vol I, II, London on Madrid, 3 months, pp. 43-46.","London on Madrid, 3 months"
+<<<<<<< HEAD
 "currency_pp. 61-66; London on Lissabon, 60 days (1790-1850), 3 months (1851-1913).","London on Lisbon, 60 jours (1815-1850) and 3 mois (1851-1913)"
+=======
+"currency_pp. 61-66; London on Lissabon, 60 days (1790-1850), 3 months (1851-1913).","London on Lisbon, 60 jours (1815-1850) and 3 mois (1851-1913)"
+>>>>>>> 3c569a79d426fc8b092ff063a3407e608b733da3
