@@ -999,10 +999,9 @@ angular.module('ricardo.directives.reportingEntities', [])
                 else if(colorBy==="mirror_rate") {
                   tooltip.select(".table").style("display","block");
                   tooltip.select(".table").select("table").remove();
-                  tooltip.select(".table").html("<table><tr><td>Number of Partners (A)</td><td style='text-align:right'>"
-                    +v.partner.length+"</td></tr><tr><td>Number of Mirror Partners (B)</td><td style='text-align:right'>"
-                    +v.partner_intersect.length+"</td></tr><tr><td>Max Number of Mirror Partners (M) in "+v.year+"</td><td style='text-align:right'>"
-                    +v.mirror_max+"</td></tr><tr><td>Mirror Rate</td><td style='text-align:right'>"
+                  tooltip.select(".table").html("<table><tr><td>Mirror Flow (A)</td><td style='text-align:right'>"
+                    +d3.round(v.mirror_flow,2)+"</td></tr><tr><td>Flow by World Best Guess (B)</td><td style='text-align:right'>"
+                    +d3.round(v.flow,2)+"</td></tr><tr><td>Mirror Rate</td><td style='text-align:right'>"
                     +d3.round(v.mirror_rate,2)+"</td></tr></table>")
                 }
             }
