@@ -511,8 +511,8 @@ angular.module('ricardo.directives.reportingEntities', [])
           else if(colorBy==="mirror_rate"){
             // var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[colorBy]})});
             // var threshold_out=[0,10,50,100,max]
-            var threshold_in=[0.01,0.5]
-            var threshold_color=["#daafaf","#cc6666","#993333"]
+            var threshold_in=[0.01,0.5,1]
+            var threshold_color=["#daafaf","#cc6666","#993333","#663333"]
 
             scaleColor=d3.scale.threshold()
                             .domain(threshold_in)

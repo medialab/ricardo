@@ -143,7 +143,8 @@ angular.module('ricardo.directives.reportingSynth', [])
         var mirror_map={
           0:"0",
           0.5:"0 - 0.5",
-          1:"0.5 - 1"
+          1:"0.5 - 1",
+          2:"> 1"
         }
         var world_partner_map={
           "World estimated":0,
@@ -209,8 +210,8 @@ angular.module('ricardo.directives.reportingSynth', [])
 
           }
           else if(curveBy==="mirror_rate"){
-            var threshold_out=[0,0.5,1]
-            var threshold_in=[0.01,0.5]
+            var threshold_out=[0,0.5,1,2]
+            var threshold_in=[0.01,0.5,1]
             data=data.filter(function(d){return d[curveBy]!==undefined})
           }
 
