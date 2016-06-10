@@ -141,6 +141,7 @@ angular.module('ricardo.controllers.country', [])
     $scope.linechartFlow = {type: {value: "total", writable: true},
                             name: {value: "Total", writable: true}};
 
+    $scope.view="country"
     $scope.missingData = [];
     /*
      * Trigger to show or hide data table
