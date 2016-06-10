@@ -75,12 +75,12 @@
 	"METADATA_NBFLOW_INTRO":"This graph presents the total number of flows registered each year by differentiating world/bilateral trade flows (recall: 'world trade flows' for 'partner entity = world').",
 	"METADATA_MATRIX_TITLE": "Reporting entities table ",
 	"METADATA_MATRIX_INTRO": "This graph provides detailed information for each reporting entity/year.",
-	"METADATA_MATRIX_INTRO_0": "it specifies what type of 'World' is used to calculate the World best guess for this reporting/year.",
-	"METADATA_MATRIX_INTRO_1": "total number of partners by reporting/year distributed by continent.",
-	"METADATA_MATRIX_INTRO_2": "proportion of partners for which mirror flows can be estimated. It is calculated by",
-	"METADATA_MATRIX_INTRO_3": "three types of sources are differentiated in the database. Primary sources are compilations of customs returns published by national agencies. Secondary sources include international compilations of trade primary sources or national compilations of national statistics that include foreign trade statistics (mainly statistical yearbooks). ‘Estimation’ sources are works that only provide country’s total trade. Thus, ‘estimation’ for a reporting/year means that only total trade data are available in the database.",
-	"METADATA_MATRIX_INTRO_4": "a reporting entity can be a country, a city/part of, a colonial area, or a group.",
-	"METADATA_MATRIX_INTRO_5": "Africa, America, Asia, Europe, Oceania, World. When the ‘Reporting type’ is a group of countries from different continents, the designated continent is ‘World’.",
+	"METADATA_MATRIX_INTRO_3": "it specifies what type of 'World' is used to calculate the World best guess for this reporting/year.",
+	"METADATA_MATRIX_INTRO_4": "total number of partners by reporting/year distributed by continent.",
+	"METADATA_MATRIX_INTRO_5": "proportion of partners for which mirror flows can be estimated. It is calculated by",
+	"METADATA_MATRIX_INTRO_0": "three types of sources are differentiated in the database. Primary sources are compilations of customs returns published by national agencies. Secondary sources include international compilations of trade primary sources or national compilations of national statistics that include foreign trade statistics (mainly statistical yearbooks). ‘Estimation’ sources are works that only provide country’s total trade. Thus, ‘estimation’ for a reporting/year means that only total trade data are available in the database.",
+	"METADATA_MATRIX_INTRO_1": "a reporting entity can be a country, a city/part of, a colonial area, or a group.",
+	"METADATA_MATRIX_INTRO_2": "Africa, America, Asia, Europe, Oceania, World. When the ‘Reporting type’ is a group of countries from different continents, the designated continent is ‘World’.",
 	"METADATA_MATRIX_CTL1": "Order by ",
 	"METADATA_MATRIX_CTL2": "Color by "
 }
