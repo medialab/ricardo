@@ -176,7 +176,9 @@ angular.module('ricardo.directives.reportingSynth', [])
            "America":1,
            "Africa":2,
            "Asia":3,
-           "Oceania":4
+           "Oceania":4,
+           "World":5,
+           "?":6
         }
         function sort_color(colorBy,color_domain){
           switch(colorBy){

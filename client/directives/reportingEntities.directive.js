@@ -187,11 +187,12 @@ angular.module('ricardo.directives.reportingEntities', [])
            "Asia":3,
            "Oceania":4,
            "World":5,
-           "Pacific":6,
-           "Mediterranean":7,
-           "Baltic":8,
-           "Antarctic":9,
-           "Atlantic Ocean":10
+           "?":6
+           // "Pacific":6,
+           // "Mediterranean":7,
+           // "Baltic":8,
+           // "Antarctic":9,
+           // "Atlantic Ocean":10
         }
         var continentColors = {
           "Europe":"#bf6969",

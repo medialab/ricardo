@@ -19,7 +19,7 @@ def import_flows(filename,imp_exp,c):
 						continue
 					# remove 0 values
 					if reporting!="year" and flow!=0.0:
-						data=["FREDERICO-TENA",flow,"1000000","sterling pound",int(year),reporting,"World Federico-Tena",imp_exp,"gen","total_federicotena"]
+						data=["FEDERICO-TENA",flow,"1000000","sterling pound",int(year),reporting,"World Federico-Tena",imp_exp,"gen","total_federicotena"]
 						c.execute("INSERT INTO flows (source, flow, unit, currency, year, reporting, partner, export_import, special_general, world_trade_type) VALUES (?,?,?,?,?,?,?,?,?,?)",data)
 
 
@@ -31,7 +31,7 @@ def import_fredericotena(c):
 
 
 	# create source done
-	source_id="FREDERICO-TENA"
+	source_id="FEDERICO-TENA"
 	source_authors="Federico G. & A. Tena-Junguito"
 	source_type="estimation"
 	source_edition_year="2016"

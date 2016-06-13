@@ -156,6 +156,9 @@ angular.module('ricardo.controllers.matrix', [])
         //data manipulation
         $scope.rawMinDate = d3.min(data, function(d) { return +d.year; })
         $scope.rawMaxDate = d3.max(data, function(d) { return +d.year; })
+        data.forEach(function(d){
+          if(d.type.split(" ").length===2) d.type=d.type.split(" ").join("_")
+        })
         var flow=data.filter(function(d){return d.expimp===$scope.chartFlow.type.value});
         var actualData=flow.filter(function(d){return d.partnertype==="actual"})
         var worldData=flow.filter(function(d){return d.partnertype==="world"})

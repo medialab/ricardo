@@ -8,7 +8,7 @@ import itertools
 from csv_unicode import UnicodeReader
 from csv_unicode import UnicodeWriter
 import utils
-import FredericoTena
+import FedericoTena
 
 try :
 	conf=json.load(open("config.json","r"))
@@ -32,7 +32,7 @@ conn=sqlite3.connect(database_filename)
 c=conn.cursor()
 
 print "importing Frederico Tena from csv"
-FredericoTena.import_fredericotena(c)
+FedericoTena.import_fredericotena(c)
 
 ################################################################################
 ##			Create table flow_joined
@@ -366,10 +366,11 @@ c.execute("""CREATE TABLE IF NOT EXISTS metadata AS
 				(select t.reporting_slug as reporting_id,t.reporting as reporting, sum(t.flow) as flow, t.expimp as expimp, group_concat(t.partner_slug) as partner,
 				t.year as year, t.reporting_continent as reporting_continent, t.reporting_type as reporting_type,group_concat(distinct t.type) as type,group_concat(distinct t.source)  as source
 				FROM
-				(SELECT reporting, reporting_slug, flow*Unit/ifnull(rate,1) as flow, (replace(partner_slug,",","")||"+"||partner_continent) as partner_slug, year, source, type,reporting_continent,reporting_type, expimp
+				(SELECT reporting, reporting_slug, flow*Unit/ifnull(rate,1) as flow, (replace(partner_slug,",","")||"+"||partner_continent) as partner_slug, year, source, type,reporting_continent,lower(reporting_type) as reporting_type, expimp
 				FROM flow_joined
 				WHERE partner_slug NOT LIKE 'World%' 
 				AND flow*Unit/rate is not NULL
+				AND reporting_slug is not NULL
 				AND partner_continent is not NULL
 				GROUP BY  reporting_slug, partner_slug,year,expimp) t
 				Group by t.reporting_slug, t.year, t.expimp) r
@@ -386,11 +387,12 @@ c.execute("""CREATE TABLE IF NOT EXISTS metadata AS
 				reporting_continent, reporting_type, "world" as partnertype,group_concat(mirror_partner,"|") as mirror_partner
 				FROM
 				(SELECT t.reporting_slug as reporting_id, reporting, flow,  t.expimp as expimp,
-				t.partner as partner, t.year as year, type, source, reporting_continent, reporting_type,(t1.reportings ||"+"|| t1.expimp) as mirror_partner
+				t.partner as partner, t.year as year, type, source, reporting_continent,reporting_type,(t1.reportings ||"+"|| t1.expimp) as mirror_partner
 				FROM
-				(SELECT reporting, reporting_slug, flow*Unit/ifnull(rate,1) as flow, group_concat(partner,"+") as partner, year,group_concat(source,"+") as source, group_concat(type,"+") as type, reporting_continent,reporting_type, expimp
+				(SELECT reporting, reporting_slug, flow*Unit/ifnull(rate,1) as flow, group_concat(partner,"+") as partner, year,group_concat(source,"+") as source, group_concat(type,"+") as type, reporting_continent,lower(reporting_type) as reporting_type, expimp
 				FROM flow_joined
 				WHERE flow is not NULL
+				AND reporting_slug is not NULL
 				AND(partner_slug like 'Worldestimated'
 				OR partner_slug like 'Worldasreported'
 				OR partner_slug like 'Worldsumpartners'
