@@ -30,7 +30,6 @@ angular.module('ricardo.directives.linechartWorld', [])
               chart.selectAll("div#missingDataLineChart").remove();
             })
         }
-
         // scope.$watch("flowType",function(newValue,oldValue){
         //   updateLineChart(newValue)
         // })

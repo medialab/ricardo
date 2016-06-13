@@ -210,6 +210,7 @@ angular.module('ricardo.controllers.country', [])
      * Calling the API to init country selection
      */
     function init(sourceID, currency) {
+      d3.select("#linechart-world-container > svg").remove();
       apiService
         .getFlows({
           reporting_ids: sourceID,
@@ -405,9 +406,10 @@ angular.module('ricardo.controllers.country', [])
         // update local storage
         localStorage.removeItem('sourceEntitySelected');
         localStorage.setItem("sourceEntitySelected",newValue)
-
         init(newValue.RICid, $scope.currency)
         updateDateRange()
+        //clear linechartworld
+        $scope.linechartData=[]
       }
     })
 
@@ -779,7 +781,10 @@ angular.module('ricardo.controllers.country', [])
     //       updateTableData();
     //   }
     // }, true)
-
+    // $scope.changeReporting = function () {
+    //   d3.select("#linechart-world-container > svg").remove();
+    //   // console.log("clear")
+    // }
     $scope.change = function (item) {
       $scope.pushReporting(item)
     }
