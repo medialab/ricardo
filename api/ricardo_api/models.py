@@ -638,7 +638,7 @@ def get_reportings_overview(partner_ids):
 
 def get_nations_network_by_year(year):
   cursor = get_db().cursor()
-  cursor.execute("""SELECT reporting, reporting_slug, partner, partner_slug, (flow*Unit/ifnull(rate,1) as flow, expimp,
+  cursor.execute("""SELECT reporting, reporting_slug, partner, partner_slug, flow*Unit/ifnull(rate,1) as flow, expimp,
                     reporting_continent, partner_continent,reporting_type,partner_type
                     FROM flow_joined
                     WHERE reporting NOT LIKE "Worl%%"
@@ -648,7 +648,7 @@ def get_nations_network_by_year(year):
                     AND flow is not NULL
                     AND year = %s
                     """%(year)
-              )
+                )
 
   table = [list(r) for r in cursor]
 
