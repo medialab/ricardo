@@ -187,11 +187,12 @@ angular.module('ricardo.directives.reportingEntities', [])
            "Asia":3,
            "Oceania":4,
            "World":5,
-           "Pacific":6,
-           "Mediterranean":7,
-           "Baltic":8,
-           "Antarctic":9,
-           "Atlantic Ocean":10
+           "?":6
+           // "Pacific":6,
+           // "Mediterranean":7,
+           // "Baltic":8,
+           // "Antarctic":9,
+           // "Atlantic Ocean":10
         }
         var continentColors = {
           "Europe":"#bf6969",
@@ -511,8 +512,8 @@ angular.module('ricardo.directives.reportingEntities', [])
           else if(colorBy==="mirror_rate"){
             // var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[colorBy]})});
             // var threshold_out=[0,10,50,100,max]
-            var threshold_in=[0.01,0.5]
-            var threshold_color=["#daafaf","#cc6666","#993333"]
+            var threshold_in=[0.01,0.5,1]
+            var threshold_color=["#daafaf","#cc6666","#993333","#663333"]
 
             scaleColor=d3.scale.threshold()
                             .domain(threshold_in)
@@ -999,10 +1000,9 @@ angular.module('ricardo.directives.reportingEntities', [])
                 else if(colorBy==="mirror_rate") {
                   tooltip.select(".table").style("display","block");
                   tooltip.select(".table").select("table").remove();
-                  tooltip.select(".table").html("<table><tr><td>Number of Partners (A)</td><td style='text-align:right'>"
-                    +v.partner.length+"</td></tr><tr><td>Number of Mirror Partners (B)</td><td style='text-align:right'>"
-                    +v.partner_intersect.length+"</td></tr><tr><td>Max Number of Mirror Partners (M) in "+v.year+"</td><td style='text-align:right'>"
-                    +v.mirror_max+"</td></tr><tr><td>Mirror Rate</td><td style='text-align:right'>"
+                  tooltip.select(".table").html("<table><tr><td>Mirror Flow</td><td style='text-align:right'>"
+                    +d3.round(v.mirror_flow,2)+"</td></tr><tr><td>World Best Guess Flow</td><td style='text-align:right'>"
+                    +d3.round(v.flow,2)+"</td></tr><tr><td>Mirror Rate</td><td style='text-align:right'>"
                     +d3.round(v.mirror_rate,2)+"</td></tr></table>")
                 }
             }

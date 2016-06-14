@@ -347,16 +347,24 @@ def get_reportings_available_by_year():
         #             GROUP BY  partner_slug, year,expimp) t1
         #             ON t.reporting_slug=t1.partner_slug and t.year =t1.year and t.expimp!=t1.expimp)
         #             Group by reporting_id,partner, year
-  cursor.execute("""Select * From metadata""")
+  cursor.execute("""Select metadata.*, b.flow as best_flow
+                    From metadata
+                    Left outer Join
+                    (SELECT reporting_slug, group_concat(flow*Unit/ifnull(rate,1),"|")  as flow, group_concat(expimp,"|") as expimp,year
+                    from flow_joined
+                    where reporting_slug is not null
+                    and partner_slug is "Worldbestguess"
+                    group by reporting_slug,year) b
+                    on metadata.reporting_id=b.reporting_slug and metadata.year=b.year""")
   json_response=[]
   table = [list(r) for r in cursor]
   for row in table:
-    total=0
+    best_total=0
     if row[11]=="actual":
       total_partner=[]
       total_partner_mirror=[]
       for i in range(len(row[3].split("|"))):
-        total+=float(row[2].split("|")[i])
+        best_total+=float(row[13].split("|")[i])
         total_partner+=row[4].split("|")[i].split(",")
         if row[12] is not None and len(row[12].split("|"))==len(row[3].split("|")):
           partner_mirror=row[12].split("|")[i].split("+")[0].split(",")
@@ -369,7 +377,7 @@ def get_reportings_available_by_year():
         json_response.append({
           "reporting_id": row[0],
           "reporting": row[1],
-          "flow": float(row[2].split("|")[i]),
+          "flow": float(row[13].split("|")[i]),
           "expimp":row[3].split("|")[i],
           "partners":row[4].split("|")[i].split(","),
           "year":row[5],
@@ -384,7 +392,7 @@ def get_reportings_available_by_year():
       json_response.append({
           "reporting_id": row[0],
           "reporting": row[1],
-          "flow": total,
+          "flow": best_total,
           "expimp":"total",
           "partners":list(set(total_partner)),
           "year":row[5],
@@ -402,7 +410,7 @@ def get_reportings_available_by_year():
       total_sourcetypelist=[]
       total_partner_mirror=[]
       for i in range(len(row[3].split("|"))):
-        total+=float(row[2].split("|")[i])
+        best_total+=float(row[2].split("|")[i])
         partnerlist=row[4].split("|")[i].split("+")
         if "World estimated" in partnerlist:
           partner="World estimated"
@@ -462,7 +470,7 @@ def get_reportings_available_by_year():
       json_response.append({
           "reporting_id": row[0],
           "reporting": row[1],
-          "flow": total,
+          "flow": best_total,
           "expimp":"total",
           "partner":[],
           "reference":("|").join(list(set(total_partner))),
@@ -630,7 +638,7 @@ def get_reportings_overview(partner_ids):
 
 def get_nations_network_by_year(year):
   cursor = get_db().cursor()
-  cursor.execute("""SELECT reporting, reporting_slug, partner, partner_slug, (flow*Unit/ifnull(rate,1) as flow, expimp,
+  cursor.execute("""SELECT reporting, reporting_slug, partner, partner_slug, flow*Unit/ifnull(rate,1) as flow, expimp,
                     reporting_continent, partner_continent,reporting_type,partner_type
                     FROM flow_joined
                     WHERE reporting NOT LIKE "Worl%%"
@@ -640,7 +648,7 @@ def get_nations_network_by_year(year):
                     AND flow is not NULL
                     AND year = %s
                     """%(year)
-              )
+                )
 
   table = [list(r) for r in cursor]
 

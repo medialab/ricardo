@@ -156,6 +156,9 @@ angular.module('ricardo.controllers.matrix', [])
         //data manipulation
         $scope.rawMinDate = d3.min(data, function(d) { return +d.year; })
         $scope.rawMaxDate = d3.max(data, function(d) { return +d.year; })
+        data.forEach(function(d){
+          if(d.type.split(" ").length===2) d.type=d.type.split(" ").join("_")
+        })
         var flow=data.filter(function(d){return d.expimp===$scope.chartFlow.type.value});
         var actualData=flow.filter(function(d){return d.partnertype==="actual"})
         var worldData=flow.filter(function(d){return d.partnertype==="world"})
@@ -236,37 +239,39 @@ angular.module('ricardo.controllers.matrix', [])
               else flowEntities_uniq.push(v.values[0])
             })
           })
-
           flowEntities_uniq.forEach(function(d){
             if(d.partners_mirror.length>0 && d.partner.length>0 ){
               // d.partner_mirror=d.partners_mirror.split(",")
               d.partner_mirror=d.partners_mirror
-              d.partner_intersect = d.partner.filter(function(value) {
-                                     return d.partner_mirror.indexOf(value) > -1;
+              d.partner_intersect = d.partner_mirror.filter(function(value) {
+                                     return d.partner.indexOf(value.split("-")[0]) > -1;
                                  });
-              // d.mirror_rate=d.partner_intersect.length/d.partner.length
+              if(d.partner_intersect.length>0) d.mirror_flow=d3.sum(d.partner_intersect,function(p){return p.split("-")[1]})
+              else d.mirror_flow=0  
+              d.mirror_rate=d.mirror_flow/d.flow
             }
             else {
               d.partner_mirror=[]
               d.partner_intersect=[]
-              // d.mirror_rate=0
+              d.mirror_flow=0
+              d.mirror_rate=0
             }
           })
-          var mirror_rateMax=d3.nest()
-                               .key(function(d){return d.year})
-                               .rollup(function(d){
-                                  return d3.max(d,function(g){
-                                    return g.partner_intersect.length
-                                  })
-                                })
-                               .map(flowEntities_uniq)
-          flowEntities_uniq.forEach(function(d){
-            d.mirror_max=mirror_rateMax[d.year];
-            if(mirror_rateMax[d.year]>0 && d.partners_mirror.length>0 && d.partner.length>0)
-              d.mirror_rate=(d.partner_intersect.length/d.partner.length) * (d.partner_intersect.length/d.mirror_max);
-            else d.mirror_rate=0
+          // var mirror_rateMax=d3.nest()
+          //                      .key(function(d){return d.year})
+          //                      .rollup(function(d){
+          //                         return d3.max(d,function(g){
+          //                           return g.partner_intersect.length
+          //                         })
+          //                       })
+          //                      .map(flowEntities_uniq)
+          // flowEntities_uniq.forEach(function(d){
+          //   d.mirror_max=mirror_rateMax[d.year];
+          //   if(mirror_rateMax[d.year]>0 && d.partners_mirror.length>0 && d.partner.length>0)
+          //     d.mirror_rate=(d.partner_intersect.length/d.partner.length) * (d.partner_intersect.length/d.mirror_max);
+          //   else d.mirror_rate=0
             
-          })
+          // })
           $scope.flow=flowEntities_uniq
           $scope.flowEntities=d3.nest()
               .key(function(d) { return d.reporting;})

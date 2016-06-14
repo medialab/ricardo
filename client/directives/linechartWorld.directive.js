@@ -15,7 +15,8 @@ angular.module('ricardo.directives.linechartWorld', [])
         currency: '=',
         startDate: '=',
         endDate: '=',
-        flowType: '='
+        flowType: '=',
+        view:"="
       },
       link: function(scope, element, attrs) {
 
@@ -29,7 +30,6 @@ angular.module('ricardo.directives.linechartWorld', [])
               chart.selectAll("div#missingDataLineChart").remove();
             })
         }
-
         // scope.$watch("flowType",function(newValue,oldValue){
         //   updateLineChart(newValue)
         // })
@@ -238,6 +238,25 @@ angular.module('ricardo.directives.linechartWorld', [])
           // entities.exit().remove()
           
           /*
+           * Mouse interactions
+           */
+
+          var focus = chart.select(".focus")
+
+          if(focus.empty()){
+            focus = chart.append("g")
+                .attr("transform", "translate(-100,-100)")
+                .attr("class", "focus");
+            }
+
+          focus.append("circle")
+            .attr("r", 3)
+            .attr("pointer-events","none");
+
+          focus.append("text")
+            .attr("y", -10)
+            .attr("pointer-events","none");
+          /*
            * Voronoi
            */
 
@@ -269,32 +288,12 @@ angular.module('ricardo.directives.linechartWorld', [])
           voronoiGraph
             .enter().append("path")
             .attr("d", function(d) {
-              if (d !== null) return "M" + d.join("L") + "Z"; })
-            .datum(function(d) {return d.point ; })
+              if (d !== undefined) return "M" + d.join("L") + "Z"; })
+            .datum(function(d) {if(d !== undefined) return d.point ; })
             .on("mouseover", mouseover)
             .on("mouseout", mouseout);
 
           voronoiGraph.exit().remove()
-
-          /*
-           * Mouse interactions
-           */
-
-          var focus = chart.select(".focus")
-
-          if(focus.empty()){
-            focus = chart.append("g")
-                .attr("transform", "translate(-100,-100)")
-                .attr("class", "focus");
-            }
-
-          focus.append("circle")
-            .attr("r", 3)
-            .attr("pointer-events","none");
-
-          focus.append("text")
-            .attr("y", -10)
-            .attr("pointer-events","none");
 
 
           var format = d3.format("0,000");
@@ -302,8 +301,7 @@ angular.module('ricardo.directives.linechartWorld', [])
           function colorLine(country) {
             var color;
             data.forEach(function (d) {
-              if (d.key === country)
-                color = d.color;
+              if (d.key === country) color = d.color;
             })
             return color;
           }
@@ -312,7 +310,7 @@ angular.module('ricardo.directives.linechartWorld', [])
             if (d !== undefined) {
               if(d[yValue]!==null && d[yValue]!==undefined)
               {
-                var colorPoint = colorLine(d.reporting_id);
+                var colorPoint =scope.view==="world" ? colorLine(d.reporting_id):colorLine(d.partner_id);
                 focus.attr("transform", "translate(" + x(new Date(d.year, 0, 1)) + "," + y(d[yValue]) + ")");
                 if (currency==="Percent")
                   focus.select("text").attr("fill", colorPoint).text(d3.round(d[yValue], 2) + ' %');
