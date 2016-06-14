@@ -7,7 +7,7 @@ def export_report():
 
     new_slug=lambda line:"_".join(_ for _ in [line["acronym"],line["country"],line["dates"],line["edition_date"],line["volume"],line["pages"]] if _ !="")
 
-    with open("out_data/sources/sources.csv","r") as f:
+    with open("out_data/csv_data/sources.csv","r") as f:
         sources=DictReader(f)
         for s in sources:
             ns=new_slug(s)
@@ -72,5 +72,5 @@ def import_correction():
             
 
 
-#export_report()
-import_correction()
+export_report()
+#import_correction()
