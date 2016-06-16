@@ -143,8 +143,8 @@ angular.module('ricardo.directives.reportingSynth', [])
         var mirror_map={
           0:"0",
           0.5:"0 - 0.5",
-          1:"0.5 - 1",
-          2:"> 1"
+          1:"0.5 - 1"
+          // 2:"> 1"
         }
         var world_partner_map={
           "World estimated":0,
@@ -160,10 +160,7 @@ angular.module('ricardo.directives.reportingSynth', [])
           "primary":0,
           "secondary":1,
           "estimation":2,
-          "OUPS":3,
-          "Tableau général commerce France":4,
-          "estimation|primary":5,
-          "estimation|secondary":6
+          "FedericoTena":3
         }
         var type_map={
           "country":0,
@@ -212,8 +209,8 @@ angular.module('ricardo.directives.reportingSynth', [])
 
           }
           else if(curveBy==="mirror_rate"){
-            var threshold_out=[0,0.5,1,2]
-            var threshold_in=[0.01,0.5,1]
+            var threshold_out=[0,0.5,1]
+            var threshold_in=[0.01,0.5]
             data=data.filter(function(d){return d[curveBy]!==undefined})
           }
 

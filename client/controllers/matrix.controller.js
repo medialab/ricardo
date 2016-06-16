@@ -156,9 +156,7 @@ angular.module('ricardo.controllers.matrix', [])
         //data manipulation
         $scope.rawMinDate = d3.min(data, function(d) { return +d.year; })
         $scope.rawMaxDate = d3.max(data, function(d) { return +d.year; })
-        data.forEach(function(d){
-          if(d.type.split(" ").length===2) d.type=d.type.split(" ").join("_")
-        })
+        
         var flow=data.filter(function(d){return d.expimp===$scope.chartFlow.type.value});
         var actualData=flow.filter(function(d){return d.partnertype==="actual"})
         var worldData=flow.filter(function(d){return d.partnertype==="world"})
@@ -240,20 +238,18 @@ angular.module('ricardo.controllers.matrix', [])
             })
           })
           flowEntities_uniq.forEach(function(d){
+            d.partner_mirror=d.partners_mirror
             if(d.partners_mirror.length>0 && d.partner.length>0 ){
               // d.partner_mirror=d.partners_mirror.split(",")
-              d.partner_mirror=d.partners_mirror
               d.partner_intersect = d.partner_mirror.filter(function(value) {
                                      return d.partner.indexOf(value.split("-")[0]) > -1;
                                  });
-              if(d.partner_intersect.length>0) d.mirror_flow=d3.sum(d.partner_intersect,function(p){return p.split("-")[1]})
-              else d.mirror_flow=0  
-              d.mirror_rate=d.mirror_flow/d.flow
+              // if(d.partner_intersect.length>0) d.mirror_flow=d3.sum(d.partner_intersect,function(p){return p.split("-")[1]})
+              // else d.mirror_flow=0  
+              d.mirror_rate=d.partner_intersect.length/d.partner.length
             }
             else {
-              d.partner_mirror=[]
               d.partner_intersect=[]
-              d.mirror_flow=0
               d.mirror_rate=0
             }
           })
