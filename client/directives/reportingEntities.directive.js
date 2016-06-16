@@ -955,7 +955,7 @@ angular.module('ricardo.directives.reportingEntities', [])
               
               if (colorBy==="reference") tooltip.select(".reference").html("<hr><p style='font-weight:bold'>World Partner: <br>"+v.reference+"</p>")             
               else if (colorBy==="sourcetype") tooltip.select(".source").html(
-                  "<hr><div><span style='font-weight:bold'>Source("+v.sourcetype+"):</span>"+v.source+"</div>")
+                  "<hr><div><span style='font-weight:bold'>Source("+v.sourcetype+")</span>"+(v.sourcetype!=="FedericoTena" ? ":"+v.source:"") +"</div>")
 
               tooltip.select(".tip_svg").style("display","none");
               tooltip.select(".table").style("display","none");
