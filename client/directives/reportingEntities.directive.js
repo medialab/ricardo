@@ -155,8 +155,8 @@ angular.module('ricardo.directives.reportingEntities', [])
          var world_partner_map={
           "World estimated":0,
           "World as reported":1,
-          "World Federico-Tena":2,
-          "World sum partners":3,
+          "World sum partners":2,
+          "World Federico-Tena":3,
           "World estimated|World as reported":4,
           "World sum partners|World estimated":4,
           "World sum partners|World as reported":4,
@@ -212,7 +212,7 @@ angular.module('ricardo.directives.reportingEntities', [])
         // var categoryColor=d3.scale.category10()
         var categoryColor  = d3.scale.ordinal()
                     // .range(["#5254a3","#637939", "#bd9e39","#ad494a", "#a55194","#e7ba52","#de9ed6"]);
-                    .range(['#393b79',  '#bd9e39', '#ad494a',  '#637939', '#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
+                    .range(['#393b79', '#ad494a','#bd9e39','#637939', '#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
         function colorByContinent(continent) {
           return continentColors[continent]
         }
@@ -523,11 +523,15 @@ angular.module('ricardo.directives.reportingEntities', [])
                 color_domain.push(v[colorBy])
               })
             })
-            color_domain=sort_color(colorBy,d3.set(color_domain).values())
+            // categoryColor.domain(color_domain).range(['#393b79',  '#bd9e39', '#ad494a',  '#637939', '#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
             if(colorBy==="reference"){
-              categoryColor.domain(color_domain).range(['#393b79', '#bd9e39','#ad494a', '#637939','#7b4173'])
+              categoryColor.domain([0,1,2,3,4]).range(['#393b79', '#ad494a', '#bd9e39','#637939','#7b4173'])
             }
-            else categoryColor.domain(color_domain).range(['#393b79',  '#bd9e39', '#ad494a',  '#637939', '#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
+            else {
+              color_domain=sort_color(colorBy,d3.set(color_domain).values());
+              categoryColor.domain(color_domain).range(['#393b79', '#ad494a','#bd9e39','#637939', '#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
+            } 
+             
           }
         }
         function recolor(colorBy,data){
@@ -536,7 +540,8 @@ angular.module('ricardo.directives.reportingEntities', [])
           updateColor(colorBy,data)
           d3.selectAll(".available").selectAll("circle")
             .style("fill",function(v){
-              if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(v[colorBy])
+              if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype") return categoryColor(v[colorBy])
+              else if(colorBy==="reference") return categoryColor(world_partner_map[v[colorBy]])
               else if(colorBy==="mirror_rate") return v.mirror_rate!==undefined? scaleColor(v[colorBy]):"none"
               else return scaleColor(v[colorBy].length)
              })
@@ -763,7 +768,8 @@ angular.module('ricardo.directives.reportingEntities', [])
                .attr("cy",function(v) { return gridHeight/2;})
                .attr("r", gridWidth/2)
                .style("fill",function(v){
-                  if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(v[colorBy])
+                  if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype") return categoryColor(v[colorBy])
+                  else if(colorBy==="reference") return categoryColor(world_partner_map[v[colorBy]])
                   else if(colorBy==="mirror_rate") return scaleColor(v[colorBy])
                   else return scaleColor(v[colorBy].length)
                  })

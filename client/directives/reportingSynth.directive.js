@@ -58,7 +58,7 @@ angular.module('ricardo.directives.reportingSynth', [])
 
         // var categoryColor=d3.scale.category10()
         var categoryColor  = d3.scale.ordinal()
-                    .range(['#393b79',  '#bd9e39', '#ad494a',  '#637939', '#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
+                            .range(['#393b79','#ad494a','#bd9e39','#637939','#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
         var scaleColor=d3.scale.ordinal().range(["#daafaf","#cc6666","#993333","#663333"])
         var stack = d3.layout.stack()
                               .values(function(d) { return d.values; })
@@ -149,8 +149,8 @@ angular.module('ricardo.directives.reportingSynth', [])
         var world_partner_map={
           "World estimated":0,
           "World as reported":1,
-          "World Federico-Tena":2,
-          "World sum partners":3,
+          "World sum partners":2,
+          "World Federico-Tena":3,
           "Multiple world partners":4
           // "World estimated|World as reported":3,
           // "World sum partners|World estimated":3,
@@ -318,12 +318,12 @@ angular.module('ricardo.directives.reportingSynth', [])
             scaleColor.domain(color_domain)
           }
           else if(category==="reference"){
-            categoryColor.domain(color_domain).range(['#393b79', '#bd9e39','#ad494a', '#637939', '#7b4173'])
+            categoryColor.domain([0,1,2,3,4]).range(['#393b79', '#ad494a', '#bd9e39','#637939','#7b4173'])
           }
           else {
             color_domain=sort_color(category,color_domain)
             categoryColor.domain(color_domain)
-                        .range(['#393b79',  '#bd9e39', '#ad494a',  '#637939', '#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
+                        .range(['#393b79', '#ad494a','#bd9e39','#637939', '#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
           }
 
           draw_legend(color_domain)

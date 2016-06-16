@@ -197,13 +197,13 @@ def get_world_flows(from_year,to_year):
 def get_nb_flows():
   cursor=get_db().cursor()
   cursor.execute("""
-    SELECT year , count(*), "bilateral" as partner,expimp
+    SELECT year , count(*), "Bilateral" as partner,expimp
     FROM flow_joined
     WHERE partner_slug not like "World%"
     AND flow is not NULL
     GROUP BY year, expimp
     union
-    SELECT year , count(*), "world" as partner,expimp
+    SELECT year , count(*), "World" as partner,expimp
     FROM flow_joined
     WHERE (
     partner_slug like 'Worldestimated'
@@ -213,21 +213,32 @@ def get_nb_flows():
     OR partner_slug like 'WorldFedericoTena')
     AND flow is not NULL
     GROUP BY year,expimp
+    union
+    SELECT year , count(*), "FedericoTena" as partner,expimp
+    FROM flow_joined
+    WHERE partner_slug like 'WorldFedericoTena'
+    AND flow is not NULL
+    GROUP BY year,expimp
     UNION
-    SELECT year , count(*), "bilateral" as partner,"total" as expimp
+    SELECT year , count(*), "Bilateral" as partner,"total" as expimp
     FROM flow_joined
     WHERE partner_slug not like "World%"
     AND flow is not NULL
     GROUP BY year
     union
-    SELECT year , count(*), "world" as partner,  "total" as expimp
+    SELECT year , count(*), "World" as partner,  "total" as expimp
     FROM flow_joined
     WHERE (
     partner_slug like 'Worldestimated'
     OR partner_slug like 'Worldasreported'
     OR partner_slug like 'Worldasreported2'
-    OR partner_slug like 'Worldsumpartners'
-    OR partner_slug like 'WorldFedericoTena')
+    OR partner_slug like 'Worldsumpartners')
+    AND flow is not NULL
+    GROUP BY year
+    union
+    SELECT year , count(*), "FedericoTena" as partner,"total" as expimp
+    FROM flow_joined
+    WHERE partner_slug like "WorldFedericoTena"
     AND flow is not NULL
     GROUP BY year
     """)

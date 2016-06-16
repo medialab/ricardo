@@ -718,8 +718,10 @@ h4 {
 .legend .square.worldestimate{ background-color: #75792f; }
 .legend .square.worldfederico{ background-color: #7b4173; }
 .legend .square.worldbestguess{ background-color: #663333; }
-.legend .square.world{ background-color: #75792f; }
-.legend .square.bilateral{ background-color: #993333; }
+.legend .square.world{ background-color: #393b79; }
+.legend .square.bilateral{ background-color: #ad494a; }
+.legend .square.federico{ background-color: #637939; }
+
 
 
 .legend .line{
