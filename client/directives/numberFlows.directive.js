@@ -30,7 +30,13 @@ angular.module('ricardo.directives.numberFlows', [])
         var yValue=scope.flowType.type.value;
         var yName=scope.flowType.name.value;
         var color=d3.scale.ordinal()
-                    .domain(["world","bilateral"]).range(["#75792f","#993333"])
+                    .domain(["Bilateral","World","FedericoTena"]).range(['#ad494a',"#393b79","#637939"])
+        
+        // var flow_map={
+        //   "Bilateral":0,
+        //   "FedericoTena":1,
+        //   "World":2
+        // }
 
         function group_flows(data){
 
@@ -59,6 +65,7 @@ angular.module('ricardo.directives.numberFlows', [])
               });
           })//add missing with 0
           return nbFlows.sort(function(a,b){ return d3.ascending(a.key,b.key)})
+          // return nbFlows.sort(function(a,b){ return d3.ascending(flow_map[a.key],flow_map[b.key])})
         }
         var margin = {top: 20, right: 20, bottom: 20, left: 20 },
             width = document.querySelector('#number-flows-container').offsetWidth-margin.left-margin.right,
@@ -135,7 +142,12 @@ angular.module('ricardo.directives.numberFlows', [])
           svg.selectAll("*").remove()    
           var indexIter=d3.range(0,154).map(function(d){return d*0;});
           var indexIterH=d3.range(0,154).map(function(d){return d*0;});
-
+          
+          var bars=[];
+          data.forEach(function(d) { 
+            bars=bars.concat(d.values)
+          })
+          
           var backbar=svg.append("g").selectAll(".background")
                       .data(d3.range(minDate,maxDate+1)).enter()
                       .append("rect")
@@ -148,14 +160,10 @@ angular.module('ricardo.directives.numberFlows', [])
                       .attr("pointer-events","all")
                       .on("mouseover",function(d){
                         d3.select(this).style("opacity",1)
-                        svg.selectAll('.layer').selectAll("rect").filter(function(layer){return layer.key===d}).style("opacity",1)
+                        svg.selectAll('.layer').selectAll("rect").filter(function(layer){return layer.year===d}).style("opacity",1)
                         tooltip.transition().style("display", "block").style("opacity", .9);
-
-                        var selectBar=data.reduce(function(a,b) { return a.values.concat(b.values);  })
-                                          .filter(function(e) { return e.year ===d; });
-                        
-                        selectBar.sort(function(a,b){return b.nb_flows-a.nb_flows})
-
+                        var selectBar=bars.filter(function(e) { return e.year ===d; })
+                                      .sort(function(a,b){return b.nb_flows-a.nb_flows})
                         selectBar=selectBar.filter(function(d){return d.nb_flows!==0})
                         
                         selectBar.push({
