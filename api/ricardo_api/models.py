@@ -427,8 +427,10 @@ def get_reportings_available_by_year():
           sourcetype="primary"
         elif "secondary" in sourcetypelist:
           sourcetype="secondary"
-        else:
+        elif "estimation" in sourcetypelist:
           sourcetype="estimation"
+        else :
+          sourcetype="FedericoTena"
         sourceIndex=sourcetypelist.index(sourcetype)
         total_sourcetypelist.append(sourcetype)
 
