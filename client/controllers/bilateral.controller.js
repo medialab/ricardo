@@ -144,7 +144,7 @@ angular.module('ricardo.controllers.bilateral', [])
       apiService
           .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
           .then(function (result) {
-            $scope.partnerEntities=result.RICentities.partners.filter(function(d){return RICids.indexOf(d.RICid)!==-1});
+            $scope.partnerEntities=result.RICentities.partners.filter(function(d){return RICids.indexOf(d.RICid)!==-1 && d.RICid!==$scope.entities.sourceEntity.selected.RICid });
             if($scope.partnerEntities.length===0) $scope.missingBilateral="1"
             else{
               $scope.entities.targetEntity.selected=$scope.partnerEntities[0]
@@ -245,7 +245,7 @@ angular.module('ricardo.controllers.bilateral', [])
           apiService
               .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
               .then(function (result) {
-                $scope.partnerEntities=result.RICentities.partners.filter(function(d){return RICids.indexOf(d.RICid)!==-1});
+                $scope.partnerEntities=result.RICentities.partners.filter(function(d){return RICids.indexOf(d.RICid)!==-1 && d.RICid!==$scope.entities.sourceEntity.selected.RICid });
                 if($scope.partnerEntities.length===0) $scope.missingBilateral="1";
                 // else{
                 //   $scope.entities.targetEntity.selected=$scope.partnerEntities[0]
@@ -258,7 +258,7 @@ angular.module('ricardo.controllers.bilateral', [])
           apiService
             .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
             .then(function (result) {
-              $scope.partnerEntities=result.RICentities.partners.filter(function(d){return RICids.indexOf(d.RICid)!==-1});
+              $scope.partnerEntities=result.RICentities.partners.filter(function(d){return RICids.indexOf(d.RICid)!==-1 && d.RICid!==$scope.entities.sourceEntity.selected.RICid });
               if($scope.partnerEntities.length===0) $scope.missingBilateral="1";
               else{
                 $scope.entities.targetEntity.selected=$scope.partnerEntities[0]
