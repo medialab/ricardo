@@ -135,7 +135,7 @@ angular.module('ricardo.directives.reportingSynth', [])
                     .y(function(d) { return y(d.values.nb_reporting); });
 
         var partner_map={
-          0:"world parnter only",
+          0:"world partner only",
           1:"1 - 10",
           10:"10 - 50",
           50:"more than 50"
