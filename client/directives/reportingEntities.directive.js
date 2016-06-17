@@ -496,7 +496,7 @@ angular.module('ricardo.directives.reportingEntities', [])
         //   }
         // }
         function updateColor(colorBy,data){
-          if(colorBy==="partner"){
+          if(colorBy==="partner" || colorBy==="partner_intersect"){
             // var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[colorBy].length})});
             // var threshold_out=[0,10,50,100,max]
             var threshold_in=[1,10,50]
@@ -954,11 +954,13 @@ angular.module('ricardo.directives.reportingEntities', [])
               tooltip.selectAll(".source,.reference").html("")
               
               if (colorBy==="reference") tooltip.select(".reference").html("<hr><p style='font-weight:bold'>World Partner: <br>"+v.reference+"</p>")             
-              else if (colorBy==="sourcetype") tooltip.select(".source").html(
+              if (colorBy==="sourcetype") tooltip.select(".source").html(
                   "<hr><div><span style='font-weight:bold'>Source("+v.sourcetype+")</span>"+(v.sourcetype!=="FedericoTena" ? ":"+v.source:"") +"</div>")
 
+              if (colorBy==="partner_intersect") tooltip.select(".reference").html("<hr><p style='font-weight:bold'>Number of Mirror Partners: "+v.partner_intersect.length+"</p>")
               tooltip.select(".tip_svg").style("display","none");
               tooltip.select(".table").style("display","none");
+
               if(colorBy==="partner") {
                 tooltip.select(".tip_svg").style("display","block");
                 tooltip.select(".tip_svg").selectAll("*").remove()
@@ -1000,7 +1002,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                              .attr("font-size",12)
                   }
                 }
-                else if(colorBy==="mirror_rate") {
+                if(colorBy==="mirror_rate") {
                   tooltip.select(".table").style("display","block");
                   tooltip.select(".table").select("table").remove();
                   tooltip.select(".table").html("<table><tr><td>Number of mirror partner</td><td style='text-align:right'>"

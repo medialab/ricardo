@@ -42,8 +42,8 @@ angular.module('ricardo.controllers.matrix', [])
              name: {value: "World Partner",writable: true}},
              {type: {value: "partner",writable: true},
              name: {value: "Number of Partners",writable: true}},
-             {type: {value: "mirror_rate",writable: true},
-             name: {value: "Mirror Rate",writable: true}}
+             {type: {value: "partner_intersect",writable: true},
+             name: {value: "Number of Mirror Partners",writable: true}}
             ];
 
       $scope.matrixColorBy=$scope.matrixColorChoices[0]
@@ -133,7 +133,7 @@ angular.module('ricardo.controllers.matrix', [])
       }
       $scope.changeMatrixColor = function (colorBy) {
         $scope.matrixColorBy = colorBy;
-        $scope.showBilateralTip= colorBy.type.value==="mirror_rate" ? true:false
+        $scope.showBilateralTip= colorBy.type.value==="partner_intersect" ? true:false
         $scope.colorByIndex=$scope.matrixColorChoices.indexOf(colorBy);
       }
 
@@ -246,11 +246,11 @@ angular.module('ricardo.controllers.matrix', [])
                                  });
               // if(d.partner_intersect.length>0) d.mirror_flow=d3.sum(d.partner_intersect,function(p){return p.split("-")[1]})
               // else d.mirror_flow=0  
-              d.mirror_rate=d.partner_intersect.length/d.partner.length
+              // d.mirror_rate=d.partner_intersect.length/d.partner.length
             }
             else {
               d.partner_intersect=[]
-              d.mirror_rate=0
+              // d.mirror_rate=0
             }
           })
           // var mirror_rateMax=d3.nest()

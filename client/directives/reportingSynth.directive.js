@@ -140,6 +140,12 @@ angular.module('ricardo.directives.reportingSynth', [])
           10:"10 - 50",
           50:"more than 50"
         }
+        var partner_intersect_map={
+          0:"No mirror partner",
+          1:"1 - 10",
+          10:"10 - 50",
+          50:"more than 50"
+        }
         var mirror_map={
           0:"0",
           0.5:"0 - 0.5",
@@ -201,7 +207,7 @@ angular.module('ricardo.directives.reportingSynth', [])
           })
           minDate=d3.min(data,function(d){return +d.year});
           maxDate=d3.max(data,function(d){return +d.year});
-          if(curveBy==="partner"){
+          if(curveBy==="partner" || curveBy==="partner_intersect"){
             // var max=d3.max(data,function(d){return d.partner.length});
             // var threshold_out=["less than 10","10 to 50","50 to 100","more than 100"]
             var threshold_out=[0,1,10,50]
@@ -220,7 +226,7 @@ angular.module('ricardo.directives.reportingSynth', [])
 
           var nbReportings=d3.nest()
                             .key(function(d) {
-                              if(curveBy==="partner") return thresScale(d[curveBy].length)
+                              if(curveBy==="partner" || curveBy==="partner_intersect") return thresScale(d[curveBy].length)
                               else if(curveBy==="mirror_rate") return thresScale(d[curveBy])
                               else return d[curveBy]
                             })
@@ -276,12 +282,13 @@ angular.module('ricardo.directives.reportingSynth', [])
                   .attr("width",10)
                   .attr("height",10)
                   .attr("y",-5)
-                  .style("fill",function(d){return category==="partner" || category==="mirror_rate"? scaleColor(d):categoryColor(d)})
+                  .style("fill",function(d){return category==="partner" || category==="partner_intersect"? scaleColor(d):categoryColor(d)})
             legend.append("text")
                   .attr("x",15)
                   .attr("y",5)
                   .text(function(d){
                     if (category==="partner") return partner_map[d];
+                    else if(category==="partner_intersect") return partner_intersect_map[d];
                     else if(category==="mirror_rate") return mirror_map[d];
                     else return d;
                   })
@@ -313,7 +320,7 @@ angular.module('ricardo.directives.reportingSynth', [])
 
           var color_domain=data.map(function(d){return d.key;})
 
-          if(category==="partner" || category==="mirror_rate") {
+          if(category==="partner" || category==="partner_intersect") {
             color_domain.sort(function(a,b){return d3.ascending(+a, +b);})
             scaleColor.domain(color_domain)
           }
@@ -343,6 +350,7 @@ angular.module('ricardo.directives.reportingSynth', [])
              .attr("text-anchor","end")
              .attr("font-size","11px")
              .attr("transform","translate(-10,"+(height+10)+")")
+             .style("stroke","black")
           
           var backbar=svg.append("g").selectAll(".background")
                       .data(d3.range(minDate,maxDate+1)).enter()
@@ -381,13 +389,14 @@ angular.module('ricardo.directives.reportingSynth', [])
                         tr.append("td").append("svg").attr("width", '6').attr("height", '6').append("rect")
                           .attr("width", '6').attr("height", '6')
                           .attr("fill",function(d){
-                              if(d.key!=="Total") return category==="partner"||category==="mirror_rate"? scaleColor(d.key):categoryColor(d.key)
+                              if(d.key!=="Total") return category==="partner"||category==="partner_intersect"? scaleColor(d.key):categoryColor(d.key)
                               else return "none"
                           })
 
                         // create the second column for each segment.
                         tr.append("td").text(function(d){
                           if (category==="partner" && d.key!=="Total") return partner_map[d.key];
+                          else if(category==="partner_intersect" && d.key!=="Total") return partner_intersect_map[d.key];
                           else if(category==="mirror_rate" && d.key!=="Total") return mirror_map[d.key];
                           else return d.key;
                         })
@@ -463,7 +472,7 @@ angular.module('ricardo.directives.reportingSynth', [])
               .data(layers)
               .enter().append("g")
                 .attr("class", "layer")
-                .style("fill", function(d) { return category==="partner" || category==="mirror_rate"? scaleColor(d.key):categoryColor(d.key) })
+                .style("fill", function(d) { return category==="partner" || category==="partner_intersect"? scaleColor(d.key):categoryColor(d.key) })
           
           var indexIter=d3.range(0,154).map(function(d){return d*0;});
           var indexIterH=d3.range(0,154).map(function(d){return d*0;});
@@ -487,7 +496,7 @@ angular.module('ricardo.directives.reportingSynth', [])
                 // else return y(d.y0) - y(d.y + d.y0); 
               })
               .attr("width", barwidth-1)
-              .style("opacity",function(d){return category==="partner" || category==="mirror_rate" ? 0.8:0.7;})
+              .style("opacity",function(d){return category==="partner" || category==="partner_intersect" ? 0.8:0.7;})
               .attr("pointer-events","none")
           })
           // layer.selectAll("rect")

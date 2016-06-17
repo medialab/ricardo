@@ -77,7 +77,7 @@
 	"METADATA_MATRIX_INTRO": "This graph provides detailed information for each reporting entity/year.",
 	"METADATA_MATRIX_INTRO_3": "it specifies what type of 'World' is used to calculate the RICardo World best guess for this reporting/year. The World partner is ‘World FedericoTena’ when there are no total trade data in the RICardo database.",
 	"METADATA_MATRIX_INTRO_4": "total number of partners by reporting/year distributed by continent.",
-	"METADATA_MATRIX_INTRO_5": "proportion of partners for which mirror flows can be estimated. It is calculated by",
+	"METADATA_MATRIX_INTRO_5": "number of bilateral partners reported by a reporting R which report R as a partner",
 	"METADATA_MATRIX_INTRO_0": "four types of sources are differentiated in the database. Primary sources are compilations of customs returns published by national agencies. Secondary sources include international compilations of trade primary sources or national compilations of national statistics that include foreign trade statistics (mainly statistical yearbooks). ‘Estimation’ for a reporting/year means that only total trade data are available in the RICardo database. ‘Federico Tena’ refers to the source Federico-Tena(2016). ‘Federico Tena’ means that there are no data in the RICardo database for this reporting/year.",
 	"METADATA_MATRIX_INTRO_1": "a reporting entity can be a country, a city/part of, a colonial area, or a group.",
 	"METADATA_MATRIX_INTRO_2": "Africa, America, Asia, Europe, Oceania, World. When the ‘Reporting type’ is a group of countries from different continents, the designated continent is ‘World’.",
