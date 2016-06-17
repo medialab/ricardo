@@ -285,12 +285,12 @@ angular.module('ricardo.directives.reportingSynth', [])
                   .style("fill",function(d){return category==="partner" || category==="partner_intersect"? scaleColor(d):categoryColor(d)})
             legend.append("text")
                   .attr("x",15)
-                  .attr("y",5)
+                  .attr("y",5)  
                   .text(function(d){
                     if (category==="partner") return partner_map[d];
                     else if(category==="partner_intersect") return partner_intersect_map[d];
                     else if(category==="mirror_rate") return mirror_map[d];
-                    else return d;
+                    else return d.charAt(0).toUpperCase() + d.slice(1);
                   })
                   .attr("font-size",11)
             var legend_offset=0
