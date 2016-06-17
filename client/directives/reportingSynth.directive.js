@@ -135,16 +135,16 @@ angular.module('ricardo.directives.reportingSynth', [])
                     .y(function(d) { return y(d.values.nb_reporting); });
 
         var partner_map={
-          0:"world partner only",
+          0:"World partner only",
           1:"1 - 10",
           10:"10 - 50",
-          50:"more than 50"
+          50:"More than 50"
         }
         var partner_intersect_map={
           0:"No mirror partner",
           1:"1 - 10",
           10:"10 - 50",
-          50:"more than 50"
+          50:"More than 50"
         }
         var mirror_map={
           0:"0",
@@ -285,7 +285,7 @@ angular.module('ricardo.directives.reportingSynth', [])
                   .style("fill",function(d){return category==="partner" || category==="partner_intersect"? scaleColor(d):categoryColor(d)})
             legend.append("text")
                   .attr("x",15)
-                  .attr("y",5)  
+                  .attr("y",5)    
                   .text(function(d){
                     if (category==="partner") return partner_map[d];
                     else if(category==="partner_intersect") return partner_intersect_map[d];
