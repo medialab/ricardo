@@ -5,7 +5,6 @@ var gulp = require('gulp'),
 	gitshasuffix = require("gulp-gitshasuffix"),
 	revReplace = require('gulp-rev-replace'),
 	useref = require('gulp-useref'),
-	filter = require('gulp-filter'),
 	csso = require('gulp-csso'),
 	gulpif = require('gulp-if'),
 	del = require('del');
