@@ -35,25 +35,22 @@ angular.module('ricardo.services.country', [])
             return res;
             },
         addTypePartner: function(partners, data) {
-            var entityChecked = []; 
-            partners.forEach(function (d) {
-            if (entityChecked.indexOf(d.key) === -1 ) {
-              for (var i = 0, len = data.length; i < len; i++) {
-                if (d.key === data[i].partner_id) {
-                  d.type = data[i].type
-                  entityChecked.push(d.key);
-                }
-              }  
-            }
-            })
-            return partners;
-            },
+          var entityChecked = []; 
+          partners.forEach(function (d) {
+            for (var i = 0, len = data.length; i < len; i++) {
+              if (d.key === data[i].partner_name) {
+                d.type = data[i].type
+              }
+            }  
+          })
+          return partners;
+        },
         valuesToPartners: function(partners, indexYears) {
           partners.forEach(function(p){
             p.years = []
             p.values.forEach(function(d){
              
-             if(d.values.exp || d.values.imp)
+              if(d.values.exp || d.values.imp)
               p.years.push({
                 key: d.key,
                 exp: d.values.exp,
@@ -61,7 +58,7 @@ angular.module('ricardo.services.country', [])
                 balance: (d.values.exp - d.values.imp) / (d.values.exp + d.values.imp) || 0,
                 pct_exp: d.values.exp ? d.values.exp / indexYears[d.key].exp * 100 : null,
                 pct_imp: d.values.imp ? d.values.imp / indexYears[d.key].imp * 100 : null,
-                pct_tot: (d.values.exp && d.values.imp) ? (d.values.exp + d.values.imp) / indexYears[d.key].tot * 100 : null
+                pct_tot: (d.values.exp || d.values.imp) ? (d.values.exp + d.values.imp) / indexYears[d.key].tot * 100 : null
               });
             });
 

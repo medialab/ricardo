@@ -32,7 +32,7 @@ angular.module('ricardo.directives.partnersHistogram', [])
         scope.$watch("ngData", function (newValue, oldValue){
           if(newValue !== oldValue){
             removeSvgElements(chart)
-            partnersHistogram(newValue, scope.orderData, scope.indexYears, scope.startDate, scope.endDate);
+            partnersHistogram(newValue, scope.orderData, scope.indexYears, scope.startDate, scope.endDate+1);
           }
         }, true);
 

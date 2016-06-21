@@ -562,7 +562,6 @@ angular.module('ricardo.controllers.country', [])
           data.push(d);
         }
       })
-
       var indexYears = buildIndexYears(data);
       $scope.indexYears = indexYears;
 
