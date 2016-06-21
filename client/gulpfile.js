@@ -1,59 +1,55 @@
 var gulp = require('gulp'),
 	concat = require('gulp-concat'),
 	uglify = require('gulp-uglify'),
-	ngAnnotate = require('gulp-ng-annotate');
+	ngAnnotate = require('gulp-ng-annotate'),
+	gitshasuffix = require("gulp-gitshasuffix"),
+	revReplace = require('gulp-rev-replace'),
+	useref = require('gulp-useref'),
+	csso = require('gulp-csso'),
+	gulpif = require('gulp-if'),
+	del = require('del');
 
-/*
- * Minify angular app
- */
+gulp.task("index", function() {
+  return gulp.src("index.html")
+  	.pipe(useref())
+    .pipe(gulpif('**/app.js', ngAnnotate()))
+    .pipe(gulpif('**/app.js', uglify()))
+	.pipe(gulpif('**/style.css', csso()))
+    .pipe(gulpif('**/app.js',gitshasuffix()))                // Rename the concatenated files 
+    .pipe(gulpif('**/lib.js',gitshasuffix()))
+    .pipe(gulpif('**/style.css',gitshasuffix()))
+    .pipe(revReplace())         // Substitute in new filenames 
+    .pipe(gulp.dest('build'));
+});
 
-gulp.task('min_js', function () {
-  gulp.src(['controllers/*.js', 
-  			'directives/*.js', 
-  			'js/app.js', 
-  			'js/filters.js', 
-  			'js/services.js',
-  			'js/country.services.js', 
-  			'js/config.js'
-  	])
-    .pipe(concat('build/app.js'))
-    .pipe(ngAnnotate())
-    .pipe(uglify())
-    .pipe(gulp.dest('.'))
+gulp.task('fonts', function() {
+  return gulp.src('css/fonts/**/*')
+  .pipe(gulp.dest('build/css/fonts'))
 })
 
-/*
- * Concat all libs
- */
-
-gulp.task('concat_lib', function () {
-  gulp.src(['lib/bower_components/jquery/dist/jquery.min.js',
-			'lib/bower_components/jquery-ui/ui/minified/jquery-ui.min.js',
-			'lib/bower_components/bootstrap/dist/js/bootstrap.min.js',
-			'lib/bower_components/d3/d3.min.js',
-			'lib/bower_components/crossfilter/crossfilter.min.js',
-			'lib/angular/angular.min.js',
-			'lib/angular/angular-route.js',
-			'lib/angular/angular-animate.js',
-			'lib/angular/angular-sanitize.js',
-			'lib/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
-			'lib/bower_components/angular-ui-select/dist/select.js',
-			'lib/bower_components/ng-grid/build/ng-grid.js',
-			'lib/bower_components/ng-grid/plugins/ng-grid-csv-export.js',
-			'lib/bower_components/angular-loading-bar/build/loading-bar.js',
-			'lib/bower_components/angular-translate/angular-translate.min.js',
-			'lib/bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.js',
-			'lib/bower_components/oclazyload/dist/ocLazyLoad.min.js',
-			'lib/bower_components/angulartics/dist/angulartics.min.js',
-			'lib/bower_components/angulartics-google-analytics/dist/angulartics-google-analytics.min.js'		
-  	])
-    .pipe(concat('build/lib.js'))
-    .pipe(gulp.dest('.'))
+gulp.task('img', function() {
+  return gulp.src('img/*')
+  .pipe(gulp.dest('build/img'))
 })
+
+gulp.task('locales', function() {
+  return gulp.src('js/locale*.json')
+  .pipe(gulp.dest('build/js/'))
+})
+
+gulp.task('templates', function() {
+  return gulp.src('partials/**/*.html')
+  .pipe(gulp.dest('build/partials/'))
+})
+
+gulp.task('clean:build', function() {
+  return del.sync('build');
+})
+
 
 /*
  * Run tasks build
  */
 
-gulp.task('default', ['min_js', 'concat_lib'], function() {
+gulp.task('default', ['clean:build','index','fonts','locales','img','templates'], function() {
 });
