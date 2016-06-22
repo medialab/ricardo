@@ -32,10 +32,13 @@ angular.module('ricardo', [
   
   $rootScope.$on('$routeChangeStart', function() {
     cfpLoadingBar.start();
+    // $rootScope.routeLoading=true;
+    
   })
   $rootScope.$on('$routeChangeSuccess',
     function(event, toState, toParams, fromState, fromParams) {
       cfpLoadingBar.complete();
+      // $rootScope.routeLoading=false;
       $timeout(function() {
         if ($location.hash()) {
           $anchorScroll();
@@ -100,15 +103,15 @@ angular.module('ricardo', [
   });
   $routeProvider.when('/metadata', {
     templateUrl: 'partials/matrix.html',
-    controller: 'matrix',
-    resolve:{
-      reportingByYear: function(apiService){
-        return apiService.getReportingsAvailableByYear()
-      },
-      flowsByYear: function(apiService){
-        return apiService.getNumberFlows()
-      }
-    }
+    controller: 'matrix'
+    // resolve:{
+    //   reportingByYear: function(apiService){
+    //     return apiService.getReportingsAvailableByYear()
+    //   },
+    //   flowsByYear: function(apiService){
+    //     return apiService.getNumberFlows()
+    //   }
+    // }
   });
   $routeProvider.otherwise({redirectTo: '/'});
 }])

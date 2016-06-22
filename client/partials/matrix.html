@@ -1,8 +1,21 @@
+<!-- <div ng-hide="loaded" id="loading-bar-spinner">
+	<div class="spinner-icon"></div>
+</div> -->
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			</br>
-			</br>
+			<!-- </br>
+			</br> -->
+			<h4>Metadata vizualization about
+			<div class="inline-select">
+		      <ui-select ng-model="partner" theme="bootstrap" ng-change="changePartner(partner)">
+		        <match placeholder="Select partner type">{{$select.selected.name.value}}</match>
+		        <choices repeat="item in partnerChoices | filter: $select.search">
+		          <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+		        </choices>
+		      </ui-select>
+		   	</div>
+			</h4>
 			<p class="paragraphPage">
 				{{ 'METADATA_VIEW_INTRO' | translate }}
 			</p>
@@ -113,6 +126,7 @@
 				ng-data="flow"
 				flow-type="chartFlow"
 				category="matrixColorBy"
+				loaded="loaded"
 			>
 			</reporting-synth>
 			<reporting-entities flat-data="flow"

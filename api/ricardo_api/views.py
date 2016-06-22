@@ -154,8 +154,9 @@ def nations_network():
 
 @app.route('/nb_flows_by_year')
 def nb_flows_by_year():
+    partner=request.args.get('partner', '')
     try:
-        json_data=models.get_nb_flows()
+        json_data=models.get_nb_flows(partner)
     except:
         app.logger.exception("exception in flows available")
         abort(500)
@@ -163,9 +164,10 @@ def nb_flows_by_year():
 
 @app.route('/reportings_available_by_years')
 def reportings_available_by_years():
+    partner=request.args.get('partner', '')
     try:
         # json_data=models.get_reportings_overview(partner_ids)
-        json_data=models.get_reportings_available_by_year()
+        json_data=models.get_reportings_available_by_year(partner)
         # json_data=models.get_world_available()
     except:
         app.logger.exception("exception in nations available")
