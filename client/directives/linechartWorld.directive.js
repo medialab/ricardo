@@ -36,8 +36,10 @@ angular.module('ricardo.directives.linechartWorld', [])
         scope.$watchCollection('[ngData,startDate,endDate]', function(newValue, oldValue) {
           if(newValue[0] && newValue[0].length > 0){
             newValue[0].forEach(function (e) {
-              if (e.color === undefined)
-                e.color=scope.reporting.filter(function(r){return r.RICid===e.key})[0]["color"]
+              if (e.color === undefined){
+                console.log("color not defined")
+                // e.color=scope.reporting.filter(function(r){return r.RICid===e.key})[0]["color"]
+               }
             })
             // var yValueSterling;
             yValue = newValue[0][0].flowType
