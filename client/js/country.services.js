@@ -51,15 +51,15 @@ angular.module('ricardo.services.country', [])
             p.values.forEach(function(d){
              
               if(d.values.exp || d.values.imp)
-              p.years.push({
-                key: d.key,
-                exp: d.values.exp,
-                imp: d.values.imp,
-                balance: (d.values.exp - d.values.imp) / (d.values.exp + d.values.imp) || 0,
-                pct_exp: d.values.exp ? d.values.exp / indexYears[d.key].exp * 100 : null,
-                pct_imp: d.values.imp ? d.values.imp / indexYears[d.key].imp * 100 : null,
-                pct_tot: (d.values.exp || d.values.imp) ? (d.values.exp + d.values.imp) / indexYears[d.key].tot * 100 : null
-              });
+                p.years.push({
+                  key: d.key,
+                  exp: d.values.exp,
+                  imp: d.values.imp,
+                  balance: (d.values.exp - d.values.imp) / (d.values.exp + d.values.imp) || 0,
+                  pct_exp: d.values.exp ? d.values.exp / indexYears[d.key].exp * 100 : null,
+                  pct_imp: d.values.imp ? d.values.imp / indexYears[d.key].imp * 100 : null,
+                  pct_tot: (d.values.exp || d.values.imp) ? (d.values.exp + d.values.imp) / indexYears[d.key].tot * 100 : null
+                });
             });
 
             delete p.values;
@@ -70,7 +70,6 @@ angular.module('ricardo.services.country', [])
               p.avg_tot=p.avg_imp
             if(!p.avg_tot && p.avg_exp)
               p.avg_tot=p.avg_exp
-            
           })
           return partners  
         }
