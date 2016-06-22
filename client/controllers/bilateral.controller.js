@@ -31,8 +31,8 @@ angular.module('ricardo.controllers.bilateral', [])
 
     $scope.fieldsByDefault = function () {
       $scope.missingTarget = "0";
-      localStorage.removeItem('selectedMinDate');
-      localStorage.removeItem('selectedMaxDate');
+      // localStorage.removeItem('selectedMinDate');
+      // localStorage.removeItem('selectedMaxDate');
       // localStorage.removeItem('targetEntitySelected');
       window.location.reload();
     }
@@ -283,10 +283,10 @@ angular.module('ricardo.controllers.bilateral', [])
     $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newValue, oldValue) {
       if (newValue !== oldValue && newValue[0] !== newValue[1]) {
         // set data in local storage
-        localStorage.removeItem('selectedMinDate');
-        localStorage.removeItem('selectedMaxDate');
-        localStorage.setItem("selectedMinDate",newValue[0]);
-        localStorage.setItem("selectedMaxDate",newValue[1]);
+        // localStorage.removeItem('selectedMinDate');
+        // localStorage.removeItem('selectedMaxDate');
+        // localStorage.setItem("selectedMinDate",newValue[0]);
+        // localStorage.setItem("selectedMaxDate",newValue[1]);
         updateDateRange()
       }
     })

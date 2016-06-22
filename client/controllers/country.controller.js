@@ -367,11 +367,11 @@ angular.module('ricardo.controllers.country', [])
           /*
            * Save all object in localStorage
            */
-          localStorage.removeItem('selectedMinDate');
-          localStorage.removeItem('selectedMaxDate');
+          // localStorage.removeItem('selectedMinDate');
+          // localStorage.removeItem('selectedMaxDate');
           localStorage.removeItem('sourceEntitySelected');
-          localStorage.setItem('selectedMinDate', JSON.stringify($scope.selectedMinDate));
-          localStorage.setItem('selectedMaxDate', JSON.stringify($scope.selectedMaxDate));
+          // localStorage.setItem('selectedMinDate', JSON.stringify($scope.selectedMinDate));
+          // localStorage.setItem('selectedMaxDate', JSON.stringify($scope.selectedMaxDate));
           localStorage.setItem('sourceEntitySelected', JSON.stringify($scope.entities.sourceEntity.selected));
       });
     }
@@ -386,10 +386,10 @@ angular.module('ricardo.controllers.country', [])
         $scope.selectedMinDate = newValue[0];
         $scope.selectedMaxDate = newValue[1];
         // update local storage
-        localStorage.removeItem('selectedMinDate');
-        localStorage.removeItem('selectedMaxDate');
-        localStorage.setItem('selectedMinDate', newValue[0]);
-        localStorage.setItem('selectedMaxDate', newValue[1]);
+        // localStorage.removeItem('selectedMinDate');
+        // localStorage.removeItem('selectedMaxDate');
+        // localStorage.setItem('selectedMinDate', newValue[0]);
+        // localStorage.setItem('selectedMaxDate', newValue[1]);
         // localStorage.selectedMinDate = newValue[0];
         // localStorage.selectedMaxDate = newValue[1];
 

@@ -211,12 +211,15 @@ angular.module('ricardo.controllers.world', [])
       /*
        * Check if dates were in localstorage
        */
-      var minDate = parseInt(localStorage.getItem('selectedMinDate'));
-      var maxDate = parseInt(localStorage.getItem('selectedMaxDate'));
-      $scope.selectedMinDate = minDate ?
-        minDate : $scope.rawMinDate;
-      $scope.selectedMaxDate = maxDate ?
-        maxDate :$scope.rawMaxDate;
+      // var minDate = parseInt(localStorage.getItem('selectedMinDate'));
+      // var maxDate = parseInt(localStorage.getItem('selectedMaxDate'));
+      // $scope.selectedMinDate = minDate ?
+      //   minDate : $scope.rawMinDate;
+      // $scope.selectedMaxDate = maxDate ?
+      //   maxDate :$scope.rawMaxDate;
+      $scope.selectedMinDate = $scope.rawMinDate;
+      $scope.selectedMaxDate = $scope.rawMaxDate;
+
 
       if ($scope.selectedMaxDate > 1938)
         $scope.selectedMaxDate = 1938;
@@ -532,11 +535,11 @@ angular.module('ricardo.controllers.world', [])
         $scope.selectedMinDate = newVal[0];
         $scope.selectedMaxDate = newVal[1];
 
-        // update local storage
-        localStorage.removeItem('selectedMinDate');
-        localStorage.removeItem('selectedMaxDate');
-        localStorage.selectedMinDate = newVal[0];
-        localStorage.selectedMaxDate = newVal[1];
+        // // update local storage
+        // localStorage.removeItem('selectedMinDate');
+        // localStorage.removeItem('selectedMaxDate');
+        // localStorage.selectedMinDate = newVal[0];
+        // localStorage.selectedMaxDate = newVal[1];
 
         updateTableData();
         updateDateRange();
