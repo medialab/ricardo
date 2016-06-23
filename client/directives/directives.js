@@ -7,6 +7,7 @@ angular.module('ricardo.directives', [
 	'ricardo.directives.inlineSelectCountry',
 	'ricardo.directives.dualTimeline',
 	'ricardo.directives.inlineSelectCurrency',
+	'ricardo.directives.inlineSelectCtrl',
 	'ricardo.directives.inlineSelectYear',
 	'ricardo.directives.linechartTitle',
 	'ricardo.directives.comparisonTimeline',

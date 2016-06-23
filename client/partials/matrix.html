@@ -35,13 +35,13 @@
 				{{ 'METADATA_NBFLOW_INTRO' | translate }}
 			</p>
 			<div class="legend">
-			 	<div class="legend-item">
+			 	<div ng-show="bilateral" class="legend-item">
 		            <div class="square bilateral"></div> Bilateral trade flows 
 		        </div>
-				<div class="legend-item">
+				<div ng-hide="bilateral" class="legend-item">
 		          <div class="square world"></div> World trade flows
 		        </div>
-		        <div class="legend-item">
+		        <div ng-hide="bilateral" class="legend-item">
 		          <div class="square federico"></div> FedericoTena trade flows
 		        </div>
 		       
@@ -60,23 +60,18 @@
 		   	</p>
 		   	<h4>
 	   		{{ 'METADATA_MATRIX_CTL1' | translate }}
-	   		<div class="inline-select">
+	   		<inline-select-ctrl ng-model="matrixLayout" list="matrixLayoutChoices"></inline-select-ctrl>
+	   		<!-- <div class="inline-select">
 		        <ui-select ng-model="matrixLayout" theme="bootstrap" ng-change="changeMatrixLayout(matrixLayout)">
 		          <match placeholder="Order By">{{$select.selected.name.value}}</match>
 		          <choices repeat="item in matrixLayoutChoices | filter: $select.search">
 		            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
 		          </choices>
 		        </ui-select>
-		    </div>
+		    </div> -->
 		    {{ 'METADATA_MATRIX_CTL2' | translate }}
-		    <div class="inline-select">
-		        <ui-select ng-model="matrixColorBy" theme="bootstrap" ng-change="changeMatrixColor(matrixColorBy)">
-		          <match placeholder="Color By">{{$select.selected.name.value}}</match>
-		          <choices repeat="item in matrixColorChoices | filter: $select.search">
-		            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-		          </choices>
-		        </ui-select>
-		    </div>
+		    
+		    <inline-select-ctrl ng-model="matrixColorBy" list="matrixColorChoices"></inline-select-ctrl>
 		    <div class="inline-select pull-right">
 		        <ui-select ng-model="reporting" theme="bootstrap">
 		          <match placeholder="Find Reporting">{{$select.selected}}</match>
@@ -113,7 +108,7 @@
 				<div>
 					<p><strong>Number of Reportings Color by</strong>
 					<br>
-					<strong><u>{{ matrixColorBy.name.value}}</u>: </strong>{{"METADATA_MATRIX_INTRO_"+colorByIndex | translate}}</p>
+					<strong><u>{{ matrixColorBy.name.value}}</u>: </strong>{{"METADATA_MATRIX_INTRO_"+matrixColorBy.type.value | translate}}</p>
 				</div>
 				<!-- <div ng-show="showBilateralTip">
 				      <div><strong>Number of partner:</strong> total number of bilateral partners reported by <strong>R</strong> for the year</div>
@@ -127,6 +122,7 @@
 				flow-type="chartFlow"
 				category="matrixColorBy"
 				loaded="loaded"
+				partner="partner"
 			>
 			</reporting-synth>
 			<reporting-entities flat-data="flow"

@@ -197,7 +197,20 @@ def get_world_flows(from_year,to_year):
 def get_nb_flows(flow):
   cursor=get_db().cursor()
   if flow=="bilateral":
-    cursor.execute("""SELECT year , count(*), "Bilateral" as partner,"total" as expimp
+    cursor.execute("""
+                  SELECT year , count(*), "Bilateral" as partner,expimp
+                  FROM flow_joined
+                  WHERE partner_slug not like "World%"
+                  AND flow is not NULL
+                  GROUP BY year,expimp
+                  UNION
+                  SELECT year , count(*), "Bilateral" as partner,expimp
+                  FROM flow_joined
+                  WHERE partner_slug not like "World%"
+                  AND flow is not NULL
+                  GROUP BY year,expimp
+                  UNION
+                  SELECT year , count(*), "Bilateral" as partner,"total" as expimp
                   FROM flow_joined
                   WHERE partner_slug not like "World%"
                   AND flow is not NULL
@@ -413,7 +426,6 @@ def get_reportings_available_by_year(flow):
           "continent":row[9],
           "type":row[10]
         })
-
   return json.dumps(json_response,encoding="UTF8")
 
 # def get_reportings_available_by_year():
@@ -762,9 +774,17 @@ def get_reporting_entities(types=[],to_partner_ids=[]):
         where_clause = "WHERE "+where_clause if where_clause!="" else ""
     else:
         where_clause =""
-    sql="""SELECT distinct reporting_slug,reporting,reporting_type,reporting_continent
-                          FROM flow_joined
-                          %s"""%(where_clause)
+    # sql="""SELECT distinct reporting_slug,reporting,reporting_type,reporting_continent
+    #                       FROM flow_joined
+    #                       %s"""%(where_clause)
+    sql="""select reporting_slug,reporting,reporting_type,reporting_continent
+          from (
+          SELECT reporting_slug,reporting,reporting_type,reporting_continent, group_concat(distinct partner_slug) as partner
+          FROM flow_joined
+          %s
+          group by reporting_slug)
+          where partner is not 'WorldFedericoTena'
+        """%(where_clause)
     cursor.execute(sql)
 
     for (id,r,t,continent) in cursor:

@@ -10,7 +10,9 @@ angular.module('ricardo.directives.reportingSynth', [])
       scope: {
         ngData: '=',
         flowType: "=",
-        category:"="
+        category:"=",
+        loaded:"=",
+        partner:"="
       },
       link: function(scope, element, attrs) {
 
@@ -36,6 +38,21 @@ angular.module('ricardo.directives.reportingSynth', [])
             draw(data);
           }
         })
+        scope.$watch('loaded', function(newValue, oldValue) {
+          if (newValue===1) {
+            var legend_offset=0
+            svg_legend.selectAll(".legend")
+                  .attr("transform",function(d,i){
+                    if(i===0) return "translate(0,10)"
+                    else {
+                      var prevtext=d3.select(this.previousElementSibling).select("text").node().getBBox()
+                      legend_offset=legend_offset+prevtext.width+20
+                      return "translate("+legend_offset+",10)"
+                    }
+                  })
+          }
+        })
+        
 
         // var partnerColors = {
         //       "World_best_guess":"#bf6969",
@@ -201,10 +218,12 @@ angular.module('ricardo.directives.reportingSynth', [])
 
           //duplicate the array of object
           var data = JSON.parse(JSON.stringify(_data))
-
-          data.forEach(function(d){
-            d.reference=d.reference.split("|").length===1 ? d.reference:"Multiple world partners"
-          })
+          if(scope.partner.type.value==="world"){
+            data.forEach(function(d){
+              d.reference=d.reference.split("|").length===1 ? d.reference:"Multiple world partners"
+            })
+          }
+          
           minDate=d3.min(data,function(d){return +d.year});
           maxDate=d3.max(data,function(d){return +d.year});
           if(curveBy==="partner" || curveBy==="partner_intersect"){

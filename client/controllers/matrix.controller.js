@@ -4,12 +4,34 @@
 
 angular.module('ricardo.controllers.matrix', [])
 
-  .controller('matrix', [ "$scope", "$location", "apiService", "dataTableService","utils","reportingByYear","flowsByYear","METADATA_TABLE_HEADERS",
-    function ($scope, $location, apiService, dataTableService, utils,reportingByYear,flowsByYear,METADATA_TABLE_HEADERS) {
- // .controller('matrix', [ "$scope", "$location", "apiService", "dataTableService","utils","flowsByYear","METADATA_TABLE_HEADERS",
- //    function ($scope, $location, apiService, dataTableService, utils,flowsByYear,METADATA_TABLE_HEADERS) {
+  // .controller('matrix', [ "$scope", "$location", "apiService", "dataTableService","utils","flowsByYear","reportingByYear","METADATA_TABLE_HEADERS",
+  //   function ($scope, $location, apiService, dataTableService, utils,flowsByYear,reportingByYear,METADATA_TABLE_HEADERS) {
+ .controller('matrix', [ "$scope", "$location", "apiService", "dataTableService","utils","METADATA_TABLE_HEADERS",
+    function ($scope, $location, apiService, dataTableService, utils,METADATA_TABLE_HEADERS) {
       var yearsDelta = d3.range(1787, 1940)
 
+      $scope.flowChoices = [
+        {type: {value: "total",writable: true},
+         name: {value: "Total",writable: true}},
+        {type: {value: "Exp",writable: true},
+         name: {value: "Export",writable: true}},
+        {type: {value: "Imp",writable: true},
+         name: {value: "Import",writable: true}
+      }];
+
+      $scope.chartFlow = $scope.flowChoices[0]
+
+      $scope.partnerChoices = [
+        {type: {value: "bilateral",writable: true},
+         name: {value: "Bilateral Flows",writable: true}},
+        {type: {value: "world",writable: true},
+         name: {value: "World Flows",writable: true}
+      }];
+
+      $scope.partner = $scope.partnerChoices[0]
+      $scope.bilateral= $scope.partner.type.value==="bilateral"
+
+     
       $scope.multichartLayoutChoices = [
             {type: {value: "multiple",writable: true},
              name: {value: "Multiple View",writable: true}},
@@ -21,7 +43,9 @@ angular.module('ricardo.controllers.matrix', [])
       $scope.multichartLayout = $scope.multichartLayoutChoices[0]
 
 
-      $scope.matrixLayoutChoices = [
+      function updateLayoutChoices(partner){
+        if(partner==="bilateral")
+          $scope.matrixLayoutChoices = [
             {type: {value: "years",writable: true},
              name: {value: "Number of Reporting Years",writable: true}},
              {type: {value: "partnerAvg",writable: true},
@@ -29,9 +53,35 @@ angular.module('ricardo.controllers.matrix', [])
              {type: {value: "alphabet",writable: true},
              name: {value: "Reporting Name",writable: true}},
             ];
+        if(partner==="world")
+          $scope.matrixLayoutChoices = [
+            {type: {value: "years",writable: true},
+             name: {value: "Number of Reporting Years",writable: true}},
+             {type: {value: "alphabet",writable: true},
+             name: {value: "Reporting Name",writable: true}},
+            ];
+        
+      }
+      updateLayoutChoices($scope.partner.type.value)
       $scope.matrixLayout = $scope.matrixLayoutChoices[0]
 
-      $scope.matrixColorChoices = [
+
+      function updateColorChoices(partner){
+        if(partner==="bilateral")
+          $scope.matrixColorChoices = [
+            {type: {value: "sourcetype",writable: true},
+             name: {value: "Source Type",writable: true}},
+             {type: {value: "type",writable: true},
+             name: {value: "Reporting Type",writable: true}},
+             {type: {value: "continent",writable: true},
+             name: {value: "Reporting Continent",writable: true}},
+             {type: {value: "partner",writable: true},
+             name: {value: "Number of Partners",writable: true}},
+             {type: {value: "partner_intersect",writable: true},
+             name: {value: "Number of Mirror Partners",writable: true}}
+            ];
+        if(partner==="world")
+          $scope.matrixColorChoices = [
             {type: {value: "sourcetype",writable: true},
              name: {value: "Source Type",writable: true}},
              {type: {value: "type",writable: true},
@@ -39,56 +89,14 @@ angular.module('ricardo.controllers.matrix', [])
              {type: {value: "continent",writable: true},
              name: {value: "Reporting Continent",writable: true}},
              {type: {value: "reference",writable: true},
-             name: {value: "World Partner",writable: true}},
-             {type: {value: "partner",writable: true},
-             name: {value: "Number of Partners",writable: true}},
-             {type: {value: "partner_intersect",writable: true},
-             name: {value: "Number of Mirror Partners",writable: true}}
+             name: {value: "World Partner",writable: true}}        
             ];
-
+      }
+      updateColorChoices($scope.partner.type.value)
       $scope.matrixColorBy=$scope.matrixColorChoices[0]
-      $scope.colorByIndex=0
-      $scope.showBilateralTip=false;
 
-      $scope.synCurveChoices = [
-            {type: {value: "none",writable: true},
-             name: {value: "None",writable: true}},
-             {type: {value: "reference",writable: true},
-             name: {value: "World Partner",writable: true}},
-             {type: {value: "sourcetype",writable: true},
-             name: {value: "Source Type",writable: true}},
-             {type: {value: "type",writable: true},
-             name: {value: "Reporting Type",writable: true}},
-             {type: {value: "continent",writable: true},
-             name: {value: "Reporting Continent",writable: true}},
-            ];
-      $scope.synCurveBy = $scope.synCurveChoices[0]
+      // $scope.showBilateralTip=false;
 
-      $scope.flowChoices = [
-      {type: {value: "total",writable: true},
-       name: {value: "Total",writable: true}},
-      {type: {value: "Exp",writable: true},
-       name: {value: "Export",writable: true}},
-      {type: {value: "Imp",writable: true},
-       name: {value: "Import",writable: true}
-      }];
-
-      $scope.chartFlow = $scope.flowChoices[0]
-
-      $scope.grouped=false;
-
-      $scope.$watchCollection('[selectedMinDate, selectedMaxDate]', function (newVal, oldVal) {
-              if (newVal !== undefined && newVal !== oldVal && newVal[0] != newVal[1]) {
-                $scope.selectedMinDate = newVal[0];
-                $scope.selectedMaxDate = newVal[1];
-
-                // update local storage
-                localStorage.removeItem('selectedMinDate');
-                localStorage.removeItem('selectedMaxDate');
-                localStorage.selectedMinDate = newVal[0];
-                localStorage.selectedMaxDate = newVal[1];
-              }
-            })
       $scope.viewTable = 0;
 
       $scope.totalServerItems = 0;
@@ -117,7 +125,25 @@ angular.module('ricardo.controllers.matrix', [])
 
       $scope.changeFlow = function (flow) {
           $scope.chartFlow=flow;
-          reprocess(reportingByYear,flowsByYear)
+          // reprocess(reportingByYear,flowsByYear)
+          $scope.nbFlows=$scope.numberFlows.filter(function(d){return d.expimp===flow.type.value})
+          reprocess($scope.data,$scope.partner.type.value)
+      }
+      $scope.changePartner = function (partner) {
+          $scope.partner=partner;
+          updateColorChoices(partner.type.value)
+          updateLayoutChoices(partner.type.value)
+          var colorByChoices=$scope.matrixColorChoices
+                                  .map(function(d){return d.type})
+                                  .map(function(d){return d.value})
+         
+          var layoutChoices=$scope.matrixLayoutChoices
+                                  .map(function(d){return d.type})
+                                  .map(function(d){return d.value})
+          if (colorByChoices.indexOf($scope.matrixColorBy.type.value)===-1) $scope.matrixColorBy=$scope.matrixColorChoices[0]
+          if (layoutChoices.indexOf($scope.matrixLayout.type.value)===-1) $scope.matrixLayout=$scope.matrixLayoutChoices[0]
+          updatePartner(partner.type.value)  
+          $scope.bilateral= $scope.partner.type.value==="bilateral"
       }
 
       $scope.changeSynCurve = function (curveBy) {
@@ -128,14 +154,22 @@ angular.module('ricardo.controllers.matrix', [])
       // $scope.changeMultiLayout = function (layout) {
       //   $scope.multichartLayout = layout;
       // }
-      $scope.changeMatrixLayout = function (layout) {
-        $scope.matrixLayout = layout;
-      }
-      $scope.changeMatrixColor = function (colorBy) {
-        $scope.matrixColorBy = colorBy;
-        $scope.showBilateralTip= colorBy.type.value==="partner_intersect" ? true:false
-        $scope.colorByIndex=$scope.matrixColorChoices.indexOf(colorBy);
-      }
+      // $scope.changeMatrixLayout = function (layout) {
+      //   $scope.matrixLayout = layout;
+      // }
+      // $scope.changeMatrixColor = function (colorBy) {
+      //   $scope.matrixColorBy = colorBy;
+      // }
+
+      /*
+       * Trigger user interaction on colorBy
+       */
+
+      // $scope.$watch('matrixColorBy', function (newVal, oldVal) {
+      //     if (newVal !== oldVal) {
+      //      console.log(newVal)
+      //     }
+      // }, true);
 
       //quick nav
       $scope.reporting;
@@ -144,27 +178,36 @@ angular.module('ricardo.controllers.matrix', [])
         $scope.reporting=reporting;
         $scope.search+=1;
       }
-      function reprocess(data,nbFlows){
-        // var worldData=data.filter(function(d){return d.partnertype==="world"})
 
-        // var worldEntities=d3.nest()
-        //       .key(function(d) { return d.reporting; })
-        //       .key(function(d) { return d.year; })
-        //       .entries(worldData);
-        // console.log(worldEntities)
-        $scope.nbFlows=nbFlows.filter(function(d){return d.expimp===$scope.chartFlow.type.value})
-        //data manipulation
+      $scope.loaded=1;
+
+      function updatePartner(partner) {
+        apiService.getReportingsAvailableByYear({
+                      partner:partner
+                    })
+                    .then(function (result) {
+                      $scope.data=result;
+                      reprocess(result,partner)
+                    });
+        apiService.getNumberFlows({
+                      partner:partner
+                    })
+                    .then(function (result) {
+                      $scope.numberFlows=result;
+                      $scope.nbFlows=result.filter(function(d){return d.expimp===$scope.chartFlow.type.value})
+                    });
+
+      }
+      function reprocess(data,partner){
+      
         $scope.rawMinDate = d3.min(data, function(d) { return +d.year; })
         $scope.rawMaxDate = d3.max(data, function(d) { return +d.year; })
         
-        var flow=data.filter(function(d){return d.expimp===$scope.chartFlow.type.value});
-        var actualData=flow.filter(function(d){return d.partnertype==="actual"})
-        var worldData=flow.filter(function(d){return d.partnertype==="world"})
-        worldData.forEach(function(d){
-          d.partner=[]
-        })
-        //actualData proc
-        actualData.forEach(function(d){
+        var dataFiltered=data.filter(function(d){return d.expimp===$scope.chartFlow.type.value});
+         
+        //bilateral proc
+        if(partner==="bilateral"){
+          dataFiltered.forEach(function(d){
             d.year=+d.year;
             d.partner=[]
             d.partner_continent=[]
@@ -189,118 +232,64 @@ angular.module('ricardo.controllers.matrix', [])
                 "number":partner_continent[d]
               })
             })
-            d.reference="Actual Reported"
             d.partner_continent=continents.sort(function(a,b){return b.number-a.number;});
           });
-          // //worldData proc
-          // var worldEntities=d3.nest()
-          //       .key(function(d) { return d.reporting; })
-          //       .key(function(d) { return d.year; })
-          //       .entries(worldData);
 
-          // var worldbestguess=[]
-          // worldEntities.forEach(function(d){
-          //   d.values.forEach(function(e){
-          //     e.worldbestguess=e.values.filter(function(p){return p.partners==="World_best_guess"})[0]
-          //     // console.log(e.values.filter(function(p){return p.partners==="World_best_guess"}))
-          //     var worldpaterner=e.values.map(function(p){return p.partners})
-          //     if(worldpaterner.indexOf("World estimated") > -1) e.worldbestguess.reference= "World estimated"
-          //     else if (worldpaterner.indexOf("World as reported") > -1) e.worldbestguess.reference= "World as reported"
-          //     else if (worldpaterner.indexOf("World sum partners") > -1) e.worldbestguess.reference= "World sum partners"
-          //     else e.worldbestguess.reference="undefined"
-          //     e.worldbestguess.partner=[];
-          //     worldbestguess.push(e.worldbestguess)
-          //   })
-          // })
-
-          flow=actualData.concat(worldData)
-          var flowEntities=d3.nest()
-                .key(function(d) { return d.reporting; })
-                .key(function(d) { return d.year; })
-                .entries(flow);
-          // var flowEntities_uniq=flowEntities
-          var flowEntities_uniq=[]
-          flowEntities.forEach(function(d){
-            d.values.forEach(function(v){
-              if(v.values.length>1){
-                v.values.forEach(function(e,i){
-                  if (e.partnertype==="actual"){
-                    var attribute=e
-                    // attribute.reference=v.values[1].reference.split("|").length===1 ?  v.values[1].reference : "Multiple world partners"
-                    attribute.reference=v.values[1].reference
-                    attribute.sourcetype=v.values[1].sourcetype
-                    attribute.source=v.values[1].source
-                    flowEntities_uniq.push(attribute)
-                  }
-                })
-              }
-              else flowEntities_uniq.push(v.values[0])
-            })
-          })
-          flowEntities_uniq.forEach(function(d){
-            d.partner_mirror=d.partners_mirror
+          dataFiltered.forEach(function(d){
             if(d.partners_mirror.length>0 && d.partner.length>0 ){
               // d.partner_mirror=d.partners_mirror.split(",")
-              d.partner_intersect = d.partner_mirror.filter(function(value) {
+              d.partner_intersect = d.partners_mirror.filter(function(value) {
                                      return d.partner.indexOf(value.split("-")[0]) > -1;
                                  });
-              // if(d.partner_intersect.length>0) d.mirror_flow=d3.sum(d.partner_intersect,function(p){return p.split("-")[1]})
-              // else d.mirror_flow=0  
-              // d.mirror_rate=d.partner_intersect.length/d.partner.length
             }
-            else {
-              d.partner_intersect=[]
-              // d.mirror_rate=0
-            }
+            else d.partner_intersect=[]
           })
-          // var mirror_rateMax=d3.nest()
-          //                      .key(function(d){return d.year})
-          //                      .rollup(function(d){
-          //                         return d3.max(d,function(g){
-          //                           return g.partner_intersect.length
-          //                         })
-          //                       })
-          //                      .map(flowEntities_uniq)
-          // flowEntities_uniq.forEach(function(d){
-          //   d.mirror_max=mirror_rateMax[d.year];
-          //   if(mirror_rateMax[d.year]>0 && d.partners_mirror.length>0 && d.partner.length>0)
-          //     d.mirror_rate=(d.partner_intersect.length/d.partner.length) * (d.partner_intersect.length/d.mirror_max);
-          //   else d.mirror_rate=0
-            
-          // })
-          $scope.flow=flowEntities_uniq
+          $scope.flow=dataFiltered
           $scope.flowEntities=d3.nest()
               .key(function(d) { return d.reporting;})
-              .entries(flowEntities_uniq);
+              .entries(dataFiltered);
           $scope.flowEntities.forEach(function(d){
             var partner_sum=d3.sum(d.values,function(d){return d.partner.length})
             d.partnerAvg=d3.round(partner_sum/d.values.length)
             d.years=d.values.length
           })
-          $scope.entities=$scope.flowEntities.map(function(d){return d.values[0].reporting_id;})
-          $scope.tableData =flowEntities_uniq
-          setPagingData($scope.tableData,$scope.pagingOptions.pageSize,
-                $scope.pagingOptions.currentPage);
+        }//end proc bilateral
+
+        //bilateral proc
+        if(partner==="world"){  
+          $scope.flow=dataFiltered
+          $scope.flowEntities=d3.nest()
+              .key(function(d) { return d.reporting;})
+              .entries(dataFiltered);
+          $scope.flowEntities.forEach(function(d){
+            d.years=d.values.length
+          })
+        }//end proc bilateral
+        
+        $scope.entities=$scope.flowEntities.map(function(d){return d.values[0].reporting_id;})
+        $scope.tableData =dataFiltered
+        setPagingData($scope.tableData,$scope.pagingOptions.pageSize,
+              $scope.pagingOptions.currentPage);
       }//end reprocess
 
-      function init() {
-          // $scope.nbFlows=flowsByYear;
-          // $scope.data=reportingByYear;
-          reprocess(reportingByYear,flowsByYear);
-
-           // apiService
-           //  .getReportingsAvailableByYear()
-           //  .then(function (data){
-           //    $scope.data=data.slice();
-           //    reprocess(data)
-           //  })
-            // d3.csv("../metadata.csv",function(data){
-            //   $scope.data=data;
-            //   reprocess(data);
-            // })
-        }//end init
-
-        init()
+      updatePartner($scope.partner.type.value)
+      // function init() {
+        // reprocess(reportingByYear,flowsByYear); 
+          // d3.json("../metadata.json",function(data){
+          //   $scope.data=data;
+          //   reprocess(data,flowsByYear);
+          // })
+          
+          // d3.json("../metadata.json", function(reportingByYear) {
+          //   d3.json("../nbFlows.json", function(flowsByYear) {
+          //    $scope.data=reportingByYear;
+          //    $scope.numberFlows=flowsByYear;
+          //    reprocess(reportingByYear,flowsByYear); 
+          //     $scope.loaded=1;
+          //     $scope.$apply(); 
+          //   })
+          // });
+        // }//end init
 
         /*
         * Display and sort table data + download csv
@@ -316,16 +305,6 @@ angular.module('ricardo.controllers.matrix', [])
               }
           }
 
-        /*
-         * Trigger user interaction on table data
-         */
-
-        // $scope.$watch('tableData', function (newVal, oldVal) {
-        //     if (newVal !== oldVal) {
-        //       setPagingData($scope.tableData,$scope.pagingOptions.pageSize,
-        //         $scope.pagingOptions.currentPage);
-        //     }
-        // }, true);
 
         $scope.$watch('pagingOptions', function (newVal, oldVal) {
             if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {

@@ -166,10 +166,10 @@ angular.module('ricardo.directives.numberFlows', [])
                                       .sort(function(a,b){return b.nb_flows-a.nb_flows})
                         selectBar=selectBar.filter(function(d){return d.nb_flows!==0})
                         
-                        selectBar.push({
-                          partner:"total",
-                          nb_flows: d3.sum(selectBar,function(d){return d.nb_flows})
-                        })
+                        // selectBar.push({
+                        //   partner:"total",
+                        //   nb_flows: d3.sum(selectBar,function(d){return d.nb_flows})
+                        // })
                         tooltip_title.html("<h5>Number of "+yName+" Flows in "+d+"</h5")
                         // create table
                         // tooltip_table.html("<p>By "+categoryName+"</p>")
@@ -180,8 +180,9 @@ angular.module('ricardo.directives.numberFlows', [])
                         tr.append("td").append("svg").attr("width", '6').attr("height", '6').append("rect")
                           .attr("width", '6').attr("height", '6')
                           .attr("fill",function(d){ 
-                            if(d.partner!=="total") return color(d.partner);
-                            else return "none"
+                            return color(d.partner);
+                            // if(d.partner!=="total") return color(d.partner);
+                            // else return "none"
                           })
 
                         // create the second column for each segment.
