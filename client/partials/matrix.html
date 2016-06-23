@@ -1,5 +1,5 @@
 <!-- <div ng-hide="loaded" id="loading-bar-spinner">
-	<div class="spinner-icon"></div>
+	<div class="spinner-icon">{{loaded}}</div>
 </div> -->
 <div class="container">
 	<div class="row">
@@ -61,14 +61,6 @@
 		   	<h4>
 	   		{{ 'METADATA_MATRIX_CTL1' | translate }}
 	   		<inline-select-ctrl ng-model="matrixLayout" list="matrixLayoutChoices"></inline-select-ctrl>
-	   		<!-- <div class="inline-select">
-		        <ui-select ng-model="matrixLayout" theme="bootstrap" ng-change="changeMatrixLayout(matrixLayout)">
-		          <match placeholder="Order By">{{$select.selected.name.value}}</match>
-		          <choices repeat="item in matrixLayoutChoices | filter: $select.search">
-		            <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-		          </choices>
-		        </ui-select>
-		    </div> -->
 		    {{ 'METADATA_MATRIX_CTL2' | translate }}
 		    
 		    <inline-select-ctrl ng-model="matrixColorBy" list="matrixColorChoices"></inline-select-ctrl>

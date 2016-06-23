@@ -855,6 +855,7 @@ angular.module('ricardo.directives.reportingEntities', [])
                   .attr("x",-5)
                   .attr("y",8)
                   .attr("font-size",11)
+                  .attr("pointer-events","none")
                   .attr("cursor","default")
 
             d3.select("body")

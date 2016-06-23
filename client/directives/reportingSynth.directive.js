@@ -215,10 +215,10 @@ angular.module('ricardo.directives.reportingSynth', [])
           return color_domain;
         }
         function group_reporting(_data,curveBy){
-
-          //duplicate the array of object
+          //deep cp the array of object
           var data = JSON.parse(JSON.stringify(_data))
-          if(scope.partner.type.value==="world"){
+
+          if(scope.partner.type.value==="world" && data[0].reference!==undefined){
             data.forEach(function(d){
               d.reference=d.reference.split("|").length===1 ? d.reference:"Multiple world partners"
             })

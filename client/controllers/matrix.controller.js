@@ -146,11 +146,6 @@ angular.module('ricardo.controllers.matrix', [])
           $scope.bilateral= $scope.partner.type.value==="bilateral"
       }
 
-      $scope.changeSynCurve = function (curveBy) {
-        $scope.synCurveBy = curveBy;
-        // group_reporting($scope.flow,curveBy.type.value)
-
-      }
       // $scope.changeMultiLayout = function (layout) {
       //   $scope.multichartLayout = layout;
       // }
@@ -199,7 +194,6 @@ angular.module('ricardo.controllers.matrix', [])
 
       }
       function reprocess(data,partner){
-      
         $scope.rawMinDate = d3.min(data, function(d) { return +d.year; })
         $scope.rawMaxDate = d3.max(data, function(d) { return +d.year; })
         
