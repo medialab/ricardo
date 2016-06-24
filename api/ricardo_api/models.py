@@ -204,18 +204,6 @@ def get_nb_flows(flow):
                   AND flow is not NULL
                   GROUP BY year,expimp
                   UNION
-                  SELECT year , count(*), "Bilateral" as partner,expimp
-                  FROM flow_joined
-                  WHERE partner_slug not like "World%"
-                  AND flow is not NULL
-                  GROUP BY year,expimp
-                  UNION
-                  SELECT year , count(*), "Bilateral" as partner,"total" as expimp
-                  FROM flow_joined
-                  WHERE partner_slug not like "World%"
-                  AND flow is not NULL
-                  GROUP BY year
-                  UNION
                   SELECT year , count(*), "Bilateral" as partner,"total" as expimp
                   FROM flow_joined
                   WHERE partner_slug not like "World%"
@@ -234,7 +222,7 @@ def get_nb_flows(flow):
                   AND flow is not NULL
                   GROUP BY year,expimp
                   union
-                  SELECT year , count(*), "FedericoTena" as partner,expimp
+                  SELECT year , count(*), "Federico-Tena" as partner,expimp
                   FROM flow_joined
                   WHERE partner_slug like 'WorldFedericoTena'
                   AND flow is not NULL
@@ -250,7 +238,7 @@ def get_nb_flows(flow):
                   AND flow is not NULL
                   GROUP BY year
                   union
-                  SELECT year , count(*), "FedericoTena" as partner,"total" as expimp
+                  SELECT year , count(*), "Federico-Tena" as partner,"total" as expimp
                   FROM flow_joined
                   WHERE partner_slug like "WorldFedericoTena"
                   AND flow is not NULL
@@ -322,7 +310,7 @@ def get_reportings_available_by_year(flow):
           "expimp":row[3].split("|")[i],
           "partners":row[4].split("|")[i].split(","),
           "year":row[5],
-          "sourcetype":sourcetype,
+          "sourcetype":sourcetype.capitalize(),
           "source":row[7].split("|")[i],
           "continent":row[9],
           "type":row[10],
@@ -342,7 +330,7 @@ def get_reportings_available_by_year(flow):
           "expimp":"total",
           "partners":list(set(total_partner)),
           "year":row[5],
-          "sourcetype":total_sourcetype,
+          "sourcetype":total_sourcetype.capitalize(),
           "source":total_source,
           "continent":row[9],
           "type":row[10],
@@ -398,7 +386,7 @@ def get_reportings_available_by_year(flow):
           "partner":[],
           "reference":partner,
           "year":row[5],
-          "sourcetype":sourcetype,
+          "sourcetype":"Federico-Tena" if sourcetype is "FedericoTena" else sourcetype.capitalize(),
           "source":source,
           "continent":row[9],
           "type":row[10]
@@ -421,7 +409,7 @@ def get_reportings_available_by_year(flow):
           "reference":("|").join(list(set(total_partner))),
           "year":row[5],
           # "sourcetype": ("|").join(list(set(total_sourcetypelist))),
-          "sourcetype": total_sourcetype,
+          "sourcetype": "Federico-Tena" if total_sourcetype is "FedericoTena" else total_sourcetype.capitalize(),
           "source": ("|").join(list(set(total_source))),
           "continent":row[9],
           "type":row[10]

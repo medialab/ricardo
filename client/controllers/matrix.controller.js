@@ -198,7 +198,7 @@ angular.module('ricardo.controllers.matrix', [])
         $scope.rawMaxDate = d3.max(data, function(d) { return +d.year; })
         
         var dataFiltered=data.filter(function(d){return d.expimp===$scope.chartFlow.type.value});
-         
+        
         //bilateral proc
         if(partner==="bilateral"){
           dataFiltered.forEach(function(d){
@@ -252,6 +252,7 @@ angular.module('ricardo.controllers.matrix', [])
         //bilateral proc
         if(partner==="world"){  
           $scope.flow=dataFiltered
+
           $scope.flowEntities=d3.nest()
               .key(function(d) { return d.reporting;})
               .entries(dataFiltered);

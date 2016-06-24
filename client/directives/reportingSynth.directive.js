@@ -180,10 +180,10 @@ angular.module('ricardo.directives.reportingSynth', [])
           // "World sum partners|World as reported":3
         }
         var source_map={
-          "primary":0,
-          "secondary":1,
-          "estimation":2,
-          "FedericoTena":3
+          "Primary":0,
+          "Secondary":1,
+          "Estimation":2,
+          "Federico-Tena":3
         }
         var type_map={
           "country":0,
@@ -309,7 +309,7 @@ angular.module('ricardo.directives.reportingSynth', [])
                     if (category==="partner") return partner_map[d];
                     else if(category==="partner_intersect") return partner_intersect_map[d];
                     else if(category==="mirror_rate") return mirror_map[d];
-                    else return d.charAt(0).toUpperCase() + d.slice(1);
+                    else return d;
                   })
                   .attr("font-size",11)
             var legend_offset=0

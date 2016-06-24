@@ -166,10 +166,10 @@ angular.module('ricardo.directives.reportingEntities', [])
           "World Federico-Tena|World as reported":4
         }
         var source_map={
-          "primary":0,
-          "secondary":1,
-          "estimation":2,
-          "FedericoTena":3
+          "Primary":0,
+          "Secondary":1,
+          "Estimation":2,
+          "Federico-Tena":3
         }
         var type_map={
           "country":0,
@@ -956,7 +956,7 @@ angular.module('ricardo.directives.reportingEntities', [])
               
               if (colorBy==="reference") tooltip.select(".reference").html("<hr><p style='font-weight:bold'>World Partner: <br>"+v.reference+"</p>")             
               if (colorBy==="sourcetype") tooltip.select(".source").html(
-                  "<hr><div><span style='font-weight:bold'>Source("+v.sourcetype+")</span>"+(v.sourcetype!=="FedericoTena" ? ":"+v.source:"") +"</div>")
+                  "<hr><div><span style='font-weight:bold'>Source("+v.sourcetype+")</span>"+(v.sourcetype!=="Federico-Tena" ? ":"+v.source:"") +"</div>")
 
               if (colorBy==="partner_intersect") tooltip.select(".reference").html("<hr><p style='font-weight:bold'>Number of Mirror Partners: "+v.partner_intersect.length+"</p>")
               tooltip.select(".tip_svg").style("display","none");
