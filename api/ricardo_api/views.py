@@ -110,6 +110,16 @@ def reporting_entities():
 
     return Response(json_data, status=200, mimetype='application/json')
 
+@app.route('/bilateral_entities')
+def bilateral_entities():
+    try:
+        json_data=models.get_bilateral_entities()
+    except Exception:
+        raise
+        abort(500)
+
+    return Response(json_data, status=200, mimetype='application/json')
+
 @app.route('/mirror_entities')
 def mirror_entities():
     reporting_id = request.args.get('reporting_id',None)  #only one !

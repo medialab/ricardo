@@ -134,6 +134,21 @@ angular.module('ricardo.services', [])
        });
        return deferred.promise;
      },
+     getBilateralEntities: function(params){
+       var deferred = $q.defer();
+       var serviceUrl = '/bilateral_entities'
+       $http({
+          method: 'GET',
+          url : BASE_API_URL + serviceUrl,
+          params : params,
+          cache: true
+        }).success(function(data){
+         deferred.resolve(data);
+       }).error(function(){
+         deferred.reject("Error 500 : An error occured while fetching data");
+       });
+       return deferred.promise;
+     },
      getReportingYears: function(params){
        var deferred = $q.defer();
        var serviceUrl = '/reporting_years'

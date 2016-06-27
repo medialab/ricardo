@@ -785,6 +785,33 @@ def get_reporting_entities(types=[],to_partner_ids=[]):
     json_response=sorted(json_response, key=lambda k: k['RICid']) 
     return json.dumps(json_response,encoding="UTF8")
 
+def get_bilateral_entities():
+
+    cursor = get_db().cursor()
+    sql="""select distinct reporting_slug,reporting,reporting_type,reporting_continent
+            from flow_joined
+            WHERE (partner_slug is not 'Worldestimated'
+            and  partner_slug is not 'Worldasreported'
+            and partner_slug is not 'Worldasreported2'
+            and  partner_slug is not'Worldsumpartners'
+            and partner_slug is not 'WorldFedericoTena'
+            and partner_slug is not 'Worldbestguess')
+            and reporting_type is "country"
+            group by reporting
+            having count(*)>0
+        """
+    cursor.execute(sql)
+    json_response=[]
+    for (id,r,t,continent) in cursor:
+        json_response.append({
+            "RICid":id,
+            "RICname":r,
+            "type":t,
+            "continent":continent
+            })
+    json_response=sorted(json_response, key=lambda k: k['RICid']) 
+    return json.dumps(json_response,encoding="UTF8")
+
 
 def get_RICentities():
     return json.dumps(ric_entities_data(),encoding="UTF8")

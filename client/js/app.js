@@ -63,7 +63,7 @@ angular.module('ricardo', [
     controller: 'bilateral',
     resolve: {
       reportingEntities : function (apiService) {
-        return apiService.getReportingEntities({'type_filter': 'country'})
+        return apiService.getBilateralEntities()
       }
     }
   });
