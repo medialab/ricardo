@@ -80,7 +80,7 @@ angular.module('ricardo.directives.dualTimeline', [])
                 }
               })
 
-           x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
+           x.domain([new Date(scope.startDate-1, 0, 1), new Date(scope.endDate+1, 0, 1)]);
            y.domain([0, d3.max( data.filter(function(d){ return d.year >= scope.startDate
             && d.year <= scope.endDate}), function(d) { return Math.max( d.imp, d.exp ); })]);
 

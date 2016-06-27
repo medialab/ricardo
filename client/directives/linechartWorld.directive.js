@@ -139,7 +139,7 @@ angular.module('ricardo.directives.linechartWorld', [])
           // var xMax = d3.max(data, function(elm) {return d3.max(elm.values, function(d) { return new Date(d.year, 0, 1) }); });
           // var xMin = d3.min(data, function(elm) {return d3.min(elm.values, function(d) { return new Date(d.year, 0, 1) }); });
 
-          x.domain([new Date(minDate, 0, 1),new Date(maxDate, 0, 1)])
+          x.domain([new Date(minDate-1, 0, 1),new Date(maxDate+1, 0, 1)])
           y.domain([0,yMax])
 
           if (d3.select("#linechart-world-container").select("svg").empty()){

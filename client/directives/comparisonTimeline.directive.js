@@ -94,7 +94,7 @@ angular.module('ricardo.directives.comparisonTimeline', [])
               .ticks(4)
               .tickSize(width)
 
-          x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
+          x.domain([new Date(scope.startDate-1, 0, 1), new Date(scope.endDate+1, 0, 1)]);
           y.domain([
             d3.min( data.filter(function(d){ return d.year >= scope.startDate && d.year <= scope.endDate}), function(d) {
                 if (diffSourceDefined(d) && diffTargetDefined(d)) {
