@@ -24,6 +24,10 @@ angular.module('ricardo.controllers.country', [])
       $scope.missingPartner = 0;
     };
 
+    $scope.okBilateral = function () {
+      $scope.missingBilateral = 0;
+    };
+
     /*
      * Partners Histo filter
      */
@@ -210,13 +214,13 @@ angular.module('ricardo.controllers.country', [])
      * Calling the API to init country selection
      */
     function init(sourceID, currency) {
-      d3.select("#linechart-world-container > svg").remove();
       apiService
         .getFlows({
           reporting_ids: sourceID,
           with_sources:1
         })
         .then(function (data) {
+
           var dates = data.flows.map(function (d) { return d.year})
 
           $scope.selectedMinDate = d3.min(dates);
@@ -325,6 +329,12 @@ angular.module('ricardo.controllers.country', [])
             d.type = $scope.RICentities[""+d.partner_id].type
             d.continent = $scope.RICentities[d.partner_id+""].continent
           })
+          var onlyWorld=data.flows.every(function(d){
+            return d.continent==="World"
+          })
+          if (onlyWorld) $scope.missingBilateral = 1;
+
+
           cfSource.add(data.flows)
 
           // delete world flows, maybe api action ?
@@ -348,6 +358,7 @@ angular.module('ricardo.controllers.country', [])
               timelineData.push(td);
            });
 
+          // if(flow.length===1 && flow[0]===null) console.log(flow)
           $scope.timelineData=timelineData;
           $scope.$apply();
           /*
@@ -455,7 +466,6 @@ angular.module('ricardo.controllers.country', [])
       //     if()return partner_selected.indexOf(d.partner_id) > -1;
       //   });
       // }
-
       var missing;
       var allExpNull = $scope.tableDataSources.every(function (d) {
         return d.exp === null;
@@ -477,7 +487,8 @@ angular.module('ricardo.controllers.country', [])
       // })
 
       // if (onlyWorld)
-      //   missing = "1";
+      //   $scope.missingBilateral = 1;
+
       $scope.missing = missing;
 
       // if ($scope.linechartData) {

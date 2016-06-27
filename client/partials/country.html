@@ -3,10 +3,10 @@
   <div ng-show="missing" class="alert">
     <div class="modal-body" >
      <p>
-        There is <strong>no data available</strong> in the database for {{entities.sourceEntity.selected.RICname}}
+        There is <strong>no data available</strong> in the database for <strong>{{entities.sourceEntity.selected.RICname}}</strong>
      </p>
      <p>
-     between {{selectedMinDate}} and {{selectedMaxDate}}
+     between <strong>{{selectedMinDate}}</strong> and {{selectedMaxDate}}
      </p>
       <p>
         Choose another one or change date selection, thank you !
@@ -14,6 +14,19 @@
     </div>
     <div class="modal-footer">
         <button class="btn btn-default" ng-click="ok()">OK</button>
+    </div>
+  </div>
+  <div ng-show="missingBilateral" class="alert">
+    <div class="modal-body" >
+     <p>
+        There is <strong>no bilateral flow available</strong> in the database for <strong>{{entities.sourceEntity.selected.RICname}}</strong>
+     </p>
+     <p>
+        Choose <strong>World trade</strong> in the bottom chart to check the estimation flow, thank you!
+     </p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="okBilateral()">OK</button>
     </div>
   </div>
 </div>
@@ -297,7 +310,7 @@
       </h4>
         <div ng-show="messagePercent">
          <p class="paragraphViz">
-             The percentages are based on<a href="/#worldTrade">world sum partners</a> of {{entities.sourceEntity1.selected.RICname}}
+             The percentages are based on <a href="/#worldTrade">world sum partners</a> of {{entities.sourceEntity.selected.RICname}}
          </p>
         </div>
     </div>
