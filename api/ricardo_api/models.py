@@ -362,7 +362,7 @@ def get_reportings_available_by_year(flow):
         elif "estimation" in sourcetypelist:
           sourcetype="estimation"
         else:
-          sourcetype="FedericoTena"
+          sourcetype="Federico-Tena"
         sourceIndex=sourcetypelist.index(sourcetype)
         total_sourcetypelist.append(sourcetype)
 
@@ -386,7 +386,7 @@ def get_reportings_available_by_year(flow):
           "partner":[],
           "reference":partner,
           "year":row[5],
-          "sourcetype":"Federico-Tena" if sourcetype is "FedericoTena" else sourcetype.capitalize(),
+          "sourcetype":"Federico-Tena" if sourcetype is "Federico-Tena" else sourcetype.capitalize(),
           "source":source,
           "continent":row[9],
           "type":row[10]
@@ -399,7 +399,7 @@ def get_reportings_available_by_year(flow):
       elif "estimation" in total_sourcetypelist:
         total_sourcetype="estimation"
       else:
-        total_sourcetype="FedericoTena"
+        total_sourcetype="Federico-Tena"
       json_response.append({
           "reporting_id": row[0],
           "reporting": row[1],
@@ -409,7 +409,7 @@ def get_reportings_available_by_year(flow):
           "reference":("|").join(list(set(total_partner))),
           "year":row[5],
           # "sourcetype": ("|").join(list(set(total_sourcetypelist))),
-          "sourcetype": "Federico-Tena" if total_sourcetype is "FedericoTena" else total_sourcetype.capitalize(),
+          "sourcetype": "Federico-Tena" if total_sourcetype is "Federico-Tena" else total_sourcetype.capitalize(),
           "source": ("|").join(list(set(total_source))),
           "continent":row[9],
           "type":row[10]
