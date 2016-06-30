@@ -227,7 +227,7 @@ angular.module('ricardo.directives.reportingEntities', [])
         var indexSelected=null
         var yearSelected=null
 
-        var margin = {top: 0, right: 10, bottom: 40, left: 180},
+        var margin = {top: 0, right: 13, bottom: 40, left: 180},
             width = document.querySelector('#reporting-entities-container').offsetWidth-margin.left-margin.right,
             height,
             offset=30,
@@ -638,7 +638,6 @@ angular.module('ricardo.directives.reportingEntities', [])
 
           var minDate=d3.min(scope.flatData,function(d){return +d.year});
           var maxDate=d3.max(scope.flatData,function(d){return +d.year});
-
           var years=d3.range(minDate,maxDate)
 
           var reportings=data.map(function(d){

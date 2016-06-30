@@ -61,7 +61,7 @@ angular.module('ricardo.directives.reportingSynth', [])
         //        "World estimated":"#bf69bf",
         // }
 
-        var margin = {top: 20, right: 20, bottom: 20, left: 180 },
+        var margin = {top: 20, right: 15, bottom: 20, left: 180 },
             width = document.querySelector('#reporting-synth-container').offsetWidth-margin.left-margin.right,
             height=100,
             offsetHeight=10;

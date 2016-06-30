@@ -4,9 +4,16 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<!-- </br>
-			</br> -->
-			<h4>Metadata vizualization about
+			</br>
+			</br>
+			<p class="paragraphPage">
+				{{ 'METADATA_VIEW_INTRO_1' | translate }}
+				<em>Metadata</em>
+				{{ 'METADATA_VIEW_INTRO_2' | translate }}
+			</p>
+		</div>
+		<div class="col-md-12">
+			<h4>{{'METADATA_TITLE' | translate}}
 			<div class="inline-select">
 		      <ui-select ng-model="partner" theme="bootstrap" ng-change="changePartner(partner)">
 		        <match placeholder="Select partner type">{{$select.selected.name.value}}</match>
@@ -15,13 +22,7 @@
 		        </choices>
 		      </ui-select>
 		   	</div>
-			</h4>
-			<p class="paragraphPage">
-				{{ 'METADATA_VIEW_INTRO' | translate }}
-			</p>
-		</div>
-		<div class="col-md-12">
-			<h4>{{ 'METADATA_NBFLOW_TITLE' | translate }} in 
+			{{ 'METADATA_NBFLOW_TITLE' | translate }} in 
 			<div class="inline-select">
 		      <ui-select ng-model="chartFlow" theme="bootstrap" ng-change="changeFlow(chartFlow)">
 		        <match placeholder="Select flow type">{{$select.selected.name.value}}</match>
@@ -31,18 +32,23 @@
 		      </ui-select>
 		   	</div>
 			</h4>
-			<p class="paragraphPage">
-				{{ 'METADATA_NBFLOW_INTRO' | translate }}
+			<p ng-show="bilateral" class="paragraphPage">
+				{{ 'METADATA_NBFLOW_INTRO_BILATERAL' | translate }}
+			</p>
+			<p ng-hide="bilateral" class="paragraphPage">
+				{{ 'METADATA_NBFLOW_INTRO_WORLD_1' | translate }}
+				<em>World</em>
+				{{ 'METADATA_NBFLOW_INTRO_WORLD_2' | translate }}
 			</p>
 			<div class="legend">
-			 	<div ng-show="bilateral" class="legend-item">
+<!-- 			 	<div ng-show="bilateral" class="legend-item">
 		            <div class="square bilateral"></div> Bilateral trade flows 
-		        </div>
+		        </div> -->
 				<div ng-hide="bilateral" class="legend-item">
-		          <div class="square world"></div> World trade flows
+		          <div class="square world"></div> RICardo database
 		        </div>
 		        <div ng-hide="bilateral" class="legend-item">
-		          <div class="square federico"></div> Federico-Tena trade flows
+		          <div class="square federico"></div> Federico-Tena database
 		        </div>
 		       
 		    </div>
@@ -74,39 +80,44 @@
 		    </div>
 			</h4>
 
-			<!-- <div>
-				<ul class="listIntro">
-	                <li>
-	                 Reporting type: {{ "METADATA_MATRIX_INTRO_1" | translate}}
-	                </li>
-	                <li>
-	                 Reporting continent: {{ "METADATA_MATRIX_INTRO_2"| translate}}	
-	                </li>
-	                <li>
-	                Source type:{{ "METADATA_MATRIX_INTRO_3" | translate}}
-	                </li> 
-	                <li>
-	                World partner: {{ "METADATA_MATRIX_INTRO_4"| translate}}
-	                </li> 
-	                <li>
-	                Number of partners: {{"METADATA_MATRIX_INTRO_5" | translate}}
-	                </li> 
-	                <li>
-	                Mirror rate: {{ "METADATA_MATRIX_INTRO_6" | translate}}
-	                </li> 
-	             </ul>
-			</div> -->
 			<div class="matrixIntro">
 				<div>
 					<p><strong>Number of Reportings Color by</strong>
 					<br>
-					<strong><u>{{ matrixColorBy.name.value}}</u>: </strong>{{"METADATA_MATRIX_INTRO_"+matrixColorBy.type.value | translate}}</p>
+					<strong><u>{{ matrixColorBy.name.value}}</u>: </strong>
+
+					<!-- <span ng-show="(matrixColorBy.type.value=='sourcetype')? true:false">
+						{{"METADATA_MATRIX_INTRO_"+matrixColorBy.type.value+"_"+partner.type.value+"_1" | translate}}
+					</span>
+					<span ng-hide="(matrixColorBy.type.value=='sourcetype')? true:false">
+						{{"METADATA_MATRIX_INTRO_"+matrixColorBy.type.value | translate}}
+					</span> -->
+					<span ng-show="(matrixColorBy.type.value=='sourcetype')? true:false">
+						<span ng-show="bilateral">
+						{{"METADATA_MATRIX_INTRO_sourcetype_bilateral" | translate}}</span>
+						<span ng-hide="bilateral">
+						{{"METADATA_MATRIX_INTRO_sourcetype_world_0" | translate}}
+						<a href="" ng-click="goTo('/#worldTrade')"> Federico-Tena(2016)</a>
+						{{"METADATA_MATRIX_INTRO_sourcetype_world_1" | translate}}
+						</span>
+					</span>
+					<span ng-show="(matrixColorBy.type.value=='type')? true:false">
+						{{"METADATA_MATRIX_INTRO_type" | translate}}
+					</span>
+					<span ng-show="(matrixColorBy.type.value=='continent')? true:false">
+						{{"METADATA_MATRIX_INTRO_continent" | translate}}
+					</span>
+					<span ng-show="(matrixColorBy.type.value=='partner')? true:false">
+						{{"METADATA_MATRIX_INTRO_partner" | translate}}
+					</span>
+					<span ng-show="(matrixColorBy.type.value=='partner_intersect')? true:false">
+						{{"METADATA_MATRIX_INTRO_partner_intersect" | translate}}
+					</span>
+					<span ng-show="(matrixColorBy.type.value=='reference')? true:false">
+						{{"METADATA_MATRIX_INTRO_reference" | translate}}
+					</span>
+					</p>
 				</div>
-				<!-- <div ng-show="showBilateralTip">
-				      <div><strong>Number of partner:</strong> total number of bilateral partners reported by <strong>R</strong> for the year</div>
-				      <div><strong>Number of mirror partner:</strong> number of bilateral partners reported by <strong>R</strong> which report <strong>R</strong> as a partner of the year </div>
-				      <div><strong>Mirror Rate:</strong> Number of mirror partner/Number of partner</div>
-				</div> -->
 			</div>
 			
 		    <reporting-synth

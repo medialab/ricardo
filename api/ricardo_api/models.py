@@ -211,7 +211,7 @@ def get_nb_flows(flow):
                   GROUP BY year
                   """)
   else:
-    cursor.execute("""SELECT year , count(*), "World" as partner,expimp
+    cursor.execute("""SELECT year , count(*), "RICardo" as partner,expimp
                   FROM flow_joined
                   WHERE (
                   partner_slug like 'Worldestimated'
@@ -228,7 +228,7 @@ def get_nb_flows(flow):
                   AND flow is not NULL
                   GROUP BY year,expimp
                   union
-                  SELECT year , count(*), "World" as partner,  "total" as expimp
+                  SELECT year , count(*), "RICardo" as partner,  "total" as expimp
                   FROM flow_joined
                   WHERE (
                   partner_slug like 'Worldestimated'

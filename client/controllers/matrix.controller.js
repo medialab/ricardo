@@ -176,6 +176,10 @@ angular.module('ricardo.controllers.matrix', [])
 
       $scope.loaded=1;
 
+      $scope.goTo = function(url) {
+        $location.url(url);
+      }
+
       function updatePartner(partner) {
         apiService.getReportingsAvailableByYear({
                       partner:partner

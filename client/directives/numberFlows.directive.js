@@ -30,7 +30,7 @@ angular.module('ricardo.directives.numberFlows', [])
         var yValue=scope.flowType.type.value;
         var yName=scope.flowType.name.value;
         var color=d3.scale.ordinal()
-                    .domain(["Bilateral","World","Federico-Tena"]).range(['#ad494a',"#393b79","#637939"])
+                    .domain(["Bilateral","RICardo","Federico-Tena"]).range(['#ad494a',"#393b79","#637939"])
         
         // var flow_map={
         //   "Bilateral":0,
@@ -186,7 +186,7 @@ angular.module('ricardo.directives.numberFlows', [])
                           })
 
                         // create the second column for each segment.
-                        tr.append("td").text(function(d){ return d.partner+" trade flows"})
+                        tr.append("td").text(function(d){ return d.partner+" database"})
 
                         // create the third column for each segment.
                         tr.append("td").text(function(d){ return d.nb_flows}).style("text-align","right");
