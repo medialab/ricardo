@@ -66,67 +66,14 @@ angular.module('ricardo.controllers.bilateral', [])
     $scope.timelineData
     $scope.entities = {sourceEntity : {}, targetEntity : {}}
     $scope.rawMinDate                               
-    $scope.rawMaxDate                               
-    // $scope.selectedMinDate = 1787;                   
-    // $scope.selectedMaxDate = 1938;                   
+    $scope.rawMaxDate                                                
     $scope.rawYearsRange                            
     $scope.rawYearsRange_forInf                     
     $scope.rawYearsRange_forSup                    
 
     /*
-     * First init - check if data are in local storage
+     * First init - reporting/partners validation
      */
-    // try {
-    //   if (localStorage.sourceEntitySelected && localStorage.targetEntitySelected) 
-    //   {
-    //     $scope.entities.sourceEntity.selected = JSON.parse(localStorage.getItem('sourceEntitySelected'));
-    //     $scope.entities.targetEntity.selected = JSON.parse(localStorage.getItem('targetEntitySelected'));
-    //     init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected.RICid);
-    //   }
-    //   else if (localStorage.sourceEntitySelected && !localStorage.targetEntitySelected) 
-    //   {
-    //     $scope.entities.sourceEntity.selected = JSON.parse(localStorage.getItem('sourceEntitySelected'));
-    //     apiService
-    //       .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
-    //       .then(function (result) {
-    //         console.log(result)
-    //         for (var i=0, len = result.flows.length; i < len; i++) {
-    //           if (!/^World/.test(result.flows[i].partner_id)) {
-    //             var target = {RICid:"", name:""};
-    //             target.RICid = result.flows[i].partner_id;
-    //             target.RICname = result.flows[i].partner_name;
-    //             $scope.entities.targetEntity.selected = target;
-    //             break;
-    //           }
-    //           i++;
-    //         }
-    //         localStorage.setItem("targetEntitySelected",$scope.entities.targetEntity.selected)
-    //         // $scope.selectedMinDate = JSON.parse(localStorage.getItem('selectedMinDate'))
-    //         // $scope.selectedMaxDate = JSON.parse(localStorage.getItem('selectedMaxDate'))
-    //         if ($scope.entities.targetEntity.selected !== undefined)
-    //           init($scope.entities.sourceEntity.selected.RICid,$scope.entities.targetEntity.selected.RICid)
-    //           // init($scope.entities.sourceEntity.selected.RICid, 
-    //           //   $scope.entities.targetEntity.selected.RICid, 
-    //           //   $scope.selectedMinDate, $scope.selectedMaxDate);
-    //       })
-    //   }
-    //   else 
-    //   {
-    //     $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
-    //     return e.RICid===DEFAULT_REPORTING})[0]
-    //     $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){
-    //     return e.RICid===DEFAULT_PARTNER})[0]
-    //     init(DEFAULT_REPORTING, DEFAULT_PARTNER);
-    //   }
-    // }
-    // catch (e) {
-    //   console.log("error bilateral", e);
-    //   // $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
-    //   //   return e.RICid===DEFAULT_REPORTING})[0]
-    //   // $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){
-    //   //   return e.RICid===DEFAULT_PARTNER})[0]
-    //   // init(DEFAULT_REPORTING, DEFAULT_PARTNER);
-    // }
 
     try {
       if (localStorage.sourceEntitySelected) 
@@ -144,7 +91,8 @@ angular.module('ricardo.controllers.bilateral', [])
       apiService
           .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
           .then(function (result) {
-            $scope.partnerEntities=result.RICentities.partners.filter(function(d){return RICids.indexOf(d.RICid)!==-1 && d.RICid!==$scope.entities.sourceEntity.selected.RICid });
+            $scope.partnerEntities=result.RICentities.partners.filter(function(d){
+              return RICids.indexOf(d.RICid)!==-1 && d.type==="country" && d.RICid!==$scope.entities.sourceEntity.selected.RICid });
             if($scope.partnerEntities.length===0) $scope.missingBilateral="1"
             else{
               $scope.entities.targetEntity.selected=$scope.partnerEntities[0]
@@ -245,7 +193,8 @@ angular.module('ricardo.controllers.bilateral', [])
           apiService
               .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
               .then(function (result) {
-                $scope.partnerEntities=result.RICentities.partners.filter(function(d){return RICids.indexOf(d.RICid)!==-1 && d.RICid!==$scope.entities.sourceEntity.selected.RICid });
+                $scope.partnerEntities=result.RICentities.partners.filter(function(d){
+                  return RICids.indexOf(d.RICid)!==-1 && d.type==="country" && d.RICid!==$scope.entities.sourceEntity.selected.RICid });
                 if($scope.partnerEntities.length===0) $scope.missingBilateral="1";
                 // else{
                 //   $scope.entities.targetEntity.selected=$scope.partnerEntities[0]
@@ -258,7 +207,8 @@ angular.module('ricardo.controllers.bilateral', [])
           apiService
             .getFlows({reporting_ids:$scope.entities.sourceEntity.selected.RICid})
             .then(function (result) {
-              $scope.partnerEntities=result.RICentities.partners.filter(function(d){return RICids.indexOf(d.RICid)!==-1 && d.RICid!==$scope.entities.sourceEntity.selected.RICid });
+              $scope.partnerEntities=result.RICentities.partners.filter(function(d){
+                return RICids.indexOf(d.RICid)!==-1 && d.type==="country" && d.RICid!==$scope.entities.sourceEntity.selected.RICid });
               if($scope.partnerEntities.length===0) $scope.missingBilateral="1";
               else{
                 $scope.entities.targetEntity.selected=$scope.partnerEntities[0]

@@ -15,16 +15,6 @@ angular.module('ricardo.controllers.world', [])
     
     $scope.worldFlows=reportingWorldFlows;
 
-    //duplication??
-    // $scope.dualtimeline = [];
-    // worldFlowsYears.forEach( function (d) {
-    //   if (d.key)
-    //     $scope.dualtimeline.push({
-    //       year: d.key,
-    //       imp:d.values[1].flows,
-    //       exp:d.values[0].flows,
-    //     });
-    // })
 
     $scope.entities = {
       sourceEntity : {},
@@ -510,10 +500,6 @@ angular.module('ricardo.controllers.world', [])
 
 
     function updateTableData(){
-      // $scope.tableData = [];
-      // $scope.tableData = worldFlowsYearsFormat;
-      // $scope.tableData.concat(worldFlowsYearsFormat);
-
       $scope.tableData = worldFlowsYearsFormat.filter(function(d){
          return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
       });
@@ -543,9 +529,6 @@ angular.module('ricardo.controllers.world', [])
 
         updateTableData();
         updateDateRange();
-        // if ($scope.reporting.length > 0)
-        //   initLinechart($scope.reporting, $scope.linechartFlow.type.value,
-        //   $scope.linechartCurrency.type.value);
       }
     })
 

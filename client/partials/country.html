@@ -146,15 +146,6 @@
         </choices>
       </ui-select>
   </div>
- <!--     {{ 'PARTNER_HISTO_4' | translate }}
-  <div class="inline-select">
-    <ui-select ng-model="sorted" theme="bootstrap" ng-change="changeSort(sorted)">
-      <match placeholder="Sort by...">{{$select.selected.name.value}}</match>
-      <choices repeat="item in sorts | filter: $select.search">
-        <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-      </choices>
-    </ui-select>
-  </div> -->
   </h4>
   <div class="row">
     <div class="col-md-12">
@@ -211,8 +202,6 @@
       </div>
     </div>
   </div>
-
-
 
 <div id="select-doubleChart">
   <div class="row">
@@ -319,55 +308,6 @@
   </div>
 
 <div id="select-lineChart">
- <!--  <div class="col-md-9">
-
-    <div class="inline-select" >
-      <ui-select   ng-model="entities.sourceCountryEntity.selected" theme="bootstrap"  ng-change="changeCountry(entities.sourceCountryEntity.selected)">
-        <match placeholder="Country"></match>
-        <choices repeat="item in reportingCountryEntities | filter: $select.search">
-          <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-        </choices>
-      </ui-select>
-    </div>
-
-    <div class="inline-select">
-      <ui-select  ng-model="entities.sourceColonialEntity.selected" theme="bootstrap"  ng-change="changeColonial(entities.sourceColonialEntity.selected)">
-        <match placeholder="Colonial area"></match>
-        <choices repeat="item in reportingColonialEntities | filter: $select.search">
-          <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-        </choices>
-      </ui-select>
-    </div>
-
-    <div class="inline-select">
-      <ui-select  ng-model="entities.sourceGeoEntity.selected" theme="bootstrap" ng-show="reportingGeoEntities.length" ng-change="changeGeo(entities.sourceGeoEntity.selected)">
-        <match placeholder="Geographical area"></match>
-        <choices repeat="item in reportingGeoEntities | filter: $select.search">
-          <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-        </choices>
-      </ui-select>
-    </div>
-
-    <div class="inline-select">
-      <ui-select  ng-model="entities.sourceContinentEntity.selected" theme="bootstrap" ng-show="reportingContinentEntities.length" ng-change="changeContinent(entities.sourceContinentEntity.selected)">
-        <match placeholder="Continent"></match>
-        <choices repeat="item in reportingContinentEntities | filter: $select.search">
-          <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-        </choices>
-      </ui-select>
-    </div>
-
-    <div class="inline-select">
-      <ui-select  ng-model="entities.sourceWorldEntity.selected" theme="bootstrap" ng-show="reportingWorldEntities.length" ng-change="changeWorld(entities.sourceWorldEntity.selected)">
-        <match placeholder="World trade"></match>
-        <choices repeat="item in reportingWorldEntities | filter: $select.search">
-          <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-        </choices>
-      </ui-select>
-    </div>
-
-  </div> -->
-
   <div class="row">
     <div class="col-sm-12">
       <linechart-world 
