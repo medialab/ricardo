@@ -28,11 +28,11 @@ angular.module('ricardo.directives.reportingWorld', [])
           });
          
         var categoryColors = {
-               "World sum partners":"#526ca9" ,
-               "World as reported":"#a67f48",
-               "World estimated":"#75792f",
-               "World Federico-Tena":"#7b4173",
-               "World_best_guess":"#663333",
+               "World sum partners":"#bd9e39" ,
+               "World as reported":"#ad494a",
+               "World estimated":"#393b79",
+               "World Federico-Tena":"#637939",
+               "World_best_guess":"#7b4173",
         }
         // var partnerColors=d3.scale.category10()
 
@@ -42,7 +42,7 @@ angular.module('ricardo.directives.reportingWorld', [])
 
         var margin = {top: 20, right: 0, bottom: 40, left: 0 },
             width = document.querySelector('#reporting-world-container').offsetWidth-margin.left-margin.right,
-            height=500,
+            height=400,
             offsetHeight=10,
             partners=5;
         var bisector = d3.bisector(function(d) {return d.year;}).left;
@@ -230,6 +230,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                         .attr("class", "area-total")
                         .attr("d", function(d) { return area(d.values); })
                         .style("pointer-events","none")
+                        .style("opacity",1)
 
                     e.append("path")
                         .attr("class", "line")
@@ -308,6 +309,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                         e.select(".area-total")
                           .transition().duration(duration)
                           .attr("d", function(d) { return area(d.values); })
+                          .style("opacity",1)
 
                         e.select(".line")
                           .transition().duration(duration)
@@ -376,6 +378,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                               .attr("class", "area-total")
                               .attr("d", function(d) { return area(d.values); })
                               .style("pointer-events","none")
+                              .style("opacity",0)
 
                         e.append("path")
                                 .attr("class", "line")
@@ -443,6 +446,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                             e.select(".area-total")
                               .transition().duration(duration)
                               .attr("d", function(d) { return area(d.values); })
+                              .style("opacity",0)
 
                             e.select(".line")
                               .transition().duration(duration)

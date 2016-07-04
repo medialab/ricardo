@@ -112,7 +112,7 @@ angular.module('ricardo.directives.partnersHistogram', [])
               barMaxHeigth = 30,
               barGap = 40,
               barColors = [ "#cc6666","#663333"],
-              currency = "sterling pound",
+              currency = "pound sterling",
               sum = 0,
               RICentities = scope.countryData,
               chart;

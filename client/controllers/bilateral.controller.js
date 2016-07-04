@@ -47,7 +47,7 @@ angular.module('ricardo.controllers.bilateral', [])
     var data
     var RICids=reportingEntities.map(function(d){return d.RICid})
     $scope.reportingEntities = reportingEntities;
-    $scope.actualCurrency = "sterling pound"
+    $scope.actualCurrency = "pound sterling"
     $scope.tableData = [];
     $scope.totalServerItems = 0;
     $scope.alerts = []

@@ -157,7 +157,7 @@ angular.module('ricardo.controllers.country', [])
     $scope.filter = "all"
     $scope.order = "tot"
     $scope.currency = 0
-    $scope.actualCurrency = "sterling pound"
+    $scope.actualCurrency = "pound sterling"
 
 
     /*

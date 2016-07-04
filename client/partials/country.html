@@ -255,7 +255,7 @@
       </div>
       <div class="inline-select">
         <ui-select  ng-model="entities.sourceWorldEntity.selected" theme="bootstrap" ng-show="reportingWorldEntities.length" ng-change="changeWorld(entities.sourceWorldEntity.selected)">
-          <match placeholder="World trade"></match>
+          <match placeholder="World"></match>
           <choices repeat="item in reportingWorldEntities | filter: $select.search">
             <div ng-bind-html="item.RICname | highlight: $select.search"></div>
           </choices>

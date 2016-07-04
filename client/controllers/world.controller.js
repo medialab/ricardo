@@ -26,7 +26,7 @@ angular.module('ricardo.controllers.world', [])
     }
 
     $scope.currency = 0
-    $scope.actualCurrency = "sterling pound"
+    $scope.actualCurrency = "pound sterling"
     $scope.RICentities = {}
     $scope.RICentitiesDD = d3.values($scope.RICentities).sort(function(a,b){
           if(a.RICname < b.RICname) return -1;
