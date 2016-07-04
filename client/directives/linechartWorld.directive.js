@@ -20,14 +20,15 @@ angular.module('ricardo.directives.linechartWorld', [])
       },
       link: function(scope, element, attrs) {
 
-        function noData(entity) {
+        function noData(entity,minDate,maxDate) {
           d3.select("#linechart-world-container").append("div")
             .attr("class", "alert")
             .attr("id", "missingDataLineChart")
             .html(function() {
-               return '<div class="modal-body" ><p> There is <strong>no data available</strong> in the database for '+ entity + '</p><p>Choose another one or change date selection, thank you !</p> </div> <div class="modal-footer"><button class="btn btn-default" ng-click="okPartner()">OK</button></div>';})
+               return '<div class="modal-body" ><p> There is <strong>no data available</strong> in the database for '+ entity + '<br> between <strong>'+minDate+'</strong> and <strong>'+maxDate+'</strong></p>'+
+               '<p>Change date selection, thank you !</p> </div> <div class="modal-footer"><button class="btn btn-default" ng-click="okPartner()">OK</button></div>';})
             .on("click", function(){
-              chart.selectAll("div#missingDataLineChart").remove();
+              d3.selectAll("div#missingDataLineChart").remove();
             })
         }
         // scope.$watch("flowType",function(newValue,oldValue){
@@ -35,18 +36,28 @@ angular.module('ricardo.directives.linechartWorld', [])
         // })
         scope.$watchCollection('[ngData,startDate,endDate]', function(newValue, oldValue) {
           if(newValue[0] && newValue[0].length > 0){
-            newValue[0].forEach(function (e) {
-              if (e.color === undefined){
-                console.log("color not defined")
-                // e.color=scope.reporting.filter(function(r){return r.RICid===e.key})[0]["color"]
-               }
-            })
-            // var yValueSterling;
+
             yValue = newValue[0][0].flowType
             var minDate=newValue[1]
             var maxDate=newValue[2]
             currency=scope.currency.name.value
-            linechart(newValue[0], yValue, minDate,maxDate);
+
+            newValue[0].forEach(function (e) {
+            
+            //plot data anyway
+            if (e.color === undefined){
+              console.log("color not defined")
+              // e.color=scope.reporting.filter(function(r){return r.RICid===e.key})[0]["color"]
+             }
+            })
+            linechart(newValue[0], yValue, minDate,maxDate);  
+
+            //check/alert the new added reporting has all null value
+            var newData=newValue[0][newValue[0].length-1]
+            var missingData=newData.values.filter(function(d){return d.year>=minDate && d.year<=maxDate})   
+                                       .every(function(d){return d[yValue]===null})
+            if(missingData) noData(newData.key,minDate,maxDate)
+            else  d3.selectAll("div#missingDataLineChart").remove(); 
           }
           else{
             d3.select("#linechart-world-container").select("svg").remove()
