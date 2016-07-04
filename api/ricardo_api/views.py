@@ -99,9 +99,8 @@ def reporting_years():
 @app.route('/reporting_entities')
 def reporting_entities():
     type_filter = request.args.get('type_filter',None) #["countries","city","colonial_area","geographic_area"])
-    to_partner_ids = request.args.get('to_partner_ids',None)
+    to_partner_ids = request.args.get('partners_ids',None)
     types=type_filter.split(",") if type_filter else []
-
     try:
         json_data=models.get_reporting_entities(types,to_partner_ids.split(",") if to_partner_ids else [])
     except Exception:

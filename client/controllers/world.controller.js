@@ -5,8 +5,8 @@
 angular.module('ricardo.controllers.world', [])
 
   .controller('world', [ "$scope", "$location","$anchorScroll", "apiService","dataTableService",
-    "utils", "reportingEntities", "reportingWorldFlows", "reportingWorldPartner","WORLD_TABLE_HEADERS", function ($scope, $location,$anchorScroll, apiService, dataTableService,
-    utils, reportingEntities, reportingWorldFlows,reportingWorldPartner,WORLD_TABLE_HEADERS) {
+    "utils",  "reportingWorldFlows", "reportingWorldPartner","WORLD_TABLE_HEADERS", function ($scope, $location,$anchorScroll, apiService, dataTableService,
+    utils,reportingWorldFlows,reportingWorldPartner,WORLD_TABLE_HEADERS) {
 
 
     // data process for multilinechart
@@ -123,8 +123,22 @@ angular.module('ricardo.controllers.world', [])
               sources: d.values[0].sources
             });
         })
+        /*
+         * Init the list of entities for linechart
+         */
+        apiService.getReportingEntities({
+          'partners_ids': worldPartner.type.value,
+          'type_filter': 'country'
+          })
+          .then(function (result) {
+            $scope.reportingCountryEntities1=result
+            // $scope.reportingCountryEntities1 = result.filter(function (d) {
+            //     return d.type === "country"
+            // });
+          });
         init();
     }
+
     $scope.changeWorldPartner($scope.worldPartner)
 
     $scope.changeMultiFlow = function (flow) {
@@ -167,13 +181,7 @@ angular.module('ricardo.controllers.world', [])
     $scope.goTo = function(url) {
       $location.url(url);
     }
-    /*
-     * Init the list of entities for linechart
-     */
-
-    $scope.reportingCountryEntities1 = reportingEntities.filter(function (d) {
-        return d.type === "country"
-      });
+    
     /*
      *  Init the timelines
      */
@@ -194,6 +202,7 @@ angular.module('ricardo.controllers.world', [])
 
       $scope.reporting = []
       $scope.entities.sourceCountryEntity = {}
+      $scope.linechartData=[]
 
       $scope.rawMinDate = d3.min(worldFlows_filtered, function(d) { return d.year; })
       $scope.rawMaxDate = d3.max(worldFlows_filtered, function(d) { return d.year; })
@@ -266,7 +275,8 @@ angular.module('ricardo.controllers.world', [])
         yearSelected.push({
           reporting_id: ric,
           type: type,
-          partner_id:"Worldbestguess",
+          // partner_id:"Worldbestguess",
+          partner_id:$scope.worldPartner.type.value,
           year: i,
           imp: null,
           exp: null,
@@ -315,7 +325,8 @@ angular.module('ricardo.controllers.world', [])
               apiService
                 .getFlows({
                   reporting_ids: d.RICid,
-                  partner_ids:"Worldbestguess",
+                  // partner_ids:"Worldbestguess",
+                  partner_ids:$scope.worldPartner.type.value,
                   with_sources:1})
                 .then(function (result) {
                   var yearSelected = [];
@@ -336,7 +347,8 @@ angular.module('ricardo.controllers.world', [])
                apiService
                 .getContinentFlows({
                   continents: d.RICname,
-                  partner_ids:"Worldbestguess",
+                  // partner_ids:"Worldbestguess",
+                  partner_ids:$scope.worldPartner.type.value,
                   with_sources:1})
                 .then(function (result) {
                   var yearSelected = [];
@@ -362,7 +374,11 @@ angular.module('ricardo.controllers.world', [])
           partners.forEach( function (d) {
             if (d.type !== "continent" ) {
               apiService
-                .getFlows({reporting_ids: d.RICid, partner_ids:"Worldbestguess"})
+                .getFlows({
+                  reporting_ids: d.RICid, 
+                  // partner_ids:"Worldbestguess"
+                  partner_ids:$scope.worldPartner.type.value
+                })
                 .then(function (result) {
                   var yearSelected = [];
                   // yearSelected = initTabLineChart(result, yearSelected, d.type,
@@ -383,7 +399,11 @@ angular.module('ricardo.controllers.world', [])
             }
             else {
                apiService
-                .getContinentFlows({continents: d.RICname, partner_ids:"Worldbestguess"})
+                .getContinentFlows({
+                  continents: d.RICname, 
+                  // partner_ids:"Worldbestguess"
+                  partner_id:$scope.worldPartner.type.value
+                })
                 .then(function (result) {
                   var yearSelected = [];
                   // yearSelected = initTabLineChart(result, yearSelected, d.type,
@@ -420,7 +440,8 @@ angular.module('ricardo.controllers.world', [])
           worldFlowsYearsFormat.push({
             reporting_id: null,
             type: null,
-            partner_id:  "Worldbestguess",
+            // partner_id:  "Worldbestguess",
+            partner_id:$scope.worldPartner.type.value,
             year: d.key,
             imp:d.values[1].flows,
             exp:d.values[0].flows,
@@ -448,7 +469,8 @@ angular.module('ricardo.controllers.world', [])
              pctArray.push({
                     reporting_id: data.reporting_id,
                     type: data.type,
-                    partner_id: "Worldbestguess",
+                    // partner_id: "Worldbestguess",
+                    partner_id:$scope.worldPartner.type.value,
                     year: data.year,
                     imp:getRatio(data,d,"imp"),
                     exp:getRatio(data,d,"exp"),

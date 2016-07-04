@@ -80,9 +80,9 @@ angular.module('ricardo', [
     templateUrl: 'partials/world.html',
     controller: 'world',
     resolve: {
-      reportingEntities : function (apiService) {
-        return apiService.getReportingEntities({'partners_ids': 'Worldbestguess'})
-      },
+      // reportingEntities : function (apiService) {
+      //   return apiService.getReportingEntities({'partners_ids': 'Worldbestguess'})
+      // },
       reportingWorldFlows : function (apiService) {
         return apiService.getWorldFlows()
         // return apiService.getWorldAvailable()

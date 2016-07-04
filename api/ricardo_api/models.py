@@ -754,7 +754,6 @@ def get_reporting_entities(types=[],to_partner_ids=[]):
             return json.dumps(json_response,encoding="UTF8")
     else:
         json_response=[]
-
     type_clause='reporting_type IN ("%s")'%'","'.join(types) if len(types)>0 else ""
     partner_clause=" partner_slug IN ('%s') "%"','".join(to_partner_ids) if len(to_partner_ids)>0 else ""
     if type_clause!="" or partner_clause!="":
@@ -762,17 +761,18 @@ def get_reporting_entities(types=[],to_partner_ids=[]):
         where_clause = "WHERE "+where_clause if where_clause!="" else ""
     else:
         where_clause =""
-    # sql="""SELECT distinct reporting_slug,reporting,reporting_type,reporting_continent
-    #                       FROM flow_joined
-    #                       %s"""%(where_clause)
-    sql="""select reporting_slug,reporting,reporting_type,reporting_continent
-          from (
-          SELECT reporting_slug,reporting,reporting_type,reporting_continent, group_concat(distinct partner_slug) as partner
-          FROM flow_joined
-          %s
-          group by reporting_slug)
-          where partner is not 'WorldFedericoTena'
-        """%(where_clause)
+
+    sql="""SELECT distinct reporting_slug,reporting,reporting_type,reporting_continent
+                          FROM flow_joined
+                          %s"""%(where_clause)
+    # sql="""select reporting_slug,reporting,reporting_type,reporting_continent
+    #       from (
+    #       SELECT reporting_slug,reporting,reporting_type,reporting_continent, group_concat(distinct partner_slug) as partner
+    #       FROM flow_joined
+    #       %s
+    #       group by reporting_slug)
+    #       where partner is not 'WorldFedericoTena'
+    #     """%(where_clause)
     cursor.execute(sql)
 
     for (id,r,t,continent) in cursor:
