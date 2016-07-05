@@ -713,11 +713,11 @@ h4 {
 
 .legend .square.import{ background-color: #cc6666; }
 .legend .square.export{ background-color: #663333; }
-.legend .square.worldsum{ background-color: #bd9e39; }
-.legend .square.worldreport{ background-color: #ad494a; }
-.legend .square.worldestimate{ background-color: #393b79; }
-.legend .square.worldfederico{ background-color: #637939; }
-.legend .square.worldbestguess{ background-color: #7b4173; }
+.legend .square.worldsum{ background-color: #bcbd22; }
+.legend .square.worldreport{ background-color: #b82e2e; }
+.legend .square.worldestimate{ background-color: #7b4173; }
+.legend .square.worldfederico{ background-color: #109618; }
+.legend .square.worldbestguess{ background-color: #316395; }
 .legend .square.world{ background-color: #393b79; }
 .legend .square.bilateral{ background-color: #ad494a; }
 .legend .square.federico{ background-color: #637939; }

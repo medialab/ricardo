@@ -60,9 +60,12 @@ angular.module('ricardo.directives.partnersHistogram', [])
         var format = d3.format("0,000");
 
         function formatAmount(line, field){
-          var res = parseInt(line[field]);
-          res = format(Math.round(res));
-          return (res ? res : 0) + "&nbsp;" + currency.replace(/\s+/, '&nbsp;');
+          if(line[field]){
+            var res = parseInt(line[field]);
+            res = format(Math.round(res));
+            return (res ? res : 0) + "&nbsp;" + currency.replace(/\s+/, '&nbsp;');
+          }
+          else return "No Data Available"
         }
         function formatPercent(val){
           var res = parseInt(val);

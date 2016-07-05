@@ -170,8 +170,7 @@ def get_world_flows(from_year,to_year):
     cursor.execute("""SELECT SUM(flow*Unit/ifnull(rate,1)), partner_slug,year, COUNT(*), expimp, Source
                       FROM flow_joined
                       WHERE (
-                       partner_slug like 'Worldestimated'
-                       OR partner_slug like 'Worldasreported'
+                       partner_slug like 'Worldasreported'
                        OR partner_slug like 'Worldbestguess'
                        OR partner_slug like 'Worldsumpartners'
                        OR partner_slug like 'WorldFedericoTena')
@@ -430,7 +429,6 @@ def get_world_available():
                     FROM flow_joined
                     WHERE flow is not NULL
                     AND(partner_slug like 'Worldbestguess'
-                    OR partner_slug like 'Worldestimated'
                     OR partner_slug like 'Worldasreported'
                     OR partner_slug like 'Worldsumpartners'
                     OR partner_slug like 'WorldFedericoTena')

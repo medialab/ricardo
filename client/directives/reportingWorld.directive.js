@@ -28,11 +28,10 @@ angular.module('ricardo.directives.reportingWorld', [])
           });
          
         var categoryColors = {
-               "World sum partners":"#bd9e39" ,
-               "World as reported":"#ad494a",
-               "World estimated":"#393b79",
-               "World Federico-Tena":"#637939",
-               "World_best_guess":"#7b4173",
+               "World sum partners":"#bcbd22" ,
+               "World as reported":"#b82e2e",
+               "World Federico-Tena":"#109618",
+               "World_best_guess":"#316395",
         }
         // var partnerColors=d3.scale.category10()
 
@@ -44,7 +43,7 @@ angular.module('ricardo.directives.reportingWorld', [])
             width = document.querySelector('#reporting-world-container').offsetWidth-margin.left-margin.right,
             height=400,
             offsetHeight=10,
-            partners=5;
+            partners=4;
         var bisector = d3.bisector(function(d) {return d.year;}).left;
 
         var yValue=scope.flowType.type.value;
