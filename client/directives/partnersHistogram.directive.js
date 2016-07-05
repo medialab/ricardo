@@ -17,10 +17,7 @@ angular.module('ricardo.directives.partnersHistogram', [])
         endDate: '=',
         indexYears: '=',
         countryData: '=',
-        groupData: '=',
         orderData: '=',
-        sortData: '=',
-        filterData: '='
       },
       link: function(scope, element, attrs) {
 
@@ -29,10 +26,10 @@ angular.module('ricardo.directives.partnersHistogram', [])
          */
         var chart = d3.select(element[0]);
 
-        scope.$watch("ngData", function (newValue, oldValue){
+        scope.$watchCollection('[ngData,orderData]', function (newValue, oldValue){
           if(newValue !== oldValue){
             removeSvgElements(chart)
-            partnersHistogram(newValue, scope.orderData, scope.indexYears, scope.startDate, scope.endDate+1);
+            partnersHistogram(newValue[0], scope.orderData, scope.indexYears, scope.startDate, scope.endDate+1);
           }
         }, true);
 
@@ -124,7 +121,13 @@ angular.module('ricardo.directives.partnersHistogram', [])
          */
 
         function partnersHistogram(data, order, indexYears, minDate, maxDate){
-
+          //order data by ordered again
+          data = data.sort(function(a,b){
+                      if (order === 'name')
+                        return d3.ascending(a.key, b.key);
+                      // else return d3.descending(a["avg_" + order ],b["avg_" + order ])
+                      else return d3.descending(a["avg_" + order ]? a["avg_" + order ]:0,b["avg_" + order]?b["avg_" + order]:0);
+                    })
           height = (data.length + 1) * (barMaxHeigth + barGap);
           var selection = d3.select("#partners-histogram-container");
 
