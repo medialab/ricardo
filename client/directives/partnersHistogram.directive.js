@@ -155,6 +155,7 @@ angular.module('ricardo.directives.partnersHistogram', [])
           var tooltip = d3.select("body")
               .append("div")
               .attr("class", "partners-tooltip");
+              .attr("width","200px")
 
           data.forEach(function(p, i) {
             var entity = RICentities[""+p.key],

@@ -35,7 +35,7 @@
 	"COUNTRY_VIEW_INTRO": "The Country view shows the total trade of a reporting country with all its partners. It compares partner entities according to their average share in the reporting country’s total trade, calculates the annual bilateral trade balance and tracks the growth of trade with selected partners.",
 	"COUNTRY_TITLE_1": "Total trade of reporting ",
 	"COUNTRY_VIEW_DUAL_1": "The ",
-	"COUNTRY_VIEW_DUAL_2": " view focuses on the distribution of a reporting country’s total trade with its different partners. It compares the partner entities according to their share in the reporting country’s total trade, calculates the annual bilateral trade balance and can track the growth of trade with selected partners.",
+	"COUNTRY_VIEW_DUAL_2": " view focuses on the distribution of a reporting country’s total trade with its different partners. It compares the partner entities according to their share in the reporting country’s total trade, calculates the annual bilateral trade balance and tracks the growth of trade with selected partners.",
 	"COUNTRY_VIEW_DUAL_LEGEND": "In this graph, total trade equals the sum of export (import) flows with all partner entities.",
 	"COUNTRY_PARTNER_HISTO": "In this graph, the partners of the reporting country are compared by calculating two indicators:",
 	"COUNTRY_PARTNER_HISTO_1": "the average bilateral trade share estimated for available years over the selected period",
