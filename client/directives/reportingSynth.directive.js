@@ -123,10 +123,11 @@ angular.module('ricardo.directives.reportingSynth', [])
            .style("stroke","grey")
         }
 
+      
         var tooltip = d3.select("body")
                       .append("div")
                       .attr("class", "synth-tooltip")
-                      .style("width", "160px")
+                      .style("width","160px")
 
         var tooltip_title=tooltip.append("div").attr("class", "title");
         var tooltip_table=tooltip.append("div").attr("class","table")
@@ -425,7 +426,10 @@ angular.module('ricardo.directives.reportingSynth', [])
 
                       })
                       .on("mousemove",function(d){
-                        tooltip.style("left", d3.event.pageX+20 + "px")
+                        tooltip.style("left", function(){
+                                        if (d3.event.pageX-margin.left<9*width/10) return (d3.event.pageX+20)+ "px";
+                                        else return (d3.event.pageX-180)+ "px"
+                                      })
                                .style("top", d3.event.pageY-100 + "px")
                         //  //tick highlighting
                         var text = svg.append("text")

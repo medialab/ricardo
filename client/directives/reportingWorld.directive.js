@@ -41,7 +41,7 @@ angular.module('ricardo.directives.reportingWorld', [])
 
         var margin = {top: 20, right: 0, bottom: 40, left: 0 },
             width = document.querySelector('#reporting-world-container').offsetWidth-margin.left-margin.right,
-            height=400,
+            height=300,
             offsetHeight=10,
             partners=4;
         var bisector = d3.bisector(function(d) {return d.year;}).left;
@@ -180,10 +180,7 @@ angular.module('ricardo.directives.reportingWorld', [])
             })
           })
 
-          // var minDate=d3.min(data_flatten,function(d){return d.year});
-          // var maxDate=d3.max(data_flatten,function(d){return d.year});
-          // x.domain([new Date(minDate,0,1), new Date(maxDate,0,1)]);
-          x.domain([new Date(scope.startDate,0,1), new Date(scope.endDate,0,1)]);
+          x.domain([new Date(scope.startDate-1,0,1), new Date(scope.endDate+1,0,1)]);
           // y.domain([0,maxFlow])
 
           var dataFiltered=data_flatten.filter(function(d){
@@ -506,15 +503,12 @@ angular.module('ricardo.directives.reportingWorld', [])
                   })
                   .on("mousemove", function(){
                     tooltip.style("opacity", .9)
-                    .style("left", d3.event.pageX+20 + "px")
-                    // .style("left", function(){
-                    //   if (d3.event.pageX-margin.left<width/2) return (d3.event.pageX+20)+ "px";
-                    //   else return (d3.event.pageX-220)+ "px"
-                    //   // var tooltip_position=(d3.event.pageX-margin.left)<width/2 ? (d3.event.pageX+20):(d3.event.pageX-220) + "px"
-                    //   // return tooltip_position
-                    // })
+                    .style("left", function(){
+                      if (d3.event.pageX-margin.left<9*width/10) return (d3.event.pageX+20)+ "px";
+                      else return (d3.event.pageX-220)+ "px"
+                    })
                     // .style("top", (d3.event.pageY+75) + "px")
-                    .style("top", "400px")
+                    .style("top", "300px")
 
                     var mouse = d3.mouse(this),
                         mouseDate=x.invert(mouse[0]),
