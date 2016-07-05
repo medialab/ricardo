@@ -203,7 +203,7 @@ angular.module('ricardo.controllers.country', [])
             d.currency = e.currency,
             d.sources = e.sources
             d.total = e.exp + e.imp;
-            if (d.total === 0)
+            if (d.total === 0 || e.exp===null || e.imp===null)
               d.total = null;
           }
         })
