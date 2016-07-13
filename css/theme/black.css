@@ -163,7 +163,8 @@ body {
 .reveal table {
   margin: auto;
   border-collapse: collapse;
-  border-spacing: 0; }
+  border-spacing: 0;
+  font-size:0.8em; }
 
 .reveal table th {
   font-weight: bold; }
@@ -205,8 +206,9 @@ body {
  * LINKS
  *********************************************/
 .reveal a {
-  color: #42affa;
-  text-decoration: none;
+  color: #EEEEEE;
+  text-decoration: underline;
+  font-style:italic;
   -webkit-transition: color .15s ease;
   -moz-transition: color .15s ease;
   transition: color .15s ease; }
