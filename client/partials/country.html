@@ -117,7 +117,7 @@
 <div class="container">
   <br>
   <br>
-  <h4>  {{ 'PARTNER_HISTO_1' | translate }} Order by
+  <h4>  {{ 'PARTNER_HISTO_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'PARTNER_HISTO_2' | translate }} {{ 'PARTNER_HISTO_ORDER_BY' | translate }}
   <div class="inline-select">
       <ui-select ng-model="ordered" theme="bootstrap" ng-change="changeOrder(ordered)">
       <match placeholder="Order by...">{{$select.selected.name.value}}</match>
@@ -127,8 +127,7 @@
       </ui-select>
   </div>
   <br>
-     <!-- {{ 'PARTNER_HISTO_3' | translate }} -->
-     Filter on 
+     {{ 'PARTNER_HISTO_FILTER_ON' | translate }}
   <div class="inline-select">
     <ui-select ng-model="filtered" theme="bootstrap" ng-change="changeFilter(filtered)">
       <match placeholder="Filter on...">{{$select.selected.name.value}}</match>
@@ -137,7 +136,7 @@
       </choices>
     </ui-select>
   </div>
-  Group by
+     {{ 'PARTNER_HISTO_GROUP_BY' | translate }}
   <div class="inline-select">
       <ui-select ng-model="grouped" theme="bootstrap" ng-change="changeGroup(grouped)">
         <match placeholder="Group by...">{{$select.selected.name.value}}</match>
