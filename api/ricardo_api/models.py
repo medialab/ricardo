@@ -9,7 +9,8 @@ import codecs
 import networkx as nx
 import operator
 import re
-from difflib import SequenceMatcher
+import csvkit
+from StringIO import StringIO
 
 def ric_entities_data(ids=[]):
     cursor = get_db().cursor()
@@ -814,3 +815,30 @@ def get_bilateral_entities():
 def get_RICentities():
     return json.dumps(ric_entities_data(),encoding="UTF8")
 
+def get_sources_csv():
+
+  def formatRef(ref):
+    source = list(ref)
+    name = source[0]
+    if source[1]:
+      name += ' ' + source[1]
+    if source[2]:
+      name += ' ' + source[2]
+    return ['. '.join([name] + [s for s in source[3:7] if s and s != ''])]+source
+
+
+  cursor = get_db().cursor()
+  cursor.row_factory = sqlite3.Row
+  sql="""
+  SELECT name,country,dates,s.author,edition_date,volume,pages,URL,shelf_number,s.notes,
+         reference, type, st.author as reference_author
+  FROM sources as s LEFT JOIN source_types as st ON s.acronym=st.acronym"""
+  output = StringIO()
+  rows = cursor.execute(sql)
+  first = rows.next()
+  dw = csvkit.writer(output)
+  dw.writerow(["bibliographic reference"] + first.keys())
+
+  dw.writerow(formatRef(first))
+  dw.writerows(formatRef(r) for r in rows)  
+  return output.getvalue()
