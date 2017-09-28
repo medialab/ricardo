@@ -20,7 +20,6 @@ angular.module('ricardo', [
   'ricardo.services.country',
   'ricardo.directives',
   'ricardo.controllers.navbar',
-  'ricardo.controllers.footer',
   'ricardo.controllers.TranslateController',
   'ricardo.controllers.bilateral',
   'ricardo.controllers.country',

@@ -1,348 +1,407 @@
 <div class="view-page">
-  <div top-menu class="row">
-  </div>
-    <div id="homeImage" class="row">
-      <img ng-src="../img/ricepaper_v3.png" id="backHomeImage"/>
-      <div>
-        <h2 id="imgTitle">The RICardo Project</h2>
-        <p id="imgSubtitle">Trade between Nations from c. 1800 to 1938</p>
-      </div>
+  <div top-menu class="row"></div>
+  <div id="homeImage" class="row">
+    <img ng-src="../img/ricepaper_v3.png" id="backHomeImage"/>
+    <div>
+      <h2 id="imgTitle">The RICardo Project</h2>
+      <p id="imgSubtitle">Trade between Nations from c. 1800 to 1938</p>
     </div>
+  </div>
+  <div class="container">
+    <div id="homeSubtitle">
+      {{ 'INTRO' | translate }}
+    </div>
+    <div class="row workingPaperContainer">
+      <div class="spaceBetweenParagraphs noFloat">&bull;</div>
+      <div class="col-xs-6 col-md-6">
+        {{ 'COLUMN1' | translate }}
+        <a href="https://data.imf.org/">data.imf.org</a>
+        {{ 'COLUMN1_LINK' | translate }}
+        <a href="http://comtrade.un.org/">comtrade.un.org</a>
+      </div>
+      <div class="col-xs-6 col-md-6">
+        {{ 'COLUMN2' | translate }}
+        <a href="mailto:beatrice.dedinger@siencespo.fr">beatrice.dedinger@siencespo.fr</a>
+      </div>
+
+      </div>
+      <div class="spaceBetweenParagraphs noFloat">&bull;</div>
+    </div>
+
+  <div id="workingPaper">
     <div class="container">
-      <div id="homeSubtitle">
-        {{ 'INTRO' | translate }}
-      </div>
       <div class="row workingPaperContainer">
-        <div class="spaceBetweenParagraphs noFloat">&bull;</div>
-        <div class="col-xs-6 col-md-6"> 
-          {{ 'COLUMN1' | translate }}
-          <a href="https://data.imf.org/">data.imf.org</a>
-          {{ 'COLUMN1_LINK' | translate }}
-          <a href="http://comtrade.un.org/">comtrade.un.org</a>
-        </div>
-        <div class="col-xs-6 col-md-6"> 
-          {{ 'COLUMN2' | translate }}
-          <a href="mailto:beatrice.dedinger@siencespo.fr">beatrice.dedinger@siencespo.fr</a>
-        </div>
+        <div class="col-xs-6 col-md-12">
+        <div class="thumbnailStudy" id="studies">
+            <span class="studyTitle">{{ 'HOW_TO_CITE' | translate}}</span>
 
-        </div>
-        <div class="spaceBetweenParagraphs noFloat">&bull;</div>
-      </div>
-   
-    <div id="workingPaper">
-      <div class="container">
-        <div class="row workingPaperContainer">
-          <div class="col-xs-6 col-md-12">
-          <div class="thumbnailStudy" id="studies">
-              <span class="studyTitle">{{ 'HOW_TO_CITE' | translate}}</span>
-
-            </div>
-            <p>{{ 'WORKING_PAPER' | translate }}
-            </p>
-
-            <h5 class="slTitle">{{ 'DATABASE' | translate}}</h5>
-            <p>Dedinger, Béatrice, et Paul Girard. 2017. « Exploring trade globalization in the long run: The RICardo project ». <i>Historical Methods: A Journal of Quantitative and Interdisciplinary History</i> 50 (1): 30‑48. doi:10.1080/01615440.2016.1220269.
-            <br>
-            Links to <a href="http://www.tandfonline.com/doi/citedby/10.1080/01615440.2016.1220269">the paper at Historical Methods</a> and to <a href="http://ricardo.medialab.Sciences-po.fr/Dedinger_Girard_RICardo_HistoricalMethods_revised.pdf">our preprint version: 01-May-2016</a>
-            </p>
-
-            <h5 class="slTitle">{{ 'EXPLORATION_TOOL' | translate}}</h5>
-
-            <p> Girard, Paul, Béatrice Dedinger, Donato Ricci, Benjamin Ooghe-Tabanou, Mathieu Jacomy, Guillaume Plique, et Grégory Tible. 2016. « RICardo Project : Exploring XIX Century International Trade ». In <i>Digital Humanities 2016: Conference Abstracts</i>, 208‑10. agiellonian University & Pedagogical University, Kraków, Poland. <a href="http://dh2016.adho.org/abstracts/177">http://dh2016.adho.org/abstracts/177</a>
-            <br>
-            links to <a href="http://medialab.github.io/ricardo">our presentation slides</a> et vers <a href="http://ricardo.medialab.sciences-po.fr/Girardetal_RICardo_dh2016_fr.pdf">l'abstract en français</a> 
-            </p>
-            
           </div>
-          
-          
-          </div>
+          <p>{{ 'WORKING_PAPER' | translate }}
+          </p>
 
-      </div>
-    </div>
-      <div id="studies" class="page">
-        <div class="container">
-          <div class="spaceBetweenParagraphs noFloat">&bull;</div>
-          <div>
-          </br>
-          </br>
-            <div class="thumbnailStudy" id="studies">
-              <span class="studyTitle">RICardo Vocabulary</span>
+          <h5 class="slTitle">{{ 'DATABASE' | translate}}</h5>
+          <p>Dedinger, Béatrice, et Paul Girard. 2017. « Exploring trade globalization in the long run: The RICardo project ». <i>Historical Methods: A Journal of Quantitative and Interdisciplinary History</i> 50 (1): 30‑48. doi:10.1080/01615440.2016.1220269.
+          <br>
+          Links to <a href="http://www.tandfonline.com/doi/citedby/10.1080/01615440.2016.1220269">the paper at Historical Methods</a> and to <a href="http://ricardo.medialab.Sciences-po.fr/Dedinger_Girard_RICardo_HistoricalMethods_revised.pdf">our preprint version: 01-May-2016</a>
+          </p>
 
-            </div>
-            <ol class="storylinesContainer">
-              <li class="storyline">
+          <h5 class="slTitle">{{ 'EXPLORATION_TOOL' | translate}}</h5>
 
-                <div class="slInfo">
-                  <h5 class="slTitle">Trade flows</h5>
-                  <p class="slPara">
-                    {{ 'TRADE_FLOWS' | translate }}
-                  </p>
-                </div>
-              </li>
-              <li class="storyline">
+          <p> Girard, Paul, Béatrice Dedinger, Donato Ricci, Benjamin Ooghe-Tabanou, Mathieu Jacomy, Guillaume Plique, et Grégory Tible. 2016. « RICardo Project : Exploring XIX Century International Trade ». In <i>Digital Humanities 2016: Conference Abstracts</i>, 208‑10. agiellonian University & Pedagogical University, Kraków, Poland. <a href="http://dh2016.adho.org/abstracts/177">http://dh2016.adho.org/abstracts/177</a>
+          <br>
+          links to <a href="http://medialab.github.io/ricardo">our presentation slides</a> et vers <a href="http://ricardo.medialab.sciences-po.fr/Girardetal_RICardo_dh2016_fr.pdf">l'abstract en français</a>
+          </p>
 
-                <div class="slInfo">
-                  <h5 class="slTitle">RIC entities</h5>
-                  <p class="slPara"> 
-                    {{ 'RICENTITIES_1' | translate }} <a href="http://correlatesofwar.org\"> correlatesofwar.org</a> {{ 'RICENTITIES_2' | translate }}
-                  </p>
-                </div>
-              </li>
-              <li class="storyline">
-
-                <div id="worldTrade" class="slInfo">
-                  <h5 class="slTitle">Continent</h5>
-                  <p class="slPara"> 
-                    {{ 'CONTINENT' | translate }}
-                  </p>
-
-                </div>
-              </li>
-              <li id="worldbestguess" class="storyline">
-                <div class="slInfo">
-                  <h5 class="slTitle">World trade / Total trade</h5>
-                  <p class="slPara"> 
-                    {{ 'WORLD_TRADE_INTRO' | translate }}
-                  </p>
-                    <ul>
-                      <li  class="slPara">
-                        {{ 'WORLD_REPORTED' | translate }}
-                      </li> 
-                        
-                      <li class="slPara">
-                        {{ 'WORLD_SUM_PARTNERS' | translate }}
-                      </li>
-                      <li class="slPara">
-                        {{ 'WORLD_SUB_REPORTING' | translate }}
-                      </li>
-                      <li class="slPara">
-                        {{ 'WORLD_ESTIMATED' | translate }}
-                      </li>
-                      <li class="slPara">
-                        {{ 'WORLD_BESTGUESS' | translate }}
-                      </li>
-                       <li id="worldfederico" class="slPara">
-                        {{ 'WORLD_FEDERICO' | translate }},  
-                        <a href="http://www.ehes.org/EHES_93.pdf">“World trade, 1800-1938: a new data-set”, EHES Working paper 93</a> |
-                        <a href="http://www.ehes.org/WP%20Statistical%20Appendix%20tables%20(%202016)2.xlsx">Excel Data</a>
-                      </li>
-                    </ul>
-                    <p class="slPara">
-                      {{'WORLD_UNDEFINED' | translate}} 
-                    </p>
-
-                </div>
-              </li>
-              <li class="storyline">
-                <div class="slInfo">
-                  <h5 class="slTitle">Mirror Flows</h5>
-                  <p class="slPara"> 
-                    {{ 'MIRROR_FLOWS_1' | translate}}
-                  </p>
-                  <p class="slPara">
-                    {{ 'MIRROR_FLOWS_2' | translate}}
-                    <a href="http://ricardo.medialab.Sciences-po.fr/Dedinger_Girard_RICardo_HistoricalMethods.pdf"> Historical Methods (en) </a>. 
-                  </p>
-                  <p class="slPara">
-                    {{ 'MIRROR_FLOWS_3' | translate}}
-                  </p>
-
-                </div>
-              </li>
-            </ol>
-          </div>
         </div>
-      </div>
-    </div>
-    <!-- <div id="footer"> -->
-    <section id="footer">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-6">
-            <h2 class="section-heading">
-              Contribute
-            </h2>
-            <hr>
-            <p class="links">
-             Share your ideas or issues on : 
-             <br>
-             <span>
-               <a href="https://github.com/medialab/ricardo/issues">https://github.com/medialab/ricardo/issues</a>
-             </span>     
-            </p>
-            <br>
-            <br>
-            <br>
-            <h2 class="section-heading">
-              Source code
-            </h2>
-            <hr>
-            <p class="links">
-             RICardo is a website under MIT Licence. 
-             <br>
-             Source code and documentation available on Github :
-             <span>
-               <a href="https://github.com/medialab/ricardo">https://github.com/medialab/ricardo</a>
-             </span>     
-            </p>
-          </div>
-          <div class="col-md-6">
-            <h2 class="section-heading" style="text-align:right;">
-              CREDITS
-            </h2>
-            <hr>
-            <a href="http://www.medialab.sciences-po.fr" class="pull-right">
-              <img src="../img/sciencespo_medialab.png" alt="Sciences Po medialab" style="width:200px;">
-            </a>
-            <br>
-            <br>
-            <br>
-            <br>
-            <p class="links" style="text-align:right; font-weight:bold;">
-               <a href="https://twitter.com/medialab_scpo">@medialab_ScPo</a>
-            </p>
-            <p class="links" style="text-align:right; font-weight:bold;">
-              Discover other medialab's tools on:
-              <br>
-              <a href="http://tools.medialab.sciences-po.fr/" class="pull-right">
-                tools.medialab.sciences-po.fr
-              </a>
-            </p>
-            <br>
-            <a href="http://chsp.sciences-po.fr" class="pull-right">
-              <img src="../img/sciencespo_chsp.png" alt="Sciences Po chsp" style="width:200px;" class="invert">
-            </a>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <p style="text-align:right; font-weight:bold;">
-               <a style="text-align:right; font-weight:bold;" href="https://twitter.com/ScPo_CHSP">@ScPo_CHSP</a>
-            </p>
-            <br>
-            <p style="text-align:right; font-weight:bold;">
-              <a href="#team" class="portfolio-link" data-toggle="modal">Team's project</a>
-            </p>
-          </div>
+
+
         </div>
-      </section>
-      <center><a href="#touModal" id="legal" class="portfolio-link" data-toggle="modal">legal notice</a></center>
-       <!-- Terms of use Modal -->
-    <div class="portfolio-modal modal fade" id="touModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-content">
-            <div class="close-modal" data-dismiss="modal">
-                <div class="lr">
-                    <div class="rl">
-                    </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 col-lg-offset-2">
-                        <div class="modal-body">
-                            <h2>Legal notice</h2>
-                            <p class="item-intro text-muted"></p>
-                            
-                            <p>
-                                The contents of this site were supplied by
-                            </p>
-                            <p>
-                                Sciences Po
-                                <br>
-                                27 rue Saint-Guillaume
-                                <br>
-                                75337 Paris Cedex 07
-                                <br>
-                                Tel. : 01 45 49 50 50
-                                <br>
-                                Fax. : 01 42 22 31 26
-                                <br>
-                                webmestre ( AT ) sciencespo ( DOT ) fr
-                                <br>
-                                Contact webmaster : paul.girard ( AT ) sciencespo ( DOT ) fr
-                            </p>
-                            <h3>Publisher</h3>
-                            <p>
-                                Frédéric Mion, President of Sciences Po
-                            </p>
-                            <h3>Hosting</h3>
-                            <p>
-                                This internet site is hosted by Fondation Nationale des Sciences Politiques (FNSP), Sciences Po - Direction des Systèmes d'Information
-                            </p>
-                            <p>
-                                APE Code: 803Z
-                                <br>
-                                27, rue saint Guillaume
-                                <br>
-                                75337 Paris cedex 07
-                            </p>
-                            <h3>Industrial and Intellectual Property</h3>
-                            <p>
-                                Except for explicitly licensed elements (website source codes), all information on this web site (text, photos, logos…) is protected by the copyrights held by Sciences Po or their partners.
-                                <br>
-                                Therefore, the information may not be reproduced, modified, republished, re-aired, translated, distributed or reused in any manner, without the written consent of Sciences Po.
-                                <br>
-                                The Sciences Po site’s title, concept and form, as well as its content, such as news, descriptions, illustrations and original images and their organisation, and any software compilation, source code and other elements contained on the Sciences Po site are the property of Sciences Po.
-                            </p>
-                            <h3>Hypertext Links</h3>
-                            <p>
-                                Our pages also contain links to other sites for which we are in no manner responsible, neither regarding their adhesion to public order or good conduct, on the one hand, nor regarding their personal data privacy policies and use, on the other.
-                                <br>
-                                By accessing an outside site, through a hypertext link, you accept that this access is carried out at your own risk. Therefore, Sciences Po will in no way be held responsible for any direct or indirect damages resulting from your access to an outside site through a hypertext link.
-                            </p>
-                            
-                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close legal notice</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="portfolio-modal modal fade" id="team" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-content">
-            <div class="close-modal" data-dismiss="modal">
-                <div class="lr">
-                    <div class="rl">
-                    </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 col-lg-offset-2">
-                        <div class="modal-body">
-                            <h3>RICardo project's team</h3>
-                            <ul id="teamList">
-                                <li>
-                                    <a href="http://chsp.sciences-po.fr/chercheur-permanent/dedinger">Béatrice Dedinger</a>, Chercheur au Centre d'histoire de Sciences Po
-                                </li>
-                                <li>
-                                    <a href="http://www.medialab.sciences-po.fr/fr/people/paul-girard/">Paul Girard</a>, directeur technique du Medialab de Sciences Po
-                                </li>
-                                <li>
-                                    <a href="http://www.medialab.sciences-po.fr/fr/people/donato-ricci/">Donatto Ricci</a>, designer au Medialab de Sciences Po
-                                </li>
-                                <li>
-                                    <a href="http://www.medialab.sciences-po.fr/fr/people/mathieu-jacomy/">Matthieu Jacomy</a>, ingénieur au Medialab de Sciences Po
-                                </li>
-                                <li>
-                                    <a href="http://www.medialab.sciences-po.fr/fr/people/benjamin-ooghe-tabanou/">Benjamin Ooghr-Tabanou</a>, ingénieur au Medialab de Sciences Po
-                                </li>
-                                <li>
-                                    <a href="http://www.medialab.sciences-po.fr/fr/people/guillaume-plique/">Guillaume Plique</a>, développeur au Medialab de Sciences Po
-                                </li>
-                                <li>
-                                    <a href="http://www.medialab.sciences-po.fr/fr/people/gregory-tible/">Grégory Tible</a>, développeur au Medialab de Sciences Po
-                                </li>
-                            </ul>
-                            
-                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close team presentation</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
     </div>
   </div>
+    <div id="studies" class="page">
+      <div class="container">
+        <div class="spaceBetweenParagraphs noFloat">&bull;</div>
+        <div>
+        </br>
+        </br>
+          <div class="thumbnailStudy" id="studies">
+            <span class="studyTitle">RICardo Vocabulary</span>
 
+          </div>
+          <ol class="storylinesContainer">
+            <li class="storyline">
+
+              <div class="slInfo">
+                <h5 class="slTitle">Trade flows</h5>
+                <p class="slPara">
+                  {{ 'TRADE_FLOWS' | translate }}
+                </p>
+              </div>
+            </li>
+            <li class="storyline">
+
+              <div class="slInfo">
+                <h5 class="slTitle">RIC entities</h5>
+                <p class="slPara">
+                  {{ 'RICENTITIES_1' | translate }} <a href="http://correlatesofwar.org\"> correlatesofwar.org</a> {{ 'RICENTITIES_2' | translate }}
+                </p>
+              </div>
+            </li>
+            <li class="storyline">
+
+              <div id="worldTrade" class="slInfo">
+                <h5 class="slTitle">Continent</h5>
+                <p class="slPara">
+                  {{ 'CONTINENT' | translate }}
+                </p>
+
+              </div>
+            </li>
+            <li id="worldbestguess" class="storyline">
+              <div class="slInfo">
+                <h5 class="slTitle">World trade / Total trade</h5>
+                <p class="slPara">
+                  {{ 'WORLD_TRADE_INTRO' | translate }}
+                </p>
+                  <ul>
+                    <li  class="slPara">
+                      {{ 'WORLD_REPORTED' | translate }}
+                    </li>
+
+                    <li class="slPara">
+                      {{ 'WORLD_SUM_PARTNERS' | translate }}
+                    </li>
+                    <li class="slPara">
+                      {{ 'WORLD_SUB_REPORTING' | translate }}
+                    </li>
+                    <li class="slPara">
+                      {{ 'WORLD_ESTIMATED' | translate }}
+                    </li>
+                    <li class="slPara">
+                      {{ 'WORLD_BESTGUESS' | translate }}
+                    </li>
+                     <li id="worldfederico" class="slPara">
+                      {{ 'WORLD_FEDERICO' | translate }},
+                      <a href="http://www.ehes.org/EHES_93.pdf">“World trade, 1800-1938: a new data-set”, EHES Working paper 93</a> |
+                      <a href="http://www.ehes.org/WP%20Statistical%20Appendix%20tables%20(%202016)2.xlsx">Excel Data</a>
+                    </li>
+                  </ul>
+                  <p class="slPara">
+                    {{'WORLD_UNDEFINED' | translate}}
+                  </p>
+
+              </div>
+            </li>
+            <li class="storyline">
+              <div class="slInfo">
+                <h5 class="slTitle">Mirror Flows</h5>
+                <p class="slPara">
+                  {{ 'MIRROR_FLOWS_1' | translate}}
+                </p>
+                <p class="slPara">
+                  {{ 'MIRROR_FLOWS_2' | translate}}
+                  <a href="http://ricardo.medialab.Sciences-po.fr/Dedinger_Girard_RICardo_HistoricalMethods.pdf"> Historical Methods (en) </a>.
+                </p>
+                <p class="slPara">
+                  {{ 'MIRROR_FLOWS_3' | translate}}
+                </p>
+
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div id="footer"> -->
+  <section id="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h2 class="section-heading">
+            Contribute
+          </h2>
+          <hr>
+          <p class="links">
+           Share your ideas or issues on :
+           <br>
+           <span>
+             <a href="https://github.com/medialab/ricardo/issues">https://github.com/medialab/ricardo/issues</a>
+           </span>
+          </p>
+          <br>
+          <br>
+          <br>
+          <h2 class="section-heading">
+            Source code
+          </h2>
+          <hr>
+          <p class="links">
+           RICardo is a website under MIT Licence.
+           <br>
+           Source code and documentation available on Github :
+           <span>
+             <a href="https://github.com/medialab/ricardo">https://github.com/medialab/ricardo</a>
+           </span>
+          </p>
+        </div>
+        <div class="col-md-6">
+          <h2 class="section-heading" style="text-align:right;">
+            CREDITS
+          </h2>
+          <hr>
+          <a href="http://www.medialab.sciences-po.fr" class="pull-right">
+            <img src="../img/sciencespo_medialab.png" alt="Sciences Po medialab" style="width:200px;">
+          </a>
+          <br>
+          <br>
+          <br>
+          <br>
+          <p class="links" style="text-align:right; font-weight:bold;">
+             <a href="https://twitter.com/medialab_scpo">@medialab_ScPo</a>
+          </p>
+          <p class="links" style="text-align:right; font-weight:bold;">
+            Discover other medialab's tools on:
+            <br>
+            <a href="http://tools.medialab.sciences-po.fr/" class="pull-right">
+              tools.medialab.sciences-po.fr
+            </a>
+          </p>
+          <br>
+          <a href="http://chsp.sciences-po.fr" class="pull-right">
+            <img src="../img/sciencespo_chsp.png" alt="Sciences Po chsp" style="width:200px;" class="invert">
+          </a>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <p style="text-align:right; font-weight:bold;">
+             <a style="text-align:right; font-weight:bold;" href="https://twitter.com/ScPo_CHSP">@ScPo_CHSP</a>
+          </p>
+          <br>
+          <p style="text-align:right; font-weight:bold;">
+            <a href="#team" class="portfolio-link" data-toggle="modal">Team's project</a>
+          </p>
+        </div>
+      </div>
+    </section>
+    <center><a href="#touModal" id="legal" class="portfolio-link" data-toggle="modal">legal notice</a></center>
+     <!-- Terms of use Modal -->
+  <div class="portfolio-modal modal fade" id="touModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-content">
+          <div class="close-modal" data-dismiss="modal">
+              <div class="lr">
+                  <div class="rl">
+                  </div>
+              </div>
+          </div>
+          <div class="container">
+              <div class="row">
+                  <div class="col-lg-8 col-lg-offset-2">
+                      <div class="modal-body">
+                          <h2>Legal notice</h2>
+                          <p class="item-intro text-muted"></p>
+
+                          <p>
+                              The contents of this site were supplied by
+                          </p>
+                          <p>
+                              Sciences Po
+                              <br>
+                              27 rue Saint-Guillaume
+                              <br>
+                              75337 Paris Cedex 07
+                              <br>
+                              Tel. : 01 45 49 50 50
+                              <br>
+                              Fax. : 01 42 22 31 26
+                              <br>
+                              webmestre ( AT ) sciencespo ( DOT ) fr
+                              <br>
+                              Contact webmaster : paul.girard ( AT ) sciencespo ( DOT ) fr
+                          </p>
+                          <h3>Publisher</h3>
+                          <p>
+                              Frédéric Mion, President of Sciences Po
+                          </p>
+                          <h3>Hosting</h3>
+                          <p>
+                              This internet site is hosted by Fondation Nationale des Sciences Politiques (FNSP), Sciences Po - Direction des Systèmes d'Information
+                          </p>
+                          <p>
+                              APE Code: 803Z
+                              <br>
+                              27, rue saint Guillaume
+                              <br>
+                              75337 Paris cedex 07
+                          </p>
+                          <h3>Industrial and Intellectual Property</h3>
+                          <p>
+                              Except for explicitly licensed elements (website source codes), all information on this web site (text, photos, logos…) is protected by the copyrights held by Sciences Po or their partners.
+                              <br>
+                              Therefore, the information may not be reproduced, modified, republished, re-aired, translated, distributed or reused in any manner, without the written consent of Sciences Po.
+                              <br>
+                              The Sciences Po site’s title, concept and form, as well as its content, such as news, descriptions, illustrations and original images and their organisation, and any software compilation, source code and other elements contained on the Sciences Po site are the property of Sciences Po.
+                          </p>
+                          <h3>Hypertext Links</h3>
+                          <p>
+                              Our pages also contain links to other sites for which we are in no manner responsible, neither regarding their adhesion to public order or good conduct, on the one hand, nor regarding their personal data privacy policies and use, on the other.
+                              <br>
+                              By accessing an outside site, through a hypertext link, you accept that this access is carried out at your own risk. Therefore, Sciences Po will in no way be held responsible for any direct or indirect damages resulting from your access to an outside site through a hypertext link.
+                          </p>
+
+                          <button type="button" class="btn btn-primary" data-dismiss="modal">Close legal notice</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="portfolio-modal modal fade" id="team" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-content">
+          <div class="close-modal" data-dismiss="modal">
+              <div class="lr">
+                  <div class="rl">
+                  </div>
+              </div>
+          </div>
+          <div class="container">
+              <div class="row">
+                  <div class="col-lg-8 col-lg-offset-2">
+                      <div class="modal-body">
+                          <h3>RICardo project's team</h3>
+                          <ul id="teamList">
+                              <li>
+                                  <a href="http://chsp.sciences-po.fr/chercheur-permanent/dedinger">Béatrice Dedinger</a>, Chercheur au Centre d'histoire de Sciences Po
+                              </li>
+                              <li>
+                                  <a href="http://www.medialab.sciences-po.fr/fr/people/paul-girard/">Paul Girard</a>, directeur technique du Medialab de Sciences Po
+                              </li>
+                              <li>
+                                  <a href="http://www.medialab.sciences-po.fr/fr/people/donato-ricci/">Donatto Ricci</a>, designer au Medialab de Sciences Po
+                              </li>
+                              <li>
+                                  <a href="http://www.medialab.sciences-po.fr/fr/people/mathieu-jacomy/">Matthieu Jacomy</a>, ingénieur au Medialab de Sciences Po
+                              </li>
+                              <li>
+                                  <a href="http://www.medialab.sciences-po.fr/fr/people/benjamin-ooghe-tabanou/">Benjamin Ooghr-Tabanou</a>, ingénieur au Medialab de Sciences Po
+                              </li>
+                              <li>
+                                  <a href="http://www.medialab.sciences-po.fr/fr/people/guillaume-plique/">Guillaume Plique</a>, développeur au Medialab de Sciences Po
+                              </li>
+                              <li>
+                                  <a href="http://www.medialab.sciences-po.fr/fr/people/gregory-tible/">Grégory Tible</a>, développeur au Medialab de Sciences Po
+                              </li>
+                          </ul>
+
+                          <button type="button" class="btn btn-primary" data-dismiss="modal">Close team presentation</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-5 col-sm-push-7">
+      <img class="img-responsive pull-left" src="http://fakeimg.pl/290x220/?text=World&font=lobster" width="290" height="220">
+    </div>
+    <div class="col-sm-6 col-sm-offset-1 col-sm-pull-5">
+      <h1>{{ 'HOME_INTRO' | translate }}</h1>
+      <p class="lead">{{ 'HOME_INTRO_LEAD' | translate }}</p>
+      <p>{{ 'HOME_INTRO_PARA' | translate }}</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-3">
+      <div class="box text-center">
+        <h2>Metadata</h2>
+        <p>{{ 'HOME_METADATA_PARA' | translate }}</p>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="box text-center">
+        <h2>World</h2>
+        <p>{{ 'HOME_WORLD_PARA' | translate }}</p>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="box text-center">
+        <h2>Country</h2>
+        <p>{{ 'HOME_COUNTRY_PARA' | translate }}</p>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="box text-center">
+        <h2>Bilateral</h2>
+        <p>{{ 'HOME_BILATERAL_PARA' | translate }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+      <h3 class="text-center">{{ 'HOME_SCIENCE_TITLE' | translate }}</h3>
+      <p class="lead text-center">{{ 'HOME_SCIENCE_LEAD' | translate }}</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-5 col-sm-offset-1">
+      <h4>{{ 'HOME_SCIENCE_LEFT_SUBTITLE' | translate }}</h4>
+      <p>{{ 'HOME_SCIENCE_LEFT_PARA' | translate }}</p>
+      <a href="https://github.com/medialab/ricardo">https://github.com/medialab/ricardo</a>
+    </div>
+    <div class="col-sm-5">
+      <h4>{{ 'HOME_SCIENCE_RIGHT_SUBTITLE' | translate }}</h4>
+      <p>{{ 'HOME_SCIENCE_RIGHT_PARA' | translate }} <a href="https://opendatacommons.org/licenses/by/">https://opendatacommons.org/licenses/by/</a> <a href="https://github.com/medialab/ricardo_data">https://github.com/medialab/ricardo_data</a></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      Flux RSS
+    </div>
+  </div>
+</div>
