@@ -11,7 +11,21 @@
     </div>
     <div class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
-        <li ng-repeat="view in views" ng-class="{ active: isActive('/' + view.slug)}"><a href="#/{{view.slug}}">{{view.label}}</a></li>
+        <li>
+          <div class="dropdown">
+            <button class="btn btn-link" id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Views
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dLabel">
+              <li ng-repeat="view in views" ng-class="{ active: isActive('/' + view.slug)}"><a href="#/{{view.slug}}">{{view.label}}</a></li>
+            </ul>
+          </div>
+        </li>
+        <li ng-class="{ active: isActive('/metadata')}"><a href="#/metadata">MetaData</a></li>
+        <li ng-class="{ active: isActive('/glossary')}"><a href="#/glossary">Glossary</a></li>
+        <li ng-class="{ active: isActive('/corpus')}"><a href="#/corpus">Corpus</a></li>
+        <li ng-class="{ active: isActive('/about')}"><a href="#/about">About</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right" ng-controller="TranslateController">
         <li>

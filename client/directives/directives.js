@@ -2,6 +2,7 @@
 
 angular.module('ricardo.directives', [
 	'ricardo.directives.navbar',
+	'ricardo.directives.footer',
 	'ricardo.directives.worldTitle',
 	'ricardo.directives.countryTitle',
 	'ricardo.directives.inlineSelectCountry',

@@ -20,6 +20,7 @@ angular.module('ricardo', [
   'ricardo.services.country',
   'ricardo.directives',
   'ricardo.controllers.navbar',
+  'ricardo.controllers.footer',
   'ricardo.controllers.TranslateController',
   'ricardo.controllers.bilateral',
   'ricardo.controllers.country',
@@ -29,11 +30,11 @@ angular.module('ricardo', [
   ])
 
 .run(function($rootScope, $location, $anchorScroll,$timeout,cfpLoadingBar) {
-  
+
   $rootScope.$on('$routeChangeStart', function() {
     cfpLoadingBar.start();
     // $rootScope.routeLoading=true;
-    
+
   })
   $rootScope.$on('$routeChangeSuccess',
     function(event, toState, toParams, fromState, fromParams) {
@@ -51,7 +52,7 @@ angular.module('ricardo', [
   // $rootScope.$on('cfpLoadingBar:completed', function(){
   //     console.log('completed', Date.now());
   // });
-    
+
 })
 .config(['$routeProvider', function($routeProvider) {
 
@@ -112,6 +113,18 @@ angular.module('ricardo', [
     //     return apiService.getNumberFlows()
     //   }
     // }
+  });
+  $routeProvider.when('/glossary', {
+    templateUrl: 'partials/glossary.html'
+  });
+  $routeProvider.when('/corpus', {
+    templateUrl: 'partials/corpus.html'
+  });
+  $routeProvider.when('/about', {
+    templateUrl: 'partials/about.html'
+  });
+  $routeProvider.when('/legalNotice', {
+    templateUrl: 'partials/legalNotice.html'
   });
   $routeProvider.otherwise({redirectTo: '/'});
 }])

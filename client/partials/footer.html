@@ -1,0 +1,13 @@
+<footer>
+  <div class="container">
+    <div class="row">
+      <ul class="list-unstyled list-inline col-sm-12">
+        <li ng-repeat="view in views" ng-class="{ active: isActive('/' + view.slug)}"><a href="#/{{view.slug}}">{{view.label}}</a></li>
+      </ul>
+      <ul>
+        <li><a href="#">SciencesPo Médialab</a></li>
+        <li><a href="#">SciencesPo Centre d'histoire</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
