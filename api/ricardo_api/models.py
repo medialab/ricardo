@@ -9,7 +9,8 @@ import codecs
 import networkx as nx
 import operator
 import re
-from difflib import SequenceMatcher
+import csvkit
+from StringIO import StringIO
 
 def ric_entities_data(ids=[]):
     cursor = get_db().cursor()
@@ -173,7 +174,7 @@ def get_world_flows(from_year,to_year):
                        partner_slug like 'Worldasreported'
                        OR partner_slug like 'Worldbestguess'
                        OR partner_slug like 'Worldsumpartners'
-                       OR partner_slug like 'WorldFedericoTena')
+                       OR partner_slug like 'WorldFederico-Tena')
                       %s
                       GROUP BY year, expimp,partner_slug
                       ORDER BY year ASC
@@ -217,13 +218,13 @@ def get_nb_flows(flow):
                   OR partner_slug like 'Worldasreported'
                   OR partner_slug like 'Worldasreported2'
                   OR partner_slug like 'Worldsumpartners'
-                  OR partner_slug like 'WorldFedericoTena')
+                  OR partner_slug like 'WorldFederico-Tena')
                   AND flow is not NULL
                   GROUP BY year,expimp
                   union
                   SELECT year , count(*), "Federico-Tena" as partner,expimp
                   FROM flow_joined
-                  WHERE partner_slug like 'WorldFedericoTena'
+                  WHERE partner_slug like 'WorldFederico-Tena'
                   AND flow is not NULL
                   GROUP BY year,expimp
                   union
@@ -239,7 +240,7 @@ def get_nb_flows(flow):
                   union
                   SELECT year , count(*), "Federico-Tena" as partner,"total" as expimp
                   FROM flow_joined
-                  WHERE partner_slug like "WorldFedericoTena"
+                  WHERE partner_slug like "WorldFederico-Tena"
                   AND flow is not NULL
                   GROUP BY year
                   """)
@@ -431,7 +432,7 @@ def get_world_available():
                     AND(partner_slug like 'Worldbestguess'
                     OR partner_slug like 'Worldasreported'
                     OR partner_slug like 'Worldsumpartners'
-                    OR partner_slug like 'WorldFedericoTena')
+                    OR partner_slug like 'WorldFederico-Tena')
                     GROUP BY  reporting_slug, partner,year,expimp) t
                     group by partner,year,expimp) tot
                     group by partner,year
@@ -792,7 +793,7 @@ def get_bilateral_entities():
             and  partner_slug is not 'Worldasreported'
             and partner_slug is not 'Worldasreported2'
             and  partner_slug is not'Worldsumpartners'
-            and partner_slug is not 'WorldFedericoTena'
+            and partner_slug is not 'WorldFederico-Tena'
             and partner_slug is not 'Worldbestguess')
             and reporting_type is "country"
             group by reporting
@@ -814,3 +815,30 @@ def get_bilateral_entities():
 def get_RICentities():
     return json.dumps(ric_entities_data(),encoding="UTF8")
 
+def get_sources_csv():
+
+  def formatRef(ref):
+    source = list(ref)
+    name = source[0]
+    if source[1]:
+      name += ' ' + source[1]
+    if source[2]:
+      name += ' ' + source[2]
+    return ['. '.join([name] + [s for s in source[3:7] if s and s != ''])]+source
+
+
+  cursor = get_db().cursor()
+  cursor.row_factory = sqlite3.Row
+  sql="""
+  SELECT name,country,dates,s.author,edition_date,volume,pages,URL,shelf_number,s.notes,
+         reference, type, st.author as reference_author
+  FROM sources as s LEFT JOIN source_types as st ON s.acronym=st.acronym"""
+  output = StringIO()
+  rows = cursor.execute(sql)
+  first = rows.next()
+  dw = csvkit.writer(output)
+  dw.writerow(["bibliographic reference"] + first.keys())
+
+  dw.writerow(formatRef(first))
+  dw.writerows(formatRef(r) for r in rows)  
+  return output.getvalue()
