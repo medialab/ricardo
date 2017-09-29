@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>RICardo</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,400i,500,600,700" rel="stylesheet">
   <!-- build:css css/style.css -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="lib/bower_components/bootstrap/dist/css/bootstrap.min.css"/>
@@ -15,9 +16,24 @@
 <body>
   <div id="nav" ng-controller="navbar" navbar></div>
   <div id="view" ng-view></div>
+  <footer>
+    <div class="container">
+      <div class="row">
+        <ul class="list-unstyled list-inline col-sm-12">
+          <li><a href="#/legalNotice">Legal Notice</a></li>
+        </ul>
+        <ul>
+          <li><a href="#">SciencesPo Médialab</a></li>
+          <li><a href="#">SciencesPo Centre d'histoire</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
 
    <!-- build:js scripts/lib.js -->
   <script src="lib/bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="js/main.js"></script>
   <script src="lib/bower_components/jquery-ui/ui/minified/jquery-ui.min.js"></script>
   <script src="lib/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
   <script src="lib/bower_components/d3/d3.min.js"></script>

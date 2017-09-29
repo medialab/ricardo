@@ -1,4 +1,4 @@
-<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+<div class="navbar navbar-default" role="navigation" data-spy="affix" data-offset-top="28">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -7,17 +7,24 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/">RICardo</a>
+      <a class="navbar-brand" href="/">
+        <span class="sr-only">RICardo</span>
+        <img ng-src="../svg/logotype-ricardo.svg" />
+        <span>RICardo</span>
+      </a>
     </div>
     <div class="collapse navbar-collapse">
-      <ul class="nav navbar-nav">
+      <ul class="nav navbar-nav navbar-nav-menu">
         <li>
           <div class="dropdown">
             <button class="btn btn-link" id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Views
-              <span class="caret"></span>
+              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="48" height="32" viewBox="0 0 48 32">
+                <title>Open dropdown</title>
+                <path fill="#e2ac13" d="M24.116 32c-0.773 0-1.546-0.309-2.164-0.928l-21.333-26.744c-0.928-1.082-0.773-2.783 0.309-3.71s2.783-0.773 3.71 0.464l19.324 24.116 19.324-24.271c0.928-1.082 2.628-1.391 3.71-0.464s1.391 2.628 0.464 3.71l-21.333 26.899c-0.464 0.618-1.237 0.928-2.010 0.928z"></path>
+              </svg>
             </button>
-            <ul class="dropdown-menu" aria-labelledby="dLabel">
+            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dLabel">
               <li ng-repeat="view in views" ng-class="{ active: isActive('/' + view.slug)}"><a href="#/{{view.slug}}">{{view.label}}</a></li>
             </ul>
           </div>
@@ -38,3 +45,5 @@
     </div>
   </div>
 </div>
+<div class="affix-placeholder"></div>
+
