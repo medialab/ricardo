@@ -1,40 +1,56 @@
-<div class="container container-top">
+<div class="container container-intro">
   <div class="row">
     <div class="col-sm-5 col-sm-push-7">
-      <img class="img-responsive pull-left" src="http://fakeimg.pl/290x220/?text=World&font=lobster" width="290" height="220">
+      <img class="img-responsive pull-left" src="http://fakeimg.pl/290x220/?text=World&font=lobster" width="290" height="250">
     </div>
-    <div class="col-sm-6 col-sm-offset-1 col-sm-pull-5">
-      <h1>{{ 'HOME' | translate }}</h1>
-      <p class="lead">{{ 'HOME_INTRO' | translate }}</p>
+    <div class="col-sm-5 col-sm-offset-2 col-sm-pull-5">
+      <h1 class="home-title">{{ 'HOME_INTRO' | translate }}</h1>
+      <p class="lead">{{ 'HOME_INTRO_LEAD' | translate }}</p>
       <p>{{ 'HOME_INTRO_PARA' | translate }}</p>
     </div>
   </div>
+</div>
+<div class="container-fluid container-links">
   <div class="row">
-    <div class="col-sm-3">
-      <div class="box text-center">
-        <h2>Metadata</h2>
-        <p>{{ 'HOME_METADATA_PARA' | translate }}</p>
-      </div>
-    </div>
-    <div class="col-sm-3">
-      <div class="box text-center">
-        <h2>World</h2>
-        <p>{{ 'HOME_WORLD_PARA' | translate }}</p>
-      </div>
-    </div>
-    <div class="col-sm-3">
-      <div class="box text-center">
-        <h2>Country</h2>
-        <p>{{ 'HOME_COUNTRY_PARA' | translate }}</p>
-      </div>
-    </div>
-    <div class="col-sm-3">
-      <div class="box text-center">
-        <h2>Bilateral</h2>
-        <p>{{ 'HOME_BILATERAL_PARA' | translate }}</p>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-3">
+          <div class="box-container">
+            <a href="#/world" class="btn btn-link box text-center">
+              <h2>World</h2>
+              <p>{{ 'HOME_WORLD_PARA' | translate }}</p>
+            </a>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="box-container">
+            <a href="#/country" class="btn btn-link box text-center">
+              <h2>Country</h2>
+              <p>{{ 'HOME_COUNTRY_PARA' | translate }}</p>
+            </a>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="box-container">
+            <a href="#/bilateral" class="btn btn-link box text-center">
+              <h2>Bilateral</h2>
+              <p>{{ 'HOME_BILATERAL_PARA' | translate }}</p>
+            </a>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="box-container">
+            <a href="#/metaData" class="btn btn-link box text-center">
+              <h2>Metadata</h2>
+              <p>{{ 'HOME_METADATA_PARA' | translate }}</p>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+</div>
+<div class="container container-science">
   <div class="row">
     <div class="col-sm-8 col-sm-offset-2">
       <h3 class="text-center">{{ 'HOME_SCIENCE_TITLE' | translate }}</h3>
@@ -43,18 +59,24 @@
   </div>
   <div class="row">
     <div class="col-sm-5 col-sm-offset-1">
-      <h4>{{ 'HOME_SCIENCE_LEFT_SUBTITLE' | translate }}</h4>
+      <h4><strong>{{ 'HOME_SCIENCE_LEFT_SUBTITLE' | translate }}</strong></h4>
       <p>{{ 'HOME_SCIENCE_LEFT_PARA' | translate }}</p>
       <a href="https://github.com/medialab/ricardo">https://github.com/medialab/ricardo</a>
     </div>
     <div class="col-sm-5">
-      <h4>{{ 'HOME_SCIENCE_RIGHT_SUBTITLE' | translate }}</h4>
+      <h4><strong>{{ 'HOME_SCIENCE_RIGHT_SUBTITLE' | translate }}</strong></h4>
       <p>{{ 'HOME_SCIENCE_RIGHT_PARA' | translate }} <a href="https://opendatacommons.org/licenses/by/">https://opendatacommons.org/licenses/by/</a> <a href="https://github.com/medialab/ricardo_data">https://github.com/medialab/ricardo_data</a></p>
     </div>
   </div>
+</div>
+<div class="container-fluid container-rss">
   <div class="row">
-    <div class="col-sm-12">
-      Flux RSS
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12">
+          Flux RSS
+        </div>
+      </div>
     </div>
   </div>
 </div>
