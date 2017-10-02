@@ -201,7 +201,6 @@ body > .container {
 }
 
 .container-science,
-.container-links,
 .container-rss {
     padding-top: 5em;
     padding-bottom: 5em;
@@ -216,9 +215,12 @@ body > .container {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding-top: 10em;
+    padding-bottom: 6em;
 }
 
 .container-links .col-sm-3 {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -244,6 +246,57 @@ body > .container {
     transition: all .35s ease-in-out;
     transform: rotate(-15deg);
     border-radius: 1.5em;
+}
+
+.box-bg:before {
+    content: '';
+    position: absolute;
+    width: 20em;
+    height: 20em;
+    z-index: 0;
+}
+
+.box-bg-world {
+    margin-right: -3em;
+    margin-top: -1em;
+}
+
+.box-bg-world:before {
+    top: -5em;
+    left: -4em;
+    background: transparent url("../img/bg_home_world.png") no-repeat left top;
+}
+
+.box-bg-country {
+    margin-top: 2em;
+    margin-left: -6em;
+}
+
+.box-bg-country:before {
+    top: -6em;
+    right: 0;
+    background: transparent url("../img/bg_home_country.png") no-repeat left top;
+}
+
+.box-bg-bilateral {
+    margin-right: -6em;
+}
+
+.box-bg-bilateral:before {
+    top: -5em;
+    left: -2em;
+    background: transparent url("../img/bg_home_bilateral.png") no-repeat left top;
+}
+
+.box-bg-metadata {
+    margin-left: -4em;
+    margin-top: -2em;
+}
+
+.box-bg-metadata:before {
+    top: -4em;
+    right: -4em;
+    background: transparent url("../img/bg_home_metadata.png") no-repeat left top;
 }
 
 .box-container:hover {
@@ -275,7 +328,7 @@ body > .container {
     margin-top: 0;
     color: white;
     font-size: 1.8em;
-    font-weight: 300;
+    font-weight: normal;
 }
 
 .box p {
@@ -288,8 +341,28 @@ body > .container {
     color: #e2ac13;
 }
 
+h3.title-border {
+    position: relative;
+    font-size: 2.2em;
+    margin-bottom: 1em;
+}
+
+.container-science h3:before {
+    width: 4em;
+}
+
 .container-science h3 + p {
     color: #1c747f;
+}
+
+.title-border:before {
+    position: absolute;
+    bottom: -0.5em;
+    left: 0;
+    content: '';
+    width: 4em;
+    height: 2px;
+    background-color: #e2ac13;
 }
 
 /*
