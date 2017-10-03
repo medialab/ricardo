@@ -67,6 +67,10 @@ h5 {
     color: #1c747f;
 }
 
+h4.ng-binding {
+    margin-top: 2em;
+}
+
 footer {
     position: absolute;
     bottom: -1em;
@@ -104,6 +108,40 @@ footer a:hover {
     footer ul.list-inline > li {
         display: block;
     }
+}
+
+a {
+    color: #e2ac13;
+}
+
+a:hover {
+    color: #e2ac13;
+}
+
+dt {
+    font-size: 1.4em;
+    margin-bottom: 0.2em;
+    color: #1c747f;
+}
+
+.well {
+    background-color: white;
+    border-color: white;
+    box-shadow: none;
+}
+
+.btn-group {
+    margin: 2em 0 4em;
+}
+
+.btn-default:hover {
+    background-color: #e2ac13;
+    color: white;
+    border-color: #e2ac13;
+}
+
+.caret {
+    border-top-color: #e2ac13;
 }
 
 /*
@@ -253,6 +291,14 @@ footer a:hover {
 @media (min-width: 768px) {
     .affix-top .navbar-nav {
         margin-top: 2em;
+    }
+
+    .affix-top .navbar-brand {
+        margin-left: -45px !important;
+    }
+
+    .affix .navbar-brand {
+        margin-left: -30px !important;
     }
 }
 
@@ -410,9 +456,11 @@ footer a:hover {
 
 /* Custom page CSS
 -------------------------------------------------- */
-
-#view {
-    padding-top: 50px;
+/* Responsive */
+@media (min-width: 768px) {
+    #view {
+        padding-top: 80px;
+    }
 }
 
 body > .container {
@@ -428,6 +476,14 @@ body > .container {
  */
 .container-intro {
     padding-bottom: 5em;
+}
+
+.container-page {
+    padding-bottom: 2em;
+}
+
+.container-page-last {
+    padding-bottom: 2em;
 }
 
 .container-img {
@@ -553,7 +609,8 @@ body > .container {
     transform: rotate(15deg);
 }
 
-.box:hover {
+.box.btn-link:hover,
+.box.btn-link:focus {
     text-decoration: none;
     color: white;
     transition: all .35s ease-in-out;
@@ -576,10 +633,21 @@ body > .container {
     color: #e2ac13;
 }
 
+h1.title-border,
+h2.title-border,
 h3.title-border {
     position: relative;
     font-size: 2.2em;
     margin-bottom: 1em;
+}
+
+h1.title-border {
+    font-weight: 600;
+}
+
+h2.title-border {
+    font-size: 1.6em;
+    font-weight: normal;
 }
 
 .container-science h3:before {
@@ -793,7 +861,7 @@ h3.title-border {
     box-shadow: none;
     color: #663333;
     background-color: #FAFAFA;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid #e2ac13;
     font-size: 16px;
     font-weight: 600;
 }
@@ -1452,7 +1520,7 @@ path.lineTrajectory {
     position: absolute;
     background: #333;
     color: #ddd;
-    padding: 2px;
+    padding: 1em;
     border: 0px;
     border-radius: 5px;
     opacity: 0;
@@ -1477,7 +1545,7 @@ div #reporting-entities-container {
     position: absolute;
     background: #333;
     color: #ddd;
-    padding: 2px;
+    padding: 1em;
     border: 0px;
     border-radius: 5px;
     opacity: 0;
@@ -1485,9 +1553,11 @@ div #reporting-entities-container {
     font-size: 12px;
 }
 
-/*.matrix-tooltip h5,.continent-tooltip h5,.synth-tooltip h5{
- text-align: center;
-}*/
+.matrix-tooltip h5,
+.continent-tooltip h5,
+.synth-tooltip h5 {
+    color: #e2ac13;
+}
 
 .matrix-tooltip hr,
 .continent-tooltip hr {
