@@ -117,8 +117,7 @@ footer a:hover {
     background: white;
     border-color: transparent;
     opacity: 1;
-    -webkit-transition: all .335s ease-in-out;
-    transition: all .35s ease-in-out;
+    transition: all .15s ease-in-out;
 }
 
 .affix .navbar-default {
@@ -147,25 +146,25 @@ footer a:hover {
 .affix-top {
     border-color: transparent;
     opacity: 1;
-    -webkit-transition: all .35s ease-in-out;
-    transition: all .35s ease-in-out;
+    transition: all .15s ease-in-out;
 }
 
-.affix-top .navbar-brand img {
+.affix-top img {
     width: 6em;
     height: 6em;
-    -webkit-transition: all .35s ease-in-out;
-    transition: all .35s ease-in-out;
+    transition: all .15s ease-in-out;
 }
 
 .affix-top .navbar-brand span {
     font-size: 3em;
+    transition: all .35s ease-in-out;
 }
 
 .affix-top .navbar-brand:before {
     top: -9em;
     left: 4.5em;
     transform: scale(1) rotate(-20deg);
+    transition: all .15s ease-in-out;
 }
 
 .affix-placeholder {
@@ -197,6 +196,10 @@ footer a:hover {
     border-radius: 50%;
 }
 
+.affix img {
+    transition: all .15s ease-in-out;
+}
+
 .navbar-brand span {
     position: relative;
     z-index: 10;
@@ -204,6 +207,10 @@ footer a:hover {
     font-family: 'montserrat', 'Arial', sans-serif;
     font-weight: 600;
     color: white;
+}
+
+.affix .navbar-brand span {
+    transition: all .15s ease-in-out;
 }
 
 .navbar-brand:before {
@@ -215,8 +222,12 @@ footer a:hover {
     width: 18em;
     height: 18em;
     background-color: #1c747f;
-    transform: scale(0.35) rotate(-20deg);
     border-radius: 1.5em;
+    transform: scale(0.35) rotate(-20deg);
+}
+
+.affix .navbar-brand:before {
+    transition: all .15s ease-in-out;
 }
 
 /* Responsive */
@@ -261,6 +272,9 @@ footer a:hover {
 /*
  * Navbar
  */
+#nav .dropdown-menu {
+    border-color: white;
+}
 
 #nav .navbar-nav > li > a,
 #nav .navbar-nav .btn-link,
@@ -416,6 +430,16 @@ body > .container {
     padding-bottom: 5em;
 }
 
+.container-img {
+    transform: rotate(-15deg);
+}
+
+.container-img img {
+    width: 260px;
+    height: 260px;
+    border-radius: 1.5em;
+}
+
 .container-science,
 .container-rss {
     padding-top: 5em;
@@ -443,6 +467,7 @@ body > .container {
 }
 
 .home-title {
+    margin-top: 2em;
     color: #1c747f;
     font-weight: 400;
 }

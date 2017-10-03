@@ -1,7 +1,7 @@
 {
 	"HOME_INTRO": "The RICardo Project",
 	"HOME_INTRO_LEAD": "Trade between Nations from c. 1800 to 1938",
-	"HOME_INTRO_PARA": "RICardo (Research on International Commerce) est un corpus dédié au commerce entre nations sur une période allant des débuts de la Révolution industrielle à la veille de la Seconde Guerre mondiale. Il allie une base historique de données sur le commerce bilatéral de tous pays du monde à un site web dont le but est d’explorer l’histoire du commerce international à partir de visualisations.",
+	"HOME_INTRO_PARA": "RICardo (Research on International Commerce) is a corpus dedicated to trade between nations over a period spanning the beginning of the Industrial Revolution to the eve of the Second World War. It combines a historical database of bilateral trade of all of the world’s countries and a website which aims at exploring the history of international trade through data visualizations.",
 	"HOME_METADATA_PARA": "Metadata provides an overview of  bilateral and total trade data availability.",
 	"HOME_WORLD_PARA": "World provides different historical series of world trade as well as a view of the growth of countries’ share in world trade.",
 	"HOME_COUNTRY_PARA": "Country depicts the distribution of trade  by partners of a selected country over a period of time.",
