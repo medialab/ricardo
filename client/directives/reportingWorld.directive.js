@@ -508,7 +508,7 @@ angular.module('ricardo.directives.reportingWorld', [])
                       else return (d3.event.pageX-220)+ "px"
                     })
                     // .style("top", (d3.event.pageY+75) + "px")
-                    .style("top", "300px")
+                    .style("top", "650px")
 
                     var mouse = d3.mouse(this),
                         mouseDate=x.invert(mouse[0]),

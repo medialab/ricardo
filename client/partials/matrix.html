@@ -1,6 +1,6 @@
-<div ng-hide="loaded" id="loading-bar-spinner">
+<!--<div ng-hide="loaded" id="loading-bar-spinner">
   <div class="spinner-icon">{{loaded}}</div>
-</div>
+</div>-->
 <div class="container">
   <div class="row">
     <div class="col-md-12">
@@ -136,16 +136,14 @@
         >
       </reporting-entities>
     </div>
-    <div class="row">
-      <div class="col-xs-12 col-sm-12 text-center shdt">
-        <div class="btn-group" role="group">
-          <button type="button" class="btn  btn-default" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
-          {{ 'DOWNLOAD_1' | translate }}
-          </button>
-          <button type="button" ng-click="download()" class="btn btn-default">
-          {{ 'DOWNLOAD_2' | translate }}
-          </button>
-        </div>
+    <div class="col-xs-12 col-sm-12 text-center shdt">
+      <div class="btn-group" role="group">
+        <button type="button" class="btn  btn-default" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
+        {{ 'DOWNLOAD_1' | translate }}
+        </button>
+        <button type="button" ng-click="download()" class="btn btn-default">
+        {{ 'DOWNLOAD_2' | translate }}
+        </button>
       </div>
     </div>
     <div ng-if="viewTable" class="row table-cont">

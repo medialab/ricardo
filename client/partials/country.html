@@ -171,7 +171,7 @@
     <div class="legend-item">
       ExpA = total exports A
     </div>
-    </br>
+    <br>
     <div class="legend-item">
       {{ 'PARTNER_HISTO_LEG_1' | translate }} = Exp A->B / ExpA * 100
     </div>
@@ -262,7 +262,8 @@
             </choices>
           </ui-select>
         </div>
-        </br>
+        <br>
+        <br>
         {{selectedMinDate}} – {{selectedMaxDate}}, in
         <div class="inline-select">
           <ui-select ng-model="linechartCurrency" theme="bootstrap" ng-change="changeCurrency(linechartCurrency)">
@@ -282,7 +283,7 @@
           </ui-select>
         </div>
         <div class="subtitle">{{'LINE_CHART_SELECT' | translate }} </div>
-        </br>
+        <br>
         <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
         <span class="close-btn">
         <i class="fa fa-times-circle"></i>
