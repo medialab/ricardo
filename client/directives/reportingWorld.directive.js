@@ -26,7 +26,7 @@ angular.module('ricardo.directives.reportingWorld', [])
               draw(newValue[0]);
             }
           });
-         
+
         var categoryColors = {
                "World sum partners":"#bcbd22" ,
                "World as reported":"#b82e2e",

@@ -8,10 +8,10 @@ angular.module('ricardo.controllers.navbar', [])
         return viewLocation === $location.path();
     };
     $scope.views = [
-      {slug: "metadata", label: "Metadata view"},
-      {slug: "world", label: "World view"},
-      {slug: "country", label: "Country view"},
-      {slug: "bilateral", label: "Bilateral view"},
+      //{slug: "metadata", label: "Metadata"},
+      {slug: "world", label: "World"},
+      {slug: "country", label: "Country"},
+      {slug: "bilateral", label: "Bilateral"}
       //{slug:"RICentities", label:"RICentities view"}
     ]
   }])
