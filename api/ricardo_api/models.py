@@ -824,7 +824,23 @@ def get_sources_csv():
       name += ' ' + source[1]
     if source[2]:
       name += ' ' + source[2]
-    return ['. '.join([name] + [s for s in source[3:7] if s and s != ''])]+source
+    # volume and pages
+    volumePages = []
+    if source[5]:
+      volumePages.append('vol. ' + source[5])
+    if source[6]:
+      volumePages.append('pp. ' + source[6])
+    volumePages = ', '.join(volumePages)
+
+    # complete ref
+    bibliographicRef = [name] + [s for s in source[3:4] if s and s != '']
+    if volumePages:
+      bibliographicRef += [volumePages]
+    if source[7] and source[7] != '':
+      bibliographicRef.append(source[7])
+
+    bibliographicRef = '. '.join(bibliographicRef)
+    return [bibliographicRef] + source
 
 
   cursor = get_db().cursor()
@@ -832,7 +848,9 @@ def get_sources_csv():
   sql="""
   SELECT name,country,dates,s.author,edition_date,volume,pages,URL,shelf_number,s.notes,
          reference, type, st.author as reference_author
-  FROM sources as s LEFT JOIN source_types as st ON s.acronym=st.acronym"""
+  FROM sources as s LEFT JOIN source_types as st ON s.acronym=st.acronym
+  WHERE s.slug in (SELECT distinct source from flow_joined) OR 
+        s.slug in (SELECT distinct source from exchange_rates)"""
   output = StringIO()
   rows = cursor.execute(sql)
   first = rows.next()

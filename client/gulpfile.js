@@ -32,6 +32,11 @@ gulp.task('img', function() {
   .pipe(gulp.dest('build/img'))
 })
 
+gulp.task('svg', function() {
+  return gulp.src('svg/*')
+  .pipe(gulp.dest('build/svg'))
+})
+
 gulp.task('locales', function() {
   return gulp.src('js/locale*.json')
   .pipe(gulp.dest('build/js/'))
@@ -51,5 +56,5 @@ gulp.task('clean:build', function() {
  * Run tasks build
  */
 
-gulp.task('default', ['clean:build','index','fonts','locales','img','templates'], function() {
+gulp.task('default', ['clean:build','index','fonts','locales','img','svg','templates'], function() {
 });
