@@ -11,7 +11,7 @@
 </div>
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-sm-12 well">
       <h4>
         {{'METADATA_TITLE' | translate}}
         <div class="inline-select">
@@ -58,7 +58,11 @@
         flow-type="chartFlow">
       </number-flows>
     </div>
-    <div class="col-md-12">
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
       <h4>
         {{ 'METADATA_MATRIX_TITLE' | translate }}
       </h4>
@@ -136,7 +140,11 @@
         >
       </reporting-entities>
     </div>
-    <div class="col-xs-12 col-sm-12 text-center shdt">
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 text-center shdt">
       <div class="btn-group" role="group">
         <button type="button" class="btn  btn-default" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
         {{ 'DOWNLOAD_1' | translate }}
@@ -147,7 +155,7 @@
       </div>
     </div>
     <div ng-if="viewTable" class="row table-cont">
-      <div class="col-xs-12 col-sm-12 grid-cont">
+      <div class="col-sm-12 grid-cont">
         <div class="gridStyle" ng-grid="gridOptions"></div>
       </div>
     </div>
