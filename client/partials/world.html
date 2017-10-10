@@ -2,13 +2,13 @@
   <div class="row">
     <div class="col-sm-12">
       <h1 class="title-border">{{ 'WORLD_INTRO' | translate }}</h1>
-      <p class="lead">{{ 'WORLD_INTRO_PARA' | translate }}</p>
+      <p>{{ 'WORLD_INTRO_PARA' | translate }}</p>
     </div>
   </div>
 </div>
 <div class="container">
   <div class="row">
-    <div class="col-sm-12">
+    <div class="col-sm-12 well">
       <h4>
         {{ 'WORLD_COMPARE_TITLE' | translate }} in
         <div class="inline-select">
@@ -62,8 +62,8 @@
         </div>
       </div>
     </div>
-    <div class="row timeline-cont">
-      <div class="col-xs-12 col-sm-12">
+    <div class="col-sm-12 well">
+      <div class="timeline-cont">
         <h4>
           {{ 'WORLD_VIEW_TITLE' | translate }}
           with
@@ -100,110 +100,98 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="container">
-    <div class="row">
-      <div class="col-xs-12 col-sm-12">
-        <br>
-        <br>
-        <h4> {{ 'WORLD_NB_REPORTINGS' | translate }}</h4>
-        <bar-chart
-          ng-data="nbReportings"
-          start-date="selectedMinDate"
-          end-date="selectedMaxDate"
-          raw-start-date="rawMinDate"
-          raw-end-date="rawMaxDate"
-          ></bar-chart>
-        <div class="legend">
-          <div class="legend-item">
-            <div class="square import"></div>
-            {{ 'WORLD_REPORTINGS_1' | translate }}
-            <a href="#/glossary#worldTrade">{{worldPartner.name.value}}</a>
-            {{ 'WORLD_REPORTINGS_2' | translate }}
-          </div>
+    <div class="col-sm-12 well">
+      <h4> {{ 'WORLD_NB_REPORTINGS' | translate }}</h4>
+      <bar-chart
+        ng-data="nbReportings"
+        start-date="selectedMinDate"
+        end-date="selectedMaxDate"
+        raw-start-date="rawMinDate"
+        raw-end-date="rawMaxDate"
+        ></bar-chart>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="square import"></div>
+          {{ 'WORLD_REPORTINGS_1' | translate }}
+          <a href="#/glossary#worldTrade">{{worldPartner.name.value}}</a>
+          {{ 'WORLD_REPORTINGS_2' | translate }}
         </div>
       </div>
     </div>
-  </div>
-  <div class="container">
-    <div class="row">
-      <div class="col-xs-12 col-md-12">
+    <div class="col-sm-12 well">
+      <h4 class="titleDualTL">
+        {{ 'WORLD_COMPARAISON' | translate }}
+        <div class="inline-select" >
+          <ui-select  ng-model="entities.sourceCountryEntity1.selected" theme="bootstrap" ng-change="change(entities.sourceCountryEntity1.selected)" >
+            <match placeholder="Country"></match>
+            <choices repeat="item in reportingCountryEntities1 | filter: $select.search">
+              <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+            </choices>
+          </ui-select>
+        </div>
         <br>
+        {{selectedMinDate}} – {{selectedMaxDate}}, in
+        <div class="inline-select">
+          <ui-select ng-model="linechartCurrency" theme="bootstrap" ng-change="changeCurrency(linechartCurrency)">
+            <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
+            <choices repeat="item in linechartCurrencyChoices | filter: $select.search">
+              <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+            </choices>
+          </ui-select>
+        </div>
+        for
+        <div class="inline-select">
+          <ui-select ng-model="linechartFlow" theme="bootstrap" ng-change="changeFlow(linechartFlow)">
+            <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
+            <choices repeat="item in linechartFlowChoices | filter: $select.search">
+              <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+            </choices>
+          </ui-select>
+        </div>
+        <div class="subtitle">{{'LINE_CHART_SELECT' | translate }} </div>
         <br>
-        <h4 class="titleDualTL">
-          {{ 'WORLD_COMPARAISON' | translate }}
-          <div class="inline-select" >
-            <ui-select  ng-model="entities.sourceCountryEntity1.selected" theme="bootstrap" ng-change="change(entities.sourceCountryEntity1.selected)" >
-              <match placeholder="Country"></match>
-              <choices repeat="item in reportingCountryEntities1 | filter: $select.search">
-                <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-              </choices>
-            </ui-select>
-          </div>
-          </br>
-          {{selectedMinDate}} – {{selectedMaxDate}}, in
-          <div class="inline-select">
-            <ui-select ng-model="linechartCurrency" theme="bootstrap" ng-change="changeCurrency(linechartCurrency)">
-              <match placeholder="Select sterling or percent">{{$select.selected.name.value}}</match>
-              <choices repeat="item in linechartCurrencyChoices | filter: $select.search">
-                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-              </choices>
-            </ui-select>
-          </div>
-          for
-          <div class="inline-select">
-            <ui-select ng-model="linechartFlow" theme="bootstrap" ng-change="changeFlow(linechartFlow)">
-              <match placeholder="Select type flow">{{$select.selected.name.value}}</match>
-              <choices repeat="item in linechartFlowChoices | filter: $select.search">
-                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-              </choices>
-            </ui-select>
-          </div>
-          <div class="subtitle">{{'LINE_CHART_SELECT' | translate }} </div>
-          </br>
-          <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
+        <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
           <span class="close-btn">
-          <i class="fa fa-times-circle"></i>
+            <i class="fa fa-times-circle"></i>
           </span>
           <span ng-if="!$last">, </span>
-          </span>
-        </h4>
-        <p class="paragraphViz">
-          {{ 'WORLD_LINES_1' | translate }}
-          <a href="#/glossary#worldTrade">{{'WORLD_TRADE' | translate}}</a> {{ 'WORLD_LINES_2' | translate }} <a href="#/glossary#worldTrade">{{worldPartner.name.value}}</a>
+        </span>
+      </h4>
+      <p class="paragraphViz">
+        {{ 'WORLD_LINES_1' | translate }}
+        <a href="#/glossary#worldTrade">{{'WORLD_TRADE' | translate}}</a> {{ 'WORLD_LINES_2' | translate }} <a href="#/glossary#worldTrade">{{worldPartner.name.value}}</a>
+      </p>
+      <!-- <div ng-show="messagePercent">
+        <p>
+           The percentages are based on the total amount of <a href="/#worldTrade"> world bestguess</a> of {{entities.sourceEntity.selected.RICname}}
         </p>
-        <!-- <div ng-show="messagePercent">
-          <p>
-             The percentages are based on the total amount of <a href="/#worldTrade"> world bestguess</a> of {{entities.sourceEntity.selected.RICname}}
-          </p>
-          </div> -->
-      </div>
-    </div>
-    <div id="select-lineChart" >
+        </div> -->
       <div class="row">
-        <div class="col-xs-12 col-sm-12">
-          <linechart-world
-            ng-data="linechartData"
-            currency="linechartCurrency"
-            start-date="selectedMinDate"
-            end-date="selectedMaxDate"
-            view="view">
-          </linechart-world>
+        <div class="col-md-12">
+          <div id="select-lineChart" >
+            <linechart-world
+              ng-data="linechartData"
+              currency="linechartCurrency"
+              start-date="selectedMinDate"
+              end-date="selectedMaxDate"
+              view="view">
+            </linechart-world>
+          </div>
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-xs-12 col-sm-12 text-center shdt">
-        <button type="button" class="btn" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
+    <div class="col-sm-12 text-center shdt">
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-default" ng-model="viewTable" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
         {{ 'DOWNLOAD_1' | translate }}
         </button>
-        <button type="button" ng-click="download()" class="btn">
+        <button type="button" ng-click="download()" class="btn btn-default">
         {{ 'DOWNLOAD_2' | translate }}
         </button>
       </div>
     </div>
     <div ng-if="viewTable" class="row table-cont">
-      <div class="col-xs-12 col-sm-12 grid-cont">
+      <div class="col-sm-12 grid-cont">
         <div class="gridStyle" ng-grid="gridOptions"></div>
       </div>
     </div>
