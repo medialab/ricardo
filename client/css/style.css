@@ -17,7 +17,7 @@
     text-align: center;
     background-color: #e7e7e7;
     border: #777;
-    border-radius: 0px;
+    border-radius: 0;
     z-index: 10000;
     color: #555;
 }
@@ -27,7 +27,7 @@
  */
 
 .modal-content {
-    border-radius: 0px;
+    border-radius: 0;
     text-align: center;
 }
 
@@ -67,10 +67,6 @@ h5 {
     color: #1c747f;
 }
 
-h4.ng-binding {
-    /*margin-top: 2em;*/
-}
-
 footer {
     position: absolute;
     bottom: 0;
@@ -105,7 +101,7 @@ footer a:hover {
     }
 
     footer ul,
-    footer ul.list-inline > li {
+    footer li {
         display: block;
     }
 }
@@ -1319,7 +1315,7 @@ h4 {
 
 .filter-group .btn,
 .modal-content .btn {
-    border-radius: 0px;
+    border-radius: 0;
 }
 
 .filter {
