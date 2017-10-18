@@ -17,7 +17,7 @@
     text-align: center;
     background-color: #e7e7e7;
     border: #777;
-    border-radius: 0px;
+    border-radius: 0;
     z-index: 10000;
     color: #555;
 }
@@ -27,7 +27,7 @@
  */
 
 .modal-content {
-    border-radius: 0px;
+    border-radius: 0;
     text-align: center;
 }
 
@@ -67,10 +67,6 @@ h5 {
     color: #1c747f;
 }
 
-h4.ng-binding {
-    /*margin-top: 2em;*/
-}
-
 footer {
     position: absolute;
     bottom: 0;
@@ -95,7 +91,7 @@ footer a {
 
 footer a,
 footer a:hover {
-    color: white;
+    color: #fff;
 }
 
 /* Responsive */
@@ -105,7 +101,7 @@ footer a:hover {
     }
 
     footer ul,
-    footer ul.list-inline > li {
+    footer li {
         display: block;
     }
 }
@@ -125,8 +121,8 @@ dt {
 }
 
 .well {
-    background-color: white;
-    border-color: white;
+    background-color: #fff;
+    border-color: #fff;
     box-shadow: none;
 }
 
@@ -136,7 +132,7 @@ dt {
 
 .btn-default:hover {
     background-color: #e2ac13;
-    color: white;
+    color: #fff;
     border-color: #e2ac13;
 }
 
@@ -178,7 +174,7 @@ dt {
 
 .navbar-default .navbar-toggle:hover .icon-bar,
 .navbar-default .navbar-toggle:focus .icon-bar {
-    background-color: white;
+    background-color: #fff;
 }
 
 .affix-top {
@@ -230,7 +226,7 @@ dt {
 .navbar-brand img {
     position: relative;
     z-index: 10;
-    background-color: white;
+    background-color: #fff;
     border-radius: 50%;
 }
 
@@ -244,7 +240,7 @@ dt {
     margin-left: 0.5em;
     font-family: 'montserrat', 'Arial', sans-serif;
     font-weight: 600;
-    color: white;
+    color: #fff;
 }
 
 .affix .navbar-brand span {
@@ -319,7 +315,7 @@ dt {
  * Navbar
  */
 #nav .dropdown-menu {
-    border-color: white;
+    border-color: #fff;
 }
 
 #nav .navbar-nav > li > a,
@@ -387,7 +383,7 @@ dt {
 #nav .dropdown-menu > .active > a:hover,
 #nav .dropdown-menu > .active > a:focus {
     background-color: #e2ac13;
-    color: white;
+    color: #fff;
 }
 
 /* Responsive */
@@ -409,7 +405,7 @@ dt {
         float: right;
     }
 
-    #nav .affix-top .navbar-nav:not(.navbar-right) {
+    #nav .affix-top .navbar-nav.navbar-nav-menu {
         margin-right: 2em;
     }
 }
@@ -509,7 +505,7 @@ body > .container {
 
 .container-links,
 .container-rss {
-    background-color: white;
+    background-color: #fff;
 }
 
 .container-links {
@@ -608,7 +604,7 @@ body > .container {
     width: 15em;
     height: 15em;
     padding: 0;
-    color: white;
+    color: #fff;
     white-space: inherit;
     transition: all .35s ease-in-out;
     transform: rotate(15deg);
@@ -617,14 +613,14 @@ body > .container {
 .box.btn-link:hover,
 .box.btn-link:focus {
     text-decoration: none;
-    color: white;
+    color: #fff;
     transition: all .35s ease-in-out;
 }
 
 .box h2 {
     margin-top: 0;
     margin-bottom: 0.2em;
-    color: white;
+    color: #fff;
     font-size: 1.8em;
     font-weight: normal;
 }
@@ -752,10 +748,12 @@ h2.title-border {
     /* column width */
     -moz-column-width: 20em;
     -webkit-column-width: 20em;
+    column-width: 20em;
 
     /* space between columns */
     -moz-column-gap: 2em;
     -webkit-column-gap: 2em;
+    column-gap: 2em;
 }
 
 .article-list span {
@@ -826,7 +824,7 @@ article.item {
     font-family: 'Open Sans', 'Helvetica', sans-serif;
     font-weight: 300;
     line-height: 1.2em;
-    color: white;
+    color: #fff;
     transform: rotate(15deg);
 }
 
@@ -863,7 +861,7 @@ article.item {
  */
 
 #select {
-    background-color: white;
+    background-color: #fff;
     border: 1px solid #e7e7e7;
     min-height: 70px;
 }
@@ -1000,7 +998,7 @@ article.item {
 .dropdown-menu > .active > a:hover,
 .dropdown-menu > .active > a:focus,
 #select-doubleChart select {
-    color: white;
+    color: #fff;
     background-color: #e2ac13;
 }
 
@@ -1266,7 +1264,7 @@ h4 {
 
 .table-cont {
     margin-bottom: 20px;
-    background-color: white;
+    background-color: #fff;
     border-top: 3px solid #222;
     height: 500px;
     overflow: hidden;
@@ -1319,7 +1317,7 @@ h4 {
 
 .filter-group .btn,
 .modal-content .btn {
-    border-radius: 0px;
+    border-radius: 0;
 }
 
 .filter {
@@ -1335,7 +1333,7 @@ h4 {
 }
 
 .white {
-    background-color: white;
+    background-color: #fff;
 }
 
 .svgElement {
@@ -1426,7 +1424,7 @@ h4 {
 }
 
 .alert-custom {
-    background-color: white;
+    background-color: #fff;
     border-radius: 0;
     margin: 7px 0px 2px 0px;
     padding: 0;
@@ -1656,7 +1654,7 @@ div #reporting-entities-container {
 .continent-tooltip h5,
 .synth-tooltip h5 {
     margin-top: 0;
-    color: white;
+    color: #fff;
 }
 
 .matrix-tooltip hr,
