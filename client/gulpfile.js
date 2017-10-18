@@ -14,11 +14,11 @@ gulp.task("index", function() {
   	.pipe(useref())
     .pipe(gulpif('**/app.js', ngAnnotate()))
     .pipe(gulpif('**/app.js', uglify()))
-	.pipe(gulpif('**/style.css', csso()))
-    .pipe(gulpif('**/app.js',gitshasuffix()))                // Rename the concatenated files 
+	.pipe(gulpif('./css/style.css', csso()))
+    .pipe(gulpif('**/app.js',gitshasuffix()))                // Rename the concatenated files
     .pipe(gulpif('**/lib.js',gitshasuffix()))
-    .pipe(gulpif('**/style.css',gitshasuffix()))
-    .pipe(revReplace())         // Substitute in new filenames 
+    .pipe(gulpif('./css/style.css',gitshasuffix()))
+    .pipe(revReplace())         // Substitute in new filenames
     .pipe(gulp.dest('build'));
 });
 
