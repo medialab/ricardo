@@ -68,6 +68,7 @@
 	"COMMITTEE_LIST8": "(All Souls College Oxford)",
 	"COMMITTEE_LIST9": "(Sciences Po médialab)",
 	"COMMITTEE_LIST10": "(Universidad Carlos III de Madrid)",
+	"LOGOTYPE_ANR": "This work ahs been supported by l’Agence National de la Recherche under the reference RICARDO ANR-06-BLAN-0332",
 	"GLOSSARY_INTRO_TITLE": "Glossary",
 	"GLOSSARY_TITLE1": "Trade flows",
 	"GLOSSARY_DESC1": "Trade flows are values of merchandise exports or imports. The RICardo database combines two sets of data. Bilateral trade data are the distribution of the total trade of a reporting country with its partners. Total trade data are the sum of all bilateral exports/imports (computation explained in the point ‘Total trade’). In the sources used to collect data, trade flows are expressed in many different currencies. They have all been converted into pound sterling by using the RICardo exchange rate database. Conversion rates are market exchange rates except during the periods of great instability for which the gold parity has been used. It concerns the US/£ rate over the years 1861-1865 (American Civil War) and the years 1915-1923 (pound depreciation).",

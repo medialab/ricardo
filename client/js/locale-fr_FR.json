@@ -68,6 +68,7 @@
 	"COMMITTEE_LIST8": "(All Souls College Oxford)",
 	"COMMITTEE_LIST9": "(Sciences Po médialab)",
 	"COMMITTEE_LIST10": "(Universidad Carlos III de Madrid)",
+	"LOGOTYPE_ANR": "Ce travail a bénéficié d’une aide de l’Agence National de la Recherche portant la référence RICARDO ANR-06-BLAN-0332",
 	"GLOSSARY_INTRO_TITLE": "Glossaire",
 	"GLOSSARY_TITLE1": "Flux commerciaux",
 	"GLOSSARY_DESC1": "Les flux commerciaux correspondent aux valeurs des exportations et importations de marchandises. La base de données RICardo combine deux séries de données. Les données de commerce bilatéral correspondent à la répartition du commerce total d'un pays déclarant entre ses partenaires. Les données de commerce total représentent la somme de toutes les exportations / importations bilatérales (voir le point ‘Commerce total’ pour le mode de calcul). Dans les sources utilisées pour collecter les données, les valeurs des échanges commerciaux sont exprimées dans de nombreuses monnaies différentes. Elles ont toutes été converties en livres sterling en utilisant la base de taux de change RICardo. Les taux de conversion sont les taux de change du marché sauf durant les périodes de forte instabilité pour lesquelles la parité or a été utilisée. Cela concerne le taux de change US/£ sur les années 1861-1865 (Guerre de Sécession) et les années 1915-1923 (dépréciation de la livre).",
