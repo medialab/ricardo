@@ -298,6 +298,12 @@ dt {
     }
 }
 
+@media (min-width: 768px) and (max-width: 991px) {
+    .affix .navbar-nav.navbar-nav-menu > li > a {
+        padding: 15px 5px;
+    }
+}
+
 @media (max-width: 991px) {
     .affix-top > .container,
     .affix > .container {
@@ -408,6 +414,10 @@ dt {
     #nav .affix-top .navbar-nav.navbar-nav-menu {
         margin-right: 2em;
     }
+
+    #nav .affix .navbar-nav-menu > li > {
+        margin-left: 2em;
+    }
 }
 
 @media (max-width: 767px) {
@@ -454,6 +464,12 @@ dt {
     }
 }
 
+@media (min-width: 768px) and (max-width: 1170px) {
+    #nav .affix .navbar-nav.navbar-nav-menu {
+        float: left;
+    }
+}
+
 /* Custom page CSS
 -------------------------------------------------- */
 /* Responsive */
@@ -469,6 +485,46 @@ body > .container {
 
 .container .text-muted {
     margin: 20px 0;
+}
+
+/*
+ * Logotype Page About
+ */
+.team-logotype,
+.logotype-anr {
+    display: flex;
+    align-items: center;
+}
+
+.team-logotype img,
+.logotype-anr img {
+    width: 10em;
+    height: auto;
+    margin: 1em 1em 2em 1em;
+}
+
+.logotype-anr img {
+    margin-bottom: 1em;
+}
+
+.logotype-anr img {
+    width: 8em;
+}
+
+.team-logotype > img:first-child,
+.logotype-anr img {
+    margin-left: 0;
+}
+
+.team-logotype img,
+.logotype-anr img {
+    padding: 0.5em 1em;
+    background-color: #ffffff;
+    border-radius: 4px;
+}
+
+.team-logotype img {
+    padding: 0.5em;
 }
 
 /*
