@@ -72,7 +72,7 @@ angular.module('ricardo', [
     controller: 'country',
     resolve: {
       reportingEntities : function (apiService) {
-        return apiService.getReportingEntities({'type_filter': 'country'})
+        return apiService.getReportingEntities({'type_filter': 'country,group,city'})
       }
     }
   });

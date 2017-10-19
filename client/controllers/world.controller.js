@@ -126,7 +126,7 @@ angular.module('ricardo.controllers.world', [])
          */
         apiService.getReportingEntities({
           'partners_ids': worldPartner.type.value,
-          'type_filter': 'country'
+          'type_filter': 'country,group,city'
           })
           .then(function (result) {
             $scope.reportingCountryEntities1=result
