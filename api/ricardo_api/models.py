@@ -174,7 +174,7 @@ def get_world_flows(from_year,to_year):
                        partner_slug like 'Worldasreported'
                        OR partner_slug like 'Worldbestguess'
                        OR partner_slug like 'Worldsumpartners'
-                       OR partner_slug like 'WorldFederico-Tena')
+                       OR partner_slug like 'WorldFedericoTena')
                       %s
                       GROUP BY year, expimp,partner_slug
                       ORDER BY year ASC
@@ -218,13 +218,13 @@ def get_nb_flows(flow):
                   OR partner_slug like 'Worldasreported'
                   OR partner_slug like 'Worldasreported2'
                   OR partner_slug like 'Worldsumpartners'
-                  OR partner_slug like 'WorldFederico-Tena')
+                  OR partner_slug like 'WorldFedericoTena')
                   AND flow is not NULL
                   GROUP BY year,expimp
                   union
-                  SELECT year , count(*), "Federico-Tena" as partner,expimp
+                  SELECT year , count(*), "FedericoTena" as partner,expimp
                   FROM flow_joined
-                  WHERE partner_slug like 'WorldFederico-Tena'
+                  WHERE partner_slug like 'WorldFedericoTena'
                   AND flow is not NULL
                   GROUP BY year,expimp
                   union
@@ -238,9 +238,9 @@ def get_nb_flows(flow):
                   AND flow is not NULL
                   GROUP BY year
                   union
-                  SELECT year , count(*), "Federico-Tena" as partner,"total" as expimp
+                  SELECT year , count(*), "FedericoTena" as partner,"total" as expimp
                   FROM flow_joined
-                  WHERE partner_slug like "WorldFederico-Tena"
+                  WHERE partner_slug like "WorldFedericoTena"
                   AND flow is not NULL
                   GROUP BY year
                   """)
@@ -348,8 +348,8 @@ def get_reportings_available_by_year(flow):
           partner="World estimated"
         elif "World as reported" in partnerlist:
           partner="World as reported"
-        elif "World Federico-Tena" in partnerlist:
-          partner="World Federico-Tena"
+        elif "World Federico Tena" in partnerlist:
+          partner="World Federico Tena"
         else:
           partner="World sum partners"
         total_partner.append(partner)
@@ -362,7 +362,7 @@ def get_reportings_available_by_year(flow):
         elif "estimation" in sourcetypelist:
           sourcetype="estimation"
         else:
-          sourcetype="Federico-Tena"
+          sourcetype="FedericoTena"
         sourceIndex=sourcetypelist.index(sourcetype)
         total_sourcetypelist.append(sourcetype)
 
@@ -386,7 +386,7 @@ def get_reportings_available_by_year(flow):
           "partner":[],
           "reference":partner,
           "year":row[5],
-          "sourcetype":"Federico-Tena" if sourcetype is "Federico-Tena" else sourcetype.capitalize(),
+          "sourcetype":"FedericoTena" if sourcetype is "FedericoTena" else sourcetype.capitalize(),
           "source":source,
           "continent":row[9],
           "type":row[10]
@@ -399,7 +399,7 @@ def get_reportings_available_by_year(flow):
       elif "estimation" in total_sourcetypelist:
         total_sourcetype="estimation"
       else:
-        total_sourcetype="Federico-Tena"
+        total_sourcetype="FedericoTena"
       json_response.append({
           "reporting_id": row[0],
           "reporting": row[1],
@@ -409,7 +409,7 @@ def get_reportings_available_by_year(flow):
           "reference":("|").join(list(set(total_partner))),
           "year":row[5],
           # "sourcetype": ("|").join(list(set(total_sourcetypelist))),
-          "sourcetype": "Federico-Tena" if total_sourcetype is "Federico-Tena" else total_sourcetype.capitalize(),
+          "sourcetype": "FedericoTena" if total_sourcetype is "FedericoTena" else total_sourcetype.capitalize(),
           "source": ("|").join(list(set(total_source))),
           "continent":row[9],
           "type":row[10]
@@ -432,7 +432,7 @@ def get_world_available():
                     AND(partner_slug like 'Worldbestguess'
                     OR partner_slug like 'Worldasreported'
                     OR partner_slug like 'Worldsumpartners'
-                    OR partner_slug like 'WorldFederico-Tena')
+                    OR partner_slug like 'WorldFedericoTena')
                     GROUP BY  reporting_slug, partner,year,expimp) t
                     group by partner,year,expimp) tot
                     group by partner,year
@@ -793,7 +793,7 @@ def get_bilateral_entities():
             and  partner_slug is not 'Worldasreported'
             and partner_slug is not 'Worldasreported2'
             and  partner_slug is not'Worldsumpartners'
-            and partner_slug is not 'WorldFederico-Tena'
+            and partner_slug is not 'WorldFedericoTena'
             and partner_slug is not 'Worldbestguess')
             and reporting_type is "country"
             group by reporting
