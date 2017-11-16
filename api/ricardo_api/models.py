@@ -276,7 +276,7 @@ def get_reportings_available_by_year(flow):
     if flow=="bilateral":
       total_partner=[]
       total_partner_mirror=[]
-      total_source=row[7].split("|")[0] if row[8]==1 else row[7]
+      total_source=row[7].split("|")[0] if row[8]==1 else row[7].split("|")
       total_sourcetypelist=[]
       for i in range(len(row[3].split("|"))):
         total+=float(row[2].split("|")[i])
