@@ -818,37 +818,50 @@ def get_RICentities():
 def get_sources_csv():
 
   def formatRef(ref):
+    #MLA :
+    # Author (last name, first name).
+    # Title/description of material.
+    # Date (day month year).
+    # Call number, identifier or box/folder/item number.
+    # Collection name.
+    # Name of repository, location.
+
+    # RICardo version
+    # author.
+    # name, country, vol_number, vol_date.
+    # editor, edition_date.
+    # pages, shelf_number, URL.
+
+
+
     source = list(ref)
-    name = source[0]
-    if source[1]:
-      name += ' ' + source[1]
-    if source[2]:
-      name += ' ' + source[2]
-    # volume and pages
-    volumePages = []
-    if source[5]:
-      volumePages.append('vol. ' + source[5])
-    if source[6]:
-      volumePages.append('pp. ' + source[6])
-    volumePages = ', '.join(volumePages)
+    bibliographicRef= ''
+    if source[0]:
+      bibliographicRef += source[0]+'.'
+    # name, country, vol_number, vol_date.
+    title = ', '.join([s for s in source[1:5] if s])+'.'
+    if title != '.':
+      bibliographicRef += ' '+title if bibliographicRef != '' else title
+    # editor, edition_date.
+    editions = ', '.join([s for s in source[5:7] if s])+'.'
+    if editions != '.':
+      bibliographicRef += ' '+editions if bibliographicRef != '' else editions
+    # pages, shelf_number, URL.
+    if source[7]:
+      source[7]= 'pp. '+source[7]
+    identifiers = ', '.join([s for s in source[7:10] if s])+'.'
+    if identifiers != '.':
+      bibliographicRef += ' '+identifiers if bibliographicRef != '' else identifiers
 
-    # complete ref
-    bibliographicRef = [name] + [s for s in source[3:4] if s and s != '']
-    if volumePages:
-      bibliographicRef += [volumePages]
-    if source[7] and source[7] != '':
-      bibliographicRef.append(source[7])
-
-    bibliographicRef = '. '.join(bibliographicRef)
+    
     return [bibliographicRef] + source
 
 
   cursor = get_db().cursor()
   cursor.row_factory = sqlite3.Row
   sql="""
-  SELECT name,country,dates,s.author,edition_date,volume,pages,URL,shelf_number,s.notes,
-         reference, type, st.author as reference_author
-  FROM sources as s LEFT JOIN source_types as st ON s.acronym=st.acronym
+  SELECT author,name,country,volume_number,volume_date,editor,edition_date,pages,shelf_number,URL,source_category,type,notes
+  FROM sources as s 
   WHERE s.slug in (SELECT distinct source from flow_joined) OR 
         s.slug in (SELECT distinct source from exchange_rates)"""
   output = StringIO()
