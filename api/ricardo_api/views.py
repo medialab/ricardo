@@ -196,8 +196,18 @@ def world_available():
 def sources_csv():
     try:
         csv_data=models.get_sources_csv()
-        print csv_data
     except:
         app.logger.exception("exception in sources csv available")
         abort(500)
     return Response(csv_data, status=200, mimetype='txt/csv')
+
+@app.route('/RICentities.csv')
+def RICentities_csv():
+    try:
+        csv_data=models.get_RICentities_csv()
+    except:
+        app.logger.exception("exception in sources csv available")
+        abort(500)
+    return Response(csv_data, status=200, mimetype='txt/csv')
+
+    

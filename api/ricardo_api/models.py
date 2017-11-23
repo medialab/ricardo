@@ -873,3 +873,74 @@ def get_sources_csv():
   dw.writerow(formatRef(first))
   dw.writerows(formatRef(r) for r in rows)  
   return output.getvalue()
+
+def reduce_years_list_into_periods(_years):
+  years = [int(y) for y in _years]
+  years.sort()
+  periods=[]
+  for y in years:
+    if len(periods)>0 and y == periods[-1][1] + 1:
+      periods[-1][1]+=1
+    elif len(periods) == 0 or y > periods[-1][1]:
+      if len(periods) != 0  and periods[-1][0] == periods[-1][1]:
+        del periods[-1][1]
+      periods.append([y,y])
+  return periods
+
+def get_RICentities_csv():
+
+  cursor = get_db().cursor()
+  cursor.row_factory = sqlite3.Row
+
+  select_RICentities = """
+  SELECT * from RICentities
+  """
+  cursor.execute(select_RICentities)
+  RICentities = {}
+  for ric in cursor:
+    RICentities[ric[0]]={'RICname':ric[0], 'RICtype': ric[1], 'continent': ric[2], 'COW code': ric[3]}
+
+  select_reportings ="""
+  SELECT reporting,
+  GROUP_CONCAT(original_reporting,'|') as original_names, 
+  GROUP_CONCAT(source_label,'|') as sources, GROUP_CONCAT(distinct year), count(*) as nb_flows
+  FROM flow_joined 
+  WHERE partner NOT LIKE 'World%'
+  GROUP BY reporting"""
+
+  for reporting in cursor.execute(select_reportings):
+    RICentities[reporting[0]]['names in source (reporting)'] = "; ".join(set(reporting[1].split('|')))
+    RICentities[reporting[0]]['sources (reporting)'] = "; ".join(set(reporting[2].split('|')))
+    RICentities[reporting[0]]['bilateral periods (reporting)'] = ','.join('-'.join(str(e) for e in p) for p in reduce_years_list_into_periods(reporting[3].split(',')))
+    RICentities[reporting[0]]['nb flows (reporting)'] = reporting[4]
+    RICentities[reporting[0]]['total nb flows'] = reporting[4]
+    
+  select_partners="""
+  SELECT partner, 
+  GROUP_CONCAT(original_partner,'|') as original_names, 
+  GROUP_CONCAT(source_label,'|') as sources, GROUP_CONCAT(distinct year), count(*) as nb_flows
+  FROM flow_joined
+  WHERE partner NOT LIKE 'World%'
+  GROUP BY partner"""
+
+  for partner in cursor.execute(select_partners):
+    RICentities[partner[0]]['names in source (partner)'] = "; ".join(set(partner[1].split('|')))
+    RICentities[partner[0]]['sources (partner)'] = "; ".join(set(partner[2].split('|')))
+    RICentities[partner[0]]['bilateral periods (partner)'] = ','.join('-'.join(str(e) for e in p) for p in reduce_years_list_into_periods(partner[3].split(',')))
+    RICentities[partner[0]]['nb flows (partner)'] = partner[4]
+    if 'total nb flows' in RICentities[partner[0]]:
+      RICentities[partner[0]]['total nb flows'] += partner[4]
+    else:
+      RICentities[partner[0]]['total nb flows'] = partner[4]
+
+  output = StringIO()
+  hs = ['total nb flows', 'RICname', 'RICtype', 'continent', 'COW code',
+  'nb flows (reporting)', 'nb flows (partner)',
+  'names in source (reporting)', 'names in source (partner)',
+  'bilateral periods (reporting)', 'bilateral periods (partner)',
+  'sources (reporting)', 'sources (partner)'] 
+  dw = csvkit.DictWriter(output, fieldnames= hs )
+  dw.writeheader()
+  dw.writerows(sorted((r for r in RICentities.values() if 'total nb flows' in r),key =lambda r:-1*r['total nb flows']))
+  return output.getvalue()
+
