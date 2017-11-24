@@ -136,6 +136,14 @@ angular.module('ricardo', [
       prefix: 'js/locale-',
       suffix: '.json'
     });
-    $translateProvider.use('en_EN');
+    var language = navigator.languages
+    ? navigator.languages[0]
+    : (navigator.language || navigator.userLanguage);
+
+    if (language.indexOf('fr')>-1)
+      language = 'fr-FR';
+    else
+      language = 'en-EN';
+    $translateProvider.use(language);
   });
 
