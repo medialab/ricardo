@@ -26,6 +26,7 @@ angular.module('ricardo', [
   'ricardo.controllers.world',
   'ricardo.controllers.network',
   'ricardo.controllers.matrix',
+  'ricardo.controllers.home'
   ])
 
 .run(function($rootScope, $location, $anchorScroll,$timeout,cfpLoadingBar) {
@@ -56,7 +57,13 @@ angular.module('ricardo', [
 .config(['$routeProvider', function($routeProvider) {
 
   $routeProvider.when('/', {
-  	templateUrl: 'partials/home.html'
+  	templateUrl: 'partials/home.html',
+    controller: 'home',
+    resolve: {
+      blogRSS : function (apiService) {
+        return apiService.getBlogRSS()
+      }
+    }
   });
   $routeProvider.when('/bilateral', {
     templateUrl: 'partials/bilateral.html',
@@ -72,7 +79,7 @@ angular.module('ricardo', [
     controller: 'country',
     resolve: {
       reportingEntities : function (apiService) {
-        return apiService.getReportingEntities({'type_filter': 'country'})
+        return apiService.getReportingEntities({'type_filter': 'country,group,city'})
       }
     }
   });
@@ -136,6 +143,14 @@ angular.module('ricardo', [
       prefix: 'js/locale-',
       suffix: '.json'
     });
-    $translateProvider.use('en_EN');
+    var language = navigator.languages
+    ? navigator.languages[0]
+    : (navigator.language || navigator.userLanguage);
+
+    if (language.indexOf('fr')>-1)
+      language = 'fr-FR';
+    else
+      language = 'en-EN';
+    $translateProvider.use(language);
   });
 

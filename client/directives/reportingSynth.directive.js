@@ -174,7 +174,7 @@ angular.module('ricardo.directives.reportingSynth', [])
           "World estimated":0,
           "World as reported":1,
           "World sum partners":2,
-          "World Federico-Tena":3,
+          "World Federico Tena":3,
           "Multiple world partners":4
           // "World estimated|World as reported":3,
           // "World sum partners|World estimated":3,

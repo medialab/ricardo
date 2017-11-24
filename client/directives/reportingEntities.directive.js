@@ -156,20 +156,20 @@ angular.module('ricardo.directives.reportingEntities', [])
           "World estimated":0,
           "World as reported":1,
           "World sum partners":2,
-          "World Federico-Tena":3,
+          "World Federico Tena":3,
           "World estimated|World as reported":4,
           "World sum partners|World estimated":4,
           "World sum partners|World as reported":4,
-          "World as reported|World Federico-Tena":4,
-          "World sum partners|World Federico-Tena":4,
-          "World estimated|World Federico-Tena":4,
-          "World Federico-Tena|World as reported":4
+          "World as reported|World Federico Tena":4,
+          "World sum partners|World Federico Tena":4,
+          "World estimated|World Federico Tena":4,
+          "World Federico Tena|World as reported":4
         }
         var source_map={
           "Primary":0,
           "Secondary":1,
           "Estimation":2,
-          "Federico-Tena":3
+          "Federico Tena":3
         }
         var type_map={
           "country":0,
@@ -953,9 +953,25 @@ angular.module('ricardo.directives.reportingEntities', [])
               "<h5>"+v.reporting +"<br> ("+v.type.split("/")[0]+" in "+v.continent+")<br>"+ " in " + v.year +"</h5>")
               tooltip.selectAll(".source,.reference").html("")
               
+              function cleanSourceLabel(source){
+                function onlyUnique(value, index, self) { 
+                  return self.indexOf(value) === index;
+                }
+                function splitSource(value, index){
+                  return value.split(',');
+                }
+                
+                if(Array.isArray(source)){
+                  
+                  return [].concat.apply([],source.map(splitSource)).filter(onlyUnique).join(',<br>');
+                }
+                else
+                  return source.split(',').filter(onlyUnique).join(',<br>');
+              }
+              
               if (colorBy==="reference") tooltip.select(".reference").html("<hr><p style='font-weight:bold'>World Partner: <br>"+v.reference+"</p>")             
               if (colorBy==="sourcetype") tooltip.select(".source").html(
-                  "<hr><div><span style='font-weight:bold'>Source("+v.sourcetype+")</span>"+(v.sourcetype!=="Federico-Tena" ? ":"+v.source:"") +"</div>")
+                  "<hr><div><span style='font-weight:bold'>Source("+v.sourcetype+")</span>"+ ":<br>"+cleanSourceLabel(v.source) +"</div>")
 
               if (colorBy==="partner_intersect") tooltip.select(".reference").html("<hr><p style='font-weight:bold'>Number of Mirror Partners: "+v.partner_intersect.length+"</p>")
               tooltip.select(".tip_svg").style("display","none");

@@ -319,7 +319,20 @@ angular.module('ricardo.services', [])
        });
 
        return deferred.promise;
-     }
+     },
+     getBlogRSS: function(params){
+       var deferred = $q.defer();
+       $http({
+          method: 'GET',
+          url : BASE_API_URL + '/blog_RSS.xml',
+          cache: true
+        }).success(function(data){
+         deferred.resolve(data);
+       }).error(function(){
+         deferred.reject("An error occured while fetching Blog RSS");
+       });
+       return deferred.promise;
+     },
    }
   }])
   .factory('cfSource', function() {

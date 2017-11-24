@@ -30,7 +30,7 @@ angular.module('ricardo.directives.numberFlows', [])
         var yValue=scope.flowType.type.value;
         var yName=scope.flowType.name.value;
         var color=d3.scale.ordinal()
-                    .domain(["Bilateral","RICardo","Federico-Tena"]).range(['#ad494a',"#393b79","#637939"])
+                    .domain(["Bilateral","RICardo","FedericoTena"]).range(['#ad494a',"#393b79","#637939"])
         
         // var flow_map={
         //   "Bilateral":0,

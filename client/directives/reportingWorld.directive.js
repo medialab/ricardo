@@ -30,7 +30,7 @@ angular.module('ricardo.directives.reportingWorld', [])
         var categoryColors = {
                "World sum partners":"#bcbd22" ,
                "World as reported":"#b82e2e",
-               "World Federico-Tena":"#109618",
+               "World Federico Tena":"#109618",
                "World_best_guess":"#316395",
         }
         // var partnerColors=d3.scale.category10()
