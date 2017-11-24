@@ -36,6 +36,10 @@ gulp.task('svg', function() {
   return gulp.src('svg/*')
   .pipe(gulp.dest('build/svg'))
 })
+gulp.task('data', function() {
+  return gulp.src('data/*.csv')
+  .pipe(gulp.dest('build/data'))
+})
 
 gulp.task('locales', function() {
   return gulp.src('js/locale*.json')
@@ -56,5 +60,5 @@ gulp.task('clean:build', function() {
  * Run tasks build
  */
 
-gulp.task('default', ['clean:build','index','fonts','locales','img','svg','templates'], function() {
+gulp.task('default', ['clean:build','index','fonts','locales','img','svg','data','templates'], function() {
 });
