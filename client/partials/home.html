@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-md-5 col-md-push-7">
       <div class="container-img">
-        <img class="img-responsive pull-left" src="img/home_harbor.jpg" width="320" height="320" alt="Chambre de commerce">
+        <img class="img-responsive pull-left" src="img/home_repertoireGeneral.png" width="320" height="320" alt="Chambre de commerce">
       </div>
     </div>
     <div class="col-md-5 col-md-offset-2 col-md-pull-5">
@@ -95,69 +95,17 @@
       </div>
     <div class="container">
       <div class="article-list row">
-        <article class="item">
-          <a href="#">
-            <span class="article-title">Article de blog 1</span>
+        <article ng-repeat="article in articles" class="item">
+          <a href="{{article.url}}">
+            <span class="article-title">{{article.title}}</span>
             <span class="article-container-time">
               <time>
-                <span>22</span>
-                <span>sept</span>
-                <span>2017</span>
+                <span>{{article.day}}</span>
+                <span>{{article.month}}</span>
+                <span>{{article.year}}</span>
               </time>
             </span>
-            <p>Plusieurs variations de Lorem Ipsum peuvent être trouvées ici ou là, mais la majeure partie d'entre elles a été altérée par l'addition d'humour ou de mots aléatoires qui ne ressemblent pas une seconde à du texte standard...</p>
-          </a>
-        </article>
-        <article class="item">
-          <a href="#">
-            <span class="article-title">Article de blog 2</span>
-            <span class="article-container-time">
-              <time>
-                <span>30</span>
-                <span>mars</span>
-                <span>2017</span>
-              </time>
-            </span>
-            <p>Il n'a pas fait que survivre cinq siècles, mais s'est aussi adapté à la bureautique informatique, sans que son contenu n'en soit modifié...</p>
-          </a>
-        </article>
-        <article class="item">
-          <a href="#">
-            <span class="article-title">Article de blog 3</span>
-            <span class="article-container-time">
-              <time>
-                <span>27</span>
-                <span>avr</span>
-                <span>2017</span>
-              </time>
-            </span>
-            <p>Le Lorem Ipsum est simplement du faux texte employé dans la composition et la mise en page avant impression. Le Lorem Ipsum est le faux texte standard de l'imprimerie depuis les années 1500, quand un peintre anonyme assembla ensemble des morceaux de texte pour réaliser un livre spécimen de polices de texte...</p>
-          </a>
-        </article>
-        <article class="item">
-          <a href="#">
-            <span class="article-title">Article de blog 4</span>
-            <span class="article-container-time">
-              <time>
-                <span>02</span>
-                <span>avr</span>
-                <span>2017</span>
-              </time>
-            </span>
-            <p>Plusieurs variations de Lorem Ipsum peuvent être trouvées ici ou là, mais la majeure partie d'entre elles a été altérée par l'addition d'humour ou de mots aléatoires qui ne ressemblent pas une seconde à du texte standard...</p>
-          </a>
-        </article>
-        <article class="item">
-          <a href="#">
-            <span class="article-title">Article de blog 3</span>
-            <span class="article-container-time">
-              <time>
-                <span>27</span>
-                <span>avr</span>
-                <span>2017</span>
-              </time>
-            </span>
-            <p>Le Lorem Ipsum est simplement du faux texte employé dans la composition et la mise en page avant impression. Le Lorem Ipsum est le faux texte standard de l'imprimerie depuis les années 1500, quand un peintre anonyme assembla ensemble des morceaux de texte pour réaliser un livre spécimen de polices de texte...</p>
+            <p ng-bind-html="article.description"></p>
           </a>
         </article>
       </div>

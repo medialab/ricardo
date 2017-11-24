@@ -6,6 +6,11 @@ from flask import abort
 from flask import jsonify
 from cStringIO import StringIO as IO
 import gzip
+import feedparser
+import config
+import json
+import calendar
+
 
 import ricardo_api.models as models
 
@@ -192,22 +197,27 @@ def world_available():
         abort(500)
     return Response(json_data, status=200, mimetype='application/json')
 
-@app.route('/sources.csv')
-def sources_csv():
-    try:
-        csv_data=models.get_sources_csv()
-    except:
-        app.logger.exception("exception in sources csv available")
-        abort(500)
-    return Response(csv_data, status=200, mimetype='txt/csv')
 
-@app.route('/RICentities.csv')
-def RICentities_csv():
+@app.route('/blog_RSS.xml')
+def blog_RSS():
     try:
-        csv_data=models.get_RICentities_csv()
+        rss_data=feedparser.parse(config.BLOG_RSS)
+        posts = []
+        for e in rss_data['entries']:
+            print e
+            posts.append({
+                'title':e["title"],
+                'day':e.published_parsed[2],
+                'month' : calendar.month_abbr[e.published_parsed[1]],
+                'year' : e.published_parsed[0],
+                'description': e.description.split(' <')[0],
+                'url': e.link
+                })
     except:
-        app.logger.exception("exception in sources csv available")
+        app.logger.exception("exception in retrieving BLOG RSS")
         abort(500)
-    return Response(csv_data, status=200, mimetype='txt/csv')
+    return Response(json.dumps(posts,encoding="UTF8"), status=200, mimetype='application/rss+xml')
+
+
 
     

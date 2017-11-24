@@ -26,6 +26,7 @@ angular.module('ricardo', [
   'ricardo.controllers.world',
   'ricardo.controllers.network',
   'ricardo.controllers.matrix',
+  'ricardo.controllers.home'
   ])
 
 .run(function($rootScope, $location, $anchorScroll,$timeout,cfpLoadingBar) {
@@ -56,7 +57,13 @@ angular.module('ricardo', [
 .config(['$routeProvider', function($routeProvider) {
 
   $routeProvider.when('/', {
-  	templateUrl: 'partials/home.html'
+  	templateUrl: 'partials/home.html',
+    controller: 'home',
+    resolve: {
+      blogRSS : function (apiService) {
+        return apiService.getBlogRSS()
+      }
+    }
   });
   $routeProvider.when('/bilateral', {
     templateUrl: 'partials/bilateral.html',
