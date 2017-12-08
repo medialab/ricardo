@@ -108,18 +108,22 @@ angular.module('ricardo.controllers.world', [])
           .entries(worldFlows_filtered);
         worldFlowsYearsFormat = [];
         worldFlowsYears.forEach( function (d) {
-          if (d.key)
+          if (d.key){
+            var exp = d.values.filter(function(e){return e.type==='Exp'})[0]
+            var imp = d.values.filter(function(e){return e.type==='Imp'})[0]
+            var sources = [(exp ? exp.sources : null),(imp ? (imp.sources!=(exp ? exp.sources : null)? imp.sources :null) : null)].filter(function(e){return e})
             worldFlowsYearsFormat.push({
               reporting_id: null,
               type: null,
               partner_id: d.values[0].partner,
               year: d.key,
-              imp:d.values[1].flows,
-              exp:d.values[0].flows,
-              total: d.values[1].flows + d.values[0].flows,
+              imp: imp ? imp.flows : null,
+              exp: exp ? exp.flows : null,
+              total: (imp ? imp.flows : 0) + (exp ? exp.flows : 0),
               currency: "sterling",
-              sources: d.values[0].sources
+              sources: sources.join(', ')
             });
+          }
         })
         /*
          * Init the list of entities for linechart
