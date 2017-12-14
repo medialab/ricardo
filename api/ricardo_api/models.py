@@ -213,34 +213,27 @@ def get_nb_flows(flow):
   else:
     cursor.execute("""SELECT year , count(*), "RICardo" as partner,expimp
                   FROM flow_joined
-                  WHERE (
-                  partner_slug like 'Worldestimated'
-                  OR partner_slug like 'Worldasreported'
-                  OR partner_slug like 'Worldasreported2'
-                  OR partner_slug like 'Worldsumpartners'
-                  OR partner_slug like 'WorldFedericoTena')
+                  WHERE 
+                  partner_slug = 'Worldbestguess'
                   AND flow is not NULL
                   GROUP BY year,expimp
                   union
                   SELECT year , count(*), "FedericoTena" as partner,expimp
                   FROM flow_joined
-                  WHERE partner_slug like 'WorldFedericoTena'
+                  WHERE partner_slug = 'WorldFedericoTena'
                   AND flow is not NULL
                   GROUP BY year,expimp
                   union
                   SELECT year , count(*), "RICardo" as partner,  "total" as expimp
                   FROM flow_joined
-                  WHERE (
-                  partner_slug like 'Worldestimated'
-                  OR partner_slug like 'Worldasreported'
-                  OR partner_slug like 'Worldasreported2'
-                  OR partner_slug like 'Worldsumpartners')
+                  WHERE 
+                  partner_slug = 'Worldbestguess'
                   AND flow is not NULL
                   GROUP BY year
                   union
                   SELECT year , count(*), "FedericoTena" as partner,"total" as expimp
                   FROM flow_joined
-                  WHERE partner_slug like "WorldFedericoTena"
+                  WHERE partner_slug = "WorldFedericoTena"
                   AND flow is not NULL
                   GROUP BY year
                   """)
