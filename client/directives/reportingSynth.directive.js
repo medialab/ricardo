@@ -184,7 +184,7 @@ angular.module('ricardo.directives.reportingSynth', [])
           "Primary":0,
           "Secondary":1,
           "Estimation":2,
-          "Federico-Tena":3
+          "FedericoTena":3
         }
         var type_map={
           "country":0,
