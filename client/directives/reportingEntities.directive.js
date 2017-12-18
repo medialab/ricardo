@@ -953,25 +953,25 @@ angular.module('ricardo.directives.reportingEntities', [])
               "<h5>"+v.reporting +"<br> ("+v.type.split("/")[0]+" in "+v.continent+")<br>"+ " in " + v.year +"</h5>")
               tooltip.selectAll(".source,.reference").html("")
               
-              function cleanSourceLabel(source){
-                function onlyUnique(value, index, self) { 
-                  return self.indexOf(value) === index;
-                }
-                function splitSource(value, index){
-                  return value.split(',');
-                }
+              // function cleanSourceLabel(source){
+              //   function onlyUnique(value, index, self) { 
+              //     return self.indexOf(value) === index;
+              //   }
+              //   function splitSource(value, index){
+              //     return value.split(',');
+              //   }
                 
-                if(Array.isArray(source)){
+              //   if(Array.isArray(source)){
                   
-                  return [].concat.apply([],source.map(splitSource)).filter(onlyUnique).join(',<br>');
-                }
-                else
-                  return source.split(',').filter(onlyUnique).join(',<br>');
-              }
+              //     return [].concat.apply([],source.map(splitSource)).filter(onlyUnique).join(',<br>');
+              //   }
+              //   else
+              //     return source.split(',').filter(onlyUnique).join(',<br>');
+              // }
               
               if (colorBy==="reference") tooltip.select(".reference").html("<hr><p style='font-weight:bold'>World Partner: <br>"+v.reference+"</p>")             
               if (colorBy==="sourcetype") tooltip.select(".source").html(
-                  "<hr><div><span style='font-weight:bold'>Source("+v.sourcetype+")</span>"+ ":<br>"+cleanSourceLabel(v.source) +"</div>")
+                  "<hr><div><span style='font-weight:bold'>Source("+v.sourcetype+")</span>"+ ":<br>"+v.source+"</div>")
 
               if (colorBy==="partner_intersect") tooltip.select(".reference").html("<hr><p style='font-weight:bold'>Number of Mirror Partners: "+v.partner_intersect.length+"</p>")
               tooltip.select(".tip_svg").style("display","none");
