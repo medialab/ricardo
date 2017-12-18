@@ -204,7 +204,6 @@ def blog_RSS():
         rss_data=feedparser.parse(config.BLOG_RSS)
         posts = []
         for e in rss_data['entries']:
-            print e
             posts.append({
                 'title':e["title"],
                 'day':e.published_parsed[2],
