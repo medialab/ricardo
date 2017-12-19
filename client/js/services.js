@@ -329,7 +329,8 @@ angular.module('ricardo.services', [])
         }).success(function(data){
          deferred.resolve(data);
        }).error(function(){
-         deferred.reject("An error occured while fetching Blog RSS");
+         deferred.resolve([]);
+         //deferred.reject("An error occured while fetching Blog RSS");
        });
        return deferred.promise;
      },
