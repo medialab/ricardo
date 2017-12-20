@@ -2,11 +2,12 @@
 
 **RICardo Project, Historical Trade Database**
 
-This project contains 3 applications:
+This project contains 2 applications:
 
-* `database_creation`: a set of python scripts transforming the source Access database into a sqlite one and doing a set of data manipulation and validation on the go.
 * [`ricardo_api`](API.md)': a [Flask](http://flask.pocoo.org/) application exposing a REST API serving data from the sqlite database in JSON format.
 * `client`: an HTML5 angular.js application displaying data vizualisations from the ricardo API.
+
+The dataset needed to run this application is available in the [ricardo data repository](http://github.com/medialab/ricardo_data).
 
 ## Installation
 
