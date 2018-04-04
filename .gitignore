@@ -56,7 +56,7 @@ docs/_build/
 
 # Client bower components
 client/lib/bower_components/
-
+node_modules
 # Client data
 client/js/config.js
 
