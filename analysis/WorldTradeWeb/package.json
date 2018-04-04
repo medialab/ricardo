@@ -1,0 +1,13 @@
+{
+  "name": "RICardoNetworkPaper",
+  "version": "0.0.0",
+  "dependencies": {
+    "async": "^2.6.0",
+    "graphology": "^0.11.3",
+    "graphology-gexf": "^0.3.1",
+    "graphology-hits": "^0.1.0",
+    "graphology-metrics": "^1.5.0",
+    "graphology-pagerank": "^1.1.0",
+    "sqlite3": "^3.1.13"
+  }
+}

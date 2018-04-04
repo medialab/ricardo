@@ -1,0 +1,258 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v3.json",
+  "width": 600,
+  "height": 600,
+  "padding": 5,
+  "autosize": {
+    "type": "fit",
+    "resize": true
+  },
+  "signals": [
+    {
+      "name": "yField",
+      "value": "pagerank",
+      "bind": {
+        "input": "select",
+        "options": [
+          "pagerank",
+          "worldTradePart",
+          "worldTrade"
+        ]
+      }
+    },
+    {
+      "name": "xField",
+      "value": "worldTradePart",
+      "bind": {
+        "input": "select",
+        "options": [
+          "pagerank",
+          "worldTradePart",
+          "worldTrade"
+        ]
+      }
+    },
+    {
+      "name": "year",
+      "value": "1833",
+      "bind": {
+        "input": "range",
+        "min": 1833,
+        "max": 1933
+      }
+    },
+    {
+  "name": "hover",
+  "value": "{}",
+  "on": [
+    {"events": "symbol:mouseover", "update": "datum"},
+    {"events": "symbol:mouseout", "update": "{}"}
+  ]
+}
+    
+  ],
+  "data": [
+    {
+      "name": "ricardo",
+      "url": "./data/gapminderRICardo.json",
+      "transform": [
+        {
+          "type": "formula",
+          "expr": "datum.reporting + ' ' + datum.year + ' ' + datum.pagerank + ' ' +datum.worldTrade +' '+datum.worldTradePart",
+          "as": "tooltip"
+        }
+      ]
+    },
+    {
+      "name": "yearonly",
+      "source": "ricardo",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.year == year"
+        }
+      ]
+    },
+     {
+      "name": "reporting_timeline",
+      "source": "ricardo",
+      "transform": [
+        {"type": "filter", "expr": "hover && datum.reporting == hover.reporting"},
+        {"type": "collect", "sort": {"field": "year"}}
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "yscale",
+      "type": "linear",
+      "range": [
+        {
+          "signal": "height"
+        },
+        0
+      ],
+      "nice": true,
+      "domain": {
+        "data": "ricardo",
+        "field": {
+          "signal": "yField"
+        }
+      }
+    },
+    {
+      "name": "xscale",
+      "type": "linear",
+      "range": [
+        0,
+        {
+          "signal": "width"
+        }
+      ],
+      "nice": true,
+      "domain": {
+        "data": "ricardo",
+        "field": {
+          "signal": "xField"
+        }
+      }
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "domain": {
+        "data": "ricardo",
+        "field": "continent"
+      },
+      "range": "category"
+    }
+  ],
+  "axes": [
+    {
+      "orient": "bottom",
+      "scale": "xscale",
+      "offset": 5,
+      "title": {
+        "signal": "xField"
+      }
+    },
+    {
+      "orient": "left",
+      "scale": "yscale",
+      "offset": 5,
+      "title": {
+        "signal": "yField"
+      }
+    }
+  ],
+  "legends": [
+    {
+      "fill": "color",
+      "title": "Continent",
+      "orient": "right"
+    }
+  ],
+  "marks": [
+    {
+      "type": "symbol",
+      "from": {
+        "data": "yearonly"
+      },
+      "encode": {
+        "enter": {
+          "size": {
+            "value": 50
+          },
+         "fill": {
+            "scale": "color",
+            "field": "continent"
+          },
+          "tooltip": {
+            "field": "tooltip"
+          }
+        },
+        "update": {
+          "x": {
+            "scale": "xscale",
+            "field": {
+              "signal": "xField"
+            }
+          },
+          "y": {
+            "scale": "yscale",
+            "field": {
+              "signal": "yField"
+            }
+          },
+            "fill": {
+            "scale": "color",
+            "field": "continent"
+          },
+          "fillOpacity": {
+            "value": 0.8
+          },
+          "zindex": {
+            "value": 0
+          }
+        },
+        "hover": {
+          "fill": {
+            "value": "firebrick"
+          },
+          "fillOpacity": {
+            "value": 1
+          },
+          "zindex": {
+            "value": 1
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "width",
+            "offset": -20
+          },
+          "y": {
+            "value": 0
+          },
+          "text": {"signal":"hover.reporting"} ,
+          "align": {
+            "value": "right"
+          },
+          "baseline": {
+            "value": "top"
+          },
+          "fill": {
+            "value": "#999"
+          },
+          "fontSize": {
+            "value": 15
+          }
+        }
+      }
+    },
+    {
+      "type": "line",
+      "interactive": false,
+      "from": {"data": "reporting_timeline"},
+      "encode": {
+        "update": {
+          "x": {"scale": "xscale", "field": {
+              "signal": "xField"
+            }},
+          "y": {"scale": "yscale", "field": {
+              "signal": "yField"
+            }},
+          "stroke": {"value": "#bbb"},
+          "strokeWidth": {"value": 2},
+          "strokeOpacity": {"value": 0.5}
+        }
+      }
+    }
+  ]
+}
