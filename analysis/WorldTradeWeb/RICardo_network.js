@@ -40,7 +40,7 @@ const computeGraph = (year, done) =>{
 
   DB.get().all(`SELECT * FROM flow_joined
     WHERE
-      flow*rate is not null AND
+      flow is not null and rate is not null AND
       year = ${year} AND
       (partner is not null AND (partner not LIKE 'world%' OR partner = 'World_best_guess'))
       `, 
@@ -51,7 +51,7 @@ const computeGraph = (year, done) =>{
       
       rows.forEach(r => {
 
-        const w = r.flow*r.rate*r.unit; 
+        const w = r.flow*(r.unit || 1)/r.rate; 
         if (w && w != 0){
 
           if (r.partner_slug === "Worldbestguess"){
