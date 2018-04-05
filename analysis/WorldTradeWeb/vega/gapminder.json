@@ -125,6 +125,15 @@
         "field": "continent"
       },
       "range": "category"
+    },
+     {
+      "name": "year_color",
+      "type": "ordinal",
+      "domain": {
+        "data": "reporting_timeline",
+        "field": "year"
+      },
+      "range": {"scheme": "reds-9"} 
     }
   ],
   "axes": [
@@ -237,7 +246,7 @@
       }
     },
     {
-      "type": "line",
+      "type": "symbol",
       "interactive": false,
       "from": {"data": "reporting_timeline"},
       "encode": {
@@ -248,9 +257,9 @@
           "y": {"scale": "yscale", "field": {
               "signal": "yField"
             }},
-          "stroke": {"value": "#bbb"},
-          "strokeWidth": {"value": 2},
-          "strokeOpacity": {"value": 0.5}
+          "stroke": {"value": "#eee"},
+          "strokeWidth": {"value": 0.1},
+          "fill": {"scale": "year_color", "field":"year"}
         }
       }
     }
