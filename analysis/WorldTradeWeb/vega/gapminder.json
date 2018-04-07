@@ -38,15 +38,14 @@
       "bind": {
         "input": "range",
         "min": 1833,
-        "max": 1933
+        "max": 1938
       }
     },
     {
   "name": "hover",
   "value": "{}",
   "on": [
-    {"events": "symbol:mouseover", "update": "datum"},
-    {"events": "symbol:mouseout", "update": "{}"}
+    {"events": "symbol:click", "update": "if(hover==datum,{},datum)"}
   ]
 }
     
@@ -133,7 +132,7 @@
         "data": "reporting_timeline",
         "field": "year"
       },
-      "range": {"scheme": "reds-9"} 
+      "range": {"scheme": "greys"} 
     }
   ],
   "axes": [
@@ -159,7 +158,13 @@
       "fill": "color",
       "title": "Continent",
       "orient": "right"
+    },
+    {
+      "fill": "year_color",
+      "title": "Years",
+      "type": "gradient"
     }
+
   ],
   "marks": [
     {
@@ -247,7 +252,7 @@
     },
     {
       "type": "symbol",
-      "interactive": false,
+      "interactive": true,
       "from": {"data": "reporting_timeline"},
       "encode": {
         "update": {
@@ -257,9 +262,23 @@
           "y": {"scale": "yscale", "field": {
               "signal": "yField"
             }},
-          "stroke": {"value": "#eee"},
-          "strokeWidth": {"value": 0.1},
-          "fill": {"scale": "year_color", "field":"year"}
+          "stroke": {"value": "#888"},
+          "strokeWidth": {"value": 0.3},
+          "fill": {"scale": "year_color", "field":"year"},
+          "hover": {
+          "fill": {
+            "value": "firebrick"
+          },
+          "fillOpacity": {
+            "value": 1
+          },
+          "zindex": {
+            "value": 1
+          },
+            "tooltip": {
+            "field": "tooltip"
+          }
+        }
         }
       }
     }
