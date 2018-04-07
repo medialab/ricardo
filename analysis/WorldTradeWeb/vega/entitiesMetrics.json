@@ -1,0 +1,118 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v3.0.json",
+  "width": 600,
+  "padding": 5,
+
+  "signals": [
+    {"name": "offset", "value": 15},
+    {"name": "cellHeight", "value": 100},
+    {"name": "height", "update": "2 * (offset + cellHeight)"}
+  ],
+   "data": [
+    {
+      "name": "ricardo",
+      "url": "http://localhost:8080/data/gapminderRICardo.json",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.reporting == 'France'"
+        },
+        
+        {
+          "type": "fold", "fields": ["pagerank", "worldTradePart"]
+        }
+        
+      ]
+    },
+    {"name": "metrics", "values": ["pagerank","worldTradePart"]}],
+  "scales":[
+    {
+      "name": "gscale",
+      "type": "band",
+      "range": [0, {"signal": "height"}],
+      "round": true,
+       "domain": {
+        "data": "ricardo",
+        "field": "key"
+      }
+    },
+    {
+      "name":"xyears",
+      "type":"point",
+      "range":"width",
+      "nice":true,
+      "domain":{"data": "ricardo", "field":"year"}
+    }
+  ],
+  "axes": [
+    {"orient": "bottom", "scale": "xyears", "zindex": 1}
+  ],
+   "marks": [
+    {
+      "name": "metric",
+      "type": "group",
+
+       "from": {
+        "facet": {
+          "data": "ricardo",
+          "name": "metrics",
+          "groupby": "key"
+        }
+      },
+      "encode": {
+        "enter": {
+          "y": {"scale": "gscale", "field": "key", "offset": {"signal": "offset"}},
+          "height": {"signal": "cellHeight"},
+          "width": {"signal": "width"},
+          "stroke": {"value": "#ccc"}
+        }
+      },
+      "scales": [
+        {
+          "name": "yscale",
+          "type": "linear",
+          "round": true,
+          "domain": [0,{"signal": "cellHeight"}]
+        }
+      ],
+      "axes": [
+        {
+          "orient": "left",
+          "scale": "yscale"
+         }
+      ],
+      "marks": [
+        {
+          "type": "symbol",
+          "from": {"data": "metrics"},
+          "encode": {
+            "enter": {
+              "x": {"scale": "xyears", "field": "year"},
+              "y": {"scale": "yscale", "field": "value"},
+              "strokeWidth": {"value": 2},
+              "size": {"value": 50}
+            }
+          }
+        }
+      ]
+     
+    },
+
+    {
+      "type": "text",
+      "from": {"data": "metric"},
+      "encode": {
+        "enter": {
+          "x": {"field": "width", "mult": 0.5},
+          "y": {"field": "y"},
+          "fontSize": {"value": 11},
+          "fontWeight": {"value": "bold"},
+          "text": {"field": "datum.key"},
+          "align": {"value": "center"},
+          "baseline": {"value": "bottom"},
+          "fill": {"value": "#000"}
+        }
+      }
+    }
+  ]
+}
