@@ -42,10 +42,18 @@
       }
     },
     {
-  "name": "hover",
+  "name": "clickEntity",
   "value": "{}",
   "on": [
-    {"events": "symbol:click", "update": "if(hover==datum,{},datum)"}
+    {"events": "symbol:click", "update": "if(clickEntity==datum,{},datum)"}
+  ]
+},
+  {
+  "name": "hoverEntity",
+  "value": "{}",
+  "on": [
+    {"events": "symbol:mouseover", "update": "datum"},
+    {"events": "symbol:mouseout", "update": "{}"}
   ]
 }
     
@@ -76,7 +84,7 @@
       "name": "reporting_timeline",
       "source": "ricardo",
       "transform": [
-        {"type": "filter", "expr": "hover && datum.reporting == hover.reporting"},
+        {"type": "filter", "expr": "clickEntity && datum.reporting == clickEntity.reporting"},
         {"type": "collect", "sort": {"field": "year"}}
       ]
     }
@@ -234,7 +242,7 @@
           "y": {
             "value": 0
           },
-          "text": {"signal":"hover.reporting"} ,
+          "text": {"signal":"hoverEntity.reporting || clickEntity.reporting"} ,
           "align": {
             "value": "right"
           },
