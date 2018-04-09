@@ -1,2 +1,4 @@
-data/
+data/*.json
+data/*.sqlite
+data/networks/*.gexf
 node_modules
