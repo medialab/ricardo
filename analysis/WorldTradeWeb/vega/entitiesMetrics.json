@@ -12,7 +12,7 @@
       "value": "France",
       "bind": {
         "input": "select",
-        "options": ["France","United Kingdom","Germany"]
+        "options": ["United Kingdom","United States of America","France","Netherlands","Belgium","India","Spain","Italy","Germany","Canada","Australia","Sweden","China (People's Republic of China)","Russia/USSR","Algeria","Chile","Brazil","Argentina","Portugal","Denmark","Japan","Switzerland","Norway","Egypt/United Arab Republic","Greece","Peru","Philippines","New Zealand","Bulgaria","Uruguay","Sri Lanka (Ceylon)","Turkey","Romania","Austria","Mexico","Cuba","Colombia (Gran Colombia)","Finland","Indonesia (Dutch East Indies)","Mauritius","Austria-Hungary","Straits Settlements","Tunisia","Thailand (Siam)","Venezuela","Belgium & Luxemburg","Hong Kong","Newfoundland","Ecuador","South Africa","New South Wales","Guyana (Br. Guiana)","Iran (Persia)","Cape Colony","Victoria","Morocco","Bolivia","El Salvador","British Colonies (other)","Czechoslovakia","Trinidad and Tobago","Haiti","French Indochina","Hamburg","South Australia","Paraguay","Jamaica","Yugoslavia","Sierra Leone","Malta","Barbados","Poland","British West Indies","Cyprus","Guatemala","Hungary","Costa Rica","Zanzibar","Ghana (Gold Coast)","Gibraltar","Puerto Rico","Ireland","Latvia","Nicaragua","Norway & Sweden","Panama","Singapore","Queensland","Natal","Honduras","Western Australia","Bremen","Dominican Republic (Santo Domingo)","Malaysia (Malaya)","Malagasy Republic (Madagascar)","Estonia","French Guyana","Aden","Serbia"]
       }
     },
     {
@@ -20,28 +20,28 @@
       "value": "United Kingdom",
       "bind": {
         "input": "select",
-        "options": ["France","United Kingdom","Germany"]}
+        "options": ["","United Kingdom","United States of America","France","Netherlands","Belgium","India","Spain","Italy","Germany","Canada","Australia","Sweden","China (People's Republic of China)","Russia/USSR","Algeria","Chile","Brazil","Argentina","Portugal","Denmark","Japan","Switzerland","Norway","Egypt/United Arab Republic","Greece","Peru","Philippines","New Zealand","Bulgaria","Uruguay","Sri Lanka (Ceylon)","Turkey","Romania","Austria","Mexico","Cuba","Colombia (Gran Colombia)","Finland","Indonesia (Dutch East Indies)","Mauritius","Austria-Hungary","Straits Settlements","Tunisia","Thailand (Siam)","Venezuela","Belgium & Luxemburg","Hong Kong","Newfoundland","Ecuador","South Africa","New South Wales","Guyana (Br. Guiana)","Iran (Persia)","Cape Colony","Victoria","Morocco","Bolivia","El Salvador","British Colonies (other)","Czechoslovakia","Trinidad and Tobago","Haiti","French Indochina","Hamburg","South Australia","Paraguay","Jamaica","Yugoslavia","Sierra Leone","Malta","Barbados","Poland","British West Indies","Cyprus","Guatemala","Hungary","Costa Rica","Zanzibar","Ghana (Gold Coast)","Gibraltar","Puerto Rico","Ireland","Latvia","Nicaragua","Norway & Sweden","Panama","Singapore","Queensland","Natal","Honduras","Western Australia","Bremen","Dominican Republic (Santo Domingo)","Malaysia (Malaya)","Malagasy Republic (Madagascar)","Estonia","French Guyana","Aden","Serbia"]}
     },
      {
       "name": "reporting_3",
       "value": "Germany",
       "bind": {
         "input": "select",
-        "options": ["France","United Kingdom","Germany"]}
+        "options": ["","United Kingdom","United States of America","France","Netherlands","Belgium","India","Spain","Italy","Germany","Canada","Australia","Sweden","China (People's Republic of China)","Russia/USSR","Algeria","Chile","Brazil","Argentina","Portugal","Denmark","Japan","Switzerland","Norway","Egypt/United Arab Republic","Greece","Peru","Philippines","New Zealand","Bulgaria","Uruguay","Sri Lanka (Ceylon)","Turkey","Romania","Austria","Mexico","Cuba","Colombia (Gran Colombia)","Finland","Indonesia (Dutch East Indies)","Mauritius","Austria-Hungary","Straits Settlements","Tunisia","Thailand (Siam)","Venezuela","Belgium & Luxemburg","Hong Kong","Newfoundland","Ecuador","South Africa","New South Wales","Guyana (Br. Guiana)","Iran (Persia)","Cape Colony","Victoria","Morocco","Bolivia","El Salvador","British Colonies (other)","Czechoslovakia","Trinidad and Tobago","Haiti","French Indochina","Hamburg","South Australia","Paraguay","Jamaica","Yugoslavia","Sierra Leone","Malta","Barbados","Poland","British West Indies","Cyprus","Guatemala","Hungary","Costa Rica","Zanzibar","Ghana (Gold Coast)","Gibraltar","Puerto Rico","Ireland","Latvia","Nicaragua","Norway & Sweden","Panama","Singapore","Queensland","Natal","Honduras","Western Australia","Bremen","Dominican Republic (Santo Domingo)","Malaysia (Malaya)","Malagasy Republic (Madagascar)","Estonia","French Guyana","Aden","Serbia"]}
     },
      {
       "name": "reporting_4",
       "value": "Spain",
       "bind": {
         "input": "select",
-        "options": ["France","United Kingdom","Germany"]}
+        "options": ["","United Kingdom","United States of America","France","Netherlands","Belgium","India","Spain","Italy","Germany","Canada","Australia","Sweden","China (People's Republic of China)","Russia/USSR","Algeria","Chile","Brazil","Argentina","Portugal","Denmark","Japan","Switzerland","Norway","Egypt/United Arab Republic","Greece","Peru","Philippines","New Zealand","Bulgaria","Uruguay","Sri Lanka (Ceylon)","Turkey","Romania","Austria","Mexico","Cuba","Colombia (Gran Colombia)","Finland","Indonesia (Dutch East Indies)","Mauritius","Austria-Hungary","Straits Settlements","Tunisia","Thailand (Siam)","Venezuela","Belgium & Luxemburg","Hong Kong","Newfoundland","Ecuador","South Africa","New South Wales","Guyana (Br. Guiana)","Iran (Persia)","Cape Colony","Victoria","Morocco","Bolivia","El Salvador","British Colonies (other)","Czechoslovakia","Trinidad and Tobago","Haiti","French Indochina","Hamburg","South Australia","Paraguay","Jamaica","Yugoslavia","Sierra Leone","Malta","Barbados","Poland","British West Indies","Cyprus","Guatemala","Hungary","Costa Rica","Zanzibar","Ghana (Gold Coast)","Gibraltar","Puerto Rico","Ireland","Latvia","Nicaragua","Norway & Sweden","Panama","Singapore","Queensland","Natal","Honduras","Western Australia","Bremen","Dominican Republic (Santo Domingo)","Malaysia (Malaya)","Malagasy Republic (Madagascar)","Estonia","French Guyana","Aden","Serbia"]}
     },
       {
       "name": "reporting_5",
       "value": "Netherlands",
       "bind": {
         "input": "select",
-        "options": ["France","United Kingdom","Germany"]}
+        "options": ["","United Kingdom","United States of America","France","Netherlands","Belgium","India","Spain","Italy","Germany","Canada","Australia","Sweden","China (People's Republic of China)","Russia/USSR","Algeria","Chile","Brazil","Argentina","Portugal","Denmark","Japan","Switzerland","Norway","Egypt/United Arab Republic","Greece","Peru","Philippines","New Zealand","Bulgaria","Uruguay","Sri Lanka (Ceylon)","Turkey","Romania","Austria","Mexico","Cuba","Colombia (Gran Colombia)","Finland","Indonesia (Dutch East Indies)","Mauritius","Austria-Hungary","Straits Settlements","Tunisia","Thailand (Siam)","Venezuela","Belgium & Luxemburg","Hong Kong","Newfoundland","Ecuador","South Africa","New South Wales","Guyana (Br. Guiana)","Iran (Persia)","Cape Colony","Victoria","Morocco","Bolivia","El Salvador","British Colonies (other)","Czechoslovakia","Trinidad and Tobago","Haiti","French Indochina","Hamburg","South Australia","Paraguay","Jamaica","Yugoslavia","Sierra Leone","Malta","Barbados","Poland","British West Indies","Cyprus","Guatemala","Hungary","Costa Rica","Zanzibar","Ghana (Gold Coast)","Gibraltar","Puerto Rico","Ireland","Latvia","Nicaragua","Norway & Sweden","Panama","Singapore","Queensland","Natal","Honduras","Western Australia","Bremen","Dominican Republic (Santo Domingo)","Malaysia (Malaya)","Malagasy Republic (Madagascar)","Estonia","French Guyana","Aden","Serbia"]}
     },
     
     {
@@ -52,7 +52,7 @@
    "data": [
     {
       "name": "ricardo",
-      "url": "./data/gapminderRICardo.json"
+      "url": "http://localhost:8080/data/gapminderRICardo.json"
     },
     {
       "name": "filtered",
