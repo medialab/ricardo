@@ -1,30 +1,76 @@
-{
+  {
   "$schema": "https://vega.github.io/schema/vega/v3.0.json",
   "width": 600,
   "padding": 5,
 
   "signals": [
     {"name": "offset", "value": 15},
-    {"name": "cellHeight", "value": 100},
-    {"name": "height", "update": "2 * (offset + cellHeight)"}
+    {"name": "cellHeight", "value": 250},
+    {"name": "height", "update": "2 * (offset + cellHeight)"},
+    {
+      "name": "reporting_1",
+      "value": "France",
+      "bind": {
+        "input": "select",
+        "options": ["France","United Kingdom","Germany"]
+      }
+    },
+    {
+      "name": "reporting_2",
+      "value": "United Kingdom",
+      "bind": {
+        "input": "select",
+        "options": ["France","United Kingdom","Germany"]}
+    },
+     {
+      "name": "reporting_3",
+      "value": "Germany",
+      "bind": {
+        "input": "select",
+        "options": ["France","United Kingdom","Germany"]}
+    },
+     {
+      "name": "reporting_4",
+      "value": "Spain",
+      "bind": {
+        "input": "select",
+        "options": ["France","United Kingdom","Germany"]}
+    },
+      {
+      "name": "reporting_5",
+      "value": "Netherlands",
+      "bind": {
+        "input": "select",
+        "options": ["France","United Kingdom","Germany"]}
+    },
+    
+    {
+      "name": "reportings",
+      "update": "[reporting_1,reporting_2,reporting_3,reporting_4,reporting_5]"
+    }
   ],
    "data": [
     {
       "name": "ricardo",
-      "url": "http://localhost:8080/data/gapminderRICardo.json",
-      "transform": [
-        {
-          "type": "filter",
-          "expr": "datum.reporting == 'France'"
-        },
-        
-        {
-          "type": "fold", "fields": ["pagerank", "worldTradePart"]
-        }
-        
-      ]
+      "url": "./data/gapminderRICardo.json"
     },
-    {"name": "metrics", "values": ["pagerank","worldTradePart"]}],
+    {
+      "name": "filtered",
+      "source":"ricardo",
+       "transform":[{
+          "type": "filter",
+          "expr": "indexof(reportings,datum.reporting) != -1"
+        }]
+    },
+    { 
+      "name": "folded",
+      "source":"filtered",
+      "transform":[{
+          "type": "fold", 
+          "fields": ["pagerank", "worldTradePart"]
+        }]
+    }
+    ],
   "scales":[
     {
       "name": "gscale",
@@ -32,21 +78,38 @@
       "range": [0, {"signal": "height"}],
       "round": true,
        "domain": {
-        "data": "ricardo",
+        "data": "folded",
         "field": "key"
       }
     },
     {
       "name":"xyears",
-      "type":"point",
+      "type":"linear",
       "range":"width",
       "nice":true,
-      "domain":{"data": "ricardo", "field":"year"}
+      "domain":{"data": "folded", "field":"year"},
+      "zero":false
+    },
+    {
+          "name": "reporting_color",
+          "type": "ordinal",
+          "domain":{
+            "data": "folded",
+            "field": "reporting"
+          },
+      "range": "category"
     }
   ],
   "axes": [
     {"orient": "bottom", "scale": "xyears", "zindex": 1}
   ],
+  "legends":[
+        {
+          "title":"reporting",
+          "type":"symbol",
+          "fill":"reporting_color"
+        }
+      ],
    "marks": [
     {
       "name": "metric",
@@ -54,7 +117,7 @@
 
        "from": {
         "facet": {
-          "data": "ricardo",
+          "data": "folded",
           "name": "metrics",
           "groupby": "key"
         }
@@ -71,29 +134,50 @@
         {
           "name": "yscale",
           "type": "linear",
-          "round": true,
-          "domain": [0,{"signal": "cellHeight"}]
+          "range": [{"signal": "cellHeight"},0],
+          "domain":{
+            "data": "metrics",
+            "field": "value"
+          }
         }
       ],
+      
       "axes": [
         {
           "orient": "left",
-          "scale": "yscale"
+          "scale": "yscale",
+          "ticks": true
          }
       ],
       "marks": [
+        
         {
-          "type": "symbol",
-          "from": {"data": "metrics"},
+      "type": "group",
+      "from": {
+        "facet": {
+          "name": "series",
+          "data": "metrics",
+          "groupby": "reporting"
+        }
+      },
+      "marks": [
+        {
+          "type": "line",
+          "from": {"data": "series"},
           "encode": {
             "enter": {
               "x": {"scale": "xyears", "field": "year"},
               "y": {"scale": "yscale", "field": "value"},
-              "strokeWidth": {"value": 2},
-              "size": {"value": 50}
+              "stroke": {"scale": "reporting_color", "field": "reporting"},
+              "strokeWidth": {"value": 2}
+            },
+            "hover": {
+              "fillOpacity": {"value": 0.5}
             }
           }
         }
+      ]
+    }
       ]
      
     },

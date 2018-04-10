@@ -16,10 +16,12 @@
 </head>
 
 <body>  
-  <div id="vis"></div>
-  
+  <div id="gapminder"></div>
+  <div id="entitiesMetrics"></div>
   <script>
-    const spec = "./vega/gapminder.json";
-  	vegaEmbed('#vis', spec).catch(console.warn);
+    const gap_spec = "./vega/gapminder.json";
+  	vegaEmbed('#gapminder', gap_spec).catch(console.warn);
+    const em_spec = "./vega/entitiesMetrics.json";
+    vegaEmbed('#entitiesMetrics', em_spec).catch(console.warn);
   </script>
 </body>
