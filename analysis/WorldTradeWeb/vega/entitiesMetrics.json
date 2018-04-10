@@ -52,7 +52,7 @@
    "data": [
     {
       "name": "ricardo",
-      "url": "http://localhost:8080/data/gapminderRICardo.json"
+      "url": "./data/gapminderRICardo.json"
     },
     {
       "name": "filtered",
