@@ -2,6 +2,7 @@ const sqlite3 = require('sqlite3')
 const conf = require('./configuration.json')
 const {DirectedGraph} = require('graphology');
 const {density} = require('graphology-metrics');
+const {modularity} = require('graphology-metrics');
 const pagerank = require('graphology-pagerank');
 const gexf = require('graphology-gexf/browser');
 const async = require('async');
@@ -89,18 +90,20 @@ const computeGraph = (year, done) =>{
       // compute metrics
       metrics.year = year;
       // network level
+      metrics.networks.modularity = 0;//modularity(graph);
       metrics.networks.density = density(graph);
       metrics.networks.order = graph.order;
       metrics.networks.size = graph.size;
+
       //node level
       pagerank.assign(graph);
       graph.nodes().forEach(n => {
         
         // herfindall index
-        const inDegree = graph.inEdges(n).reduce((acc,e) => acc + graph.getEdgeAttribute(e,'weight'), 0)
-        const outDegree = graph.outEdges(n).reduce((acc,e) => acc + graph.getEdgeAttribute(e,'weight'), 0)
-        graph.setNodeAttribute(n, 'inHerfindahl', graph.inEdges(n).reduce((acc,e) => acc + Math.pow(graph.getEdgeAttribute(e,"weight")/inDegree,2), 0))
-        graph.setNodeAttribute(n, 'outHerfindahl', graph.outEdges(n).reduce((acc,e) => acc + Math.pow(graph.getEdgeAttribute(e,"weight")/outDegree,2), 0))
+        const inDegree = graph.inEdges(n).reduce((acc,e) => acc + graph.getEdgeAttribute(e,'weight'), 0);
+        const outDegree = graph.outEdges(n).reduce((acc,e) => acc + graph.getEdgeAttribute(e,'weight'), 0);
+        graph.setNodeAttribute(n, 'inHerfindahl', graph.inEdges(n).reduce((acc,e) => acc + Math.pow(graph.getEdgeAttribute(e,"weight")/inDegree,2), 0));
+        graph.setNodeAttribute(n, 'outHerfindahl', graph.outEdges(n).reduce((acc,e) => acc + Math.pow(graph.getEdgeAttribute(e,"weight")/outDegree,2), 0));
         graph.setNodeAttribute(n, 'herfindahl', graph.neighbors(n).reduce((acc,neighbor) =>{
           // total trade of this neighbor 
           let neighborTotal = graph.edges(n,neighbor).reduce((s, e) => s+graph.getEdgeAttribute(e,'weight'), 0);
@@ -108,11 +111,11 @@ const computeGraph = (year, done) =>{
         },0));
         
         // store node attributes to metrics
-        metrics.entities[n] = graph.getNodeAttributes(n)
+        metrics.entities[n] = graph.getNodeAttributes(n);
         
         if (metrics.entities[n].world_Exp && metrics.entities[n].world_Imp){
-          metrics.entities[n].worldTradePart = (metrics.entities[n].world_Imp + metrics.entities[n].world_Exp) / (totalTrade.Exp + totalTrade.Imp) 
-          graph.setNodeAttribute(n,'worldTradePart', metrics.entities[n].worldTradePart)
+          metrics.entities[n].worldTradePart = (metrics.entities[n].world_Imp + metrics.entities[n].world_Exp) / (totalTrade.Exp + totalTrade.Imp);
+          graph.setNodeAttribute(n,'worldTradePart', metrics.entities[n].worldTradePart);
         }
       })
       //Write gexf
@@ -122,12 +125,12 @@ const computeGraph = (year, done) =>{
           if (err)
             done(err);
           else{
-            done(null, metrics)   
+            done(null, metrics);   
           }
         })
       }
       else
-        done(null, metrics)
+        done(null, metrics);
   });
 }
 
@@ -141,12 +144,21 @@ for (year = conf.startDate; year <= conf.endDate; year++) {
 async.map(years, computeGraph, (err, metrics) =>{
    //merge metrics
    const gapMinderMetrics = []
-   const metricsByYear = {networks:{density:{},order:{},size:{}},entities:{}}
+   const networksMetrics =[]
+   const metricsByYear = {networks:{density:{},order:{},size:{},modularity:{}},entities:{}}
    metrics.forEach(m => {
       // to be factorized later
       metricsByYear.networks.density[m.year] = m.networks.density;
+      metricsByYear.networks.modularity[m.year] = m.networks.modularity;
       metricsByYear.networks.order[m.year] = m.networks.order;
       metricsByYear.networks.size[m.year] = m.networks.size;
+      // networks metrics only
+      networksMetrics.push({
+        year:m.year,
+        density:m.networks.density,
+        nb_reportings:m.networks.order,
+        nb_flows: m.networks.size,
+        modularity: m.modularity})
       
       for (e in m.entities){
 
@@ -189,6 +201,10 @@ async.map(years, computeGraph, (err, metrics) =>{
   fs.writeFile(`./data/${conf.gapMinder_metric_filename}`, JSON.stringify(gapMinderMetrics, null, 2), 'utf8', (err)=>{
       if (err) console.log(`error : couldn't write ${conf.gapMinder_metric_filename}`);
       else console.log(`writing to ${conf.gapMinder_metric_filename}`);
+    });
+  fs.writeFile(`./data/${conf.network_metric_filename}`, JSON.stringify(networksMetrics, null, 2), 'utf8', (err)=>{
+      if (err) console.log(`error : couldn't write ${conf.network_metric_filename}`);
+      else console.log(`writing to ${conf.network_metric_filename}`);
     });
 })
 

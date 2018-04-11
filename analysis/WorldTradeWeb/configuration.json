@@ -1,7 +1,8 @@
 {
 	"RICardo_data":"RICardo_viz.sqlite",
 	"startDate":1833,
-	"endDate":1933,
+	"endDate":1938,
 	"writeGexf":0,
-	"gapMinder_metric_filename":"gapminderRICardo.json"
+	"gapMinder_metric_filename":"gapminderRICardo.json",
+	"network_metric_filename": "networkMetrics.json"
 }
