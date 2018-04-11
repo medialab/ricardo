@@ -95,9 +95,22 @@ const computeGraph = (year, done) =>{
       //node level
       pagerank.assign(graph);
       graph.nodes().forEach(n => {
+        
+        // herfindall index
+        const inDegree = graph.inEdges(n).reduce((acc,e) => acc + graph.getEdgeAttribute(e,'weight'), 0)
+        const outDegree = graph.outEdges(n).reduce((acc,e) => acc + graph.getEdgeAttribute(e,'weight'), 0)
+        graph.setNodeAttribute(n, 'inHerfindahl', graph.inEdges(n).reduce((acc,e) => acc + Math.pow(graph.getEdgeAttribute(e,"weight")/inDegree,2), 0))
+        graph.setNodeAttribute(n, 'outHerfindahl', graph.outEdges(n).reduce((acc,e) => acc + Math.pow(graph.getEdgeAttribute(e,"weight")/outDegree,2), 0))
+        graph.setNodeAttribute(n, 'herfindahl', graph.neighbors(n).reduce((acc,neighbor) =>{
+          // total trade of this neighbor 
+          let neighborTotal = graph.edges(n,neighbor).reduce((s, e) => s+graph.getEdgeAttribute(e,'weight'), 0);
+          return acc + Math.pow(neighborTotal/(inDegree+outDegree),2);
+        },0));
+        
+        // store node attributes to metrics
         metrics.entities[n] = graph.getNodeAttributes(n)
+        
         if (metrics.entities[n].world_Exp && metrics.entities[n].world_Imp){
-          // not sure about the worldTradePart
           metrics.entities[n].worldTradePart = (metrics.entities[n].world_Imp + metrics.entities[n].world_Exp) / (totalTrade.Exp + totalTrade.Imp) 
           graph.setNodeAttribute(n,'worldTradePart', metrics.entities[n].worldTradePart)
         }
@@ -146,7 +159,10 @@ async.map(years, computeGraph, (err, metrics) =>{
             continent: m.entities[e].continent,
             pagerank: m.entities[e].pagerank,
             worldTrade: m.entities[e].world_Imp || 0 + m.entities[e].world_Exp || 0,
-            worldTradePart: m.entities[e].worldTradePart || null
+            worldTradePart: m.entities[e].worldTradePart || null,
+            herfindahl: m.entities[e].herfindahl,
+            inHerfindahl: m.entities[e].inHerfindahl,
+            outHerfindahl: m.entities[e].outHerfindahl
           })  
         }
         // generic output

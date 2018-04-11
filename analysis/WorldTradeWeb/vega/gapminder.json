@@ -1,6 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v3.json",
-  "width": 600,
+  "width": 800,
   "height": 600,
   "padding": 5,
   "autosize": {
@@ -16,7 +16,10 @@
         "options": [
           "pagerank",
           "worldTradePart",
-          "worldTrade"
+          "worldTrade",
+          "herfindahl",
+          "inHerfindahl",
+          "outHerfindahl"
         ]
       }
     },
@@ -28,7 +31,10 @@
         "options": [
           "pagerank",
           "worldTradePart",
-          "worldTrade"
+          "worldTrade",
+          "herfindahl",
+          "inHerfindahl",
+          "outHerfindahl"
         ]
       }
     },
@@ -278,13 +284,10 @@
             "value": "firebrick"
           },
           "fillOpacity": {
-            "value": 1
-          },
-          "zindex": {
-            "value": 1
+            "value": 0.5
           },
             "tooltip": {
-            "field": "tooltip"
+            "field": "year"
           }
         }
         }

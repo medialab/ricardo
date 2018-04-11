@@ -6,7 +6,7 @@
   "signals": [
     {"name": "offset", "value": 15},
     {"name": "cellHeight", "value": 250},
-    {"name": "height", "update": "2 * (offset + cellHeight)"},
+    {"name": "height", "update": "5 * (offset + cellHeight)"},
     {
       "name": "reporting_1",
       "value": "France",
@@ -67,7 +67,7 @@
       "source":"filtered",
       "transform":[{
           "type": "fold", 
-          "fields": ["pagerank", "worldTradePart"]
+          "fields": ["pagerank", "worldTradePart", "herfindahl", "inHerfindahl", "outHerfindahl"]
         }]
     }
     ],
