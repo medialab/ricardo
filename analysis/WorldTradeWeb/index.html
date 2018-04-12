@@ -16,12 +16,16 @@
 </head>
 
 <body>  
+  
   <div id="gapminder"></div>
+  <div id="networksMetrics"></div>
   <div id="entitiesMetrics"></div>
   <script>
-    const gap_spec = "./vega/gapminder.json";
-  	vegaEmbed('#gapminder', gap_spec).catch(console.warn);
-    const em_spec = "./vega/entitiesMetrics.json";
-    vegaEmbed('#entitiesMetrics', em_spec).catch(console.warn);
+
+    vegaEmbed('#gapminder', "./vega/gapminder.json").catch(console.warn);
+
+    vegaEmbed('#networksMetrics', "./vega/networksMetrics.json").catch(console.warn);
+  	
+    vegaEmbed('#entitiesMetrics', "./vega/entitiesMetrics.json").catch(console.warn);
   </script>
 </body>

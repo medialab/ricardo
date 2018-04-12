@@ -1,0 +1,141 @@
+  {
+  "$schema": "https://vega.github.io/schema/vega/v3.0.json",
+  "width": 600,
+  "height":400,
+  "padding": 5,
+
+  "signals": [
+  ],
+  "data": [
+    {
+      "name": "networkMetrics",
+      "url": "./data/networkMetrics.json"
+    },
+    {
+      "name":"folded",
+      "source": "networkMetrics",
+      "transform":[
+        {"type":"fold", "fields":["density", "nb_reportings", "nb_flows"]}
+      ]
+    },
+    {
+      "name":"densities",
+      "source": "folded",
+      "transform":[
+        {"type":"filter", "expr":"datum.key == 'density'"}
+      ]
+    },
+    {
+      "name":"reportingsFlows",
+      "source": "folded",
+      "transform":[
+        {"type":"filter", "expr":"datum.key != 'density'"},
+        {
+          "type": "stack",
+          "groupby": ["year"],
+          "sort": {"field": "key"},
+          "field": "value"
+        }
+      
+      ]
+    }
+
+  ],
+  "scales":[
+    {
+      "name":"xyears",
+      "type":"linear",
+      "range":"width",
+      "nice":true,
+      "domain":{"data": "folded", "field":"year"},
+      "zero":false
+    },
+    {
+      "name": "metric_color",
+      "type": "ordinal",
+      "domain":{"data":"folded","field":"key"},
+      "range": "category"
+    },
+    {
+      "name": "flowReportingScale",
+      "type": "linear",
+      "range": [{"signal":"height"},0],
+      "domain":[0,5000]
+    },
+    {
+      "name": "densityScale",
+      "type": "linear",
+      "range": [{"signal":"height"},0],
+      "domain":{
+        "data": "networkMetrics",
+        "field": "density"
+      }
+    }
+  ],
+  "axes": [
+    {"orient": "bottom", "scale": "xyears", "zindex": 1},
+    {
+          "title":"flows and reportings",
+          "orient": "left",
+          "scale": "flowReportingScale",
+          "ticks": true
+         },
+         {
+          "orient": "right",
+          "scale": "densityScale",
+          "ticks": true
+         }
+  ],
+  "legends":[
+        {
+          "title":"Networks Metrics",
+          "type":"symbol",
+          "fill":"metric_color"
+        }
+      ],
+   "marks": [
+    {
+      "name": "metric",
+      "type": "group",
+      "from": {
+        "facet": {
+          "name": "stacked",
+          "data": "reportingsFlows",
+          "groupby": "key"
+        }
+      },
+       "marks": [
+
+        {
+          "type": "area",
+          "from": {"data": "stacked"},
+          "encode": {
+            "enter": {
+              "interpolate": {"value": "monotone"},
+              "x": {"scale": "xyears", "field": "year"},
+              "y": {"scale": "flowReportingScale", "field": "y0"},
+              "y2":{"scale":  "flowReportingScale", "field": "y1"},
+              "fill": {"scale": "metric_color", "field": "key"}
+            }
+          }
+        },
+        
+        {
+          "type": "line",
+          "from": {"data": "densities"},
+          "encode": {
+            "enter": {
+              "x": {"scale": "xyears", "field": "year"},
+              "y": {"scale": "densityScale", "field": "value"},
+              "stroke": {"scale": "metric_color", "field": "key"},
+              "strokeWidth": {"value": 2}
+            },
+            "hover": {
+              "fillOpacity": {"value": 0.5}
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

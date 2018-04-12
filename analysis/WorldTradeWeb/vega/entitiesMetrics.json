@@ -1,12 +1,22 @@
   {
   "$schema": "https://vega.github.io/schema/vega/v3.0.json",
   "width": 600,
-  "padding": 5,
+  "padding": 25,
 
   "signals": [
-    {"name": "offset", "value": 15},
+    {"name": "offset", "value": 40},
     {"name": "cellHeight", "value": 250},
     {"name": "height", "update": "5 * (offset + cellHeight)"},
+    {
+      "name": "indexDate",
+      "update": "1833",
+      "on": [
+        {
+          "events": "mousemove",
+          "update": "clamp(round(invert('xyears', x('metric'))),1833,1938)"
+        }
+      ]
+    },
     {
       "name": "reporting_1",
       "value": "France",
@@ -103,13 +113,7 @@
   "axes": [
     {"orient": "bottom", "scale": "xyears", "zindex": 1}
   ],
-  "legends":[
-        {
-          "title":"reporting",
-          "type":"symbol",
-          "fill":"reporting_color"
-        }
-      ],
+ 
    "marks": [
     {
       "name": "metric",
@@ -147,7 +151,14 @@
           "orient": "left",
           "scale": "yscale",
           "ticks": true
-         }
+         },
+        {"orient": "bottom", "scale": "xyears", "zindex": 1}
+      ],
+       "legends":[
+        {
+          "type":"symbol",
+          "fill":"reporting_color"
+        }
       ],
       "marks": [
         
@@ -161,6 +172,23 @@
         }
       },
       "marks": [
+         {
+          "type": "symbol",
+          "interactive":true,
+          "from": {"data": "series"},
+          "encode": {
+            "enter": {
+              "x": {"scale": "xyears", "field": "year"},
+              "y": {"scale": "yscale", "field": "value"},
+              "stroke": {"scale": "reporting_color", "field": "reporting"},
+              "strokeWidth": {"value": 2},
+              "size":{"value":10},
+              "fillOpacity":{"value":1},
+              "fill": {"scale": "reporting_color", "field": "reporting"},
+              "zindex":0
+            }
+          }
+        },
         {
           "type": "line",
           "from": {"data": "series"},
@@ -175,13 +203,38 @@
               "fillOpacity": {"value": 0.5}
             }
           }
+        },
+        {
+      "type": "rule",
+      "encode": {
+        "update": {
+          "x": {"scale": "xyears", "signal": "indexDate", "offset": 0.5},
+          "y": {"value": 0},
+          "y2": {"signal":"cellHeight"},
+          "stroke": {"value": "firebrick"}
         }
+      }
+    },
+    {
+      "type": "text",
+      "encode": {
+        "update": {
+          "x":  {"scale": "xyears", "signal": "indexDate", "offset": 10},
+          "y": {"value": 20},
+          "fontSize": {"value": 11},
+          "text": {"signal": "indexDate"},
+          "baseline": {"value": "bottom"},
+          "fill": {"value": "firebrike"}
+        }      
+      }
+    }
+    
       ]
     }
       ]
      
     },
-
+   
     {
       "type": "text",
       "from": {"data": "metric"},
@@ -198,5 +251,7 @@
         }
       }
     }
+     
+    
   ]
 }
