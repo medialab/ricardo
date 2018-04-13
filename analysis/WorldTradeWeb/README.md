@@ -23,7 +23,9 @@ Examples : Italy, Germany, Switzerland...
 In World Trade Network, density captures the level of integration of the worl trade. If density grows, more countries are trading one with another.
 
 In (De Benidictis et Atjoli 2011), they report (TABLE 2) a density of 
+
 |1950|1960|1970|1980|1990|2000|
+|----|----|----|----|----|----|
 |0.067|0.149|0.269|0.334|0.42|0.388|
 
 In RICardo the density charts ends in 1938 at 0.029 with exponential growth the previous years which could ends up at 0.067 in 1950.
