@@ -5,6 +5,17 @@
   "padding": 5,
 
   "signals": [
+    {"name":"reportingsHeight", "update":"height*0.7"},
+    {
+      "name": "indexDate",
+      "update": "1833",
+      "on": [
+        {
+          "events": "mousemove",
+          "update": "clamp(round(invert('xyears', x('metric'))),1833,1938)"
+        }
+      ]
+    }
   ],
   "data": [
     {
@@ -26,19 +37,20 @@
       ]
     },
     {
-      "name":"reportingsFlows",
+      "name":"reportings",
       "source": "folded",
       "transform":[
-        {"type":"filter", "expr":"datum.key != 'density'"},
-        {
-          "type": "stack",
-          "groupby": ["year"],
-          "sort": {"field": "key"},
-          "field": "value"
-        }
-      
+        {"type":"filter", "expr":"datum.key == 'nb_reportings'"}
+      ]
+    },
+    {
+      "name":"flows",
+      "source": "folded",
+      "transform":[
+        {"type":"filter", "expr":"datum.key == 'nb_flows'"}
       ]
     }
+
 
   ],
   "scales":[
@@ -57,10 +69,16 @@
       "range": "category"
     },
     {
-      "name": "flowReportingScale",
+      "name": "flowScale",
       "type": "linear",
       "range": [{"signal":"height"},0],
-      "domain":[0,5000]
+      "domain":{"data":"flows", "field":"value"}
+    },
+        {
+      "name": "reportingScale",
+      "type": "linear",
+      "range": [{"signal":"height"},{"signal":"reportingsHeight"}],
+      "domain":{"data":"reportings", "field":"value"}
     },
     {
       "name": "densityScale",
@@ -74,13 +92,24 @@
   ],
   "axes": [
     {"orient": "bottom", "scale": "xyears", "zindex": 1},
-    {
-          "title":"flows and reportings",
+  
+         {
+          "title":"flows",
           "orient": "left",
-          "scale": "flowReportingScale",
+          "scale": "flowScale",
           "ticks": true
          },
          {
+          "title":"reportings",
+          "orient": "left",
+          "scale": "reportingScale",
+          "ticks": true,
+          "offset":{
+            "value": 40
+          }
+         },
+         {
+           "title":"density",
           "orient": "right",
           "scale": "densityScale",
           "ticks": true
@@ -97,25 +126,27 @@
     {
       "name": "metric",
       "type": "group",
-      "from": {
-        "facet": {
-          "name": "stacked",
-          "data": "reportingsFlows",
-          "groupby": "key"
-        }
-      },
        "marks": [
 
         {
-          "type": "area",
-          "from": {"data": "stacked"},
+          "type": "line",
+          "from": {"data": "reportings"},
           "encode": {
             "enter": {
-              "interpolate": {"value": "monotone"},
               "x": {"scale": "xyears", "field": "year"},
-              "y": {"scale": "flowReportingScale", "field": "y0"},
-              "y2":{"scale":  "flowReportingScale", "field": "y1"},
-              "fill": {"scale": "metric_color", "field": "key"}
+              "y": {"scale": "reportingScale", "field": "value"},
+              "stroke": {"scale": "metric_color", "field": "key"}
+            }
+          }
+        },
+        {
+          "type": "line",
+          "from": {"data": "flows"},
+          "encode": {
+            "enter": {
+              "x": {"scale": "xyears", "field": "year"},
+              "y": {"scale": "flowScale", "field": "value"},
+              "stroke": {"scale": "metric_color", "field": "key"}
             }
           }
         },
@@ -133,6 +164,30 @@
             "hover": {
               "fillOpacity": {"value": 0.5}
             }
+          }
+        },
+        {
+          "type": "rule",
+          "encode": {
+            "update": {
+              "x": {"scale": "xyears", "signal": "indexDate", "offset": 0.5},
+              "y": {"value": 0},
+              "y2": {"signal":"height"},
+              "stroke": {"value": "grey"}
+            }
+          }
+        },
+        {
+          "type": "text",
+          "encode": {
+            "update": {
+              "x":  {"scale": "xyears", "signal": "indexDate", "offset": 10},
+              "y": {"value": 20},
+              "fontSize": {"value": 11},
+              "text": {"signal": "indexDate"},
+              "baseline": {"value": "bottom"},
+              "stroke": {"value": "grey"}
+            }      
           }
         }
       ]
