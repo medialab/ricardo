@@ -1,7 +1,7 @@
   {
   "$schema": "https://vega.github.io/schema/vega/v3.0.json",
   "width": 600,
-  "padding": 25,
+  "padding": 60,
 
   "signals": [
     {"name": "offset", "value": 40},
@@ -211,7 +211,7 @@
           "x": {"scale": "xyears", "signal": "indexDate", "offset": 0.5},
           "y": {"value": 0},
           "y2": {"signal":"cellHeight"},
-          "stroke": {"value": "firebrick"}
+          "stroke": {"value": "grey"}
         }
       }
     },
@@ -224,7 +224,7 @@
           "fontSize": {"value": 11},
           "text": {"signal": "indexDate"},
           "baseline": {"value": "bottom"},
-          "fill": {"value": "firebrike"}
+          "stroke": {"value": "grey"}
         }      
       }
     }
