@@ -109,7 +109,7 @@ const computeGraph = (year, done) =>{
       //node level
       pagerank.assign(graph);
       graph.nodes().forEach(n => {
-        const reportingType = graph.getNodeAttributes(n, 'type');
+        const reportingType = graph.getNodeAttribute(n, 'type');
         metrics.networks[`nb_reportings_${reportingType}`] = (metrics.networks[`nb_reportings_${reportingType}`] || 0 ) + 1
 
         // herfindall index
