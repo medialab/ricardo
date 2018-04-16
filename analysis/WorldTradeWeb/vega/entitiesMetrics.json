@@ -1,10 +1,9 @@
   {
   "$schema": "https://vega.github.io/schema/vega/v3.0.json",
   "width": 600,
-  "padding": 60,
 
   "signals": [
-    {"name": "offset", "value": 40},
+    {"name": "offset", "value": 30},
     {"name": "cellHeight", "value": 250},
     {"name": "height", "update": "8 * (offset + cellHeight)"},
     {
