@@ -4,6 +4,7 @@ const {DirectedGraph} = require('graphology');
 const {density} = require('graphology-metrics');
 const {modularity} = require('graphology-metrics');
 const pagerank = require('graphology-pagerank');
+const louvain = require('graphology-communities-louvain');
 const gexf = require('graphology-gexf/browser');
 const async = require('async');
 const fs = require('fs');
@@ -90,15 +91,27 @@ const computeGraph = (year, done) =>{
       // compute metrics
       metrics.year = year;
       // network level
-      metrics.networks.modularity = 0;//modularity(graph);
       metrics.networks.density = density(graph);
-      metrics.networks.order = graph.order;
-      metrics.networks.size = graph.size;
+      metrics.networks.nb_reportings = graph.order;
+      metrics.networks.nb_flows = graph.size;
+      // Modularity score of Louvain partition 
+      louvain.assign(graph);
+      metrics.networks.modularity = modularity(graph);
+      
+
+      // number of edges which replace partner missing flows by reporting sources
+      // Those edges are 'Imp' one as we prefer 'Exp' when both data exists
+      metrics.networks.mirrorFlows = graph.edges().reduce((acc,e) => {
+        return graph.getEdgeAttribute(e, 'direction') === 'Imp' ? acc + 1 : acc 
+      },0);
+
 
       //node level
       pagerank.assign(graph);
       graph.nodes().forEach(n => {
-        
+        const reportingType = graph.getNodeAttributes(n, 'type');
+        metrics.networks[`nb_reportings_${reportingType}`] = (metrics.networks[`nb_reportings_${reportingType}`] || 0 ) + 1
+
         // herfindall index
         const inDegree = graph.inEdges(n).reduce((acc,e) => acc + graph.getEdgeAttribute(e,'weight'), 0);
         const outDegree = graph.outEdges(n).reduce((acc,e) => acc + graph.getEdgeAttribute(e,'weight'), 0);
@@ -109,6 +122,10 @@ const computeGraph = (year, done) =>{
           let neighborTotal = graph.edges(n,neighbor).reduce((s, e) => s+graph.getEdgeAttribute(e,'weight'), 0);
           return acc + Math.pow(neighborTotal/(inDegree+outDegree),2);
         },0));
+        graph.setNodeAttribute(n, 'weightedInDegree', inDegree);
+        graph.setNodeAttribute(n, 'weightedOutDegree', outDegree);
+        graph.setNodeAttribute(n, 'inDegree', graph.inDegree(n));
+        graph.setNodeAttribute(n, 'outDegree', graph.outDegree(n));
         
         // store node attributes to metrics
         metrics.entities[n] = graph.getNodeAttributes(n);
@@ -145,20 +162,19 @@ async.map(years, computeGraph, (err, metrics) =>{
    //merge metrics
    const gapMinderMetrics = []
    const networksMetrics =[]
-   const metricsByYear = {networks:{density:{},order:{},size:{},modularity:{}},entities:{}}
+   const metricsByYear = {networks:{density:{},nb_reportings:{},nb_flows:{},modularity:{}},entities:{}}
    metrics.forEach(m => {
       // to be factorized later
       metricsByYear.networks.density[m.year] = m.networks.density;
       metricsByYear.networks.modularity[m.year] = m.networks.modularity;
-      metricsByYear.networks.order[m.year] = m.networks.order;
-      metricsByYear.networks.size[m.year] = m.networks.size;
+      metricsByYear.networks.nb_reportings[m.year] = m.networks.nb_reportings;
+      metricsByYear.networks.nb_flows[m.year] = m.networks.nb_flows;
       // networks metrics only
-      networksMetrics.push({
-        year:m.year,
-        density:m.networks.density,
-        nb_reportings:m.networks.order,
-        nb_flows: m.networks.size,
-        modularity: m.modularity})
+      networksMetric = {year:m.year};
+      for (a in m.networks)
+        networksMetric[a] = m.networks[a];
+      networksMetrics.push(networksMetric);
+
       
       for (e in m.entities){
 
