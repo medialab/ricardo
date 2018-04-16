@@ -180,8 +180,7 @@ async.map(years, computeGraph, (err, metrics) =>{
 
         // gapminder viz data formatting
         // check if entity is a reporting (i.e. has world trade reports)
-        if (m.entities[e].world_Imp || m.entities[e].world_Exp){
-          gapMinderMetrics.push({
+        gapMinderMetrics.push({
             year: m.year,
             reporting: m.entities[e].label,
             continent: m.entities[e].continent,
@@ -190,9 +189,13 @@ async.map(years, computeGraph, (err, metrics) =>{
             worldTradePart: m.entities[e].worldTradePart || null,
             herfindahl: m.entities[e].herfindahl,
             inHerfindahl: m.entities[e].inHerfindahl,
-            outHerfindahl: m.entities[e].outHerfindahl
-          })  
-        }
+            outHerfindahl: m.entities[e].outHerfindahl,
+            inDegree: m.entities[e].inDegree,
+            outDegree: m.entities[e].outDegree,
+            weightedInDegree: m.entities[e].weightedInDegree,
+            weightedOutDegree: m.entities[e].weightedOutDegree
+        })  
+        
         // generic output
         if(!metricsByYear.entities[e])
           metricsByYear.entities[e] = {}

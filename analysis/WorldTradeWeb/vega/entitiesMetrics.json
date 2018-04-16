@@ -6,7 +6,7 @@
   "signals": [
     {"name": "offset", "value": 40},
     {"name": "cellHeight", "value": 250},
-    {"name": "height", "update": "5 * (offset + cellHeight)"},
+    {"name": "height", "update": "8 * (offset + cellHeight)"},
     {
       "name": "indexDate",
       "update": "1833",
@@ -41,7 +41,7 @@
     },
      {
       "name": "reporting_4",
-      "value": "Spain",
+      "value": "United States of America",
       "bind": {
         "input": "select",
         "options": ["","United Kingdom","United States of America","France","Netherlands","Belgium","India","Spain","Italy","Germany","Canada","Australia","Sweden","China (People's Republic of China)","Russia/USSR","Algeria","Chile","Brazil","Argentina","Portugal","Denmark","Japan","Switzerland","Norway","Egypt/United Arab Republic","Greece","Peru","Philippines","New Zealand","Bulgaria","Uruguay","Sri Lanka (Ceylon)","Turkey","Romania","Austria","Mexico","Cuba","Colombia (Gran Colombia)","Finland","Indonesia (Dutch East Indies)","Mauritius","Austria-Hungary","Straits Settlements","Tunisia","Thailand (Siam)","Venezuela","Belgium & Luxemburg","Hong Kong","Newfoundland","Ecuador","South Africa","New South Wales","Guyana (Br. Guiana)","Iran (Persia)","Cape Colony","Victoria","Morocco","Bolivia","El Salvador","British Colonies (other)","Czechoslovakia","Trinidad and Tobago","Haiti","French Indochina","Hamburg","South Australia","Paraguay","Jamaica","Yugoslavia","Sierra Leone","Malta","Barbados","Poland","British West Indies","Cyprus","Guatemala","Hungary","Costa Rica","Zanzibar","Ghana (Gold Coast)","Gibraltar","Puerto Rico","Ireland","Latvia","Nicaragua","Norway & Sweden","Panama","Singapore","Queensland","Natal","Honduras","Western Australia","Bremen","Dominican Republic (Santo Domingo)","Malaysia (Malaya)","Malagasy Republic (Madagascar)","Estonia","French Guyana","Aden","Serbia"]}
@@ -70,14 +70,24 @@
        "transform":[{
           "type": "filter",
           "expr": "indexof(reportings,datum.reporting) != -1"
-        }]
+        },
+        {"type":"formula", "expr":"datum.weightedOutDegree-datum.weightedInDegree", "as":"tradeBalance"}
+      ]
     },
     { 
       "name": "folded",
       "source":"filtered",
       "transform":[{
           "type": "fold", 
-          "fields": ["pagerank", "worldTradePart", "herfindahl", "inHerfindahl", "outHerfindahl"]
+          "fields": ["pagerank", "worldTradePart", "herfindahl", "inHerfindahl", "outHerfindahl", "inDegree", "outDegree", "tradeBalance"]
+        },
+      {
+          "type": "impute",
+          "groupby": ["reporting"],
+          "key": "year",
+          "field": "value",
+          "method": "value",
+          "value": null
         }]
     }
     ],
@@ -182,7 +192,7 @@
               "y": {"scale": "yscale", "field": "value"},
               "stroke": {"scale": "reporting_color", "field": "reporting"},
               "strokeWidth": {"value": 2},
-              "size":{"value":10},
+              "size":{"signal": "isNumber(datum.value)? 10 : 0"},
               "fillOpacity":{"value":1},
               "fill": {"scale": "reporting_color", "field": "reporting"},
               "zindex":0
@@ -197,7 +207,8 @@
               "x": {"scale": "xyears", "field": "year"},
               "y": {"scale": "yscale", "field": "value"},
               "stroke": {"scale": "reporting_color", "field": "reporting"},
-              "strokeWidth": {"value": 2}
+              "strokeWidth": {"value": 2},
+              "defined":{"signal": "isNumber(datum.value)"}
             },
             "hover": {
               "fillOpacity": {"value": 0.5}
