@@ -1,11 +1,12 @@
   {
   "$schema": "https://vega.github.io/schema/vega/v3.0.json",
   "width": 600,
-  "height":400,
+  "height":600,
   "padding": 5,
 
   "signals": [
-    {"name":"reportingsHeight", "update":"height*0.7"},
+     {"name":"flowsHeight", "update":"height*0.33-15"},
+      {"name":"reportingsHeight", "update":"height*0.66-15"},
     {
       "name": "indexDate",
       "update": "1833",
@@ -71,19 +72,19 @@
     {
       "name": "flowScale",
       "type": "linear",
-      "range": [{"signal":"height"},0],
+      "range": [{"signal":"flowsHeight"},0],
       "domain":{"data":"flows", "field":"value"}
     },
         {
       "name": "reportingScale",
       "type": "linear",
-      "range": [{"signal":"height"},{"signal":"reportingsHeight"}],
+      "range": [{"signal":"reportingsHeight"},{"signal":"flowsHeight"}],
       "domain":{"data":"reportings", "field":"value"}
     },
     {
       "name": "densityScale",
       "type": "linear",
-      "range": [{"signal":"height"},0],
+      "range": [{"signal":"height"},{"signal":"reportingsHeight"}],
       "domain":{
         "data": "networkMetrics",
         "field": "density"
@@ -91,28 +92,25 @@
     }
   ],
   "axes": [
-    {"orient": "bottom", "scale": "xyears", "zindex": 1},
+    {"orient": "bottom", "scale": "xyears", "zindex": 1, "grid": true },
   
          {
           "title":"flows",
           "orient": "left",
           "scale": "flowScale",
-          "ticks": true
+          "grid": true
          },
          {
           "title":"reportings",
           "orient": "left",
           "scale": "reportingScale",
-          "ticks": true,
-          "offset":{
-            "value": 40
-          }
+          "grid": true
          },
          {
            "title":"density",
-          "orient": "right",
+          "orient": "left",
           "scale": "densityScale",
-          "ticks": true
+          "grid": true
          }
   ],
   "legends":[
@@ -140,6 +138,17 @@
           }
         },
         {
+          "type": "rule",
+          "encode": {
+            "update": {
+              "x": {"value": 0},
+              "y": {"signal": "flowsHeight"},
+              "x2": {"signal":"width"},
+              "stroke": {"value": "black"}
+            }
+          }
+        },
+        {
           "type": "line",
           "from": {"data": "flows"},
           "encode": {
@@ -150,7 +159,17 @@
             }
           }
         },
-        
+        {
+          "type": "rule",
+          "encode": {
+            "update": {
+              "x": {"value": 0},
+              "y": {"signal": "reportingsHeight"},
+              "x2": {"signal":"width"},
+              "stroke": {"value": "black"}
+            }
+          }
+        },
         {
           "type": "line",
           "from": {"data": "densities"},
@@ -173,7 +192,8 @@
               "x": {"scale": "xyears", "signal": "indexDate", "offset": 0.5},
               "y": {"value": 0},
               "y2": {"signal":"height"},
-              "stroke": {"value": "grey"}
+              "stroke": {"value": "grey"},
+              "zindex":0
             }
           }
         },
