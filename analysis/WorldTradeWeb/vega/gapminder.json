@@ -71,7 +71,7 @@
       "transform": [
         {
           "type": "formula",
-          "expr": "datum.reporting + ' ' + datum.year + ' ' + datum.pagerank + ' ' +datum.worldTrade +' '+datum.worldTradePart",
+          "expr": "datum.entity + ' ' + datum.year",
           "as": "tooltip"
         }
       ]
@@ -90,7 +90,7 @@
       "name": "reporting_timeline",
       "source": "ricardo",
       "transform": [
-        {"type": "filter", "expr": "clickEntity && datum.reporting == clickEntity.reporting"},
+        {"type": "filter", "expr": "clickEntity && datum.entity == clickEntity.entity"},
         {"type": "collect", "sort": {"field": "year"}}
       ]
     }
@@ -143,7 +143,7 @@
       "name": "year_color",
       "type": "ordinal",
       "domain": {
-        "data": "reporting_timeline",
+        "data": "entity_timeline",
         "field": "year"
       },
       "range": {"scheme": "greys"} 
@@ -248,7 +248,7 @@
           "y": {
             "value": 0
           },
-          "text": {"signal":"hoverEntity.reporting || clickEntity.reporting"} ,
+          "text": {"signal":"hoverEntity.entity || clickEntity.entity"} ,
           "align": {
             "value": "right"
           },
@@ -267,7 +267,7 @@
     {
       "type": "symbol",
       "interactive": true,
-      "from": {"data": "reporting_timeline"},
+      "from": {"data": "entity_timeline"},
       "encode": {
         "update": {
           "x": {"scale": "xscale", "field": {

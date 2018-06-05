@@ -68,7 +68,7 @@
       "source":"ricardo",
        "transform":[{
           "type": "filter",
-          "expr": "indexof(reportings,datum.reporting) != -1"
+          "expr": "indexof(reportings,datum.entity) != -1"
         },
         {"type":"formula", "expr":"datum.weightedOutDegree-datum.weightedInDegree", "as":"tradeBalance"}
       ]
@@ -82,7 +82,7 @@
         },
       {
           "type": "impute",
-          "groupby": ["reporting"],
+          "groupby": ["entity"],
           "key": "year",
           "field": "value",
           "method": "value",
@@ -108,15 +108,6 @@
       "nice":true,
       "domain":{"data": "folded", "field":"year"},
       "zero":false
-    },
-    {
-          "name": "reporting_color",
-          "type": "ordinal",
-          "domain":{
-            "data": "folded",
-            "field": "reporting"
-          },
-      "range": "category"
     }
   ],
   "axes": [
@@ -152,6 +143,15 @@
             "data": "metrics",
             "field": "value"
           }
+        },
+         {
+          "name": "entity_color",
+          "type": "ordinal",
+          "domain":{
+            "data": "metrics",
+            "field": "entity"
+              },
+          "range": "category"
         }
       ],
       
@@ -166,7 +166,7 @@
        "legends":[
         {
           "type":"symbol",
-          "fill":"reporting_color"
+          "fill":"entity_color"
         }
       ],
       "marks": [
@@ -177,7 +177,7 @@
         "facet": {
           "name": "series",
           "data": "metrics",
-          "groupby": "reporting"
+          "groupby": "entity"
         }
       },
       "marks": [
@@ -189,11 +189,11 @@
             "enter": {
               "x": {"scale": "xyears", "field": "year"},
               "y": {"scale": "yscale", "field": "value"},
-              "stroke": {"scale": "reporting_color", "field": "reporting"},
+              "stroke": {"scale": "entity_color", "field": "entity"},
               "strokeWidth": {"value": 2},
               "size":{"signal": "isNumber(datum.value)? 10 : 0"},
               "fillOpacity":{"value":1},
-              "fill": {"scale": "reporting_color", "field": "reporting"},
+              "fill": {"scale": "entity_color", "field": "entity"},
               "zindex":0
             }
           }
@@ -205,7 +205,7 @@
             "enter": {
               "x": {"scale": "xyears", "field": "year"},
               "y": {"scale": "yscale", "field": "value"},
-              "stroke": {"scale": "reporting_color", "field": "reporting"},
+              "stroke": {"scale": "entity_color", "field": "entity"},
               "strokeWidth": {"value": 2},
               "defined":{"signal": "isNumber(datum.value)"}
             },

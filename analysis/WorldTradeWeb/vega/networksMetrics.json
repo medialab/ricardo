@@ -31,12 +31,12 @@
       ]
     },
     {
-      "name":"reportings",
+      "name":"entities",
       "source": "networkMetrics",
       "transform":[
-        {"type": "formula", "as": "nb_reportings_group", "expr": "datum.nb_reportings_group ? datum.nb_reportings_group : 0"},
-        {"type": "formula", "as": "nb_reportings_city/part_of", "expr": "datum['nb_reportings_city/part_of'] ? datum['nb_reportings_city/part_of'] : 0"},
-        {"type":"fold", "fields":["nb_reportings_country", "nb_reportings_city/part_of", "nb_reportings_group"]},
+        {"type": "formula", "as": "nb_entities_group", "expr": "datum.nb_entities_group ? datum.nb_entities_group : 0"},
+        {"type": "formula", "as": "nb_entities_city/part_of", "expr": "datum['nb_entities_city/part_of'] ? datum['nb_entities_city/part_of'] : 0"},
+        {"type":"fold", "fields":["nb_entities_country", "nb_entities_city/part_of", "nb_entities_group", "nb_entities_colonial_area", "nb_entities_geographical_area"]},
         {"type":"stack", "groupby" :["year"] , "field":"value", "sort":{"field":"key","order":"descending"}}
       ]
     }
@@ -59,9 +59,9 @@
       "range": {"scheme" : "paired"}
     },
     {
-      "name": "reporting_color",
+      "name": "entity_color",
       "type": "ordinal",
-      "domain":{"data":"reportings","field":"key"},
+      "domain":{"data":"entities","field":"key"},
       "range": { "scheme" : "accent"}
     },
     {
@@ -71,10 +71,10 @@
       "domain":{"data":"flows", "field": "y1"}
     },
         {
-      "name": "reportingScale",
+      "name": "entityScale",
       "type": "linear",
       "range": [{"signal":"height/blockNumber*2-15"},{"signal":"height/blockNumber"}],
-      "domain":{"data":"reportings", "field":"y1"}
+      "domain":{"data":"entities", "field":"y1"}
     },
     {
       "name": "densityScale",
@@ -105,9 +105,9 @@
           "grid": true
          },
          {
-          "title":"reportings",
+          "title":"entities",
           "orient": "left",
-          "scale": "reportingScale",
+          "scale": "entityScale",
           "grid": true
          },
          {
@@ -132,9 +132,9 @@
           "fill":"flow_color"
         },
         {
-          "title":"Reporting_type",
+          "title":"Entities type",
           "type":"symbol",
-          "fill":"reporting_color"
+          "fill":"entity_color"
         }
       ],
    "marks": [
@@ -173,7 +173,7 @@
           "from": {
             "facet": {
               "name": "areas",
-              "data": "reportings",
+              "data": "entities",
               "groupby": "key"
             }
           },      
@@ -184,9 +184,9 @@
               "encode": {
                 "enter": {
                   "x": {"scale": "xyears", "field": "year"},
-                  "y": {"scale": "reportingScale", "field": "y0"},
-                  "y2": {"scale": "reportingScale", "field": "y1"},
-                  "fill": {"scale": "reporting_color", "field": "key"}
+                  "y": {"scale": "entityScale", "field": "y0"},
+                  "y2": {"scale": "entityScale", "field": "y1"},
+                  "fill": {"scale": "entity_color", "field": "key"}
                 }
               }
             }

@@ -66,8 +66,8 @@ const computeGraph = (year, done) =>{
           }
           else{
 
-            graph.mergeNode(r.reporting_slug,{type:r.reporting_type, label:r.reporting, continent: r.reporting_continent})
-            graph.mergeNode(r.partner_slug,{type:r.reporting_type, label: r.partner, continent: r.partner_continent})
+            graph.mergeNode(r.reporting_slug,{type:r.reporting_type, label:r.reporting, continent: r.reporting_continent, reporting:true})
+            graph.mergeNode(r.partner_slug,{type:r.partner_type, label: r.partner, continent: r.partner_continent})
             let source = r.reporting_slug
             let target = r.partner_slug
             // swap 
@@ -110,7 +110,7 @@ const computeGraph = (year, done) =>{
       pagerank.assign(graph);
       graph.nodes().forEach(n => {
         const reportingType = graph.getNodeAttribute(n, 'type');
-        metrics.networks[`nb_reportings_${reportingType}`] = (metrics.networks[`nb_reportings_${reportingType}`] || 0 ) + 1
+        metrics.networks[`nb_entities_${reportingType}`] = (metrics.networks[`nb_entities_${reportingType}`] || 0 ) + 1
 
         // herfindall index
         const inDegree = graph.inEdges(n).reduce((acc,e) => acc + graph.getEdgeAttribute(e,'weight'), 0);
@@ -182,7 +182,9 @@ async.map(years, computeGraph, (err, metrics) =>{
         // check if entity is a reporting (i.e. has world trade reports)
         gapMinderMetrics.push({
             year: m.year,
-            reporting: m.entities[e].label,
+            entity: m.entities[e].label,
+            type: m.entities[e].type,
+            isReporting: m.entities[e].reporting || false,
             continent: m.entities[e].continent,
             pagerank: m.entities[e].pagerank,
             worldTrade: m.entities[e].world_Imp || 0 + m.entities[e].world_Exp || 0,
