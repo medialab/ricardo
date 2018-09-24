@@ -1,11 +1,21 @@
   {
   "$schema": "https://vega.github.io/schema/vega/v3.0.json",
-  "width": 600,
-  "height":600,
+  "width": 1500,
+  "height":1700,
   "padding": 5,
+  "config":{
+    "axis":{
+      "labelFontSize":20,
+      "titleFontSize":25
+    },
+    "legend":{
+      "labelFontSize":20,
+      "titleFontSize":25
+    }
+  },
 
   "signals": [
-     {"name":"blockNumber", "update":"4"},
+     {"name":"blockNumber", "update":"5"},
     {
       "name": "indexDate",
       "update": "1833",
@@ -26,7 +36,8 @@
       "name": "flows",
       "source": "networkMetrics",
       "transform":[
-        {"type":"fold", "fields":["nb_flows", "mirrorFlows"]},
+        {"type": "formula", "as": "partnerFlows", "expr": "datum.nb_flows - datum.mirrorFlows"},
+        {"type":"fold", "fields":["partnerFlows", "mirrorFlows"]},
         {"type":"stack", "groupby" :["year"] , "field":"value", "sort":{"field":"key","order":"descending"}}
       ]
     },
@@ -37,6 +48,32 @@
         {"type": "formula", "as": "nb_entities_group", "expr": "datum.nb_entities_group ? datum.nb_entities_group : 0"},
         {"type": "formula", "as": "nb_entities_city/part_of", "expr": "datum['nb_entities_city/part_of'] ? datum['nb_entities_city/part_of'] : 0"},
         {"type":"fold", "fields":["nb_entities_country", "nb_entities_city/part_of", "nb_entities_group", "nb_entities_colonial_area", "nb_entities_geographical_area"]},
+        {"type":"stack", "groupby" :["year"] , "field":"value", "sort":{"field":"key","order":"descending"}}
+      ]
+    },
+    {
+      "name":"reportings",
+      "source": "networkMetrics",
+      "transform":[
+        {"type": "formula", "as": "group", "expr": "datum.nb_reportings_group ? datum.nb_reportings_group : 0"},
+        {"type": "formula", "as": "city/part_of", "expr": "datum['nb_reportings_city/part_of'] ? datum['nb_reportings_city/part_of'] : 0"},
+        {"type": "formula", "as": "colonial_area", "expr": "datum['nb_reportings_colonial_area'] ? datum['nb_reportings_colonial_area'] : 0"},
+        {"type": "formula", "as": "geographical_area", "expr": "datum['nb_reportings_geographical_area'] ? datum['nb_reportings_geographical_area'] : 0"},
+        {"type": "formula", "as": "country", "expr": "datum['nb_reportings_country'] ? datum['nb_reportings_country'] : 0"},
+        {"type":"fold", "fields":["country", "city/part_of", "group", "colonial_area", "geographical_area"]},
+        {"type":"stack", "groupby" :["year"] , "field":"value", "sort":{"field":"key","order":"descending"}}
+      ]
+    },
+     {
+      "name":"partners",
+      "source": "networkMetrics",
+      "transform":[
+        {"type": "formula", "as": "group", "expr": "datum.nb_partners_group ? datum.nb_partners_group : 0"},
+        {"type": "formula", "as": "city/part_of", "expr": "datum['nb_partners_city/part_of'] ? datum['nb_partners_city/part_of'] : 0"},
+        {"type": "formula", "as": "colonial_area", "expr": "datum['nb_partners_colonial_area'] ? datum['nb_partners_colonial_area'] : 0"},
+        {"type": "formula", "as": "geographical_area", "expr": "datum['nb_partners_geographical_area'] ? datum['nb_partners_geographical_area'] : 0"},
+        {"type": "formula", "as": "country", "expr": "datum['nb_partners_country'] ? datum['nb_partners_country'] : 0"},
+        {"type":"fold", "fields":["country", "city/part_of", "group", "colonial_area", "geographical_area"]},
         {"type":"stack", "groupby" :["year"] , "field":"value", "sort":{"field":"key","order":"descending"}}
       ]
     }
@@ -59,27 +96,39 @@
       "range": {"scheme" : "paired"}
     },
     {
-      "name": "entity_color",
+      "name": "partners_color",
       "type": "ordinal",
-      "domain":{"data":"entities","field":"key"},
+      "domain":{"data":"partners","field":"key"},
+      "range": { "scheme" : "accent"}
+    },
+    {
+      "name": "reportings_color",
+      "type": "ordinal",
+      "domain":{"data":"reportings","field":"key"},
       "range": { "scheme" : "accent"}
     },
     {
       "name": "flowScale",
       "type": "linear",
       "range": [{"signal":"height/blockNumber-15"},0],
-      "domain":{"data":"flows", "field": "y1"}
+      "domain":{"data":"flows", "field": "nb_flows"}
     },
-        {
-      "name": "entityScale",
+    {
+      "name": "reportingsScale",
       "type": "linear",
       "range": [{"signal":"height/blockNumber*2-15"},{"signal":"height/blockNumber"}],
+      "domain":{"data":"entities", "field":"y1"}
+    },
+     {
+      "name": "partnersScale",
+      "type": "linear",
+      "range": [{"signal":"height/blockNumber*3-15"},{"signal":"height/blockNumber*2"}],
       "domain":{"data":"entities", "field":"y1"}
     },
     {
       "name": "densityScale",
       "type": "linear",
-      "range": [{"signal":"height/blockNumber*3-15"},{"signal":"height/blockNumber*2"}],
+      "range": [{"signal":"height/blockNumber*4-15"},{"signal":"height/blockNumber*3"}],
       "domain":{
         "data": "networkMetrics",
         "field": "density"
@@ -88,7 +137,7 @@
     {
       "name": "modularityScale",
       "type": "linear",
-      "range": [{"signal":"height"},{"signal":"height/blockNumber*3"}],
+      "range": [{"signal":"height"},{"signal":"height/blockNumber*4"}],
       "domain":{
         "data": "networkMetrics",
         "field": "modularity"
@@ -97,6 +146,7 @@
   ],
   "axes": [
     {"orient": "bottom", "scale": "xyears", "zindex": 1, "grid": true },
+      {"orient": "top", "scale": "xyears", "zindex": 1, "grid": true },
   
          {
           "title":"flows",
@@ -105,11 +155,18 @@
           "grid": true
          },
          {
-          "title":"entities",
+          "title":"reportings",
           "orient": "left",
-          "scale": "entityScale",
+          "scale": "reportingsScale",
           "grid": true
          },
+        {
+          "title":"partners",
+          "orient": "left",
+          "scale": "partnersScale",
+          "grid": true
+         },
+
          {
            "title":"density",
           "orient": "left",
@@ -132,9 +189,9 @@
           "fill":"flow_color"
         },
         {
-          "title":"Entities type",
+          "title":"entities",
           "type":"symbol",
-          "fill":"entity_color"
+          "fill":"reportings_color"
         }
       ],
    "marks": [
@@ -173,7 +230,7 @@
           "from": {
             "facet": {
               "name": "areas",
-              "data": "entities",
+              "data": "reportings",
               "groupby": "key"
             }
           },      
@@ -184,9 +241,33 @@
               "encode": {
                 "enter": {
                   "x": {"scale": "xyears", "field": "year"},
-                  "y": {"scale": "entityScale", "field": "y0"},
-                  "y2": {"scale": "entityScale", "field": "y1"},
-                  "fill": {"scale": "entity_color", "field": "key"}
+                  "y": {"scale": "reportingsScale", "field": "y0"},
+                  "y2": {"scale": "reportingsScale", "field": "y1"},
+                  "fill": {"scale": "reportings_color", "field": "key"}
+                }
+              }
+            }
+          ]
+        },
+         { 
+          "type":"group",
+          "from": {
+            "facet": {
+              "name": "areas",
+              "data": "partners",
+              "groupby": "key"
+            }
+          },      
+          "marks":[
+            {
+              "type": "area",
+              "from": {"data": "areas"},
+              "encode": {
+                "enter": {
+                  "x": {"scale": "xyears", "field": "year"},
+                  "y": {"scale": "partnersScale", "field": "y0"},
+                  "y2": {"scale": "partnersScale", "field": "y1"},
+                  "fill": {"scale": "partners_color", "field": "key"}
                 }
               }
             }

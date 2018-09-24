@@ -66,7 +66,7 @@ const computeGraph = (year, done) =>{
           }
           else{
 
-            graph.mergeNode(r.reporting_slug,{type:r.reporting_type, label:r.reporting, continent: r.reporting_continent, reporting:true})
+            graph.mergeNode(r.reporting_slug,{type:r.reporting_type, label:r.reporting, continent: r.reporting_continent, reporting:1})
             graph.mergeNode(r.partner_slug,{type:r.partner_type, label: r.partner, continent: r.partner_continent})
             let source = r.reporting_slug
             let target = r.partner_slug
@@ -99,18 +99,35 @@ const computeGraph = (year, done) =>{
       metrics.networks.modularity = modularity(graph);
       
 
-      // number of edges which replace partner missing flows by reporting sources
-      // Those edges are 'Imp' one as we prefer 'Exp' when both data exists
+      // number of mirror Flows as defined by flows between reportings
       metrics.networks.mirrorFlows = graph.edges().reduce((acc,e) => {
-        return graph.getEdgeAttribute(e, 'direction') === 'Imp' ? acc + 1 : acc 
+        //if (graph.extremities(e).map(n => !!graph.getNodeAttribute(n, 'reporting')).filter(_ => _).length === 2)
+        if (graph.getEdgeAttribute(e, 'mirrored')){
+          if (graph.getEdgeAttribute(e, 'mirrored')){
+            let st = graph.getEdgeAttribute(e, 'source_types');
+            let rt = graph.getEdgeAttribute(e, 'reporting_types');
+            let pt = graph.getEdgeAttribute(e, 'partner_types');
+            nbMirrorFlows['by_source_type'][st] = (nbMirrorFlows['by_source_type'][st] + 1) || 1
+            nbMirrorFlows['by_reporting_type'][rt] = (nbMirrorFlows['by_reporting_type'][rt] + 1) || 1
+            nbMirrorFlows['by_partner_type'][pt] = (nbMirrorFlows['by_partner_type'][pt] + 1) || 1
+          }
+          return acc + 1;
+        }
+        else
+          return acc;
       },0);
-
+      metrics.nbMirrorFlows = nbMirrorFlows;
 
       //node level
       pagerank.assign(graph);
       graph.nodes().forEach(n => {
         const reportingType = graph.getNodeAttribute(n, 'type');
         metrics.networks[`nb_entities_${reportingType}`] = (metrics.networks[`nb_entities_${reportingType}`] || 0 ) + 1
+        if (graph.getNodeAttribute(n, 'reporting'))
+          metrics.networks[`nb_reportings_${reportingType}`] = (metrics.networks[`nb_reportings_${reportingType}`] || 0 ) + 1
+        else
+          metrics.networks[`nb_partners_${reportingType}`] = (metrics.networks[`nb_partners_${reportingType}`] || 0 ) + 1
+        
 
         // herfindall index
         const inDegree = graph.inEdges(n).reduce((acc,e) => acc + graph.getEdgeAttribute(e,'weight'), 0);
