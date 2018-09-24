@@ -50,6 +50,7 @@ const computeGraph = (year, done) =>{
       
       const graph = new DirectedGraph()
       const totalTrade = {'Imp':0, 'Exp':0}
+      const nbMirrorFlows = {'by_source_type':{},'by_reporting_type':{},'by_partner_type':{}}
       
       rows.forEach(r => {
 
@@ -75,12 +76,30 @@ const computeGraph = (year, done) =>{
               [source,target] = [target,source]
             
             try{
-              graph.addEdge(source, target, {weight:w, direction:r.expimp});   
+              graph.addEdge(source, target, {weight:w, direction:r.expimp,source_type:r.type});   
             }
             catch(error){
-              // duplicated edge because of mirror flows, we prefer Exp on Imp in such cases
-              if(r.expimp==='Exp')
-                graph.mergeEdge(source, target, {weight:w, direction:r.expimp});
+              // duplicated edge
+              const dup_edge = graph.edge(source,target)
+              const dup_source_type = graph.getEdgeAttribute(dup_edge, 'source_type')
+              // add info that this edge is mirrored
+              graph.setEdgeAttribute(dup_edge, 'mirrored', true)
+              // storing extra meta for mirroflows for later stats analysis
+              graph.setEdgeAttribute(dup_edge, 'source_types', [r.type,dup_source_type].sort())
+              graph.setEdgeAttribute(dup_edge, 'reporting_types', [r.reporting_type,graph.getNodeAttribute(r.expimp === 'Imp' ? source : target, 'type')].sort())
+              graph.setEdgeAttribute(dup_edge, 'partner_types', [r.partner_type,graph.getNodeAttribute(r.expimp === 'Imp' ? target : source, 'type')].sort())
+
+                            
+              // rules to choose which information to keep 
+              if(
+                // dup edege is from aggregation but the new is not, let's merge to give priority to source 
+                (dup_source_type === 'aggregation' && r.source_type !== 'aggregation') ||                  
+                // mirror flows from sources, we prefer Exp on Imp in such cases
+                (r.expimp==='Exp' && dup_source_type !== 'aggregation' && r.source_type !== 'aggregation')||
+                // same rule of mirror flows if both edges are from aggregations
+                (r.expimp==='Exp' && dup_source_type === 'aggregation' && r.source_type === 'aggregation')){
+                  graph.mergeEdge(source, target, {weight:w, direction:r.expimp, source_type:r.type});
+              }
             }
           }
         }
@@ -180,7 +199,19 @@ async.map(years, computeGraph, (err, metrics) =>{
    const gapMinderMetrics = []
    const networksMetrics =[]
    const metricsByYear = {networks:{density:{},nb_reportings:{},nb_flows:{},modularity:{}},entities:{}}
+   const general_stat = {}
+   const nbMirrorFlows = {'by_source_type':{},'by_reporting_type':{},'by_partner_type':{}}
+
    metrics.forEach(m => {
+
+      // aggregating nbMirrorFlows
+      for (by in m.nbMirrorFlows){
+        for (p in m.nbMirrorFlows[by]){
+          nbMirrorFlows[by][p] = (nbMirrorFlows[by][p] || 0) + m.nbMirrorFlows[by][p] 
+        }
+      }
+      general_stat['nbMirrorFlows'] = nbMirrorFlows
+
       // to be factorized later
       metricsByYear.networks.density[m.year] = m.networks.density;
       metricsByYear.networks.modularity[m.year] = m.networks.modularity;
@@ -243,6 +274,10 @@ async.map(years, computeGraph, (err, metrics) =>{
   fs.writeFile(`./data/${conf.network_metric_filename}`, JSON.stringify(networksMetrics, null, 2), 'utf8', (err)=>{
       if (err) console.log(`error : couldn't write ${conf.network_metric_filename}`);
       else console.log(`writing to ${conf.network_metric_filename}`);
+    });
+  fs.writeFile(`./data/${conf.general_stat_filename}`, JSON.stringify(general_stat, null, 2), 'utf8', (err)=>{
+      if (err) console.log(`error : couldn't write ${conf.general_stat_filename}`);
+      else console.log(`writing to ${conf.general_stat_filename}`);
     });
 })
 

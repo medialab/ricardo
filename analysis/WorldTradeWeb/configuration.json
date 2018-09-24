@@ -4,5 +4,6 @@
 	"endDate":1938,
 	"writeGexf":0,
 	"gapMinder_metric_filename":"gapminderRICardo.json",
-	"network_metric_filename": "networkMetrics.json"
+	"network_metric_filename": "networkMetrics.json",
+	"general_stat_filename": "general_stat.json"
 }
