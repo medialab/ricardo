@@ -40,7 +40,7 @@ const computeGraph = (year, done) =>{
   // }
 
 
-  DB.get().all(`SELECT * FROM flow_joined
+  DB.get().all(`SELECT * FROM flow_aggregated
     WHERE
       flow is not null and rate is not null AND
       year = ${year} AND
