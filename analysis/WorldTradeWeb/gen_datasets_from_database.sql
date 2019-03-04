@@ -102,7 +102,7 @@ GROUP BY discrepency
 ORDER BY discrepency ASC;
 
 .once './data/country_entities_diff_with_FT.csv'
-SELECT (nb_reporting+nb_partner) - count(distinct reporting) as diff, year
+SELECT nb_reporting, nb_partner, count(distinct reporting) as nb_FT,(nb_reporting+nb_partner) - count(distinct reporting) as diff_all, nb_reporting - count(distinct reporting) as diff_reporting, nb_partner - count(distinct reporting) as diff_partner,  year
 FROM flow_aggregated LEFT JOIN (SELECT count(distinct reporting) as nb_reporting, year FROM flow_aggregated 
 	WHERE partner not like '%world%' and reporting_type = 'country' group by year) USING (year)
 	LEFT JOIN (

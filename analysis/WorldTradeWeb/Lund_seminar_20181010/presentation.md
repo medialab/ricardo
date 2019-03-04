@@ -49,16 +49,16 @@ Béatrice Dedinger
 
 ---
 
-## 2. mirror flows discrepencies
+## 2. mirror flows discrepancies
 ---
 <center>![mirror flows](./img/bilateraltrade.svg)<!-- .element: style="width:50%" --></center>
 ---
 
-![bilateral France Sweden discrepencies](./img/bilateral_France_Sweden.png)
+![bilateral France Sweden discrepancies](./img/bilateral_France_Sweden.png)
 ---
 ### Quantifying the issue
 
-![distribution of discrepency index](./img/discrepency_index_distirbution.png)<!-- .element: style="width:70%" --></center>
+![distribution of discrepancy index](./img/discrepency_index_distirbution.png)<!-- .element: style="width:70%" --></center>
 ---
 
 # II. variability in time
@@ -106,6 +106,13 @@ Generated flows are tagged, indicating the method used :
 ---
 ## Colonial areas
 
+![](./img/colonial_areas.png)
+
+---
+## Correlates of War dataset
+![](./img/british_colonies_COW.png)
+---
+## To desaggregate colonial areas
 - for each colonial areas
 - to manually define the composition
 - by selecting the possible colonies listing in COW dataset
@@ -122,6 +129,8 @@ Generated flows are tagged, indicating the method used :
 ![with diff_year_treshold = 10 ](./img/partner_types_through_time_diff.png)
 ---
 ![](./img/part_of_partner_types_diff.png)
+---
+![](./img/nb_countries_compared_FT.png)
 ---
 #  IV. network analysis
 ---
