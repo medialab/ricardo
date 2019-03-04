@@ -8,6 +8,7 @@ const louvain = require('graphology-communities-louvain');
 const gexf = require('graphology-gexf/browser');
 const async = require('async');
 const fs = require('fs');
+const GTAP = require('./GTAP.js');
 
 // RICardo database acces as singleton
 const DB =  ( () => {
@@ -37,7 +38,7 @@ const computeGraph = (year, done) =>{
   //   network:{
   //     density:{year:value}...
   //   }
-  // }
+  // }exports
 
 
   DB.get().all(`SELECT * FROM flow_aggregated
@@ -72,15 +73,25 @@ const computeGraph = (year, done) =>{
             let source = r.reporting_slug
             let target = r.partner_slug
             // swap 
-            if (r.expimp === 'Imp')
+            if (r.expimp === 'Imp'){
               [source,target] = [target,source]
-            
+              weightLabel = 'targetWeight'
+            }
+            else 
+              weightLabel = 'sourceWeight'
             try{
-              graph.addEdge(source, target, {weight:w, direction:r.expimp,source_type:r.type});   
+              const edgeData = {sourceWeight:w, direction:r.expimp,source_type:r.type}
+              edgeData[weightLabel] = w
+              graph.addEdge(source, target, edgeData)   
             }
             catch(error){
               // duplicated edge
               const dup_edge = graph.edge(source,target)
+              // add mirror info 
+              
+              
+              graph.setEdgeAttribute(dup_edge, r.expimp === 'Imp' ? 'targetWeight' : 'sourceWeight', w)
+              
               const dup_source_type = graph.getEdgeAttribute(dup_edge, 'source_type')
               // add info that this edge is mirrored
               graph.setEdgeAttribute(dup_edge, 'mirrored', true)
@@ -90,7 +101,7 @@ const computeGraph = (year, done) =>{
               graph.setEdgeAttribute(dup_edge, 'partner_types', [r.partner_type,graph.getNodeAttribute(r.expimp === 'Imp' ? target : source, 'type')].sort())
 
                             
-              // rules to choose which information to keep 
+              //rules to choose which information to keep 
               if(
                 // dup edege is from aggregation but the new is not, let's merge to give priority to source 
                 (dup_source_type === 'aggregation' && r.source_type !== 'aggregation') ||                  
@@ -118,24 +129,7 @@ const computeGraph = (year, done) =>{
       metrics.networks.modularity = modularity(graph);
       
 
-      // number of mirror Flows as defined by flows between reportings
-      metrics.networks.mirrorFlows = graph.edges().reduce((acc,e) => {
-        //if (graph.extremities(e).map(n => !!graph.getNodeAttribute(n, 'reporting')).filter(_ => _).length === 2)
-        if (graph.getEdgeAttribute(e, 'mirrored')){
-          if (graph.getEdgeAttribute(e, 'mirrored')){
-            let st = graph.getEdgeAttribute(e, 'source_types');
-            let rt = graph.getEdgeAttribute(e, 'reporting_types');
-            let pt = graph.getEdgeAttribute(e, 'partner_types');
-            nbMirrorFlows['by_source_type'][st] = (nbMirrorFlows['by_source_type'][st] + 1) || 1
-            nbMirrorFlows['by_reporting_type'][rt] = (nbMirrorFlows['by_reporting_type'][rt] + 1) || 1
-            nbMirrorFlows['by_partner_type'][pt] = (nbMirrorFlows['by_partner_type'][pt] + 1) || 1
-          }
-          return acc + 1;
-        }
-        else
-          return acc;
-      },0);
-      metrics.nbMirrorFlows = nbMirrorFlows;
+ 
 
       //node level
       pagerank.assign(graph);
@@ -146,10 +140,11 @@ const computeGraph = (year, done) =>{
           metrics.networks[`nb_reportings_${reportingType}`] = (metrics.networks[`nb_reportings_${reportingType}`] || 0 ) + 1
         else
           metrics.networks[`nb_partners_${reportingType}`] = (metrics.networks[`nb_partners_${reportingType}`] || 0 ) + 1
-        
-
+       
+        const{RIX, inDegree} =  GTAP.RIX(n, graph)
+        graph.setNodeAttribute(n, 'RIX', RIX);
         // herfindall index
-        const inDegree = graph.inEdges(n).reduce((acc,e) => acc + graph.getEdgeAttribute(e,'weight'), 0);
+        //const inDegree = graph.inEdges(n).reduce((acc,e) => acc + graph.getEdgeAttribute(e,'weight'), 0);
         const outDegree = graph.outEdges(n).reduce((acc,e) => acc + graph.getEdgeAttribute(e,'weight'), 0);
         graph.setNodeAttribute(n, 'inHerfindahl', graph.inEdges(n).reduce((acc,e) => acc + Math.pow(graph.getEdgeAttribute(e,"weight")/inDegree,2), 0));
         graph.setNodeAttribute(n, 'outHerfindahl', graph.outEdges(n).reduce((acc,e) => acc + Math.pow(graph.getEdgeAttribute(e,"weight")/outDegree,2), 0));
@@ -171,6 +166,32 @@ const computeGraph = (year, done) =>{
           graph.setNodeAttribute(n,'worldTradePart', metrics.entities[n].worldTradePart);
         }
       })
+
+      // now that we loop on all nodes we can chose the right miror using GTAP data
+      // number of mirror Flows as defined by flows between reportings
+      metrics.networks.mirrorFlows = graph.edges().reduce((acc,e) => {
+      //if (graph.extremities(e).map(n => !!graph.getNodeAttribute(n, 'reporting')).filter(_ => _).length === 2)
+      if (graph.getEdgeAttribute(e, 'mirrored')){
+        let st = graph.getEdgeAttribute(e, 'source_types');
+        let rt = graph.getEdgeAttribute(e, 'reporting_types');
+        let pt = graph.getEdgeAttribute(e, 'partner_types');
+        nbMirrorFlows['by_source_type'][st] = (nbMirrorFlows['by_source_type'][st] + 1) || 1
+        nbMirrorFlows['by_reporting_type'][rt] = (nbMirrorFlows['by_reporting_type'][rt] + 1) || 1
+        nbMirrorFlows['by_partner_type'][pt] = (nbMirrorFlows['by_partner_type'][pt] + 1) || 1
+        // chose a weight for edge using GTAP index
+        const sourceRIX = graph.getNodeAttribute(graph.source(e), 'RIX')
+        const targetRIX = graph.getNodeAttribute(graph.target(e), 'RIX')
+        if (sourceRIX >= targetRIX)
+          graph.setEdgeAttribute(e, 'weight', graph.getEdgeAttribute(e, 'sourceWeight'))
+        else 
+          graph.setEdgeAttribute(e, 'weight', graph.getEdgeAttribute(e, 'targetWeight'))
+        return acc + 1;
+      }
+      else
+        return acc;
+    },0);
+    metrics.nbMirrorFlows = nbMirrorFlows;
+
       //Write gexf
       if (conf.writeGexf){
         const gexfString = gexf.write(graph);
@@ -243,7 +264,8 @@ async.map(years, computeGraph, (err, metrics) =>{
             inDegree: m.entities[e].inDegree,
             outDegree: m.entities[e].outDegree,
             weightedInDegree: m.entities[e].weightedInDegree,
-            weightedOutDegree: m.entities[e].weightedOutDegree
+            weightedOutDegree: m.entities[e].weightedOutDegree,
+            RIX: m.entities[e].RIX 
         })  
         
         // generic output

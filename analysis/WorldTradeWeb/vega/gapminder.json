@@ -19,7 +19,8 @@
           "worldTrade",
           "herfindahl",
           "inHerfindahl",
-          "outHerfindahl"
+          "outHerfindahl", 
+          "RIX"
         ]
       }
     },
@@ -34,7 +35,8 @@
           "worldTrade",
           "herfindahl",
           "inHerfindahl",
-          "outHerfindahl"
+          "outHerfindahl", 
+          "RIX"
         ]
       }
     },
@@ -143,7 +145,7 @@
       "name": "year_color",
       "type": "ordinal",
       "domain": {
-        "data": "entity_timeline",
+        "data": "reporting_timeline",
         "field": "year"
       },
       "range": {"scheme": "greys"} 
@@ -267,7 +269,7 @@
     {
       "type": "symbol",
       "interactive": true,
-      "from": {"data": "entity_timeline"},
+      "from": {"data": "reporting_timeline"},
       "encode": {
         "update": {
           "x": {"scale": "xscale", "field": {
