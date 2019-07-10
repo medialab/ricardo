@@ -24,13 +24,10 @@ ARG API_URL=$STATIC_URL/api
 ENV API_URL=${API_URL}
 ENV STATIC_URL=${STATIC_URL}
 
-ADD ./client /client
+ADD . /
 WORKDIR /client
-
-RUN apt-get update && apt-get -y install apt-utils && apt-get -y install git build-essential python \
-    && npm install --quiet --production true --no-audit \
-    && npm run build \
-    && rm -rf ./node_modules /root/.npm /root/.node-gyp /root/.config /usr/lib/node_modules
+RUN npm install --quiet --production true --no-audit \
+    && npm run build 
 
 ################ Build nginx image
 FROM tiangolo/uwsgi-nginx:python2.7-alpine3.8
@@ -50,7 +47,7 @@ COPY --from=ricardo_data --chown=nginx:nginx /ricardo_data/database_scripts/depl
 COPY --from=ricardo_data --chown=nginx:nginx /ricardo_data/data/exchange_rates.csv /data/data/exchange_rates.csv
 WORKDIR /data/database_scripts
 # move data files to api folder
-RUN sh deploy.sh
+RUN sh deploy.sh -o /
 
 WORKDIR /api
 RUN pip install -r ./requirements.txt
