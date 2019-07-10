@@ -44,6 +44,7 @@ COPY ./api /api
 COPY --from=ricardo_data --chown=nginx:nginx /ricardo_data/sqlite_data /data/sqlite_data
 COPY --from=ricardo_data --chown=nginx:nginx /ricardo_data/database_scripts/config.json /data/database_scripts/config.json
 COPY --from=ricardo_data --chown=nginx:nginx /ricardo_data/database_scripts/deploy.sh /data/database_scripts/deploy.sh
+COPY --from=ricardo_data --chown=nginx:nginx /ricardo_data/database_scripts/*.csv /data/database_scripts/
 COPY --from=ricardo_data --chown=nginx:nginx /ricardo_data/data/exchange_rates.csv /data/data/exchange_rates.csv
 WORKDIR /data/database_scripts
 # move data files to api folder
@@ -62,7 +63,6 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
-
 # Run the start script provided by the parent image tiangolo/uwsgi-nginx.
 # It will check for an /app/prestart.sh script (e.g. for migrations)
 # And then will start Supervisor, which in turn will start Nginx and uWSGI
