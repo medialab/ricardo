@@ -14,7 +14,7 @@ RUN python RICardo_website_sqlite_creation.py
 
 ############## BUILDING ANGULAR WEB CLIENT
 
-FROM node:lts/boron AS static_client
+FROM node:6.17  AS static_client
 
 ENV NODE_ENV production
 
