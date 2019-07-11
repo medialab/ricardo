@@ -25,8 +25,9 @@ ENV API_URL=${API_URL}
 ENV STATIC_URL=${STATIC_URL}
 ENV PATH /client/node_modules/.bin:$PATH
 
+USER node
 
-ADD . /
+ADD --chown=node:node . /
 WORKDIR /client
 RUN npm install --quiet --production true --no-audit \
     && npm run build 
