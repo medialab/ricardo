@@ -1,0 +1,4 @@
+import sys
+from ricardo_api import app as application
+# make sure no stdout
+sys.stdout = sys.stderr

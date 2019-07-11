@@ -43,8 +43,10 @@ RUN mkdir /client/data
 
 COPY nginx.conf /app/nginx.conf
 
-# Add demo app
+# Add API app
 COPY ./api /api
+RUN /bin/cp /api/ricardo_api.wsgi.docker /api/ricardo_api.wsgi \
+    && /bin/cp /api/uwsgi.ini /app/uwsgi.ini
 # GET the database DATA
 COPY --from=ricardo_data --chown=nginx:nginx /ricardo_data/sqlite_data /data/sqlite_data
 COPY --from=ricardo_data --chown=nginx:nginx /ricardo_data/database_scripts/config.json /data/database_scripts/config.json
