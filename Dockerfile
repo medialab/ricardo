@@ -30,6 +30,7 @@ USER node
 ADD --chown=node:node . /
 WORKDIR /client
 RUN npm install --production true --no-audit \
+    && /bin/cp ./js/config.sample.js ./js/config.js \
     && npm run build 
 
 ################ Build nginx image
