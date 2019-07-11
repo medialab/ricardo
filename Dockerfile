@@ -41,7 +41,7 @@ ENV PROD=true
 COPY --from=static_client --chown=nginx:nginx /client/build /client
 RUN mkdir /client/data
 
-COPY nginx.conf /etc/nginx/conf.d/nginx.conf
+COPY nginx.conf /app/nginx.conf
 
 # Add demo app
 COPY ./api /api
@@ -60,12 +60,6 @@ RUN pip install -r ./requirements.txt
 
 # Make /app/* available to be imported by Python globally to better support several use cases like Alembic migrations.
 ENV PYTHONPATH=/api
-
-# Move the base entrypoint to reuse it
-RUN mv /entrypoint.sh /uwsgi-nginx-entrypoint.sh
-# Copy the entrypoint that will generate Nginx additional configs
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 # Run the start script provided by the parent image tiangolo/uwsgi-nginx.
