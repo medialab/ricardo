@@ -39,6 +39,7 @@ ENV SECRET_KEY=azeoijz3245324aepoizajeoizé&
 ENV PROD=true
 # GET the exploration website from build image
 COPY --from=static_client --chown=nginx:nginx /client/build /client
+RUN mkdir /client/data
 
 COPY nginx.conf /etc/nginx/conf.d/nginx.conf
 
