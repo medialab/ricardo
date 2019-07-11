@@ -29,7 +29,7 @@ USER node
 
 ADD --chown=node:node . /
 WORKDIR /client
-RUN npm install --quiet --production true --no-audit \
+RUN npm install --production true --no-audit \
     && npm run build 
 
 ################ Build nginx image
