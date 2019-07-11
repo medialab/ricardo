@@ -23,6 +23,8 @@ ARG API_URL=$STATIC_URL/api
 
 ENV API_URL=${API_URL}
 ENV STATIC_URL=${STATIC_URL}
+ENV PATH /client/node_modules/.bin:$PATH
+
 
 ADD . /
 WORKDIR /client
