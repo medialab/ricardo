@@ -7,7 +7,16 @@ var gulp = require('gulp'),
 	useref = require('gulp-useref'),
 	csso = require('gulp-csso'),
 	gulpif = require('gulp-if'),
-	del = require('del');
+	del = require('del'),
+    replace = require('gulp-replace');
+
+gulp.task('env', function() {
+  return gulp.src('js/config.js')
+    .pipe(replace('http://localhost:5000', process.env.API_URL || 'http://localhost:5000'))
+    .pipe(gulp.dest(function(file) {
+      return file.base;
+     }))
+})
 
 gulp.task("index", function() {
   return gulp.src("index.html")
@@ -60,5 +69,5 @@ gulp.task('clean:build', function() {
  * Run tasks build
  */
 
-gulp.task('default', ['clean:build','index','fonts','locales','img','svg','data','templates'], function() {
+gulp.task('default', ['clean:build', 'env', 'index','fonts','locales','img','svg','data','templates'], function() {
 });
