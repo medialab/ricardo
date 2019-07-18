@@ -1,4 +1,5 @@
 import sys
+sys.path.insert(0, '/ricardo/api')
 from ricardo_api import app as application
 # make sure no stdout
 sys.stdout = sys.stderr
