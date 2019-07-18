@@ -74,3 +74,6 @@ ricardoapi.log*
 
 # Libreoffice lock files
 .~lock.*
+
+# Docker
+docker-compose.yml
