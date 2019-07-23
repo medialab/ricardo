@@ -55,7 +55,8 @@ COPY --from=static_client --chown=nginx:nginx /client/build /ricardo/client
 WORKDIR /ricardo/client
 
 # GET the database DATA
-COPY --from=ricardo_data --chown=nginx:nginx /ricardo_data/database_scripts/*.csv /client/data/
+COPY --from=ricardo_data --chown=nginx:nginx /ricardo_data/database_scripts/*.csv /ricardo/client/data/
+COPY --from=ricardo_data --chown=nginx:nginx /ricardo_data/data/exchange_rates.csv /ricardo/client/data/RICardo_exchange_rates.csv
 
 RUN rm /etc/nginx/conf.d/default.conf
 
