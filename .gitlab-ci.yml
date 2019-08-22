@@ -1,0 +1,50 @@
+image: docker:stable
+
+stages:
+  - build
+  - deploy
+
+variables:
+  CLIENT_IMAGE_NAME: $CI_REGISTRY_IMAGE/ricardo-client:$CI_COMMIT_REF_SLUG
+  API_IMAGE_NAME: $CI_REGISTRY_IMAGE/ricardo-api:$CI_COMMIT_REF_SLUG
+
+build_client_image:
+  stage: build
+  script:
+    - docker build -t $CLIENT_IMAGE_NAME --build-arg "STATIC_URL=$BASEURL" --build-arg "DATA_VERSION_REF=2017.12.with.FT"  -f ./client/Dockerfile .
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker push $CLIENT_IMAGE_NAME
+  environment:
+    name: $CI_COMMIT_REF_SLUG
+    url: $BASEURL
+  only:
+    - staging
+    - prod
+    - tags
+
+build_api_image:
+  stage: build
+  script:
+    - docker build -t $API_IMAGE_NAME --build-arg "DATA_VERSION_REF=2017.12.with.FT" api
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker push $API_IMAGE_NAME
+  environment:
+    name: $CI_COMMIT_REF_SLUG
+    url: $BASEURL
+  only:
+    - staging
+    - prod
+    - tags
+
+deploy:
+  stage: deploy
+  image: cdrx/rancher-gitlab-deploy
+  script:
+    - upgrade --rancher-key $RANCHER_ACCESS_KEY --rancher-secret $RANCHER_SECRET_KEY --rancher-url $RANCHER_URL --environment $RANCHER_ENV --stack $RANCHER_STACK --service $RANCHER_API_SERVICE --start-before-stopping
+    - upgrade --rancher-key $RANCHER_ACCESS_KEY --rancher-secret $RANCHER_SECRET_KEY --rancher-url $RANCHER_URL --environment $RANCHER_ENV --stack $RANCHER_STACK --service $RANCHER_WEB_SERVICE --start-before-stopping
+  environment:
+    name: $CI_COMMIT_REF_SLUG
+    url: $STAGING_BASEURL
+  only:
+    - staging
+    - production
