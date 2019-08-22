@@ -19,7 +19,7 @@ build_client_image:
     url: $BASEURL
   only:
     - staging
-    - prod
+    - production
     - tags
 
 build_api_image:
@@ -33,7 +33,7 @@ build_api_image:
     url: $BASEURL
   only:
     - staging
-    - prod
+    - production
     - tags
 
 deploy:
