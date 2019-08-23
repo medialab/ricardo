@@ -36,6 +36,7 @@ USER node
 
 COPY --chown=node:node client /client
 COPY --chown=node:node .git /
+COPY --chown=node:node analysis/WorldTradeWeb /WorldTradeWeb
 
 WORKDIR /client
 
@@ -51,6 +52,7 @@ ENV API_HOST=api
 
 # GET the exploration website from build image
 COPY --from=static_client --chown=nginx:nginx /client/build /ricardo/client
+COPY --from=static_client --chown=nginx:nginx /WorldTradeWeb /ricardo/client/WTW/
 
 WORKDIR /ricardo/client
 
