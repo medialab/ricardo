@@ -60,6 +60,11 @@ gulp.task('templates', function() {
   .pipe(gulp.dest('build/partials/'))
 })
 
+gulp.task('papers', function() {
+  return gulp.src('papers/*.pdf')
+  .pipe(gulp.dest('build/'))
+})
+
 gulp.task('clean:build', function() {
   return del.sync('build');
 })
@@ -69,5 +74,5 @@ gulp.task('clean:build', function() {
  * Run tasks build
  */
 
-gulp.task('default', ['clean:build', 'env', 'index','fonts','locales','img','svg','data','templates'], function() {
+gulp.task('default', ['clean:build', 'env', 'index','fonts','locales','img','svg','data','templates', 'papers'], function() {
 });
