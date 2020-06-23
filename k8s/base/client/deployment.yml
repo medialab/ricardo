@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: client
+  template:
+    metadata:
+      labels:
+        component: client
+    spec:
+      imagePullSecrets:
+        - name: gitlab
+      containers:
+        - name: client
+          image: gitlab.sciences-po.fr:4567/medialab/ricardo/ricardo-client:latest
+          env:
+            - name: API_HOST
+              value: ricardo-api.ricardo.svc.cluster.local
+            - name: API_PORT
+              value: '8000'
+          imagePullPolicy: Always

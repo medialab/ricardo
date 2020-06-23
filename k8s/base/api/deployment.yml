@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: api
+  template:
+    metadata:
+      labels:
+        component: api
+    spec:
+      imagePullSecrets:
+        - name: gitlab
+      containers:
+        - name: api
+          image: gitlab.sciences-po.fr:4567/medialab/ricardo/ricardo-api:latest
+          imagePullPolicy: Always
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: api
+                  key: secret_key
