@@ -56,6 +56,7 @@ deploy:
     - kubectl config set-context default --cluster=k8s --user=gitlab-admin
     - kubectl config use-context default
     - kubectl apply -f k8s/namespace.yml
+    - cp ${API_SECRETS} k8s/overlays/$CI_COMMIT_REF_SLUG/api.env
     - kubectl apply -k k8s/overlays/$CI_COMMIT_REF_SLUG
     - kubectl -n ${NS} rollout restart deployment ${NS}-api
     - kubectl -n ${NS} rollout restart deployment ${NS}-client
