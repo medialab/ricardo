@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/server-alias: ricardo-prod.medialab.sciences-po.fr
+spec:
+  rules:
+  - host: ricardo.medialab.sciences-po.fr
+    http:
+      paths:
+        - path: /
+          backend:
+            serviceName: client
+            servicePort: 80

@@ -7,8 +7,13 @@ stages:
 variables:
   CLIENT_IMAGE_NAME: $CI_REGISTRY_IMAGE/ricardo-client:$CI_COMMIT_REF_SLUG
   API_IMAGE_NAME: $CI_REGISTRY_IMAGE/ricardo-api:$CI_COMMIT_REF_SLUG
+  DOCKER_HOST: tcp://127.0.0.1:2375
+  DOCKER_TLS_CERTDIR: ""
 
-build_client_image:
+services:
+    - docker:stable-dind
+
+build_client:
   stage: build
   script:
     - docker build -t $CLIENT_IMAGE_NAME --build-arg "STATIC_URL=$BASEURL" --build-arg "DATA_VERSION_REF=2017.12.with.FT"  -f ./client/Dockerfile .
@@ -16,13 +21,13 @@ build_client_image:
     - docker push $CLIENT_IMAGE_NAME
   environment:
     name: $CI_COMMIT_REF_SLUG
-    url: $BASEURL
   only:
+    - master
     - staging
-    - production
+    - prod
     - tags
 
-build_api_image:
+build_api:
   stage: build
   script:
     - docker build -t $API_IMAGE_NAME --build-arg "DATA_VERSION_REF=2017.12.with.FT" api
@@ -30,21 +35,32 @@ build_api_image:
     - docker push $API_IMAGE_NAME
   environment:
     name: $CI_COMMIT_REF_SLUG
-    url: $BASEURL
   only:
+    - master
     - staging
-    - production
+    - prod
     - tags
 
 deploy:
+  image:
+    name: jrisp/kubehelper:latest
+    entrypoint: [""]
   stage: deploy
-  image: cdrx/rancher-gitlab-deploy
+  dependencies:
+    - build_client
+    - build_api
   script:
-    - upgrade --rancher-key $RANCHER_ACCESS_KEY --rancher-secret $RANCHER_SECRET_KEY --rancher-url $RANCHER_URL --environment $RANCHER_ENV --stack $RANCHER_STACK --service $RANCHER_API_SERVICE --start-before-stopping
-    - upgrade --rancher-key $RANCHER_ACCESS_KEY --rancher-secret $RANCHER_SECRET_KEY --rancher-url $RANCHER_URL --environment $RANCHER_ENV --stack $RANCHER_STACK --service $RANCHER_WEB_SERVICE --start-before-stopping
+    - NS=ricardo
+    - kubectl config set-cluster k8s --server="$KUBE_URL" --certificate-authority="$KUBE_CA_PEM_FILE"
+    - kubectl config set-credentials gitlab-admin --token="$KUBE_TOKEN"
+    - kubectl config set-context default --cluster=k8s --user=gitlab-admin
+    - kubectl config use-context default
+    - kubectl apply -f k8s/namespace.yml
+    - kubectl apply -k k8s/overlays/$CI_COMMIT_REF_SLUG
+    - kubectl -n ${NS} rollout restart deployment ${NS}-api
+    - kubectl -n ${NS} rollout restart deployment ${NS}-client
   environment:
     name: $CI_COMMIT_REF_SLUG
-    url: $STAGING_BASEURL
   only:
-    - staging
-    - production
+   - staging
+   - prod
