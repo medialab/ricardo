@@ -24,7 +24,7 @@ build_client:
   only:
     - master
     - staging
-    - production
+    - prod
     - tags
 
 build_api:
@@ -38,7 +38,7 @@ build_api:
   only:
     - master
     - staging
-    - production
+    - prod
     - tags
 
 deploy:
@@ -52,4 +52,4 @@ deploy:
     url: $STAGING_BASEURL
   only:
     - staging
-    - production
+    - prod
