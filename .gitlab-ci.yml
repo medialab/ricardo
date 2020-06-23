@@ -42,14 +42,25 @@ build_api:
     - tags
 
 deploy:
+  image:
+    name: jrisp/kubehelper:latest
+    entrypoint: [""]
   stage: deploy
-  image: cdrx/rancher-gitlab-deploy
+  dependencies:
+    - build_client
+    - build_api
   script:
-    - upgrade --rancher-key $RANCHER_ACCESS_KEY --rancher-secret $RANCHER_SECRET_KEY --rancher-url $RANCHER_URL --environment $RANCHER_ENV --stack $RANCHER_STACK --service $RANCHER_API_SERVICE --start-before-stopping
-    - upgrade --rancher-key $RANCHER_ACCESS_KEY --rancher-secret $RANCHER_SECRET_KEY --rancher-url $RANCHER_URL --environment $RANCHER_ENV --stack $RANCHER_STACK --service $RANCHER_WEB_SERVICE --start-before-stopping
+    - NS=ricardo
+    - kubectl config set-cluster k8s --server="$KUBE_URL" --certificate-authority="$KUBE_CA_PEM_FILE"
+    - kubectl config set-credentials gitlab-admin --token="$KUBE_TOKEN"
+    - kubectl config set-context default --cluster=k8s --user=gitlab-admin
+    - kubectl config use-context default
+    - kubectl apply -f k8s/namespace.yml
+    - kubectl apply -k k8s/overlays/$CI_COMMIT_REF_SLUG
+    - kubectl -n ${NS} rollout restart deployment ${NS}-api
+    - kubectl -n ${NS} rollout restart deployment ${NS}-client
   environment:
     name: $CI_COMMIT_REF_SLUG
-    url: $STAGING_BASEURL
   only:
-    - staging
-    - prod
+   - staging
+   - prod
