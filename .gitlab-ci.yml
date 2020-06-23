@@ -13,7 +13,7 @@ variables:
 services:
     - docker:stable-dind
 
-build_client_image:
+build_client:
   stage: build
   script:
     - docker build -t $CLIENT_IMAGE_NAME --build-arg "STATIC_URL=$BASEURL" --build-arg "DATA_VERSION_REF=2017.12.with.FT"  -f ./client/Dockerfile .
@@ -21,13 +21,13 @@ build_client_image:
     - docker push $CLIENT_IMAGE_NAME
   environment:
     name: $CI_COMMIT_REF_SLUG
-    url: $BASEURL
   only:
+    - master
     - staging
     - production
     - tags
 
-build_api_image:
+build_api:
   stage: build
   script:
     - docker build -t $API_IMAGE_NAME --build-arg "DATA_VERSION_REF=2017.12.with.FT" api
@@ -35,8 +35,8 @@ build_api_image:
     - docker push $API_IMAGE_NAME
   environment:
     name: $CI_COMMIT_REF_SLUG
-    url: $BASEURL
   only:
+    - master
     - staging
     - production
     - tags
