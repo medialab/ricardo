@@ -1,16 +1,19 @@
-'use strict';
+"use strict";
 
 /* Directives */
 
-angular.module('ricardo.directives.inlineSelectCountry', [])
+angular
+  .module("ricardo.directives.inlineSelectCountry", [])
   /* directive with only template */
-  .directive('inlineSelectCountry', [function(){
-    return {
-      restrict: 'E'
-      ,templateUrl: 'partials/inlineSelectCountry.html'
-      ,scope: {
-          model: '=ngModel'
-        , list: '=list'
-      }
-    }
-  }])
+  .directive("inlineSelectCountry", [
+    function () {
+      return {
+        restrict: "E",
+        templateUrl: "partials/inlineSelectCountry.html",
+        scope: {
+          model: "=ngModel",
+          list: "=list",
+        },
+      };
+    },
+  ]);

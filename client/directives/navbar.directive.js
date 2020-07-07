@@ -1,15 +1,19 @@
-'use strict';
+"use strict";
 
 /* Directives */
 
-angular.module('ricardo.directives.navbar', [])
+angular
+  .module("ricardo.directives.navbar", [])
 
-  .directive('navbar',[ 'fileService', '$timeout', function (fileService, $timeout){
-    return {
-      restrict: 'A',
-      replace: false,
-      templateUrl: 'partials/navbar.html',
-      link: function(scope, element, attrs) {
-      }
-    }
-  }])
+  .directive("navbar", [
+    "fileService",
+    "$timeout",
+    function (fileService, $timeout) {
+      return {
+        restrict: "A",
+        replace: false,
+        templateUrl: "partials/navbar.html",
+        link: function (scope, element, attrs) {},
+      };
+    },
+  ]);
