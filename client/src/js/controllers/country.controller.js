@@ -36,16 +36,19 @@ angular.module("ricardo.controllers.country", []).controller("country", [
     /*
      * Message error if no data
      */
+    $scope.missing = false;
+    $scope.missingPartner = false;
+    $scope.missingBilateral = false;
     $scope.ok = function () {
-      $scope.missing = "0";
+      $scope.missing = false;
     };
 
     $scope.okPartner = function () {
-      $scope.missingPartner = 0;
+      $scope.missingPartner = false;
     };
 
     $scope.okBilateral = function () {
-      $scope.missingBilateral = 0;
+      $scope.missingBilateral = false;
     };
 
     /*
@@ -114,14 +117,6 @@ angular.module("ricardo.controllers.country", []).controller("country", [
       },
     ];
     $scope.grouped = $scope.groups[0];
-
-    // $scope.sorts = [
-    //   {type: {value: "name",writable: true},
-    //    name: {value: "Name",writable: true}},
-    //   {type: {value: "average",writable: true},
-    //    name: {value: "Average share",writable: true}
-    // }];
-    // $scope.sorted = $scope.sorts[1];
 
     $scope.linechartCurrency = {};
     $scope.linechartCurrencyChoices = [
@@ -405,7 +400,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
           var onlyWorld = data.flows.every(function (d) {
             return d.continent === "World";
           });
-          if (onlyWorld) $scope.missingBilateral = 1;
+          if (onlyWorld) $scope.missingBilateral = true;
 
           cfSource.add(data.flows);
 
@@ -435,7 +430,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
 
           // if(flow.length===1 && flow[0]===null) console.log(flow)
           $scope.timelineData = timelineData;
-          $scope.$apply();
+          //$scope.$apply();
           /*
            * Display filters selection and init partner histogram
            */
@@ -562,28 +557,12 @@ angular.module("ricardo.controllers.country", []).controller("country", [
       });
 
       if (allExpNull && allImpNull) {
-        missing = "1";
+        missing = true;
       } else {
-        missing = "0";
+        missing = false;
       }
 
-      // var onlyWorld = $scope.tableDataSources.every(function (d) {
-      //   return d.continent === "World";
-      // })
-
-      // if (onlyWorld)
-      //   $scope.missingBilateral = 1;
-
       $scope.missing = missing;
-
-      // if ($scope.linechartData) {
-      //   console.log($scope.linechartData);
-      //   $scope.tableDataSources=[];
-      //   var len = $scope.linechartData.length;
-      //   for (var i = 0; i < len; i++) {
-      //     $scope.tableDataSources = $scope.tableDataSources.concat($scope.linechartData[i].values);
-      //   }
-      // }
     }
 
     /*
@@ -639,13 +618,6 @@ angular.module("ricardo.controllers.country", []).controller("country", [
       $scope.entities.sourceCountryEntity1.selected = undefined;
       $scope.entities.sourceWorldEntity.selected = undefined;
       $scope.entities.sourceContinentEntity.selected = undefined;
-      // if(t === "country"){$scope.entities.sourceCountryEntity.selected = undefined}
-      // if(t === "colonial_area"){$scope.entities.sourceColonialEntity.selected = undefined}
-      // if(t === "geographical_area"){
-      //   $scope.entities.sourceGeoEntity.selected = undefined
-      //   $scope.entities.sourceWorldEntity.selected = undefined
-      // }
-      // if(t === "continent"){$scope.entities.sourceContinentEntity.selected = undefined}
     };
 
     function buildIndexYears(data) {
@@ -666,7 +638,6 @@ angular.module("ricardo.controllers.country", []).controller("country", [
     /*
      * Partners histo triggers functions and init function partner Histo
      */
-
     function initPartnerHisto(data) {
       var data = [];
       var temp = $scope.tableData;
@@ -741,7 +712,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
 
       $scope.partnersData = partners;
 
-      if (partners.length === 0) $scope.missingPartner = 1;
+      if (partners.length === 0) $scope.missingPartner = true;
     };
 
     $scope.changeOrder = function (order) {
@@ -779,30 +750,12 @@ angular.module("ricardo.controllers.country", []).controller("country", [
         });
 
       $scope.partnersData = partners;
-      if (partners.length === 0) $scope.missingPartner = 1;
+      if (partners.length === 0) $scope.missingPartner = true;
     };
 
     /*
      *  Linechart triggers
      */
-
-    // $scope.$watch('reporting', function (newValue, oldValue){
-    //   if(newValue !== oldValue && newValue){
-    //     initLinechart($scope.reporting, $scope.linechartFlow.type.value,
-    //       $scope.linechartCurrency.type.value);
-    //     updateTableData()
-    //   }
-    // }, true)
-
-    // $scope.$watch('linechartData', function (newValue, oldValue){
-    //    if(newValue !== oldValue){
-    //       updateTableData();
-    //   }
-    // }, true)
-    // $scope.changeReporting = function () {
-    //   d3.select("#linechart-world-container > svg").remove();
-    //   // console.log("clear")
-    // }
     $scope.change = function (item) {
       $scope.pushReporting(item);
     };

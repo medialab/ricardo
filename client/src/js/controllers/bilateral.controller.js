@@ -31,26 +31,19 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
      * Display message if error in selection
      */
     $scope.ok = function () {
-      $scope.missing = "0";
+      $scope.missing = false;
     };
-
     $scope.okTarget = function () {
-      $scope.missingTarget = "0";
-      // $scope.partnerEntities=reportingEntities;
+      $scope.missingTarget = false;
     };
     $scope.okBilateral = function () {
-      $scope.missingBilateral = "0";
-      $scope.missingTarget = "0"; //test on Benin(Dahomey)
+      $scope.missingBilateral = false;
+      $scope.missingTarget = false; //test on Benin(Dahomey)
     };
-
     $scope.fieldsByDefault = function () {
-      $scope.missingTarget = "0";
-      // localStorage.removeItem('selectedMinDate');
-      // localStorage.removeItem('selectedMaxDate');
-      // localStorage.removeItem('targetEntitySelected');
+      $scope.missingTarget = false;
       window.location.reload();
     };
-
     $scope.closeAlert = function (index) {
       $scope.alerts.splice(index, 1);
     };
@@ -104,7 +97,7 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
               d.RICid !== $scope.entities.sourceEntity.selected.RICid
             );
           });
-          if ($scope.partnerEntities.length === 0) $scope.missingBilateral = "1";
+          if ($scope.partnerEntities.length === 0) $scope.missingBilateral = true;
           else {
             $scope.entities.targetEntity.selected = $scope.partnerEntities[0];
             init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected.RICid);
@@ -176,7 +169,7 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
             },
             function (res) {
               if (res[1] === 500) {
-                $scope.missingTarget = "1";
+                $scope.missingTarget = true;
                 if ($scope.entities.sourceEntity.selected.RICid == $scope.entities.targetEntity.selected.RICid) {
                   $scope.message = "Same source and target " + $scope.entities.targetEntity.selected.RICname;
                 } else {
@@ -211,7 +204,7 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
                   d.RICid !== $scope.entities.sourceEntity.selected.RICid
                 );
               });
-              if ($scope.partnerEntities.length === 0) $scope.missingBilateral = "1";
+              if ($scope.partnerEntities.length === 0) $scope.missingBilateral = true;
               // else{
               //   $scope.entities.targetEntity.selected=$scope.partnerEntities[0]
               //   init(newValue.RICid, $scope.entities.targetEntity.selected.RICid)
@@ -231,7 +224,7 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
                   d.RICid !== $scope.entities.sourceEntity.selected.RICid
                 );
               });
-              if ($scope.partnerEntities.length === 0) $scope.missingBilateral = "1";
+              if ($scope.partnerEntities.length === 0) $scope.missingBilateral = true;
               else {
                 $scope.entities.targetEntity.selected = $scope.partnerEntities[0];
                 init(newValue.RICid, $scope.entities.targetEntity.selected.RICid);
@@ -304,9 +297,9 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
           });
 
           if (allExpNull && allImpNull) {
-            missing = "1";
+            missing = true;
           } else {
-            missing = "0";
+            missing = false;
           }
           $scope.missing = missing;
         }
