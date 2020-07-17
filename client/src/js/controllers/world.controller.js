@@ -590,25 +590,10 @@ angular.module("ricardo.controllers.world", []).controller("world", [
         $scope.selectedMinDate = newVal[0];
         $scope.selectedMaxDate = newVal[1];
 
-        // // update local storage
-        // localStorage.removeItem('selectedMinDate');
-        // localStorage.removeItem('selectedMaxDate');
-        // localStorage.selectedMinDate = newVal[0];
-        // localStorage.selectedMaxDate = newVal[1];
-
         updateTableData();
         updateDateRange();
       }
     });
-
-    // $scope.$watch('reporting', function (newValue, oldValue){
-    //   if(newValue !== oldValue && newValue){
-    //     initLinechart($scope.reporting, $scope.linechartFlow.type.value,
-    //       $scope.linechartCurrency.type.value);
-    //     updateTableData();
-    //     //updateDateRange();
-    //   }
-    // }, true)
 
     $scope.$watch(
       "linechartData",
@@ -623,7 +608,6 @@ angular.module("ricardo.controllers.world", []).controller("world", [
     /*
      * Linechart functions
      */
-
     $scope.pushReporting = function (elm) {
       if ($scope.reporting.length >= 5) return;
       if (
@@ -668,7 +652,6 @@ angular.module("ricardo.controllers.world", []).controller("world", [
     /*
      * Reset filter and put it to undefined
      */
-
     $scope.resetDD = function (t) {
       if (t === "country") {
         $scope.entities.sourceCountryEntity1.selected = undefined;
@@ -678,7 +661,6 @@ angular.module("ricardo.controllers.world", []).controller("world", [
     /*
      * Catch user action on filter and push country selected to array reporting
      */
-
     $scope.change = function (item) {
       $scope.pushReporting(item);
     };
@@ -686,9 +668,6 @@ angular.module("ricardo.controllers.world", []).controller("world", [
     $scope.changeCurrency = function (currency) {
       initLinechart($scope.reporting, $scope.linechartFlow.type.value, currency.type.value);
       $scope.linechartCurrency = currency;
-      // $scope.conversion = "value";
-      // $scope.actualCurrency = "percent";
-      // $scope.messagePercent= currency.type.value==="value";
     };
 
     $scope.changeFlow = function (flow) {
@@ -699,85 +678,19 @@ angular.module("ricardo.controllers.world", []).controller("world", [
     /*
      * Display and sort table data + download csv
      */
-
-    $scope.totalServerItems = 0;
-    $scope.pagingOptions = {
-      pageSizes: [50],
-      pageSize: 50,
-      currentPage: 1,
-    };
-
-    $scope.tablePagedData = [];
     $scope.gridOptions = {
-      data: "tablePagedData",
-      enablePaging: true,
-      showFooter: true,
-      totalServerItems: "totalServerItems",
-      pagingOptions: $scope.pagingOptions,
-      enableRowSelection: false,
-      footerRowHeight: 45,
+      data: "tableData",
+      paginationPageSizes: [50],
+      paginationPageSize: 50,
       columnDefs: WORLD_TABLE_HEADERS,
-      // showFilter: true,
-      sortInfo: {
-        fields: ["year", "partner"],
-        directions: ["asc"],
-      },
+      columnFooterHeight: 45,
+      enableHorizontalScrollbar: 2,
+      enableVerticalScrollbar: 1,
     };
-
-    function setPagingData(data, pageSize, page) {
-      var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
-      $scope.tablePagedData = pagedData;
-      $scope.totalServerItems = data.length;
-      $scope.loading = false;
-      if (!$scope.$$phase) {
-        $scope.$apply();
-      }
-    }
-
-    /*
-     * Trigger user interaction on table data
-     */
-
-    $scope.$watch(
-      "tableData",
-      function (newVal, oldVal) {
-        if (newVal !== oldVal) {
-          setPagingData($scope.tableData, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
-        }
-      },
-      true,
-    );
-
-    $scope.$watch(
-      "pagingOptions",
-      function (newVal, oldVal) {
-        if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
-          setPagingData($scope.tableData, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
-        }
-      },
-      true,
-    );
-
-    /*
-     * Watch filter on colomn and changed data
-     */
-
-    $scope.$watch(
-      "gridOptions.sortInfo",
-      function (newVal, oldVal) {
-        if ($scope.tableData) {
-          dataTableService.sortData($scope.tableData, newVal.fields[0], newVal.directions[0]);
-          setPagingData($scope.tableData, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
-          $scope.pagingOptions.currentPage = $scope.pagingOptions.currentPage;
-        }
-      },
-      true,
-    );
 
     /*
      * Download all data World + countries selected
      */
-
     $scope.download = function () {
       var fileName = "RICardo - World - " + $scope.selectedMinDate + " - " + $scope.selectedMaxDate;
       var headers = WORLD_TABLE_HEADERS.map(function (h) {

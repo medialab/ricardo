@@ -68,16 +68,6 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
     $scope.totalServerItems = 0;
     $scope.alerts = [];
 
-    /*
-     * Data table init
-     */
-    $scope.viewTable = 0;
-    $scope.pagingOptions = {
-      pageSizes: [50],
-      pageSize: 50,
-      currentPage: 1,
-    };
-
     // States
     $scope.timelineData;
     $scope.entities = { sourceEntity: {}, targetEntity: {} };
@@ -360,74 +350,19 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
      * Datatable initalisation & functions
      */
 
-    $scope.tablePagedData = [];
     $scope.gridOptions = {
-      data: "tablePagedData",
-      enablePaging: true,
-      showFooter: true,
-      totalServerItems: "totalServerItems",
-      pagingOptions: $scope.pagingOptions,
-      enableRowSelection: false,
-      footerRowHeight: 45,
-      //useExternalPagination: true,
-      useExternalSorting: true,
+      data: "tableData",
+      paginationPageSizes: [50],
+      paginationPageSize: 50,
       columnDefs: TABLE_HEADERS,
-      sortInfo: {
-        fields: ["year", "partner"],
-        directions: ["asc"],
-      },
+      columnFooterHeight: 45,
+      enableHorizontalScrollbar: 2,
+      enableVerticalScrollbar: 1,
     };
-
-    function setPagingData(data, pageSize, page) {
-      var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
-      $scope.tablePagedData = pagedData;
-      $scope.totalServerItems = data.length;
-      $scope.loading = false;
-      if (!$scope.$$phase) {
-        $scope.$apply();
-      }
-    }
-
-    $scope.$watch(
-      "tableData",
-      function (newVal, oldVal) {
-        if (newVal !== oldVal) {
-          setPagingData($scope.tableData, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
-        }
-      },
-      true,
-    );
-
-    $scope.$watch(
-      "pagingOptions",
-      function (newVal, oldVal) {
-        if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
-          setPagingData($scope.tableData, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
-        }
-      },
-      true,
-    );
-
-    /*
-     * Watch filter on colomn and changed data
-     */
-    $scope.$watch(
-      "gridOptions.sortInfo",
-      function (newVal, oldVal) {
-        if ($scope.tableData) {
-          $scope.loading = true;
-          dataTableService.sortData($scope.tableData, newVal.fields[0], newVal.directions[0]);
-          setPagingData($scope.tableData, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
-          $scope.pagingOptions.currentPage = $scope.pagingOptions.currentPage;
-        }
-      },
-      true,
-    );
 
     /*
      * Download data selected
      */
-
     $scope.download = function () {
       var fileName =
         "RICardo - Bilateral - " +

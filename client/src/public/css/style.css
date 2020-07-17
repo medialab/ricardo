@@ -1742,3 +1742,11 @@ div #reporting-entities-container {
 .sideLabel {
   font-family: "montserrat", "Arial", safouns-serif;
 }
+
+.ui-grid-pager-panel {
+  border-top: 1px solid #d4d4d4;
+  background-color: #eaeaea;
+}
+.ui-grid-pager-row-count-label {
+  display: none;
+}

@@ -46,19 +46,6 @@ angular.module("ricardo.controllers.network", []).controller("network", [
     $scope.networkFlow = $scope.networkFlowChoices[0];
 
     var communityColors;
-    // var continentColors = { "Europe":"#7ED27C",
-    //                          "Asia":"#FC9FEB" ,
-    //                          "Africa":"#F6B42C",
-    //                          "America":"#BFFA27",
-    //                          "World":"#B1BCF5",
-    //                          "Oceania":"#36E120"
-    //                       }
-    // var typeColors = {"country":"#A561C7",
-    //                  "city/part_of":"#669746" ,
-    //                  "group":"#B86634",
-    //                  "geographical_area":"#6481A2",
-    //                  "colonial_area":"#B74F74"
-    //                 }
     var continents = [
       "Europe",
       "Asia",

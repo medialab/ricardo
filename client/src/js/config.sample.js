@@ -6,9 +6,9 @@ angular
   .constant("DEFAULT_CONTINENT", "Europe")
   .constant("TABLE_HEADERS", [
     { field: "reporting_id", displayName: "reporting" },
-    { field: "partner_id", displayName: "partner" },
+    { field: "partner_id", displayName: "partner", sort: { direction: "asc", priority: 1 } },
     { field: "type", displayName: "partner type" },
-    { field: "year", displayName: "year" },
+    { field: "year", displayName: "year", sort: { direction: "asc", priority: 0 } },
     { field: "imp", displayName: "import" },
     { field: "exp", displayName: "export" },
     { field: "total", displayName: "total" },
@@ -18,8 +18,8 @@ angular
   .constant("WORLD_TABLE_HEADERS", [
     { field: "reporting_id", displayName: "reporting" },
     { field: "type", displayName: "reporting type" },
-    { field: "partner_id", displayName: "partner" },
-    { field: "year", displayName: "year" },
+    { field: "partner_id", displayName: "partner", sort: { direction: "asc", priority: 1 } },
+    { field: "year", displayName: "year", sort: { direction: "asc", priority: 0 } },
     { field: "imp", displayName: "import" },
     { field: "exp", displayName: "export" },
     { field: "total", displayName: "total" },
@@ -28,9 +28,9 @@ angular
   ])
   .constant("METADATA_TABLE_HEADERS", [
     { field: "reporting", displayName: "reporting" },
-    { field: "year", displayName: "year" },
+    { field: "year", displayName: "year", sort: { direction: "asc", priority: 0 } },
     { field: "expimp", displayName: "expimp" },
-    { field: "partner", displayName: "partners" },
+    { field: "partner", displayName: "partners", sort: { direction: "asc", priority: 1 } },
     { field: "reference", displayName: "world partner" },
     { field: "partner_intersect", displayName: "bilateral partners" },
     { field: "source", displayName: "source" },

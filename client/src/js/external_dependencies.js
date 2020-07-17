@@ -8,7 +8,7 @@ import "angular-translate";
 import "angular-translate-loader-static-files";
 import "angulartics";
 import "angulartics-google-analytics";
-import "ng-grid/ng-grid-2.0.1.min.js";
+import "angular-ui-grid";
 
 // Importing js deps
 import "jquery";

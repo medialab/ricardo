@@ -138,34 +138,6 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
     updateColorChoices($scope.partner.type.value);
     $scope.matrixColorBy = $scope.matrixColorChoices[0];
 
-    // $scope.showBilateralTip=false;
-
-    $scope.viewTable = 0;
-
-    $scope.totalServerItems = 0;
-    $scope.pagingOptions = {
-      pageSizes: [50],
-      pageSize: 50,
-      currentPage: 1,
-    };
-
-    $scope.tablePagedData = [];
-    $scope.gridOptions = {
-      data: "tablePagedData",
-      enablePaging: true,
-      showFooter: true,
-      totalServerItems: "totalServerItems",
-      pagingOptions: $scope.pagingOptions,
-      enableRowSelection: false,
-      footerRowHeight: 45,
-      columnDefs: METADATA_TABLE_HEADERS,
-      // showFilter: true,
-      sortInfo: {
-        fields: ["year", "partner"],
-        directions: ["asc"],
-      },
-    };
-
     $scope.changeFlow = function (flow) {
       $scope.chartFlow = flow;
       // reprocess(reportingByYear,flowsByYear)
@@ -328,50 +300,22 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
         return d.values[0].reporting_id;
       });
       $scope.tableData = dataFiltered;
-      setPagingData($scope.tableData, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
-    } //end reprocess
+    }
 
     updatePartner($scope.partner.type.value);
 
     /*
      * Display and sort table data + download csv
      */
-
-    function setPagingData(data, pageSize, page) {
-      var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
-      $scope.tablePagedData = pagedData;
-      $scope.totalServerItems = data.length;
-      $scope.loading = false;
-      if (!$scope.$$phase) {
-        $scope.$apply();
-      }
-    }
-
-    $scope.$watch(
-      "pagingOptions",
-      function (newVal, oldVal) {
-        if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
-          setPagingData($scope.tableData, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
-        }
-      },
-      true,
-    );
-
-    /*
-     * Watch filter on colomn and changed data
-     */
-
-    $scope.$watch(
-      "gridOptions.sortInfo",
-      function (newVal, oldVal) {
-        if ($scope.tableData) {
-          dataTableService.sortData($scope.tableData, newVal.fields[0], newVal.directions[0]);
-          setPagingData($scope.tableData, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
-          $scope.pagingOptions.currentPage = $scope.pagingOptions.currentPage;
-        }
-      },
-      true,
-    );
+    $scope.gridOptions = {
+      data: "tableData",
+      paginationPageSizes: [50],
+      paginationPageSize: 50,
+      columnDefs: METADATA_TABLE_HEADERS,
+      columnFooterHeight: 45,
+      enableHorizontalScrollbar: 2,
+      enableVerticalScrollbar: 1,
+    };
 
     $scope.download = function () {
       var fileName = "RICardo - Metadata";
