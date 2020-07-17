@@ -18,10 +18,7 @@ angular
         link: function (scope, element, attrs) {
           scope.$watchCollection("[ngData, endDate, startDate]", function (newValue, oldValue) {
             if (newValue[0]) {
-              scope.$apply();
-              // $timeout(function(){
-              //   scope.$apply()
-              // },0)
+              // scope.$apply();
               draw(newValue[0]);
             }
           });
@@ -38,11 +35,8 @@ angular
              * Config axis
              */
             x = d3.time.scale().range([0, width]);
-
             y = d3.scale.linear().range([height, 0]);
-
             xAxis = d3.svg.axis().scale(x).orient("bottom");
-
             yAxis = d3.svg
               .axis()
               .scale(y)

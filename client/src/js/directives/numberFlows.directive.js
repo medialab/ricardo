@@ -33,12 +33,6 @@ angular
             .domain(["Bilateral", "RICardo", "FedericoTena"])
             .range(["#ad494a", "#393b79", "#637939"]);
 
-          // var flow_map={
-          //   "Bilateral":0,
-          //   "FedericoTena":1,
-          //   "World":2
-          // }
-
           function group_flows(data) {
             minDate = d3.min(data, function (d) {
               return +d.year;

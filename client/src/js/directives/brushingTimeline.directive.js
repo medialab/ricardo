@@ -26,13 +26,6 @@ angular
 
           scope.$watch("ngData", function (newValue, oldValue) {
             if (newValue) {
-              scope.$apply();
-              // if(!scope.$$phase) {
-              //    scope.$apply()
-              // }
-              // $timeout(function(){
-              //   scope.$apply()
-              // },3000)
               draw(scope.ngData);
             }
           });

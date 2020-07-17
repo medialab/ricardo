@@ -65,33 +65,6 @@ angular
               moveChildren(d);
             });
             update((root = flare));
-
-            //regular legend
-            // var svg_height=legend_data.length*20;
-            // legend_svg.attr("height",svg_height);
-
-            // var item =legend_svg.append("g")
-            //                     // .attr("transform","translate(0,30)")
-            //                     .selectAll(".legend").data(legend_data)
-            //                     .enter().append("g")
-            //                     .attr("class", "legend")
-            //                     .attr("transform", function(d, i) {
-            //                         return "translate(" + padding + "," + (i*(itemRadius + padding) + padding) + ")";
-            //                     }).on("click",function(d){
-            //                       highlightNode(d)
-            //                     });
-
-            // item.append("circle")
-            //     .attr("r", itemRadius)
-            //     .style("fill", function(d, i) {return scope.legend.color_domain(d);})
-            // item.append("text")
-            //     .attr("x", itemRadius*2)
-            //     .attr("y", itemRadius/2)
-            //     .attr("text-anchor", "start")
-            //     .attr("font-size", itemRadius*2 + "px")
-            //     .attr("cursor","pointer")
-            //     .attr("fill", "black")
-            //     .text(function(d) {return d;});
           }
 
           function getFlare(category, nodes) {
@@ -143,16 +116,11 @@ angular
               })
               .style("opacity", 1e-6)
               .on("click", click);
-            // .on("mouseover",highlightNode)
-            // .on("mouseout",highlightNull);
 
             // Enter any new nodes at the parent's previous position.
             nodeEnter
               .append("circle")
               .attr("r", 6)
-              // .attr("y", -barHeight / 2)
-              // .attr("height", barHeight)
-              // .attr("width", barWidth)
               .style("fill", function (d) {
                 return d.color;
               })

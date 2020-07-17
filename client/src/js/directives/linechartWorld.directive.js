@@ -161,8 +161,6 @@ angular
             var yMax = d3.max(dataFiltered, function (d) {
               return d[yValue];
             });
-            // var xMax = d3.max(data, function(elm) {return d3.max(elm.values, function(d) { return new Date(d.year, 0, 1) }); });
-            // var xMin = d3.min(data, function(elm) {return d3.min(elm.values, function(d) { return new Date(d.year, 0, 1) }); });
 
             x.domain([new Date(minDate - 1, 0, 1), new Date(maxDate + 1, 0, 1)]);
             y.domain([0, yMax]);
@@ -185,21 +183,11 @@ angular
               chart.append("g").attr("class", "y axis").call(yAxis).call(customAxis);
             } else {
               var chart = d3.select("#linechart-world-container").select(".chart");
-              // chart.selectAll(".line")
-              //      .attr("d", function(d) { return line(d.values); })
-              //      .attr("cx", line.x())
-              //      .attr("cy", line.y())
-              // chart.selectAll(".point")
               chart.select("g.x.axis").transition().duration(duration).call(xAxis);
 
               chart.select("g.y.axis").transition().duration(duration).call(yAxis).call(customAxis);
             }
 
-            // chart.append("clipPath")
-            //   .attr("id", "clip")
-            //   .append("rect")
-            //   .attr("width", width)
-            //   .attr("height", height);
             chart.selectAll(".country").remove();
             var entities = chart.selectAll(".country").data(data).enter().append("g").attr("class", "country");
 
@@ -244,30 +232,9 @@ angular
                 return d3.select(this.parentNode).datum().color;
               });
 
-            // //add clip path
-            // chart.selectAll("path,circle").attr("clip-path", "url(#clip)");
-
-            // var entities = chart.selectAll(".line")
-            //                     .data(data, function(d){return d.key});
-
-            // entities.enter()
-            //         .append("path")
-            //         .attr("class", "line")
-            //         .attr("stroke", function(d,i) { return d["color"]; })
-            //         .attr("fill", "none")
-            //         .attr("stroke-width", "2px")
-
-            // entities
-            //   .attr("d", function(d) { return line(d.values); })
-            //   // .attr("stroke", function(d,i) { return d["color"]; })
-            //   // .attr("fill", "none")
-
-            // entities.exit().remove()
-
             /*
              * Mouse interactions
              */
-
             var focus = chart.select(".focus");
 
             if (focus.empty()) {

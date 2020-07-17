@@ -22,18 +22,6 @@ angular
             }
           });
 
-          // scope.$watch('endDate', function(newValue, oldValue) {
-          //   if ( newValue && scope.ngData) {
-          //     draw(scope.ngData)
-          //   }
-          // })
-
-          // scope.$watch('startDate', function(newValue, oldValue) {
-          //   if ( newValue && scope.ngData) {
-          //     draw(scope.ngData)
-          //   }
-          // })
-
           var x,
             y,
             xAxis,
