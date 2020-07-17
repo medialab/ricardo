@@ -122,10 +122,12 @@
         }} {{ 'PARTNER_HISTO_ORDER_BY' | translate }}
         <div class="inline-select">
           <ui-select ng-model="ordered" theme="bootstrap" ng-change="changeOrder(ordered)">
-            <ui-selectmatch placeholder="Order by...">{{$select.selected.name.value}}</ui-selectmatch>
-            <ui-selectchoices repeat="item in orders | filter: $select.search">
+            <ui-selectmatch class="ui-select-match" placeholder="Order by..."
+              >{{$select.selected.name.value}}</ui-selectmatch
+            >
+            <ui-select-choices class="ui-select-choices" repeat="item in orders | filter: $select.search">
               <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-            </ui-selectchoices>
+            </ui-select-choices>
           </ui-select>
         </div>
         <br />
@@ -143,10 +145,12 @@
         {{ 'PARTNER_HISTO_GROUP_BY' | translate }}
         <div class="inline-select">
           <ui-select ng-model="grouped" theme="bootstrap" ng-change="changeGroup(grouped)">
-            <match placeholder="Group by...">{{$select.selected.name.value}}</match>
-            <choices repeat="item in groups | filter: $select.search">
+            <ui-select-match class="ui-select-match" placeholder="Group by..."
+              >{{$select.selected.name.value}}</ui-select-match
+            >
+            <ui-select-choices rclass="ui-select-choices" repeat="item in groups | filter: $select.search">
               <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-            </choices>
+            </ui-select-choices>
           </ui-select>
         </div>
       </h4>
