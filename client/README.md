@@ -28,13 +28,13 @@ $ cd ricardo/client
 install client-side dependencies:
 
 ```
-$ bower install
+$ npm install
 ```
 
 edit configuration file
 
 ```
-$ cd js
+$ cd src/js
 $ cp config.sample.js config.js
 $ vi config.js
 # edit config.js and add the correct root to API
@@ -44,19 +44,21 @@ angular.module('ricardo')
   .constant('BASE_API_URL', 'http://localhost:5000')
 ```
 
-You can now run RICardo from your local web server. For example, you can run Python's built-in server:
+You can now run RICardo with the following command :
 
 ```
-$ python -m SimpleHTTPServer 4000
+$ npm start
 ```
 
-or for Python 3+
+Once this is running, go to [http://localhost:8080/](http://localhost:8080/)
+
+You can build the RICardo application with the following command :
 
 ```
-$ python -m http.server 4000
+$ npm run build
 ```
 
-Once this is running, go to [http://localhost:4000/](http://localhost:4000/)
+The build will be available in the `dist` folder.
 
 # API structure (flask framework)
 

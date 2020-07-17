@@ -1,0 +1,235 @@
+<div class="container">
+  <div ng-show="missing" class="alert">
+    <div class="modal-body">
+      <p>There is <strong>no data available</strong> in the database for {{entities.sourceEntity.selected.RICname}}</p>
+      <p>
+        between {{selectedMinDate}} and {{selectedMaxDate}}
+      </p>
+      <p>
+        Choose another one or change date selection, thank you !
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default" ng-click="ok()">
+        Change fields manually
+      </button>
+      or
+      <button class="btn btn-default" ng-click="fieldsByDefault()">
+        Set fields by default
+      </button>
+    </div>
+  </div>
+  <div ng-show="missingTarget" class="alert">
+    <div class="modal-body">
+      <h4>{{message}}</h4>
+      <p>
+        There is <strong>no data available</strong> in the database for {{entities.sourceEntity.selected.RICname}} with
+        {{entities.targetEntity.selected.RICname}}
+      </p>
+      <p>
+        between {{selectedMinDate}} and {{selectedMaxDate}}
+      </p>
+      <p>
+        Choose another one or change date selection, thank you !
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default" ng-click="okTarget()">
+        Change fields manually
+      </button>
+      or
+      <button class="btn btn-default" ng-click="fieldsByDefault()">
+        Set fields by default
+      </button>
+    </div>
+  </div>
+  <div ng-show="missingBilateral" class="alert">
+    <div class="modal-body">
+      <h4>{{message}}</h4>
+      <p>
+        There is <strong>no bilateral partner available</strong> in the database for
+        {{entities.sourceEntity.selected.RICname}}
+      </p>
+      <p>
+        Choose another reporting, thank you !
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default" ng-click="okBilateral()">
+        Change fields manually
+      </button>
+    </div>
+  </div>
+</div>
+<div class="container container-page">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1 class="title-border">{{ 'BILATERAL_INTRO_TITLE' | translate }}</h1>
+      <p>{{ 'BILATERAL_INTRO_PARA' | translate }}</p>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4>
+        {{ 'BILATERAL_1' | translate }}
+        <inline-select-country
+          ng-model="entities.sourceEntity.selected"
+          list="reportingEntities"
+          analytics-on="click"
+          analytics-event="Bilateral source"
+        ></inline-select-country>
+        {{ 'AND' | translate }}
+        <inline-select-country
+          ng-model="entities.targetEntity.selected"
+          list="partnerEntities"
+          analytics-on="click"
+          analytics-event="Bilateral target"
+        ></inline-select-country>
+        - {{ 'FROM' | translate }}
+        <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf"></inline-select-year>
+        {{ 'TO' | translate }}
+        <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup"></inline-select-year>
+        {{ 'BILATERAL_2' | translate }} {{entities.sourceEntity.selected.RICname}}
+      </h4>
+      <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"> </dual-timeline>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="square import"></div>
+          Import
+        </div>
+        <div class="legend-item">
+          <div class="square export"></div>
+          Export
+        </div>
+        <div class="legend-item">
+          <div class="line available"></div>
+          {{ 'AVAILABLE' | translate }}
+        </div>
+        <div class="legend-item">
+          <div class="line unavailable"></div>
+          {{ 'UNAVAILABLE' | translate }}
+        </div>
+        <div class="legend-item">{{ 'CURRENCY' | translate }} <strong>{{actualCurrency}}</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4>
+        {{ 'BILATERAL_BRUSH_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'AND' | translate}}
+        {{entities.targetEntity.selected.RICname}} {{ 'BILATERAL_BRUSH_2' | translate }}
+      </h4>
+      <brushing-timeline
+        ng-data="timelineData"
+        start-date="selectedMinDate"
+        end-date="selectedMaxDate"
+        raw-start-date="rawMinDate"
+        raw-end-date="rawMaxDate"
+        source-country="entities.sourceEntity.selected.RICname"
+        target-country="entities.targetEntity.selected.RICname"
+        mirror-lines="true"
+        ng-model="timelineData"
+        ng-change="dataChange()"
+      ></brushing-timeline>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="square import"></div>
+          Import
+        </div>
+        <div class="legend-item">
+          <div class="square export"></div>
+          Export
+        </div>
+        <div class="legend-item">
+          <div class="line available"></div>
+          {{ 'AVAILABLE' | translate }}
+        </div>
+        <div class="legend-item">
+          <div class="line unavailable"></div>
+          {{ 'UNAVAILABLE' | translate }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4>
+        {{ 'COMPARAISON_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'AND' | translate }}
+        {{entities.targetEntity.selected.RICname}} {{ 'COMPARAISON_2' | translate }}
+      </h4>
+      <p class="paragraphViz">
+        {{ 'COMPARISON_INTRO' | translate }}
+      </p>
+      <comparison-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate">
+      </comparison-timeline>
+      <div class="legend">
+        <div class="legend-item">
+          <strong>A</strong> reporting : {{entities.sourceEntity.selected.RICname}} | <strong>B</strong> partner :
+          {{entities.targetEntity.selected.RICname}}
+          <br />
+          <br />
+          <span class="legendImport">Imp A <-B </span> = {{ 'COMPARAISON_LEG_1' | translate }} |
+          <span class="legendExport">Imp B <-A </span> = {{ 'COMPARAISON_LEG_2' | translate }}
+          <br />
+          <br />
+          <span class="legendImport">Exp B->A</span> = {{ 'COMPARAISON_LEG_3' | translate }} |
+          <span class="legendExport">Exp A->B</span> = {{ 'COMPARAISON_LEG_4' | translate }}
+        </div>
+        <div class="legend">
+          <div class="legend-item">
+            {{ 'MIRROR' | translate }}
+            <div class="line diff-import" style="margin-left: 20px;"></div>
+            <strong>(Imp A <-B - Exp B->A) / Imp A <-B</strong>
+          </div>
+          or
+          <div class="legend-item" style="margin-left: 20px;">
+            <div class="line diff-export"></div>
+            <strong>(Exp A->B - Imp B <-A) / Exp A->B</strong>
+          </div>
+        </div>
+        <br />
+        <br />
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 text-center shdt">
+      <div class="btn-group" role="group">
+        <button
+          type="button"
+          class="btn btn-default"
+          ng-model="viewTable"
+          btn-checkbox
+          btn-checkbox-true="1"
+          btn-checkbox-false="0"
+        >
+          {{ 'DOWNLOAD_1' | translate }}
+        </button>
+        <button
+          type="button"
+          ng-click="download()"
+          class="btn btn-default"
+          analytics-on="click"
+          analytics-event="Download Bilateral"
+        >
+          {{ 'DOWNLOAD_2' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div ng-if="viewTable" class="row table-cont">
+    <div class="col-sm-12 grid-cont">
+      <div class="gridStyle" ng-grid="gridOptions">
+        <div class="no-data" ng-hide="gridOptions.data.length && !loading"></div>
+      </div>
+    </div>
+  </div>
+</div>
