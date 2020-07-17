@@ -145,8 +145,8 @@ module.exports = (function makeWebpackConfig() {
       name: function (entrypoint) {
         return `runtimechunk~${entrypoint.name}`;
       },
-      minimize: false,
     },
+    minimize: false,
   };
 
   // Skip rendering index.html in test mode
@@ -166,7 +166,7 @@ module.exports = (function makeWebpackConfig() {
         filename: "css/[name].css",
         disable: !isProd,
         allChunks: true,
-      })
+      }),
     );
   }
 
@@ -181,7 +181,7 @@ module.exports = (function makeWebpackConfig() {
       // Reference: https://github.com/kevlened/copy-webpack-plugin
       new CopyWebpackPlugin({
         patterns: [{ from: __dirname + "/src/public", to: "." }],
-      })
+      }),
     );
     config.optimization = {
       minimize: false,
@@ -197,6 +197,8 @@ module.exports = (function makeWebpackConfig() {
     contentBase: "./src/public",
     stats: "minimal",
     host: "0.0.0.0",
+    compress: true,
+    disableHostCheck: true,
   };
 
   return config;
