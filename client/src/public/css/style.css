@@ -25,7 +25,6 @@
 /*
  * Modal
  */
-
 .modal-content {
   border-radius: 0;
   text-align: center;
@@ -949,66 +948,15 @@ article.item {
   float: left;
 }
 
-.select-dropdown .btn:hover {
-  background-color: transparent;
-}
-
-.select-dropdown *:focus,
-.select-dropdown *:active:focus {
-  outline: 0;
-}
-
-.select-dropdown .dropdown-menu {
-  border-color: #e7e7e7;
-  border-radius: 0;
-  border-width: 0 1px 1px 1px;
-  font-size: 13px;
-  -webkit-box-shadow: none;
-  box-shadow: none;
-  min-width: 294px;
-  left: -16px;
-}
-
-.select-dropdown .dropdown-menu > .active > a,
-.dropdown-menu > .active > a:hover,
-.dropdown-menu > .active > a:focus {
-  color: #222;
-  background-color: #e8e8e8;
-}
-
-.select-dropdown .dropdown-menu > li > a {
-  padding: 10px 20px;
-}
-
-/*
- * Inline selector
- */
-
-.filterSelection {
-  padding-top: 10px;
-}
-
-.inline-select,
-.inline-select .ui-select-bootstrap,
-#select-doubleChart select {
+/* INLINE SELECT */
+div.inline-select {
   display: inline-block;
+  margin: auto 5px;
 }
 
-.inline-select input,
-#select-doubleChart select {
-  display: inline;
-}
-
-.inline-select .ui-select-bootstrap button,
-#select-doubleChart select {
-  padding-right: 30px;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.inline-select .btn,
-.inline-select .form-control,
-#select-doubleChart select {
+/* drop down item */
+div.inline-select .btn,
+div.inline-select .form-control {
   border: 0;
   border-radius: 0;
   -webkit-box-shadow: none;
@@ -1017,52 +965,23 @@ article.item {
   background-color: #fafafa;
   border-bottom: 1px solid #e2ac13;
   font-size: 16px;
-}
-
-.selectPartners > .ui-select-match {
-  padding: 6px 8px;
-}
-
-.btn-sm,
-.btn-group-sm > .btn {
-  padding: 5px 5px;
-}
-
-.inline-select .btn:hover,
-#select-doubleChart select {
-  background-color: #fff;
-}
-
-.inline-select *:focus,
-.inline-select *:active:focus,
-#select-doubleChart select {
-  outline: 0;
-}
-
-.selectFilters .dropdown-menu,
-#select-doubleChart select {
-  font-size: 16px;
   font-weight: 600;
+}
+
+div.inline-select div.ui-select-choices-row span {
+  padding: 10px 15px;
   color: #633;
+  font-weight: 400;
 }
 
-#selectFilters {
-  padding-top: 10px;
-}
-
-.inline-select .dropdown-menu > .active > a,
-.dropdown-menu > .active > a:hover,
-.dropdown-menu > .active > a:focus,
-#select-doubleChart select {
+div.inline-select div.ui-select-choices-row.active span,
+div.inline-select div.ui-select-choices-row:hover span,
+div.inline-select div.ui-select-choices-row:focus span {
   color: #fff;
   background-color: #e2ac13;
 }
 
-.inline-select .dropdown-menu > li > a,
-#select-doubleChart select {
-  padding: 10px 15px;
-  color: #633;
-}
+/* END INLINE SELECT */
 
 .btnLineChart {
   font-size: 16px;
@@ -1094,6 +1013,8 @@ article.item {
 h4 {
   margin-bottom: 0;
   padding-bottom: 5px;
+  display: flex;
+  align-items: center;
 }
 
 .axis path,
