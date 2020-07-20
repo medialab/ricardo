@@ -27,7 +27,7 @@ angular
             if (newValue !== oldValue && scope.ngData) {
               yValue = newValue.type.value;
               yName = newValue.name.value;
-              // draw(scope.ngData);
+              draw(scope.ngData);
               indexSelected = null;
             }
           });
@@ -118,44 +118,15 @@ angular
             }
           });
 
-          // scope.$watch('group', function(newValue, oldValue) {
-          //   if (newValue){
-          //     svg_g.selectAll(".entities,.margin.axis").style("display","none")
-          //     svg_g.select(".num.axis").style("opacity",1)
-          //     d3.select("#reporting-entities-container")
-          //       .style("height",nb_height)
-          //       .style("overflow","initial")
-          //     regroup(colorBy)
-          //   }
-          //   else {
-          //     d3.select("#reporting-entities-container")
-          //       .style("height","800px")
-          //       .style("overflow","scroll")
-          //     svg_g.selectAll(".entities").style("display","block")
-          //     svg_g.select(".num.axis").style("opacity",0)
-          //     d3.selectAll(".available")
-          //        .attr("x", function(d) { return x(new Date(d.year,0,1));})
-          //        .attr("y",function(d){return y(d.reporting)})
-          //        .attr("width", gridWidth-gridGap)
-          //        .attr("height", gridHeight-gridGap )
-          //        .style("fill",function(d){
-          //           if(colorBy==="type"||colorBy==="continent"||colorBy==="sourcetype"|| colorBy==="reference") return categoryColor(d[colorBy])
-          //           else return scaleColor(d[colorBy].length)
-          //          })
-          //         .style("opacity",function(v){
-          //           if(colorBy==="partner" || colorBy==="flow") return 1
-          //           else return 0.7
-          //         })
-          //   }
-          // })
+          element.on("$destroy", function () {
+            d3.select("#reporting-entities-container").selectAll("*").remove();
+          });
+
           function regroup(colorBy) {
             var yearData = scope.flatData.sort(function (a, b) {
               if (colorBy === "partner") return d3.descending(a[colorBy].length, b[colorBy].length);
               else return d3.descending(a[colorBy], b[colorBy]);
             });
-            // y= d3.scale.linear()
-            //       .range([0, 600])
-            //       .domain(d3.extent(yearData,function(d){return d[colorBy]}));
             var years = d3
               .nest()
               .key(function (d) {
@@ -222,11 +193,6 @@ angular
             Oceania: 4,
             World: 5,
             "?": 6,
-            // "Pacific":6,
-            // "Mediterranean":7,
-            // "Baltic":8,
-            // "Antarctic":9,
-            // "Atlantic Ocean":10
           };
           var continentColors = {
             Europe: "#bf6969",
@@ -241,14 +207,8 @@ angular
             Antarctic: "#bf812d",
             "Atlantic Ocean": "#ce6dbd",
           };
-          // var colorByContinent=d3.scale.ordinal()
-          //                     .domain(["Europe","America","Africa","Asia","Oceania","World","Pacific","Mediterranean","Baltic","Antarctic","Atlantic Ocean"])
-          //                     .range(['#393b79',  '#bd9e39', '#ad494a',  '#637939', '#7b4173', "#003c30","#543005", '#6b6ecf', '#e7ba52','#d6616b','#b5cf6b', '#ce6dbd',"#35978f","#bf812d"]);
-
-          // var categoryColor=d3.scale.category10()
           var categoryColor = d3.scale
             .ordinal()
-            // .range(["#5254a3","#637939", "#bd9e39","#ad494a", "#a55194","#e7ba52","#de9ed6"]);
             .range([
               "#393b79",
               "#ad494a",
@@ -314,18 +274,6 @@ angular
               } else return d;
             });
 
-          // var marginAxis = d3.svg.axis()
-          //     .scale(marginScale)
-          //     .orient("top")
-          //     .ticks(2)
-          //     // .tickSize(0)
-          //     .tickFormat(function(d,i){
-          //       if(i == 0){
-          //         return
-          //       }
-          //       else return valueFormat(d);
-          //     });
-
           function valueFormat(d) {
             var prefix = d3.formatPrefix(d);
             var symbol;
@@ -343,24 +291,6 @@ angular
             } else return d;
           }
 
-          // var margin_axis = {top: 135, right: 10, bottom: 40, left: 180}
-          // var svg_axis = d3.select("#reporting-entities-axis").append("svg")
-          //     .attr("width",width + margin.left + margin.right)
-          //     .attr("height",140)
-          //     .append("g")
-          //     .attr("transform", "translate(" + margin_axis.left + ","+margin_axis.top+")");
-          // svg_axis.append("g")
-          //         .attr("class", "x axis")
-          //         .call(xAxis);
-
-          // svg_axis.append("g")
-          //         .attr("transform", "translate(-" + (2+margin_axis.left-offset) + ",0)")
-          //         .attr("class", "margin axis")
-          //         .append("text")
-          //         .attr("y",-20)
-          //         .attr("font-size",11)
-          //         .text(layoutName)
-
           //////////////////////////////////////////////////////
           ////////////////// Tooltips Setup //////////////////
           //////////////////////////////////////////////////////
@@ -376,13 +306,6 @@ angular
           // tooltip.append("div").attr("class","tip_venn")
           tooltip.append("div").attr("class", "reference");
           tooltip.append("div").attr("class", "source");
-          // var tip_max=d3.max(data,function(d){
-          //   return d3.max(d.values,function(v){
-          //     return d3.max(v.partner_continent,function(n){
-          //       return n.number;
-          //     })
-          //   })})
-          // console.log([tip_width,tip_height])
           var x_tip = d3.scale.linear().range([0, tip_width - 40]);
           var y_tip = d3.scale.ordinal().rangeRoundBands([0, 100]);
 
@@ -392,146 +315,6 @@ angular
           var countByType = [];
           var countByContinent = [];
 
-          //replaced with reportingSynth directive
-          // function recolor_legend(colorBy,data){
-
-          //   svg_axis.select(".legend").remove()
-          //   if(colorBy==="partner"){
-          //     // yValue="exp_partner"
-
-          //     var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[colorBy].length})});
-          //     var values=[]
-          //     data.forEach(function(d){
-          //       d.values.forEach(function(v){
-          //         values.push(v[colorBy].length)
-          //       })
-          //     })
-
-          //     var threshold_out=[0,10,50,max]
-          //     var threshold_in=[1,10,50]
-          //     var threshold_color=["#daafaf","#cc6666","#993333","#663333"]
-
-          //     scaleColor=d3.scale.threshold()
-          //                     .domain(threshold_in)
-          //                     .range(threshold_color)
-          //     var legendData=[
-          //         {"label":"N/A",
-          //           "value":"lightgrey"
-          //         },
-          //         {"label":"<"+valueFormat(d3.round(max/10)),
-          //           "value":"#daafaf"
-          //         },
-          //         {"label":valueFormat(d3.round(max/10))+"-"+valueFormat(d3.round(max/4)),
-          //           "value":"#cc6666"
-          //         },
-          //         {"label":valueFormat(d3.round(max/4))+"-"+valueFormat(d3.round(max*2/3)),
-          //           "value":"#993333"
-          //         },
-          //         {"label":">"+valueFormat(d3.round(max*2/3)),
-          //           "value":"#663333"
-          //         },
-          //     ]
-          //     var legend=svg_axis.append("g")
-          //              .attr("class","legend")
-          //              .attr("transform", "translate("+3*width/4+",-140)");
-          //     var legend_height=100
-          //     var legend_margin=10
-
-          //     var x_legend = d3.scale.linear()
-          //           .domain([0,max])
-          //           .range([0, width/4-legend_margin]);
-
-          //       // Generate a histogram using twenty uniformly-spaced bins.
-          //       var data_legend = d3.layout.histogram()
-          //           .bins(20)
-          //           (values);
-
-          //       var y_legend = d3.scale.linear()
-          //           .domain([0, d3.max(data_legend, function(d) { return d.y; })])
-          //           .range([legend_height-legend_margin, 0]);
-
-          //       var xAxis_legend = d3.svg.axis()
-          //           .scale(x_legend)
-          //           .tickValues(threshold_out)
-          //           // .ticks(4)
-          //           .orient("bottom");
-
-          //       var bar = legend.selectAll(".bar")
-          //           .data(data_legend)
-          //           .enter().append("g")
-          //           .attr("class", "histo_bar")
-          //           .attr("transform", function(d) { return "translate(" + x_legend(d.x) + "," + y_legend(d.y) + ")"; });
-
-          //       bar.append("rect")
-          //           .attr("x", 1)
-          //           .attr("width", x_legend(data_legend[0].dx) - 1)
-          //           .attr("height", function(d) { return legend_height-legend_margin - y_legend(d.y); })
-          //           .style("fill",function(d){return scaleColor(Math.ceil(d.x))});
-
-          //       legend.selectAll(".interval_rect")
-          //             .data(threshold_out).enter()
-          //             .append('rect')
-          //             .attr("class","interval_rect")
-          //             .attr("x",function(d){return x_legend(d);})
-          //             .attr("width",function(d,i){
-          //               if(i<threshold_out.length-1) return x_legend(threshold_out[i+1])-x_legend(threshold_out[i])
-          //               else return 0;
-          //             })
-          //             .attr("height", 8)
-          //             .attr("y",legend_height-legend_margin+1)
-          //             .style("fill",function(d){return scaleColor(d)});
-
-          //     legend.append("g")
-          //           .attr("class", "x axis")
-          //           .attr("transform", "translate(0," + legend_height + ")")
-          //           .call(xAxis_legend);
-          //     // legend.append("text")
-          //     //       .text(colorName)
-          //     //       .attr("x",-5)
-          //     //       .attr("y",6)
-          //     //       .attr("font-size",11)
-          //     //       .attr("text-anchor","end")
-
-          //     // var legend_g=legend.selectAll("g")
-          //     //       .data(legendData)
-          //     //       .enter().append("g")
-          //     //       .attr("transform", function(d,i){return "translate("+i*legendWidth+",0)"});
-
-          //     // legend_g.append("rect")
-          //     //       .attr("y", 0)
-          //     //       .attr("width", legendWidth)
-          //     //       .attr("height", 10)
-          //     //       .style("fill", function(d){return d.value;})
-
-          //     // legend_g.append("text")
-          //     //         .text(function(d){return d.label})
-          //     //         .attr("text-anchor","start")
-          //     //         .attr("y",-5)
-          //     //         .attr("font-size",11)
-          //   }
-          //   else{
-
-          //     svg_axis.select(".legend").remove()
-
-          //     var legend=svg_axis.append("g")
-          //                 .attr("class","legend")
-          //                 .attr("transform","translate("+width*3/4+",-130)")
-
-          //     var legend_g=legend.selectAll("g")
-          //                 .data(categoryColor.domain())
-          //                 .enter().append("g")
-          //                 .attr("transform", function(d,i){return "translate(0,"+i*20+")"});
-          //     legend_g.append("rect")
-          //             .attr("width",10)
-          //             .attr("height",10)
-          //             .style("fill",function(d){return categoryColor(d)})
-          //     legend_g.append("text")
-          //             .text(function(d){return d})
-          //             .attr("x",15)
-          //             .attr("y",10)
-          //             .attr("font-size",11)
-          //   }
-          // }
           function updateColor(colorBy, data) {
             if (colorBy === "partner" || colorBy === "partner_intersect") {
               // var max=d3.max(data,function(d){return d3.max(d.values,function(v){return +v[colorBy].length})});
@@ -675,8 +458,6 @@ angular
                 return d[layout];
               }),
             ]);
-            // d3.select(".margin.axis").call(marginAxis);
-            // d3.select(".margin.axis").select("text").text(layoutName)
             d3.select("#reporting-synth-container")
               .select(".ordertitle")
               .text("↓ " + layoutName);
@@ -723,6 +504,7 @@ angular
             }
           }
           function draw(data) {
+            var svg_g = d3.select("#reporting-entities-container").append("svg");
             data = order(layout, data);
             updateColor(colorBy, data);
             marginScale.domain([
@@ -731,14 +513,6 @@ angular
                 return d[layout];
               }),
             ]);
-
-            // var nbReporting=d3.nest()
-            //                    .key(function(d) { return d.year; })
-            //                    .rollup(function(v) { return {
-            //                       nb_reporting:v.length
-            //                       }
-            //                     })
-            //                    .entries(scope.flatData);
 
             var minDate = d3.min(scope.flatData, function (d) {
               return +d.year;
@@ -754,11 +528,6 @@ angular
 
             height = gridHeight * reportings.length;
             gridWidth = width / (maxDate - minDate);
-
-            // d3.select(".margin.axis").call(marginAxis);
-            svg_g.selectAll("g").remove();
-
-            // nb_height=5*d3.max(nbReporting,function(d){return d.values.nb_reporting})
 
             var svg = svg_g
               .attr("width", width + margin.left + margin.right)

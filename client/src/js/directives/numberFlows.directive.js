@@ -13,9 +13,9 @@ angular
         },
         link: function (scope, element, attrs) {
           scope.$watch("ngData", function (newValue, oldValue) {
-            console.log(newValue);
             if (newValue) {
               var data = group_flows(newValue);
+              console.log(newValue, data);
               draw(data);
             }
           });
@@ -24,7 +24,12 @@ angular
             if (newValue !== oldValue && scope.ngData) {
               yValue = newValue.type.value;
               yName = newValue.name.value;
+              stack;
             }
+          });
+
+          element.on("$destroy", function () {
+            d3.select("#number-flows-container").selectAll("*").remove();
           });
 
           var yValue = scope.flowType.type.value;
@@ -113,15 +118,15 @@ angular
           var tooltip_title = tooltip.append("div").attr("class", "title");
           var tooltip_table = tooltip.append("div").attr("class", "table");
 
-          var svg = d3
-            .select("#number-flows-container")
-            .append("svg")
-            .attr("height", height + margin.top + margin.bottom)
-            .attr("width", width + margin.left + margin.right)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
           function draw(data) {
+            var svg = d3
+              .select("#number-flows-container")
+              .append("svg")
+              .attr("height", height + margin.top + margin.bottom)
+              .attr("width", width + margin.left + margin.right)
+              .append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
             var layers = stack(data);
             var barwidth = Math.floor(width / (maxDate - minDate));
             var maxReporting = d3.max(layers, function (d) {

@@ -51,6 +51,60 @@ angular
             }
           });
 
+          element.on("$destroy", function () {
+            d3.select("#reporting-synth-container").selectAll("*").remove();
+          });
+
+          var partner_map = {
+            0: "World partner only",
+            1: "1 - 10",
+            10: "10 - 50",
+            50: "More than 50",
+          };
+          var partner_intersect_map = {
+            0: "No mirror partner",
+            1: "1 - 10",
+            10: "10 - 50",
+            50: "More than 50",
+          };
+          var mirror_map = {
+            0: "0",
+            0.5: "0 - 0.5",
+            1: "0.5 - 1",
+            // 2:"> 1"
+          };
+          var world_partner_map = {
+            "World estimated": 0,
+            "World as reported": 1,
+            "World sum partners": 2,
+            "World Federico Tena": 3,
+            "Multiple world partners": 4,
+            // "World estimated|World as reported":3,
+            // "World sum partners|World estimated":3,
+            // "World sum partners|World as reported":3
+          };
+          var source_map = {
+            Primary: 0,
+            Secondary: 1,
+            Estimation: 2,
+            FedericoTena: 3,
+          };
+          var type_map = {
+            country: 0,
+            "city/part_of": 1,
+            group: 2,
+            colonial_area: 3,
+          };
+          var continent_map = {
+            Europe: 0,
+            America: 1,
+            Africa: 2,
+            Asia: 3,
+            Oceania: 4,
+            World: 5,
+            "?": 6,
+          };
+
           var margin = { top: 20, right: 15, bottom: 20, left: 180 },
             width = document.querySelector("#reporting-synth-container").offsetWidth - margin.left - margin.right,
             height = 100,
@@ -130,77 +184,6 @@ angular
             .append("g")
             .attr("transform", "translate(" + margin.left + ",0)");
 
-          var svg = d3
-            .select("#reporting-synth-container")
-            .append("svg")
-            .attr("height", height + margin.top + margin.bottom)
-            .attr("width", width + margin.left + margin.right)
-            .append("g")
-            .attr("class", "synth_svg")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-          var line = d3.svg
-            .line()
-            .interpolate("basis")
-            .defined(function (d) {
-              return d.values.nb_reporting !== 0;
-            })
-            .x(function (d) {
-              return x(new Date(d.key, 0, 1));
-            })
-            .y(function (d) {
-              return y(d.values.nb_reporting);
-            });
-
-          var partner_map = {
-            0: "World partner only",
-            1: "1 - 10",
-            10: "10 - 50",
-            50: "More than 50",
-          };
-          var partner_intersect_map = {
-            0: "No mirror partner",
-            1: "1 - 10",
-            10: "10 - 50",
-            50: "More than 50",
-          };
-          var mirror_map = {
-            0: "0",
-            0.5: "0 - 0.5",
-            1: "0.5 - 1",
-            // 2:"> 1"
-          };
-          var world_partner_map = {
-            "World estimated": 0,
-            "World as reported": 1,
-            "World sum partners": 2,
-            "World Federico Tena": 3,
-            "Multiple world partners": 4,
-            // "World estimated|World as reported":3,
-            // "World sum partners|World estimated":3,
-            // "World sum partners|World as reported":3
-          };
-          var source_map = {
-            Primary: 0,
-            Secondary: 1,
-            Estimation: 2,
-            FedericoTena: 3,
-          };
-          var type_map = {
-            country: 0,
-            "city/part_of": 1,
-            group: 2,
-            colonial_area: 3,
-          };
-          var continent_map = {
-            Europe: 0,
-            America: 1,
-            Africa: 2,
-            Asia: 3,
-            Oceania: 4,
-            World: 5,
-            "?": 6,
-          };
           function sort_color(colorBy, color_domain) {
             switch (colorBy) {
               case "reference":
@@ -345,6 +328,28 @@ angular
             });
           }
           function draw(data) {
+            var svg = d3
+              .select("#reporting-synth-container")
+              .append("svg")
+              .attr("height", height + margin.top + margin.bottom)
+              .attr("width", width + margin.left + margin.right)
+              .append("g")
+              .attr("class", "synth_svg")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var line = d3.svg
+              .line()
+              .interpolate("basis")
+              .defined(function (d) {
+                return d.values.nb_reporting !== 0;
+              })
+              .x(function (d) {
+                return x(new Date(d.key, 0, 1));
+              })
+              .y(function (d) {
+                return y(d.values.nb_reporting);
+              });
+
             var layers = stack(data);
             // var minDate=d3.min(data[0].values,function(d){return +d.key});
             // var maxDate=d3.max(data[0].values,function(d){return +d.key});
