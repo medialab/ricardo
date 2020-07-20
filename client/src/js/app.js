@@ -54,7 +54,15 @@ angular
     "DEFAULT_REPORTING",
     "DEFAULT_PARTNER",
     "DEFAULT_CONTINENT",
-    function ($routeProvider, $locationProvider, DEFAULT_REPORTING, DEFAULT_PARTNER, DEFAULT_CONTINENT) {
+    "DEFAULT_FLOW_TYPE",
+    function (
+      $routeProvider,
+      $locationProvider,
+      DEFAULT_REPORTING,
+      DEFAULT_PARTNER,
+      DEFAULT_CONTINENT,
+      DEFAULT_FLOW_TYPE,
+    ) {
       $routeProvider.when("/", {
         templateUrl: "partials/home.html",
         controller: "home",
@@ -97,12 +105,8 @@ angular
         templateUrl: "partials/world.html",
         controller: "world",
         resolve: {
-          // reportingEntities : function (apiService) {
-          //   return apiService.getReportingEntities({'partners_ids': 'Worldbestguess'})
-          // },
           reportingWorldFlows: function (apiService) {
             return apiService.getWorldFlows();
-            // return apiService.getWorldAvailable()
           },
           reportingWorldPartner: function (apiService) {
             return apiService.getWorldAvailable();
@@ -118,9 +122,14 @@ angular
           },
         },
       });
-      $routeProvider.when("/metadata", {
+      $routeProvider.when("/metadata/:flowtype", {
         templateUrl: "partials/matrix.html",
         controller: "matrix",
+      });
+      $routeProvider.when("/metadata", {
+        redirectTo: function () {
+          return `/metadata/${DEFAULT_FLOW_TYPE}`;
+        },
       });
       $routeProvider.when("/glossary", {
         templateUrl: "partials/glossary.html",

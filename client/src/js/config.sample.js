@@ -4,6 +4,7 @@ angular
   .constant("DEFAULT_REPORTING", "France")
   .constant("DEFAULT_PARTNER", "Italy")
   .constant("DEFAULT_CONTINENT", "Europe")
+  .constant("DEFAULT_FLOW_TYPE", "bilateral")
   .constant("TABLE_HEADERS", [
     { field: "reporting_id", displayName: "reporting" },
     { field: "partner_id", displayName: "partner", sort: { direction: "asc", priority: 1 } },

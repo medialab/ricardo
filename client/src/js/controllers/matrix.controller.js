@@ -1,11 +1,12 @@
 angular.module("ricardo.controllers.matrix", []).controller("matrix", [
   "$scope",
+  "$routeParams",
   "$location",
   "apiService",
   "dataTableService",
   "utils",
   "METADATA_TABLE_HEADERS",
-  function ($scope, $location, apiService, dataTableService, utils, METADATA_TABLE_HEADERS) {
+  function ($scope, $routeParams, $location, apiService, dataTableService, utils, METADATA_TABLE_HEADERS) {
     $scope.flowChoices = [
       {
         type: { value: "total", writable: true },
@@ -20,16 +21,7 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
         name: { value: "Import", writable: true },
       },
     ];
-
-    $scope.list = [
-      { id: 1, name: "coucou" },
-      { id: 2, name: "tata" },
-      { id: 3, name: "qwe" },
-    ];
-    $scope.item = $scope.list[0];
-
     $scope.chartFlow = $scope.flowChoices[0];
-
     $scope.partnerChoices = [
       {
         type: { value: "bilateral", writable: true },
@@ -41,9 +33,15 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
       },
     ];
 
-    $scope.partner = $scope.partnerChoices[0];
+    $scope.partner = $scope.partnerChoices
+      .filter((e) => {
+        return e.type.value === $routeParams.flowtype;
+      })
+      .shift();
+    if (!$scope.partner) {
+      $location.url("/metadata");
+    }
     $scope.bilateral = $scope.partner.type.value === "bilateral";
-
     $scope.multichartLayoutChoices = [
       {
         type: { value: "multiple", writable: true },
@@ -148,30 +146,7 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
     };
 
     $scope.changePartner = function (partner) {
-      $scope.partner = partner;
-      updateColorChoices(partner.type.value);
-      updateLayoutChoices(partner.type.value);
-      var colorByChoices = $scope.matrixColorChoices
-        .map(function (d) {
-          return d.type;
-        })
-        .map(function (d) {
-          return d.value;
-        });
-
-      var layoutChoices = $scope.matrixLayoutChoices
-        .map(function (d) {
-          return d.type;
-        })
-        .map(function (d) {
-          return d.value;
-        });
-      if (colorByChoices.indexOf($scope.matrixColorBy.type.value) === -1)
-        $scope.matrixColorBy = $scope.matrixColorChoices[0];
-      if (layoutChoices.indexOf($scope.matrixLayout.type.value) === -1)
-        $scope.matrixLayout = $scope.matrixLayoutChoices[0];
-      updatePartner(partner.type.value);
-      $scope.bilateral = $scope.partner.type.value === "bilateral";
+      $location.url(`/metadata/${partner.type.value}`);
     };
 
     //quick nav
