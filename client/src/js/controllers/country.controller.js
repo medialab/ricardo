@@ -202,12 +202,18 @@ angular.module("ricardo.controllers.country", []).controller("country", [
     /*
      * First init with local storage
      */
-    //TODO: Check if the country slug exist ?
     $scope.entities.sourceEntity.selected = $scope.reportingEntities
       .filter(function (e) {
         return e.RICid === $routeParams.country;
       })
       .shift();
+
+    // If the country slug doesn't exist, we remove it from the localstorage and redirect to `/country`
+    if (!$scope.entities.sourceEntity.selected) {
+      localStorage.removeItem("sourceEntitySelected");
+      $location.url("/country");
+    }
+    // Init the data
     init($scope.entities.sourceEntity.selected.RICid, $scope.currency);
 
     function initTabLineChart(result, yearSelected, type, ric) {
