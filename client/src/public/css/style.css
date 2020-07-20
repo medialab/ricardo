@@ -956,6 +956,7 @@ div.inline-select {
 
 /* drop down item */
 div.inline-select .btn,
+div.inline-select .btn-default-focus,
 div.inline-select .form-control {
   border: 0;
   border-radius: 0;
