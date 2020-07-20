@@ -19,7 +19,7 @@
           <div class="dropdown">
             <button
               class="btn btn-link"
-              id="dLabel"
+              id="dLabel1"
               type="button"
               data-toggle="dropdown"
               aria-haspopup="true"
@@ -34,21 +34,38 @@
                 ></path>
               </svg>
             </button>
-            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dLabel">
+            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dLabel1">
               <li ng-repeat="view in views" ng-class="{ active: isActive('/' + view.slug)}">
                 <a href="#!/{{view.slug}}">{{view.label}}</a>
               </li>
             </ul>
           </div>
         </li>
-        <li ng-class="{ active: isActive('/metadata')}">
-          <a ng-href="#!/metadata">MetaData</a>
-        </li>
-        <li ng-class="{ active: isActive('/glossary')}">
-          <a ng-href="#!/glossary">Glossary</a>
-        </li>
-        <li ng-class="{ active: isActive('/corpus')}">
-          <a ng-href="#!/corpus">Corpus</a>
+        <li>
+          <div class="dropdown">
+            <button
+              class="btn btn-link"
+              id="dLabel2"
+              type="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Data
+              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="48" height="32" viewBox="0 0 48 32">
+                <title>Open dropdown</title>
+                <path
+                  fill="#e2ac13"
+                  d="M24.116 32c-0.773 0-1.546-0.309-2.164-0.928l-21.333-26.744c-0.928-1.082-0.773-2.783 0.309-3.71s2.783-0.773 3.71 0.464l19.324 24.116 19.324-24.271c0.928-1.082 2.628-1.391 3.71-0.464s1.391 2.628 0.464 3.71l-21.333 26.899c-0.464 0.618-1.237 0.928-2.010 0.928z"
+                ></path>
+              </svg>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dLabel2">
+              <li ng-repeat="view in dataViews" ng-class="{ active: isActive('/' + view.slug)}">
+                <a href="#!/{{view.slug}}">{{view.label}}</a>
+              </li>
+            </ul>
+          </div>
         </li>
         <li ng-class="{ active: isActive('/about')}">
           <a href="#!/about">About</a>

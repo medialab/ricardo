@@ -140,6 +140,10 @@ angular
           return `/metadata/${DEFAULT_FLOW_TYPE}`;
         },
       });
+      $routeProvider.when("/rates", {
+        templateUrl: "partials/rates.html",
+        controller: "rates",
+      });
       $routeProvider.when("/glossary", {
         templateUrl: "partials/glossary.html",
       });

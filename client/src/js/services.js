@@ -370,6 +370,24 @@ angular
 
           return deferred.promise;
         },
+        getExchangeRates: function () {
+          var deferred = $q.defer();
+          var serviceUrl = "/exchange_rates";
+          $http({
+            method: "GET",
+            url: BASE_API_URL + serviceUrl,
+            cache: true,
+          }).then(
+            function success(data) {
+              deferred.resolve(data.data);
+            },
+            function error() {
+              deferred.reject("An error occured while fetching data");
+            },
+          );
+
+          return deferred.promise;
+        },
         getBlogRSS: function (params) {
           var deferred = $q.defer();
           $http({
