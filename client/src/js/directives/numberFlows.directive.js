@@ -13,6 +13,7 @@ angular
         },
         link: function (scope, element, attrs) {
           scope.$watch("ngData", function (newValue, oldValue) {
+            console.log(newValue);
             if (newValue) {
               var data = group_flows(newValue);
               draw(data);
@@ -92,18 +93,9 @@ angular
             });
 
           var x = d3.time.scale().range([0, width]);
-
           var y = d3.scale.linear().range([height, 0]);
-
           var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(10);
-
           var yAxis = d3.svg.axis().scale(y).orient("right").ticks(2).tickSize(width);
-          // .tickFormat(function(d,i){
-          //   if(i == 0){
-          //     return
-          //   }
-          //   else return valueFormat(d);
-          // })
 
           function customAxis(g) {
             g.selectAll("text")

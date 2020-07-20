@@ -51,13 +51,6 @@ angular
             }
           });
 
-          // var partnerColors = {
-          //       "World_best_guess":"#bf6969",
-          //        "World sum partners":"#bfbf69" ,
-          //        "World as reported":"#69bf69",
-          //        "World estimated":"#bf69bf",
-          // }
-
           var margin = { top: 20, right: 15, bottom: 20, left: 180 },
             width = document.querySelector("#reporting-synth-container").offsetWidth - margin.left - margin.right,
             height = 100,
@@ -111,12 +104,6 @@ angular
           var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(10);
 
           var yAxis = d3.svg.axis().scale(y).orient("right").ticks(2).tickSize(width);
-          // .tickFormat(function(d,i){
-          //   if(i == 0){
-          //     return
-          //   }
-          //   else return valueFormat(d);
-          // })
 
           function customAxis(g) {
             g.selectAll("text")
@@ -142,7 +129,6 @@ angular
             .attr("height", 20)
             .append("g")
             .attr("transform", "translate(" + margin.left + ",0)");
-          // .attr("transform", "translate(" + margin.left + ","+margin.top+")");
 
           var svg = d3
             .select("#reporting-synth-container")
@@ -620,44 +606,6 @@ angular
                 })
                 .attr("pointer-events", "none");
             });
-            // layer.selectAll("rect")
-            //     .data(function(d) { return d.values; })
-            //     .enter().append("r ect")
-            //     .attr("x", function(d) { return x(new Date(d.key,0,1))-barwidth/2; })
-            //     .attr("y", function(d) {
-            //       return y(d.y + d.y0)-2
-            //       // if((y(d.y0) - y(d.y + d.y0))<=2) return 2;
-            //       // if((d.y+d.y0)===0) return y(d.y + d.y0)+2;
-            //       // else return y(d.y + d.y0);
-            //     })
-            //     .attr("height", function(d) {
-            //       return y(d.y0) - y(d.y + d.y0);
-            //       // if((y(d.y0) - y(d.y + d.y0))<=2) return 2;
-            //       // else return y(d.y0) - y(d.y + d.y0);
-            //     })
-            //     .attr("width", barwidth-1)
-            //     .style("opacity",function(d){return category==="partner" || category==="mirror_rate" ? 0.8:0.7;})
-            //     .attr("pointer-events","none")
-
-            // var multi_g=svg.selectAll(".multiple")
-            //                 .data(data)
-            //         multi_g.enter()
-            //               .append("g")
-            //               .attr("class", "multiple")
-            //               .each(function(d,i) {
-            //                 var e = d3.select(this);
-            //                 // e.append("path")
-            //                 //       .attr("class", "area-total")
-            //                 //       .attr("d", function(d) { return area(d.values); })
-            //                 //       .style("pointer-events","none")
-            //                 e.append("path")
-            //                         .attr("class", "line")
-            //                         .attr("d", function(d) {return line(d.values); })
-            //                         .style("fill","none")
-            //                         .style("stroke",function(){return category==="partner"? scaleColor(d.key):categoryColor(d.key) })
-            //                         .style("stroke-width", 1.5)
-            //                         .style("pointer-events","none")
-            //               })
             svg.append("g").attr("class", "y axis").call(yAxis).call(customAxis).style("pointer-events", "none");
 
             svg
