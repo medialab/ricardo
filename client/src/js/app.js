@@ -47,17 +47,14 @@ angular
         }
       });
     });
-    // $rootScope.$on('cfpLoadingBar:started', function() {
-    //     console.log('started', Date.now());
-    // });
-    // $rootScope.$on('cfpLoadingBar:completed', function(){
-    //     console.log('completed', Date.now());
-    // });
   })
   .config([
     "$routeProvider",
     "$locationProvider",
-    function ($routeProvider, $locationProvider) {
+    "DEFAULT_REPORTING",
+    "DEFAULT_PARTNER",
+    "DEFAULT_CONTINENT",
+    function ($routeProvider, $locationProvider, DEFAULT_REPORTING, DEFAULT_PARTNER, DEFAULT_CONTINENT) {
       $routeProvider.when("/", {
         templateUrl: "partials/home.html",
         controller: "home",
@@ -76,7 +73,7 @@ angular
           },
         },
       });
-      $routeProvider.when("/country", {
+      $routeProvider.when("/country/:country", {
         templateUrl: "partials/country.html",
         controller: "country",
         resolve: {
@@ -85,6 +82,15 @@ angular
               type_filter: "country,group,city",
             });
           },
+        },
+      });
+      $routeProvider.when("/country", {
+        redirectTo: function () {
+          let country = DEFAULT_REPORTING;
+          if (localStorage.getItem("sourceEntitySelected")) {
+            country = JSON.parse(localStorage.getItem("sourceEntitySelected")).RICid;
+          }
+          return `/country/${country}`;
         },
       });
       $routeProvider.when("/world", {
