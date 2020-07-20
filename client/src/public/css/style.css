@@ -954,6 +954,10 @@ div.inline-select {
   margin: auto 5px;
 }
 
+div.inline-select.pull-right {
+  margin-left: auto;
+}
+
 /* drop down item */
 div.inline-select .btn,
 div.inline-select .btn-default-focus,
