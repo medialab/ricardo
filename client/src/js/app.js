@@ -55,6 +55,7 @@ angular
     "DEFAULT_PARTNER",
     "DEFAULT_CONTINENT",
     "DEFAULT_FLOW_TYPE",
+    "DEFAULT_CURRENCY",
     function (
       $routeProvider,
       $locationProvider,
@@ -62,6 +63,7 @@ angular
       DEFAULT_PARTNER,
       DEFAULT_CONTINENT,
       DEFAULT_FLOW_TYPE,
+      DEFAULT_CURRENCY,
     ) {
       $routeProvider.when("/", {
         templateUrl: "partials/home.html",
@@ -140,9 +142,14 @@ angular
           return `/metadata/${DEFAULT_FLOW_TYPE}`;
         },
       });
-      $routeProvider.when("/rates", {
+      $routeProvider.when("/rates/:currency", {
         templateUrl: "partials/rates.html",
         controller: "rates",
+      });
+      $routeProvider.when("/rates", {
+        redirectTo: function () {
+          return `/rates/${DEFAULT_CURRENCY}`;
+        },
       });
       $routeProvider.when("/glossary", {
         templateUrl: "partials/glossary.html",

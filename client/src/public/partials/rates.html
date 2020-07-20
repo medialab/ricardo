@@ -15,10 +15,13 @@
         <div class="inline-select">
           <ui-select ng-model="currency" theme="bootstrap" ng-change="selectCurrency(currency)">
             <ui-select-match class="ui-select-match" placeholder="Select currency">
-              {{$select.selected}}
+              {{$select.selected.label}}
             </ui-select-match>
-            <ui-select-choices class="ui-select-choices" repeat="item in currenciesList | filter: $select.search">
-              <div ng-bind-html="item | highlight: $select.search"></div>
+            <ui-select-choices
+              class="ui-select-choices"
+              repeat="item.id as item in currenciesList | filter: $select.search"
+            >
+              <div ng-bind-html="item.label | highlight: $select.search"></div>
             </ui-select-choices>
           </ui-select>
         </div>

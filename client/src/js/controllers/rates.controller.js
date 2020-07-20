@@ -14,12 +14,43 @@
  */
 angular.module("ricardo.controllers.rates", []).controller("rates", [
   "$scope",
+  "$routeParams",
+  "$location",
   "apiService",
-  function ($scope, apiService) {
-    const DEFAULT_CURRENCY = "sterling pound";
-
+  "DEFAULT_CURRENCY",
+  function ($scope, $routeParams, $location, apiService, DEFAULT_CURRENCY) {
     $scope.view = "rates";
     $scope.loading = true;
+
+    /**
+     * INITIAL STATE:
+     * **************
+     */
+    // Initial dataset:
+    $scope.currentyRatesToPound = null;
+    // Dataset of rates between all currencies and the selected currency:
+    $scope.currentyRates = null;
+    // The selected currency, to compare to all the others:
+    $scope.currency = $routeParams.currency;
+    // The list given to autocomplete the Currency select:
+    $scope.currenciesList = [];
+    // The list of currencies that must appear in the curves list:
+    $scope.filteredCurrenciesList = [];
+    // The choices and selected choice to sort currencies as they appear in the
+    // curves list:
+    const SORT_ALPHA = "alpha";
+    const SORT_ALPHA_REVERSED = "alpha_reversed";
+    $scope.sortChoices = [
+      { id: SORT_ALPHA, label: "name (A to Z)" },
+      { id: SORT_ALPHA_REVERSED, label: "name (Z to A)" },
+    ];
+    $scope.sortChoice = SORT_ALPHA;
+    // A string to filter currencies that must appear in the curves list:
+    $scope.currencyFilter = "";
+    // The min year value for all records:
+    $scope.minYear = Infinity;
+    // The max year value for all records:
+    $scope.maxYear = -Infinity;
 
     /**
      * INITIALISATION:
@@ -43,47 +74,32 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
         return iter;
       }, {});
 
+      // Slugify all currency IDs, and store a prettified dictionary:
+      const currenciesList = [];
+      const slugifiedRatesToPound = {};
+      for (let currency in currenciesRatesToPounds) {
+        let slug = slugify(currency);
+        let label = prettify(currency);
+        currenciesList.push({ id: slug, label });
+        slugifiedRatesToPound[slug] = currenciesRatesToPounds[currency];
+      }
+
       $scope.minYear = minYear;
       $scope.maxYear = maxYear;
       $scope.currentyRatesToPound = {
-        ref: DEFAULT_CURRENCY,
-        rates: currenciesRatesToPounds,
+        ref: $scope.currency,
+        rates: slugifiedRatesToPound,
       };
-      $scope.currenciesList = Object.keys(currenciesRatesToPounds);
+      $scope.currenciesList = currenciesList;
       $scope.loading = false;
 
-      $scope.selectCurrency(DEFAULT_CURRENCY);
+      $scope.selectCurrency(slugifiedRatesToPound[$scope.currency] ? $scope.currency : DEFAULT_CURRENCY);
     });
-
-    /**
-     * INITIAL STATE:
-     * **************
-     */
-    // Initial dataset:
-    $scope.currentyRatesToPound = null;
-    // Dataset of rates between all currencies and the selected currency:
-    $scope.currentyRates = null;
-    // The selected currency, to compare to all the others:
-    $scope.currency = DEFAULT_CURRENCY;
-    // The list given to autocomplete the Currency select:
-    $scope.currenciesList = [];
-    // The list of currencies that must appear in the curves list:
-    $scope.filteredCurrenciesList = [];
-    // The choices and selected choice to sort currencies as they appear in the
-    // curves list:
-    const SORT_ALPHA = "alpha";
-    const SORT_ALPHA_REVERSED = "alpha_reversed";
-    $scope.sortChoices = [
-      { id: SORT_ALPHA, label: "name (A to Z)" },
-      { id: SORT_ALPHA_REVERSED, label: "name (Z to A)" },
-    ];
-    $scope.sortChoice = SORT_ALPHA;
-    // A string to filter currencies that must appear in the curves list:
-    $scope.currencyFilter = "";
-    // The min year value for all records:
-    $scope.minYear = Infinity;
-    // The max year value for all records:
-    $scope.maxYear = -Infinity;
+    $scope.$watch("currency", function (newValue, oldValue) {
+      if (newValue !== oldValue && newValue) {
+        return $location.url(`/rates/${newValue}`);
+      }
+    });
 
     /**
      * ACTIONS:
@@ -182,6 +198,16 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
         default:
           return filteredList;
       }
+    }
+
+    /**
+     * Helper to slugify / prettify currency values:
+     */
+    function slugify(currency) {
+      return currency.replace(/[ +-_]+/g, "-");
+    }
+    function prettify(currency) {
+      return currency[0].toUpperCase() + currency.substr(1);
     }
   },
 ]);
