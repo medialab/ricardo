@@ -197,6 +197,14 @@ def world_available():
         abort(500)
     return Response(json_data, status=200, mimetype='application/json')
 
+@app.route('/exchange_rates')
+def exchange_rates():
+    try:
+        json_data=models.get_echange_rates()
+    except:
+        abort(500)
+    return Response(json_data, status=200, mimetype='application/json')
+
 
 @app.route('/blog_RSS.xml')
 def blog_RSS():
@@ -219,4 +227,3 @@ def blog_RSS():
 
 
 
-    

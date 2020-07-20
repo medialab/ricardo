@@ -28,7 +28,7 @@ def ric_entities_data(ids=[]):
             "type":t,
             "continent":continent
             })
-    rics=sorted(rics, key=lambda k: k['RICid']) 
+    rics=sorted(rics, key=lambda k: k['RICid'])
     return rics
 
 
@@ -213,7 +213,7 @@ def get_nb_flows(flow):
   else:
     cursor.execute("""SELECT year , count(*), "RICardo" as partner,expimp
                   FROM flow_joined
-                  WHERE 
+                  WHERE
                   partner_slug = 'Worldbestguess'
                   AND flow is not NULL
                   GROUP BY year,expimp
@@ -226,7 +226,7 @@ def get_nb_flows(flow):
                   union
                   SELECT year , count(*), "RICardo" as partner,  "total" as expimp
                   FROM flow_joined
-                  WHERE 
+                  WHERE
                   partner_slug = 'Worldbestguess'
                   AND flow is not NULL
                   GROUP BY year
@@ -246,7 +246,7 @@ def get_nb_flows(flow):
       "expimp":expimp
       })
   return json.dumps(json_response,encoding="UTF8")
-  
+
 def get_reportings_available_by_year(flow):
   cursor = get_db().cursor()
   if flow=="bilateral":
@@ -774,7 +774,7 @@ def get_reporting_entities(types=[],to_partner_ids=[]):
             "type":t,
             "continent":continent
             })
-    json_response=sorted(json_response, key=lambda k: k['RICid']) 
+    json_response=sorted(json_response, key=lambda k: k['RICid'])
     return json.dumps(json_response,encoding="UTF8")
 
 def get_bilateral_entities():
@@ -801,10 +801,28 @@ def get_bilateral_entities():
             "type":t,
             "continent":continent
             })
-    json_response=sorted(json_response, key=lambda k: k['RICid']) 
+    json_response=sorted(json_response, key=lambda k: k['RICid'])
     return json.dumps(json_response,encoding="UTF8")
 
 
 def get_RICentities():
     return json.dumps(ric_entities_data(),encoding="UTF8")
+
+def get_echange_rates():
+    cursor = get_db().cursor()
+    sql="""SELECT year, modified_currency, rate_to_pounds, source
+            FROM exchange_rates
+        """
+    cursor.execute(sql)
+    json_response=[]
+    for (year, modified_currency, rate_to_pounds, source) in cursor:
+        json_response.append({
+            "currency": modified_currency,
+            "year": year,
+            "rate_to_pounds": rate_to_pounds,
+            "source": source
+        })
+    json_response=json_response
+    return json.dumps(json_response,encoding="UTF8")
+
 
