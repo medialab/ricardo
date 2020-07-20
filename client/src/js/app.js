@@ -73,6 +73,15 @@ angular
         },
       });
       $routeProvider.when("/bilateral", {
+        redirectTo: function () {
+          let entitySource = DEFAULT_REPORTING;
+          if (localStorage.getItem("sourceEntitySelected")) {
+            entitySource = JSON.parse(localStorage.getItem("sourceEntitySelected")).RICid;
+          }
+          return `/bilateral/${entitySource}`;
+        },
+      });
+      $routeProvider.when("/bilateral/:entitySource/:entityTarget?", {
         templateUrl: "partials/bilateral.html",
         controller: "bilateral",
         resolve: {

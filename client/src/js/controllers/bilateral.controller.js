@@ -4,6 +4,7 @@
  */
 angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
   "$scope",
+  "$routeParams",
   "$location",
   "reportingEntities",
   "cfSource",
@@ -16,6 +17,7 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
   "TABLE_HEADERS",
   function (
     $scope,
+    $routeParams,
     $location,
     reportingEntities,
     cfSource,
@@ -73,44 +75,60 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
     /*
      * First init - reporting/partners validation
      */
+    // Retieve the source country
+    // ------------------------------------------------------------
+    $scope.entities.sourceEntity.selected = $scope.reportingEntities
+      .filter(function (e) {
+        return e.RICid === $routeParams.entitySource;
+      })
+      .shift();
+    // Check its existance
+    if (!$scope.entities.sourceEntity.selected) {
+      $location.url("/bilateral");
+    }
 
-    try {
-      if (localStorage.sourceEntitySelected) {
-        $scope.entities.sourceEntity.selected = JSON.parse(localStorage.getItem("sourceEntitySelected"));
-      } else {
-        $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function (e) {
-          return e.RICid === DEFAULT_REPORTING;
-        })[0];
-        // $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){
-        // return e.RICid===DEFAULT_PARTNER})[0]
-        // init(DEFAULT_REPORTING, DEFAULT_PARTNER);
-      }
-      apiService
-        .getFlows({
-          reporting_ids: $scope.entities.sourceEntity.selected.RICid,
+    // Retrieve the target country (if present)
+    // ------------------------------------------------------------
+    if ($routeParams.entityTarget) {
+      // Retieve the source country
+      $scope.entities.targetEntity.selected = $scope.reportingEntities
+        .filter(function (e) {
+          return e.RICid === $routeParams.entityTarget;
         })
-        .then(function (result) {
-          $scope.partnerEntities = result.RICentities.partners.filter(function (d) {
-            return (
-              RICids.indexOf(d.RICid) !== -1 &&
-              d.type === "country" &&
-              d.RICid !== $scope.entities.sourceEntity.selected.RICid
-            );
-          });
-          if ($scope.partnerEntities.length === 0) $scope.missingBilateral = true;
-          else {
-            $scope.entities.targetEntity.selected = $scope.partnerEntities[0];
+        .shift();
+      // Check its existance
+      if (!$scope.entities.targetEntity.selected) {
+        $location.url(`/bilateral/${$routeParams.entitySource}`);
+      }
+    }
+
+    // Calling tha API to get the partner for the source entity
+    apiService
+      .getFlows({
+        reporting_ids: $scope.entities.sourceEntity.selected.RICid,
+      })
+      .then(function (result) {
+        $scope.partnerEntities = result.RICentities.partners.filter(function (d) {
+          return (
+            RICids.indexOf(d.RICid) !== -1 &&
+            d.type === "country" &&
+            d.RICid !== $scope.entities.sourceEntity.selected.RICid
+          );
+        });
+        if ($scope.partnerEntities.length === 0) $scope.missingBilateral = true;
+        else {
+          // If there is no target, we redirect to the first partner
+          if (!$routeParams.entityTarget) {
+            $location.url(`/bilateral/${$routeParams.entitySource}/${$scope.partnerEntities[0].RICid}`);
+          } else {
+            $scope.entities.targetEntity.selected = $scope.partnerEntities
+              .filter((e) => e.RICid === $routeParams.entityTarget)
+              .shift();
+            if (!$scope.entities.targetEntity.selected) $location.url(`/bilateral/${$routeParams.entitySource}`);
             init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected.RICid);
           }
-        });
-    } catch (e) {
-      console.log("error bilateral", e);
-      // $scope.entities.sourceEntity.selected = $scope.reportingEntities.filter(function(e){
-      //   return e.RICid===DEFAULT_REPORTING})[0]
-      // $scope.entities.targetEntity.selected = $scope.reportingEntities.filter(function(e){
-      //   return e.RICid===DEFAULT_PARTNER})[0]
-      // init(DEFAULT_REPORTING, DEFAULT_PARTNER);
-    }
+        }
+      });
 
     function init(sourceID, targetID, minDate, maxDate) {
       if (targetID !== undefined) {
@@ -161,8 +179,6 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
                */
               localStorage.setItem("selectedMinDate", JSON.stringify($scope.selectedMinDate));
               localStorage.setItem("selectedMaxDate", JSON.stringify($scope.selectedMaxDate));
-              // localStorage.setItem("sourceEntitySelected",JSON.stringify($scope.entities.sourceEntity.selected));
-              // localStorage.setItem("targetEntitySelected",JSON.stringify($scope.entities.targetEntity.selected));
 
               // call function to send data to tableData
               updateDateRange();
@@ -188,69 +204,19 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
     $scope.$watch("entities.sourceEntity.selected", function (newValue, oldValue) {
       if (newValue !== oldValue && newValue) {
         // set data in local storage
-        localStorage.removeItem("sourceEntitySelected");
         localStorage.setItem("sourceEntitySelected", JSON.stringify(newValue));
-        // init(newValue.RICid, $scope.entities.targetEntity.selected.RICid, $scope.selectedMinDate, $scope.selectedMaxDate);
-        if ($scope.entities.targetEntity.selected !== undefined) {
-          apiService
-            .getFlows({
-              reporting_ids: $scope.entities.sourceEntity.selected.RICid,
-            })
-            .then(function (result) {
-              $scope.partnerEntities = result.RICentities.partners.filter(function (d) {
-                return (
-                  RICids.indexOf(d.RICid) !== -1 &&
-                  d.type === "country" &&
-                  d.RICid !== $scope.entities.sourceEntity.selected.RICid
-                );
-              });
-              if ($scope.partnerEntities.length === 0) $scope.missingBilateral = true;
-              // else{
-              //   $scope.entities.targetEntity.selected=$scope.partnerEntities[0]
-              //   init(newValue.RICid, $scope.entities.targetEntity.selected.RICid)
-              // }
-            });
-          init(newValue.RICid, $scope.entities.targetEntity.selected.RICid);
-        } else {
-          apiService
-            .getFlows({
-              reporting_ids: $scope.entities.sourceEntity.selected.RICid,
-            })
-            .then(function (result) {
-              $scope.partnerEntities = result.RICentities.partners.filter(function (d) {
-                return (
-                  RICids.indexOf(d.RICid) !== -1 &&
-                  d.type === "country" &&
-                  d.RICid !== $scope.entities.sourceEntity.selected.RICid
-                );
-              });
-              if ($scope.partnerEntities.length === 0) $scope.missingBilateral = true;
-              else {
-                $scope.entities.targetEntity.selected = $scope.partnerEntities[0];
-                init(newValue.RICid, $scope.entities.targetEntity.selected.RICid);
-              }
-            });
-        }
+        $location.url(`bilateral/${newValue.RICid}/${$scope.entities.targetEntity.selected.RICid}`);
       }
     });
 
     $scope.$watch("entities.targetEntity.selected", function (newValue, oldValue) {
       if (newValue !== oldValue && newValue) {
-        // set data in local storage
-        // localStorage.removeItem('targetEntitySelected');
-        // localStorage.setItem("targetEntitySelected",JSON.stringify(newValue))
-        // init($scope.entities.sourceEntity.selected.RICid, newValue.RICid, $scope.selectedMinDate, $scope.selectedMaxDate);
-        init($scope.entities.sourceEntity.selected.RICid, newValue.RICid);
+        $location.url(`bilateral/${$scope.entities.sourceEntity.selected.RICid}/${newValue.RICid}`);
       }
     });
 
     $scope.$watchCollection("[selectedMinDate, selectedMaxDate]", function (newValue, oldValue) {
       if (newValue !== oldValue && newValue[0] !== newValue[1]) {
-        // set data in local storage
-        // localStorage.removeItem('selectedMinDate');
-        // localStorage.removeItem('selectedMaxDate');
-        // localStorage.setItem("selectedMinDate",newValue[0]);
-        // localStorage.setItem("selectedMaxDate",newValue[1]);
         updateDateRange();
       }
     });
