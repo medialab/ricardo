@@ -39,7 +39,7 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
       })
       .shift();
     if (!$scope.partner) {
-      $location.url("/metadata");
+      return $location.url("/metadata");
     }
     $scope.bilateral = $scope.partner.type.value === "bilateral";
     $scope.multichartLayoutChoices = [
@@ -146,7 +146,7 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
     };
 
     $scope.changePartner = function (partner) {
-      $location.url(`/metadata/${partner.type.value}`);
+      return $location.url(`/metadata/${partner.type.value}`);
     };
 
     //quick nav
@@ -160,7 +160,7 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
     $scope.loaded = 1;
 
     $scope.goTo = function (url) {
-      $location.url(url);
+      return $location.url(url);
     };
 
     function updatePartner(partner) {

@@ -211,7 +211,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
     // If the country slug doesn't exist, we remove it from the localstorage and redirect to `/country`
     if (!$scope.entities.sourceEntity.selected) {
       localStorage.removeItem("sourceEntitySelected");
-      $location.url("/country");
+      return $location.url("/country");
     }
     // Init the data
     init($scope.entities.sourceEntity.selected.RICid, $scope.currency);
@@ -437,7 +437,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
       if (newValue !== oldValue && newValue) {
         // update local storage
         localStorage.setItem("sourceEntitySelected", newValue);
-        $location.url(`/country/${newValue.RICid}`);
+        return $location.url(`/country/${newValue.RICid}`);
       }
     });
 

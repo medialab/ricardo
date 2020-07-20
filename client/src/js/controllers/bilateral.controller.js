@@ -84,7 +84,7 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
       .shift();
     // Check its existance
     if (!$scope.entities.sourceEntity.selected) {
-      $location.url("/bilateral");
+      return $location.url("/bilateral");
     }
 
     // Retrieve the target country (if present)
@@ -98,7 +98,7 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
         .shift();
       // Check its existance
       if (!$scope.entities.targetEntity.selected) {
-        $location.url(`/bilateral/${$routeParams.entitySource}`);
+        return $location.url(`/bilateral/${$routeParams.entitySource}`);
       }
     }
 
@@ -119,12 +119,12 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
         else {
           // If there is no target, we redirect to the first partner
           if (!$routeParams.entityTarget) {
-            $location.url(`/bilateral/${$routeParams.entitySource}/${$scope.partnerEntities[0].RICid}`);
+            return $location.url(`/bilateral/${$routeParams.entitySource}/${$scope.partnerEntities[0].RICid}`);
           } else {
             $scope.entities.targetEntity.selected = $scope.partnerEntities
               .filter((e) => e.RICid === $routeParams.entityTarget)
               .shift();
-            if (!$scope.entities.targetEntity.selected) $location.url(`/bilateral/${$routeParams.entitySource}`);
+            if (!$scope.entities.targetEntity.selected) return $location.url(`/bilateral/${$routeParams.entitySource}`);
             init($scope.entities.sourceEntity.selected.RICid, $scope.entities.targetEntity.selected.RICid);
           }
         }
