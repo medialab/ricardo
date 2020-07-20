@@ -310,9 +310,6 @@ angular
               .on("brush", function () {
                 if (brush.empty()) {
                   brush.clear();
-                  // dispatch.brushing(x.domain())
-                } else {
-                  // dispatch.brushing(brush.extent())
                 }
               })
               .on("brushend", brushended);
@@ -322,18 +319,13 @@ angular
 
               var extent0 = brush.extent(),
                 extent1 = extent0.map(function (d) {
-                  return time.year(new Date(d));
+                  return d3.time.year(new Date(d));
                 });
 
               d3.select(this).transition().call(brush.extent(extent1)).call(brush.event);
 
               if (brush.empty()) {
                 brush.extent(x.domain());
-                // dispatch.brushed(x.domain())
-                // dispatch.brushing(x.domain())
-              } else {
-                // dispatch.brushed(brush.extent())
-                // dispatch.brushing(brush.extent())
               }
 
               applyBrush();
