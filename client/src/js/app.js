@@ -121,14 +121,6 @@ angular
       $routeProvider.when("/metadata", {
         templateUrl: "partials/matrix.html",
         controller: "matrix",
-        // resolve:{
-        //   reportingByYear: function(apiService){
-        //     return apiService.getReportingsAvailableByYear()
-        //   },
-        //   flowsByYear: function(apiService){
-        //     return apiService.getNumberFlows()
-        //   }
-        // }
       });
       $routeProvider.when("/glossary", {
         templateUrl: "partials/glossary.html",
