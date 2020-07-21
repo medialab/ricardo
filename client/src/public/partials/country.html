@@ -246,105 +246,102 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-12 well">
-      <h4 class="titleDualTL">
-        {{ 'LINE_CHART_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'LINE_CHART_2' | translate }}
-        <div class="inline-select">
-          <ui-select
-            ng-model="entities.sourceCountryEntity1.selected"
-            theme="bootstrap"
-            ng-change="change(entities.sourceCountryEntity1.selected)"
-          >
-            <ui-select-match
-              class="ui-select-match"
-              placeholder="Entities"
-              ng-style="{color:elm.color}"
-            ></ui-select-match>
-            <ui-select-choices
-              class="ui-select-choices"
-              repeat="item in reportingCountryEntities1 | filter: $select.search"
+      <h4 class="titleMultiLine">
+        <div>
+          {{ 'LINE_CHART_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'LINE_CHART_2' | translate }}
+          <div class="inline-select">
+            <ui-select
+              ng-model="entities.sourceCountryEntity1.selected"
+              theme="bootstrap"
+              ng-change="change(entities.sourceCountryEntity1.selected)"
             >
-              <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-            </ui-select-choices>
-          </ui-select>
+              <ui-select-match
+                class="ui-select-match"
+                placeholder="Entities"
+                ng-style="{color:elm.color}"
+              ></ui-select-match>
+              <ui-select-choices
+                class="ui-select-choices"
+                repeat="item in reportingCountryEntities1 | filter: $select.search"
+              >
+                <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+
+          <div class="inline-select">
+            <ui-select
+              ng-model="entities.sourceContinentEntity.selected"
+              theme="bootstrap"
+              ng-show="reportingContinentEntities.length"
+              ng-change="changeContinent(entities.sourceContinentEntity.selected)"
+            >
+              <ui-select-match class="ui-select-match" placeholder="Continents"></ui-select-match>
+              <ui-select-choices
+                class="ui-select-choices"
+                repeat="item in reportingContinentEntities | filter: $select.search"
+              >
+                <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+          <div class="inline-select">
+            <ui-select
+              ng-model="entities.sourceWorldEntity.selected"
+              theme="bootstrap"
+              ng-show="reportingWorldEntities.length"
+              ng-change="changeWorld(entities.sourceWorldEntity.selected)"
+            >
+              <ui-select-match class="ui-select-match" placeholder="World"></ui-select-match>
+              <ui-select-choices
+                class="ui-select-choices"
+                repeat="item in reportingWorldEntities | filter: $select.search"
+              >
+                <div ng-bind-html="item.RICname | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
         </div>
-        <div class="inline-select">
-          <ui-select
-            ng-model="entities.sourceContinentEntity.selected"
-            theme="bootstrap"
-            ng-show="reportingContinentEntities.length"
-            ng-change="changeContinent(entities.sourceContinentEntity.selected)"
-          >
-            <ui-select-match class="ui-select-match" placeholder="Continents"></ui-select-match>
-            <ui-select-choices
-              class="ui-select-choices"
-              repeat="item in reportingContinentEntities | filter: $select.search"
-            >
-              <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-            </ui-select-choices>
-          </ui-select>
-        </div>
-        <div class="inline-select">
-          <ui-select
-            ng-model="entities.sourceWorldEntity.selected"
-            theme="bootstrap"
-            ng-show="reportingWorldEntities.length"
-            ng-change="changeWorld(entities.sourceWorldEntity.selected)"
-          >
-            <ui-select-match class="ui-select-match" placeholder="World"></ui-select-match>
-            <ui-select-choices
-              class="ui-select-choices"
-              repeat="item in reportingWorldEntities | filter: $select.search"
-            >
-              <div ng-bind-html="item.RICname | highlight: $select.search"></div>
-            </ui-select-choices>
-          </ui-select>
-        </div>
-        <br />
-        <br />
-        {{selectedMinDate}} – {{selectedMaxDate}}, in
-        <div class="inline-select">
-          <ui-select ng-model="linechartCurrency" theme="bootstrap" ng-change="changeCurrency(linechartCurrency)">
-            <ui-select-match class="ui-select-match" placeholder="Select sterling or percent"
-              >{{$select.selected.name.value}}</ui-select-match
-            >
-            <ui-select-choices
-              class="ui-select-choices"
-              repeat="item in linechartCurrencyChoices | filter: $select.search"
-            >
-              <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-            </ui-select-choices>
-          </ui-select>
-        </div>
-        for
-        <div class="inline-select">
-          <ui-select ng-model="linechartFlow" theme="bootstrap" ng-change="changeFlow(linechartFlow)">
-            <ui-select-match class="ui-select-match" placeholder="Select type flow"
-              >{{$select.selected.name.value}}</ui-select-match
-            >
-            <ui-select-choices class="ui-select-choices" repeat="item in linechartFlowChoices | filter: $select.search">
-              <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-            </ui-select-choices>
-          </ui-select>
+        <div>
+          {{selectedMinDate}} – {{selectedMaxDate}}, in
+          <div class="inline-select">
+            <ui-select ng-model="linechartCurrency" theme="bootstrap" ng-change="changeCurrency(linechartCurrency)">
+              <ui-select-match class="ui-select-match" placeholder="Select sterling or percent"
+                >{{$select.selected.name.value}}</ui-select-match
+              >
+              <ui-select-choices
+                class="ui-select-choices"
+                repeat="item in linechartCurrencyChoices | filter: $select.search"
+              >
+                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+          for
+          <div class="inline-select">
+            <ui-select ng-model="linechartFlow" theme="bootstrap" ng-change="changeFlow(linechartFlow)">
+              <ui-select-match class="ui-select-match" placeholder="Select type flow"
+                >{{$select.selected.name.value}}</ui-select-match
+              >
+              <ui-select-choices
+                class="ui-select-choices"
+                repeat="item in linechartFlowChoices | filter: $select.search"
+              >
+                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
         </div>
         <div class="subtitle">{{'LINE_CHART_SELECT' | translate }}</div>
-        <br />
-        <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}"
-          >{{elm.RICname}}
-          <span class="close-btn">
-            <i class="fa fa-times-circle"></i>
+        <div>
+          <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}"
+            >{{elm.RICname}}
+            <span class="close-btn">
+              <i class="fa fa-times-circle"></i>
+            </span>
+            <span ng-if="!$last">, </span>
           </span>
-          <span ng-if="!$last">, </span>
-        </span>
-        <!--     <div>
-               <span class="subtitle">{{ 'LINE_CHART_SELECT' | translate }} </span>
-               <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}" >{{elm.RICname}}
-
-               <span class="close-btn">
-                <i class="fa fa-times-circle"></i>
-               </span>
-               <span ng-if="!$last">, </span>
-               </span>
-               </div> -->
+        </div>
       </h4>
       <div ng-show="messagePercent">
         <p class="paragraphViz">

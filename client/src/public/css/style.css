@@ -1751,3 +1751,22 @@ div #reporting-entities-container {
   padding: 0;
   margin: 0;
 }
+
+
+h4.titleMultiLine {
+  flex-direction: column;
+}
+
+h4.titleMultiLine > div {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+h4.titleMultiLine > div:first-child {
+  margin-bottom: 20px;
+}
+
+h4.titleMultiLine > div:last-child {
+  margin-top: 20px;
+}
