@@ -14,7 +14,7 @@
         {{ 'RATES_TITLE' | translate }}
         <div class="inline-select">
           <ui-select ng-model="currency" theme="bootstrap" ng-change="selectCurrency(currency)">
-            <ui-select-match class="ui-select-match" placeholder="Select currency">
+            <ui-select-match class="ui-select-match" placeholder="{{ 'SELECT_CURRENCY' | translate }}">
               {{$select.selected.label}}
             </ui-select-match>
             <ui-select-choices
@@ -28,7 +28,7 @@
         {{ 'RATES_TITLE_SORTED_BY' | translate }}
         <div class="inline-select">
           <ui-select ng-model="sortChoice" theme="bootstrap" ng-change="selectSortChoice(sortChoice)" search-enabled="false">
-            <ui-select-match class="ui-select-match" placeholder="Select a sorting method">
+            <ui-select-match class="ui-select-match" placeholder="{{ 'SELECT_RATES_SORT' | translate }}">
               {{$select.selected.label | translate}}
             </ui-select-match>
             <ui-select-choices

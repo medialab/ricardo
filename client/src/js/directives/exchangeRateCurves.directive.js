@@ -1,5 +1,6 @@
 angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeRateCurves", [
-  function () {
+  "$filter",
+  function ($filter) {
     return {
       restrict: "E",
       templateUrl: "partials/exchangeRateCurves.html",
@@ -133,7 +134,7 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
         function getCurve(currency, refCurrency, rates, dict, { xAxis, xScale, yScale, width, height }) {
           const elRoot = document.createElement("li");
           elRoot.setAttribute("data-currency", currency);
-          const label = !!Object.keys(rates).length ? dict[currency] : `${dict[currency]} (aucune donnée)`
+          const label = !!Object.keys(rates).length ? dict[currency] : `${dict[currency]} (aucune donnée)`;
           elRoot.innerHTML =
             currency === refCurrency
               ? `<h5 class="curve-label"><strong>${label}</strong></h5>`
@@ -203,7 +204,7 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
               const { width, height } = tooltip.node().getBoundingClientRect();
               return tooltip
                 .html(
-                  `<p>In ${d[0]} :</p>
+                  `<p>${$filter("translate")("IN_YEAR")} ${d[0]} :</p>
                    <p>1 ${dict[refCurrency]} = ${formatRate(d[1])} ${dict[currency]}</p>`,
                 )
                 .style("left", d3.event.pageX - width / 2 + "px")
