@@ -1763,10 +1763,10 @@ h4.titleMultiLine > div {
   align-items: center;
 }
 
-h4.titleMultiLine > div:first-child {
+.comparison h4.titleMultiLine > div:first-child {
   margin-bottom: 20px;
 }
 
-h4.titleMultiLine > div:last-child {
+.h4.titleMultiLine > div:last-child {
   margin-top: 20px;
 }

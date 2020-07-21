@@ -84,6 +84,8 @@ angular
       $routeProvider.when("/bilateral/:entitySource/:entityTarget?", {
         templateUrl: "partials/bilateral.html",
         controller: "bilateral",
+        reloadOnUrl: false,
+        reloadOnSearch: false,
         resolve: {
           reportingEntities: function (apiService) {
             return apiService.getBilateralEntities();
@@ -93,6 +95,8 @@ angular
       $routeProvider.when("/country/:country", {
         templateUrl: "partials/country.html",
         controller: "country",
+        reloadOnUrl: true,
+        reloadOnSearch: false,
         resolve: {
           reportingEntities: function (apiService) {
             return apiService.getReportingEntities({
@@ -113,6 +117,8 @@ angular
       $routeProvider.when("/world", {
         templateUrl: "partials/world.html",
         controller: "world",
+        reloadOnUrl: true,
+        reloadOnSearch: false,
         resolve: {
           reportingWorldFlows: function (apiService) {
             return apiService.getWorldFlows();
@@ -134,6 +140,8 @@ angular
       $routeProvider.when("/metadata/:flowtype", {
         templateUrl: "partials/matrix.html",
         controller: "matrix",
+        reloadOnUrl: true,
+        reloadOnSearch: false,
       });
       $routeProvider.when("/metadata", {
         redirectTo: function () {

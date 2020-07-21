@@ -1,9 +1,12 @@
+import { initParams, getListItemId } from "../utils";
+
 /*
  * Bilateral view controller : api call and data manipulation to serve three
  * visualisations (dualtimeline, brushing & comparison timeline). ******
  */
 angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
   "$scope",
+  "$route",
   "$routeParams",
   "$location",
   "reportingEntities",
@@ -17,6 +20,7 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
   "TABLE_HEADERS",
   function (
     $scope,
+    $route,
     $routeParams,
     $location,
     reportingEntities,
@@ -161,6 +165,15 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
                 $scope.selectedMaxDate = $scope.rawMaxDate;
               }
 
+              initParams($route, $scope, [
+                {
+                  name: "selectedMinDate",
+                },
+                {
+                  name: "selectedMaxDate",
+                },
+              ]);
+
               /*
                * Consolidate data, add mirror's data to flows array
                */
@@ -202,16 +215,20 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
      */
 
     $scope.$watch("entities.sourceEntity.selected", function (newValue, oldValue) {
-      if (newValue !== oldValue && newValue) {
+      if (newValue && newValue.RICid !== oldValue.RICid) {
         // set data in local storage
         localStorage.setItem("sourceEntitySelected", JSON.stringify(newValue));
-        $location.url(`bilateral/${newValue.RICid}/${$scope.entities.targetEntity.selected.RICid}`);
+        let urlParams = Object.assign({}, $route.current.params);
+        urlParams["entitySource"] = newValue.RICid;
+        $route.updateParams(urlParams);
       }
     });
 
     $scope.$watch("entities.targetEntity.selected", function (newValue, oldValue) {
-      if (newValue !== oldValue && newValue) {
-        $location.url(`bilateral/${$scope.entities.sourceEntity.selected.RICid}/${newValue.RICid}`);
+      if (newValue && newValue.RICid !== oldValue.RICid) {
+        let urlParams = Object.assign({}, $route.current.params);
+        urlParams["entityTarget"] = newValue.RICid;
+        $route.updateParams(urlParams);
       }
     });
 

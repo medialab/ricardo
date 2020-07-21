@@ -117,41 +117,44 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-12 well">
-      <h4>
-        {{ 'PARTNER_HISTO_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'PARTNER_HISTO_2' | translate
-        }} {{ 'PARTNER_HISTO_ORDER_BY' | translate }}
-        <div class="inline-select">
-          <ui-select ng-model="ordered" theme="bootstrap" ng-change="changeOrder(ordered)">
-            <ui-selectmatch class="ui-select-match" placeholder="Order by..."
-              >{{$select.selected.name.value}}</ui-selectmatch
-            >
-            <ui-select-choices class="ui-select-choices" repeat="item in orders | filter: $select.search">
-              <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-            </ui-select-choices>
-          </ui-select>
+      <h4 class="titleMultiLine">
+        <div>
+          {{ 'PARTNER_HISTO_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'PARTNER_HISTO_2' |
+          translate }} {{ 'PARTNER_HISTO_ORDER_BY' | translate }}
+          <div class="inline-select">
+            <ui-select ng-model="$parent.ordered" theme="bootstrap" ng-change="changeOrder(ordered)">
+              <ui-selectmatch class="ui-select-match" placeholder="Order by..."
+                >{{$select.selected.name.value}}</ui-selectmatch
+              >
+              <ui-select-choices class="ui-select-choices" repeat="item in orders | filter: $select.search">
+                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
         </div>
-        <br />
-        {{ 'PARTNER_HISTO_FILTER_ON' | translate }}
-        <div class="inline-select">
-          <ui-select ng-model="filtered" theme="bootstrap" ng-change="changeFilter(filtered)">
-            <ui-select-match class="ui-select-match" placeholder="Filter on..."
-              >{{$select.selected.name.value}}</ui-select-match
-            >
-            <ui-select-choices class="ui-select-choices" repeat="item in filters | filter: $select.search">
-              <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-            </ui-select-choices>
-          </ui-select>
-        </div>
-        {{ 'PARTNER_HISTO_GROUP_BY' | translate }}
-        <div class="inline-select">
-          <ui-select ng-model="grouped" theme="bootstrap" ng-change="changeGroup(grouped)">
-            <ui-select-match class="ui-select-match" placeholder="Group by..."
-              >{{$select.selected.name.value}}</ui-select-match
-            >
-            <ui-select-choices rclass="ui-select-choices" repeat="item in groups | filter: $select.search">
-              <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-            </ui-select-choices>
-          </ui-select>
+        <div>
+          {{ 'PARTNER_HISTO_FILTER_ON' | translate }}
+          <div class="inline-select">
+            <ui-select ng-model="$parent.filtered" theme="bootstrap" ng-change="changeFilter(filtered)">
+              <ui-select-match class="ui-select-match" placeholder="Filter on..."
+                >{{$select.selected.name.value}}</ui-select-match
+              >
+              <ui-select-choices class="ui-select-choices" repeat="item in filters | filter: $select.search">
+                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+          {{ 'PARTNER_HISTO_GROUP_BY' | translate }}
+          <div class="inline-select">
+            <ui-select ng-model="$parent.grouped" theme="bootstrap" ng-change="changeGroup(grouped)">
+              <ui-select-match class="ui-select-match" placeholder="Group by..."
+                >{{$select.selected.name.value}}</ui-select-match
+              >
+              <ui-select-choices class="ui-select-choices" repeat="item in groups | filter: $select.search">
+                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
         </div>
       </h4>
       <p class="paragraphViz">
@@ -243,7 +246,7 @@
     </div>
   </div>
 </div>
-<div class="container">
+<div class="container comparison">
   <div class="row">
     <div class="col-sm-12 well">
       <h4 class="titleMultiLine">
@@ -305,7 +308,11 @@
         <div>
           {{selectedMinDate}} – {{selectedMaxDate}}, in
           <div class="inline-select">
-            <ui-select ng-model="linechartCurrency" theme="bootstrap" ng-change="changeCurrency(linechartCurrency)">
+            <ui-select
+              ng-model="$parent.linechartCurrency"
+              theme="bootstrap"
+              ng-change="changeCurrency(linechartCurrency)"
+            >
               <ui-select-match class="ui-select-match" placeholder="Select sterling or percent"
                 >{{$select.selected.name.value}}</ui-select-match
               >
@@ -319,7 +326,7 @@
           </div>
           for
           <div class="inline-select">
-            <ui-select ng-model="linechartFlow" theme="bootstrap" ng-change="changeFlow(linechartFlow)">
+            <ui-select ng-model="$parent.linechartFlow" theme="bootstrap" ng-change="changeFlow(linechartFlow)">
               <ui-select-match class="ui-select-match" placeholder="Select type flow"
                 >{{$select.selected.name.value}}</ui-select-match
               >

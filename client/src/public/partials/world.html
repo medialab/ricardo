@@ -12,7 +12,11 @@
       <h4>
         {{ 'WORLD_COMPARE_TITLE' | translate }} in
         <div class="inline-select">
-          <ui-select ng-model="multichartLayout" theme="bootstrap" ng-change="changeMultiLayout(multichartLayout)">
+          <ui-select
+            ng-model="$parent.multichartLayout"
+            theme="bootstrap"
+            ng-change="changeMultiLayout(multichartLayout)"
+          >
             <ui-select-match class="ui-select-match" placeholder="Select grouped or multiple layout"
               >{{$select.selected.name.value}}</ui-select-match
             >
@@ -26,7 +30,7 @@
         </div>
         for
         <div class="inline-select">
-          <ui-select ng-model="multichartFlow" theme="bootstrap" ng-change="changeMultiFlow(multichartFlow)">
+          <ui-select ng-model="$parent.multichartFlow" theme="bootstrap" ng-change="changeMultiFlow(multichartFlow)">
             <ui-select-match class="ui-select-match" placeholder="Select flow type"
               >{{$select.selected.name.value}}</ui-select-match
             >
@@ -73,7 +77,7 @@
         <h4>
           {{ 'WORLD_VIEW_TITLE' | translate }} with
           <div class="inline-select">
-            <ui-select ng-model="worldPartner" theme="bootstrap" ng-change="changeWorldPartner(worldPartner)">
+            <ui-select ng-model="$parent.worldPartner" theme="bootstrap" ng-change="changeWorldPartner(worldPartner)">
               <ui-select-match class="ui-select-match" placeholder="Select world partner"
                 >{{$select.selected.name.value}}</ui-select-match
               >
@@ -123,7 +127,7 @@
         </div>
       </div>
     </div>
-    <div class="col-sm-12 well">
+    <div class="col-sm-12 well comparison">
       <h4 class="titleMultiLine">
         <div>
           {{ 'WORLD_COMPARAISON' | translate }}
@@ -146,7 +150,11 @@
         <div>
           {{selectedMinDate}} – {{selectedMaxDate}}, in
           <div class="inline-select">
-            <ui-select ng-model="linechartCurrency" theme="bootstrap" ng-change="changeCurrency(linechartCurrency)">
+            <ui-select
+              ng-model="$parent.linechartCurrency"
+              theme="bootstrap"
+              ng-change="changeCurrency(linechartCurrency)"
+            >
               <ui-select-match class="ui-select-match" placeholder="Select sterling or percent"
                 >{{$select.selected.name.value}}</ui-select-match
               >
@@ -160,7 +168,7 @@
           </div>
           for
           <div class="inline-select">
-            <ui-select ng-model="linechartFlow" theme="bootstrap" ng-change="changeFlow(linechartFlow)">
+            <ui-select ng-model="$parent.linechartFlow" theme="bootstrap" ng-change="changeFlow(linechartFlow)">
               <ui-select-match class="ui-select-match" placeholder="Select type flow"
                 >{{$select.selected.name.value}}</ui-select-match
               >

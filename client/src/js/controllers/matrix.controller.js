@@ -1,12 +1,14 @@
+import { initParams, getListItemId } from "../utils";
 angular.module("ricardo.controllers.matrix", []).controller("matrix", [
   "$scope",
+  "$route",
   "$routeParams",
   "$location",
   "apiService",
   "dataTableService",
   "utils",
   "METADATA_TABLE_HEADERS",
-  function ($scope, $routeParams, $location, apiService, dataTableService, utils, METADATA_TABLE_HEADERS) {
+  function ($scope, $route, $routeParams, $location, apiService, dataTableService, utils, METADATA_TABLE_HEADERS) {
     $scope.flowChoices = [
       {
         type: { value: "total", writable: true },
@@ -57,6 +59,29 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
       },
     ];
     $scope.multichartLayout = $scope.multichartLayoutChoices[0];
+
+    initParams($route, $scope, [
+      {
+        name: "chartFlow",
+        list: $scope.flowChoices,
+        getItemId: getListItemId,
+      },
+      {
+        name: "matrixLayout",
+        list: $scope.matrixLayoutChoices,
+        getItemId: getListItemId,
+      },
+      {
+        name: "matrixColorBy",
+        list: $scope.matrixColorChoices,
+        getItemId: getListItemId,
+      },
+      {
+        name: "reporting",
+        list: $scope.entities,
+        getItemId: getListItemId,
+      },
+    ]);
 
     function updateLayoutChoices(partner) {
       if (partner === "bilateral")

@@ -1,5 +1,8 @@
+import { initParams, getListItemId } from "../utils";
+
 angular.module("ricardo.controllers.world", []).controller("world", [
   "$scope",
+  "$route",
   "$location",
   "$anchorScroll",
   "apiService",
@@ -10,6 +13,7 @@ angular.module("ricardo.controllers.world", []).controller("world", [
   "WORLD_TABLE_HEADERS",
   function (
     $scope,
+    $route,
     $location,
     $anchorScroll,
     apiService,
@@ -99,9 +103,7 @@ angular.module("ricardo.controllers.world", []).controller("world", [
         name: { value: "Imports", writable: true },
       },
     ];
-
     $scope.multichartFlow = $scope.multiFlowChoices[0];
-
     $scope.worldPartnerChoices = [
       {
         type: { value: "Worldbestguess", writable: true },
@@ -120,8 +122,8 @@ angular.module("ricardo.controllers.world", []).controller("world", [
         name: { value: "World Federico Tena", writable: true },
       },
     ];
-
     $scope.worldPartner = $scope.worldPartnerChoices[0];
+
     var worldFlowsYearsFormat, worldFlows_filtered;
 
     $scope.changeWorldPartner = function (worldPartner) {
@@ -230,10 +232,6 @@ angular.module("ricardo.controllers.world", []).controller("world", [
       name: { value: "Total", writable: true },
     };
 
-    $scope.goTo = function (url) {
-      $location.url(url);
-    };
-
     /*
      *  Init the timelines
      */
@@ -241,16 +239,9 @@ angular.module("ricardo.controllers.world", []).controller("world", [
     // init();
 
     function init() {
-      // $scope.rawYearsRange = d3.range( $scope.rawMinDate, $scope.rawMaxDate + 1 )
-      // $scope.rawYearsRange_forInf = d3.range( $scope.rawMinDate, $scope.selectedMaxDate )
-      // $scope.rawYearsRange_forSup = d3.range( $scope.selectedMinDate + 1, $scope.rawMaxDate + 1 )
-
-      //$scope.RICentities = {};
-
       /*
        * Init arrays for filters in linechart viz
        */
-
       $scope.reporting = [];
       $scope.entities.sourceCountryEntity = {};
       $scope.linechartData = [];
@@ -283,6 +274,40 @@ angular.module("ricardo.controllers.world", []).controller("world", [
       $scope.tableData = worldFlowsYearsFormat;
       // $scope.$apply()
       updateDateRange();
+
+      initParams($route, $scope, [
+        {
+          name: "multichartLayout",
+          list: $scope.multichartLayoutChoices,
+          getItemId: getListItemId,
+        },
+        {
+          name: "multichartFlow",
+          list: $scope.multiFlowChoices,
+          getItemId: getListItemId,
+        },
+        {
+          name: "selectedMinDate",
+        },
+        {
+          name: "selectedMaxDate",
+        },
+        {
+          name: "worldPartner",
+          list: $scope.worldPartnerChoices,
+          getItemId: getListItemId,
+        },
+        {
+          name: "linechartCurrency",
+          list: $scope.linechartCurrency,
+          getItemId: getListItemId,
+        },
+        {
+          name: "linechartFlow",
+          list: $scope.linechartFlow,
+          getItemId: getListItemId,
+        },
+      ]);
     }
 
     /*

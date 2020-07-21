@@ -1,9 +1,12 @@
+import { initParams, getListItemId } from "../utils";
+
 /*
  * Country view Controller : api call and data manipulation to serve four
  * visualisations (dualtimeline, brushing, partner histogram & linechart)
  */
 angular.module("ricardo.controllers.country", []).controller("country", [
   "$scope",
+  "$route",
   "$routeParams",
   "$location",
   "cfSource",
@@ -19,6 +22,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
   "TABLE_HEADERS",
   function (
     $scope,
+    $route,
     $routeParams,
     $location,
     cfSource,
@@ -215,6 +219,39 @@ angular.module("ricardo.controllers.country", []).controller("country", [
     }
     // Init the data
     init($scope.entities.sourceEntity.selected.RICid, $scope.currency);
+    initParams($route, $scope, [
+      {
+        name: "selectedMinDate",
+      },
+      {
+        name: "selectedMaxDate",
+      },
+      {
+        name: "filtered",
+        list: $scope.filters,
+        getItemId: getListItemId,
+      },
+      {
+        name: "ordered",
+        list: $scope.orders,
+        getItemId: getListItemId,
+      },
+      {
+        name: "grouped",
+        list: $scope.groups,
+        getItemId: getListItemId,
+      },
+      {
+        name: "linechartCurrency",
+        list: $scope.linechartCurrencyChoices,
+        getItemId: getListItemId,
+      },
+      {
+        name: "linechartFlow",
+        list: $scope.linechartFlowChoices,
+        getItemId: getListItemId,
+      },
+    ]);
 
     function initTabLineChart(result, yearSelected, type, ric) {
       for (var i = $scope.rawMinDate; i <= $scope.rawMaxDate; i++) {
@@ -260,6 +297,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
 
           $scope.selectedMinDate = d3.min(dates);
           $scope.selectedMaxDate = d3.max(dates);
+
           data.flows = data.flows.filter(function (d) {
             if (d.imp || d.exp !== 0) return d;
           });
