@@ -59,7 +59,7 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
          */
         function generateDOM(domRoot, refCurrency, data, dict, boundaries) {
           const curvesContainer = domRoot.querySelector(".curves-container");
-          const domWidth = domRoot.offsetWidth;
+          const domWidth = domRoot.parentElement.offsetWidth;
 
           flushDOM(domRoot);
 
