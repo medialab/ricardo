@@ -1703,6 +1703,9 @@ div #reporting-entities-container {
 #exchange-rate-curves .curves-container .curve {
   position: relative;
 }
+#exchange-rate-curves .curves-container .curve path.curve-path {
+  stroke: #cc6666;
+}
 .points-group {
   position: absolute;
   top: 0;
@@ -1719,7 +1722,7 @@ div #reporting-entities-container {
 }
 .points-group .point::after {
   content: " ";
-  background: red;
+  background: #cc6666;
   position: absolute;
   width: 4px;
   height: 4px;

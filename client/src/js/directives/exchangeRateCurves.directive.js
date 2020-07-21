@@ -15,8 +15,8 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
       link: function (scope, element) {
         const STROKE_WIDTH = 1;
         const POINT_RADIUS = 8;
-        const CURVE_HEIGHT = 50;
-        const COLOR = "red";
+        const CURVE_HEIGHT = 36;
+        const XAXIS_HEIGHT = 23;
         const formatRate = (v) => d3.round(v, 2);
 
         let hasBeenFirstRendered = false;
@@ -64,17 +64,26 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
 
           // Initialize commons (d3 scales, ...):
           const padding = Math.max(Math.ceil(STROKE_WIDTH / 2), POINT_RADIUS);
-          const x = d3.scale
+          const xScale = d3.scale
             .linear()
             .range([padding, domWidth - padding])
             .domain([boundaries.minYear, boundaries.maxYear]);
-          const y = d3.scale.linear().range([padding, CURVE_HEIGHT - padding]); // domain must be set for each curve
+          const yScale = d3.scale.linear().range([padding, CURVE_HEIGHT - padding]); // domain must be set for each curve
+          const xAxis = d3.svg
+            .axis()
+            .scale(xScale)
+            .orient("bottom")
+            .ticks(4)
+            .outerTickSize(0)
+            .innerTickSize(4)
+            .tickFormat((d) => d.toString());
 
           // Draw actual curves
           for (const currency in data.rates) {
             const curve = getCurve(currency, refCurrency, data.rates[currency], dict, {
-              x,
-              y,
+              xAxis,
+              xScale,
+              yScale,
               width: domWidth,
               height: CURVE_HEIGHT,
             });
@@ -121,10 +130,19 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
          * Returns a DOM element that displays the curve of the evolution of the
          * exchange rate for a given currency:
          */
-        function getCurve(currency, refCurrency, rates, dict, { x, y, width, height }) {
+        function getCurve(currency, refCurrency, rates, dict, { xAxis, xScale, yScale, width, height }) {
           const elRoot = document.createElement("li");
           elRoot.setAttribute("data-currency", currency);
-          elRoot.innerHTML = `<span class="curve-label">${dict[currency]}</span>`;
+          const label = !!Object.keys(rates).length ? dict[currency] : `${dict[currency]} (aucune donnée)`
+          elRoot.innerHTML =
+            currency === refCurrency
+              ? `<h5 class="curve-label"><strong>${label}</strong></h5>`
+              : `<h5 class="curve-label">${label}</h5>`;
+
+          if (!Object.keys(rates).length) {
+            return elRoot;
+          }
+
           const curveWrapper = document.createElement("div");
           curveWrapper.classList.add("curve");
           elRoot.appendChild(curveWrapper);
@@ -138,19 +156,19 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
             maxValue = Math.max(maxValue, rates[year]);
             points.push([+year, rates[year]]);
           }
-          y.domain([maxValue, minValue]);
+          yScale.domain([maxValue, minValue]);
 
           // Initialize SVG:
           const svg = d3
             .select(curveWrapper)
             .append("svg")
             .attr("width", width)
-            .attr("height", height)
-            .attr("viewBox", `0 0 ${width} ${height}`);
+            .attr("height", height + XAXIS_HEIGHT)
+            .attr("viewBox", `0 0 ${width} ${height + XAXIS_HEIGHT}`);
           const path = svg
             .append("path")
+            .attr("class", "curve-path")
             .attr("fill", "transparent")
-            .attr("stroke", COLOR)
             .attr("stroke-width", STROKE_WIDTH);
           const pointsGroup = d3.select(curveWrapper).append("div").attr("class", "points-group");
 
@@ -159,9 +177,16 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
             "d",
             d3.svg
               .line()
-              .x((d) => x(d[0]))
-              .y((d) => y(d[1]))(points),
+              .x((d) => xScale(d[0]))
+              .y((d) => yScale(d[1]))(points),
           );
+
+          // Draw legend:
+          svg
+            .append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
 
           // Draw points:
           pointsGroup
@@ -170,8 +195,8 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
             .enter()
             .append("div")
             .attr("class", "point")
-            .style("top", (d) => y(d[1]) + "px")
-            .style("left", (d) => x(d[0]) + "px")
+            .style("top", (d) => yScale(d[1]) + "px")
+            .style("left", (d) => xScale(d[0]) + "px")
             .attr("r", POINT_RADIUS)
             // Tooltips management:
             .on("mouseover", (d) => {

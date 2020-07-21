@@ -193,27 +193,37 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
     function getFilteredCurrenciesList(currencyRates, sortChoice, query, dict) {
       const lcQuery = (query || "").toLowerCase();
       const filteredList = Object.keys(currencyRates.rates).filter((str) => dict[str].toLowerCase().includes(lcQuery));
+      const filteredListWithRates = filteredList.filter((str) => !!Object.keys(currencyRates.rates[str]).length);
+      const filteredListWithoutRates = filteredList.filter((str) => !Object.keys(currencyRates.rates[str]).length).sort();
+      let sortedListWithRates;
 
       switch (sortChoice) {
         case SORT_ALPHA:
-          return filteredList.sort();
+          sortedListWithRates = filteredListWithRates.sort();
+          break;
         case SORT_ALPHA_REVERSED:
-          return filteredList.sort().reverse();
+          sortedListWithRates = filteredListWithRates.sort().reverse();
+          break;
         case HIGHEST_RATE:
-          const highestRates = filteredList.reduce(
+          const highestRates = filteredListWithRates.reduce(
             (iter, curr) => ({ ...iter, [curr]: d3.max(Object.values(currencyRates.rates[curr])) }),
             {},
           );
-          return filteredList.sort((a, b) => highestRates[a] - highestRates[b]);
+          sortedListWithRates = filteredListWithRates.sort((a, b) => highestRates[a] - highestRates[b]);
+          break;
         case AVERAGE_RATE:
-          const meanRates = filteredList.reduce(
+          const meanRates = filteredListWithRates.reduce(
             (iter, curr) => ({ ...iter, [curr]: d3.mean(Object.values(currencyRates.rates[curr])) }),
             {},
           );
-          return filteredList.sort((a, b) => meanRates[a] - meanRates[b]);
+          sortedListWithRates = filteredListWithRates.sort((a, b) => meanRates[a] - meanRates[b]);
+          break;
         default:
-          return filteredList;
+          sortedListWithRates = filteredListWithRates;
+          break;
       }
+
+      return sortedListWithRates.concat(filteredListWithoutRates)
     }
 
     /**
