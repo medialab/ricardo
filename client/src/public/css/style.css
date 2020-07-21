@@ -986,6 +986,9 @@ div.inline-select div.ui-select-choices-row:focus span {
   background-color: #e2ac13;
 }
 
+div.inline-select div.ui-select-match .text-muted {
+  padding-right: 15px;
+}
 /* END INLINE SELECT */
 
 .btnLineChart {
