@@ -32,7 +32,6 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
 
           // When the referential is updated, regenerate every curves:
           if (!hasBeenFirstRendered || oldValue[0] !== newValue[0]) {
-            flushDOM(element[0]);
             generateDOM(element[0], newValue[0], ...newValue.slice(2));
             updateDOM(element[0], newValue[1]);
           }
@@ -60,6 +59,8 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
         function generateDOM(domRoot, refCurrency, data, dict, boundaries) {
           const curvesContainer = domRoot.querySelector(".curves-container");
           const domWidth = domRoot.offsetWidth;
+
+          flushDOM(domRoot);
 
           // Initialize commons (d3 scales, ...):
           const padding = Math.max(Math.ceil(STROKE_WIDTH / 2), POINT_RADIUS);
@@ -123,9 +124,7 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
         function getCurve(currency, refCurrency, rates, dict, { x, y, width, height }) {
           const elRoot = document.createElement("li");
           elRoot.setAttribute("data-currency", currency);
-          elRoot.innerHTML = `
-            <span class="curve-label">${dict[currency]}</span>
-          `;
+          elRoot.innerHTML = `<span class="curve-label">${dict[currency]}</span>`;
           const curveWrapper = document.createElement("div");
           curveWrapper.classList.add("curve");
           elRoot.appendChild(curveWrapper);
@@ -139,7 +138,7 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
             maxValue = Math.max(maxValue, rates[year]);
             points.push([+year, rates[year]]);
           }
-          y.domain([minValue, maxValue]);
+          y.domain([maxValue, minValue]);
 
           // Initialize SVG:
           const svg = d3
@@ -153,10 +152,7 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
             .attr("fill", "transparent")
             .attr("stroke", COLOR)
             .attr("stroke-width", STROKE_WIDTH);
-          const pointsGroup = d3
-            .select(curveWrapper)
-            .append("div")
-            .attr("class", "points-group");
+          const pointsGroup = d3.select(curveWrapper).append("div").attr("class", "points-group");
 
           // Draw curve:
           path.attr(

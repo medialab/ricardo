@@ -27,7 +27,7 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
      * **************
      */
     // Initial dataset:
-    $scope.currentyRatesToPound = null;
+    $scope.currencyRatesToPound = null;
     // Dataset of rates between all currencies and the selected currency:
     $scope.currentyRates = null;
     // The selected currency, to compare to all the others:
@@ -93,8 +93,8 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
 
       $scope.boundaries.minYear = minYear;
       $scope.boundaries.maxYear = maxYear;
-      $scope.currentyRatesToPound = {
-        ref: $scope.currency,
+      $scope.currencyRatesToPound = {
+        ref: DEFAULT_CURRENCY,
         rates: slugifiedRatesToPound,
       };
       $scope.currenciesList = currenciesList;
@@ -103,11 +103,6 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
 
       $scope.selectCurrency(slugifiedRatesToPound[$scope.currency] ? $scope.currency : DEFAULT_CURRENCY);
     });
-    $scope.$watch("currency", function (newValue, oldValue) {
-      if (newValue !== oldValue && newValue) {
-        return $location.url(`/rates/${newValue}`);
-      }
-    });
 
     /**
      * ACTIONS:
@@ -115,9 +110,12 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
      */
     $scope.selectCurrency = (currency) => {
       $scope.currency = currency;
-      $scope.currencyRates = convertRates($scope.currentyRatesToPound, currency, $scope.boundaries);
+      $scope.currencyRates = convertRates($scope.currencyRatesToPound, currency, $scope.boundaries);
       $scope.currencyFilter = "";
       $scope.refreshCurrenciesList();
+
+      // Update URL:
+      $location.url(`/rates/${currency}`);
     };
 
     $scope.refreshCurrenciesList = () => {
@@ -125,7 +123,7 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
         $scope.currencyRates,
         $scope.sortChoice,
         $scope.currencyFilter,
-        $scope.currenciesDict
+        $scope.currenciesDict,
       );
     };
 

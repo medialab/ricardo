@@ -36,11 +36,9 @@ angular
   .run(function ($rootScope, $location, $anchorScroll, $timeout, cfpLoadingBar) {
     $rootScope.$on("$routeChangeStart", function () {
       cfpLoadingBar.start();
-      // $rootScope.routeLoading=true;
     });
-    $rootScope.$on("$routeChangeSuccess", function (event, toState, toParams, fromState, fromParams) {
+    $rootScope.$on("$routeChangeSuccess", function () {
       cfpLoadingBar.complete();
-      // $rootScope.routeLoading=false;
       $timeout(function () {
         if ($location.hash()) {
           $anchorScroll();
@@ -145,6 +143,8 @@ angular
       $routeProvider.when("/rates/:currency", {
         templateUrl: "partials/rates.html",
         controller: "rates",
+        reloadOnUrl: false,
+        reloadOnSearch: false,
       });
       $routeProvider.when("/rates", {
         redirectTo: function () {
