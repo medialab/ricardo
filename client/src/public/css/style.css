@@ -1676,3 +1676,72 @@ div #reporting-entities-container {
 .ui-grid-pager-row-count-label {
   display: none;
 }
+
+/* styles for exchangeRateCurves.directive.js */
+#exchange-rate-curves .no-currency-placeholder {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+}
+#exchange-rate-curves .no-currency-placeholder:not(.active) {
+  display: none;
+}
+#exchange-rate-curves .no-currency-placeholder.active + .curves-container {
+  display: none;
+}
+
+#exchange-rate-curves .curve.hidden {
+  display: none;
+}
+#exchange-rate-curves .curves-container {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#exchange-rate-curves .curves-container .curve {
+  position: relative;
+}
+.points-group {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.points-group .point {
+  width: 30px;
+  height: 30px;
+  margin-top: -15px;
+  margin-left: -15px;
+  position: absolute;
+}
+.points-group .point::after {
+  content: " ";
+  background: red;
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 4px;
+  top: 50%;
+  left: 50%;
+  margin-top: -2px;
+  margin-left: -2px;
+}
+
+.rates-tooltip {
+  position: absolute;
+  background: #333;
+  color: #ddd;
+  padding: 2px;
+  border: 0;
+  border-radius: 5px;
+  opacity: 0;
+  text-align: center;
+  pointer-events: none;
+}
+.rates-tooltip p {
+  padding: 0;
+  margin: 0;
+}

@@ -20,7 +20,7 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
   "DEFAULT_CURRENCY",
   function ($scope, $routeParams, $location, apiService, DEFAULT_CURRENCY) {
     $scope.view = "rates";
-    $scope.loading = true;
+    $scope.loaded = false;
 
     /**
      * INITIAL STATE:
@@ -36,21 +36,28 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
     $scope.currenciesList = [];
     // The list of currencies that must appear in the curves list:
     $scope.filteredCurrenciesList = [];
+    // The dictionary of currencies labels:
+    $scope.currenciesDict = {};
     // The choices and selected choice to sort currencies as they appear in the
     // curves list:
     const SORT_ALPHA = "alpha";
     const SORT_ALPHA_REVERSED = "alpha_reversed";
+    const HIGHEST_RATE = "highest_rate";
+    const AVERAGE_RATE = "average_rate";
     $scope.sortChoices = [
-      { id: SORT_ALPHA, label: "name (A to Z)" },
-      { id: SORT_ALPHA_REVERSED, label: "name (Z to A)" },
+      { id: SORT_ALPHA, label: "RATES_SORT_ALPHA" },
+      { id: SORT_ALPHA_REVERSED, label: "RATES_SORT_ALPHA_REVERSED" },
+      { id: HIGHEST_RATE, label: "RATES_SORT_HIGHEST_RATE" },
+      { id: AVERAGE_RATE, label: "RATES_SORT_AVERAGE_RATE" },
     ];
     $scope.sortChoice = SORT_ALPHA;
     // A string to filter currencies that must appear in the curves list:
     $scope.currencyFilter = "";
-    // The min year value for all records:
-    $scope.minYear = Infinity;
-    // The max year value for all records:
-    $scope.maxYear = -Infinity;
+    // The year boundaries for all records:
+    $scope.boundaries = {
+      minYear: Infinity,
+      maxYear: -Infinity,
+    };
 
     /**
      * INITIALISATION:
@@ -84,14 +91,15 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
         slugifiedRatesToPound[slug] = currenciesRatesToPounds[currency];
       }
 
-      $scope.minYear = minYear;
-      $scope.maxYear = maxYear;
+      $scope.boundaries.minYear = minYear;
+      $scope.boundaries.maxYear = maxYear;
       $scope.currentyRatesToPound = {
         ref: $scope.currency,
         rates: slugifiedRatesToPound,
       };
       $scope.currenciesList = currenciesList;
-      $scope.loading = false;
+      $scope.currenciesDict = currenciesList.reduce((iter, { id, label }) => ({ ...iter, [id]: label }), {});
+      $scope.loaded = true;
 
       $scope.selectCurrency(slugifiedRatesToPound[$scope.currency] ? $scope.currency : DEFAULT_CURRENCY);
     });
@@ -107,10 +115,7 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
      */
     $scope.selectCurrency = (currency) => {
       $scope.currency = currency;
-      $scope.currencyRates = convertRates($scope.currentyRatesToPound, currency, {
-        minYear: $scope.minYear,
-        maxYear: $scope.maxYear,
-      });
+      $scope.currencyRates = convertRates($scope.currentyRatesToPound, currency, $scope.boundaries);
       $scope.currencyFilter = "";
       $scope.refreshCurrenciesList();
     };
@@ -120,6 +125,7 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
         $scope.currencyRates,
         $scope.sortChoice,
         $scope.currencyFilter,
+        $scope.currenciesDict
       );
     };
 
@@ -186,15 +192,27 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
      * The `currencyRates` format is described at the beginning of this
      * controller.
      */
-    function getFilteredCurrenciesList(currencyRates, sortChoice, query) {
+    function getFilteredCurrenciesList(currencyRates, sortChoice, query, dict) {
       const lcQuery = (query || "").toLowerCase();
-      const filteredList = Object.keys(currencyRates.rates).filter((str) => str.toLowerCase().includes(lcQuery));
+      const filteredList = Object.keys(currencyRates.rates).filter((str) => dict[str].toLowerCase().includes(lcQuery));
 
       switch (sortChoice) {
         case SORT_ALPHA:
           return filteredList.sort();
         case SORT_ALPHA_REVERSED:
           return filteredList.sort().reverse();
+        case HIGHEST_RATE:
+          const highestRates = filteredList.reduce(
+            (iter, curr) => ({ ...iter, [curr]: d3.max(Object.values(currencyRates.rates[curr])) }),
+            {},
+          );
+          return filteredList.sort((a, b) => highestRates[a] - highestRates[b]);
+        case AVERAGE_RATE:
+          const meanRates = filteredList.reduce(
+            (iter, curr) => ({ ...iter, [curr]: d3.mean(Object.values(currencyRates.rates[curr])) }),
+            {},
+          );
+          return filteredList.sort((a, b) => meanRates[a] - meanRates[b]);
         default:
           return filteredList;
       }
