@@ -90,14 +90,24 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-12 well">
-      <h4>Political status of {{entities.sourceEntity.selected.RICname}}</h4>
-      <p class="paragraphViz">Lorem ipsum dolores sit amet.</p>
+      <h4>{{'STATUSES_TITLE' | translate}} {{entities.sourceEntity.selected.RICname}}</h4>
+      <p class="paragraphViz">{{'STATUSES_INTRO' | translate}}</p>
       <div>
         <country-statuses
           sovereignty-data="sovereigntyData"
           dependencies-data="dependenciesData"
           boundaries="boundaries"
         />
+        <div class="legend">
+          <div class="legend-item">
+            <div class="square" ng-style="{ backgroundColor: '#cc6666' }"></div>
+            {{'DEPENDENCIES_CAPTION' | translate}}
+          </div>
+          <div class="legend-item">
+            <div class="square" ng-style="{ backgroundColor: 'rgba(0,0,0,0.1)' }"></div>
+            {{'SOVEREIGNTY_CAPTION' | translate}}
+          </div>
+        </div>
       </div>
     </div>
   </div>

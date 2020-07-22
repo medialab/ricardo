@@ -34,7 +34,8 @@
  *   }
  */
 angular.module("ricardo.directives.countryStatuses", []).directive("countryStatuses", [
-  function () {
+  "$filter",
+  function ($filter) {
     return {
       restrict: "E",
       template: '<div class="country-statuses-chart"></div>',
@@ -103,10 +104,7 @@ angular.module("ricardo.directives.countryStatuses", []).directive("countryStatu
           const chart = svg.append("g").attr("transform", `translate(${leftPadding},${topPadding})`);
 
           const xScale = d3.scale.linear().range([0, chartWidth]).domain([boundaries.minYear, boundaries.maxYear]);
-          const yScale = d3.scale
-            .linear()
-            .range([0, CHART_HEIGHT])
-            .domain([maxDepsPerYear, 0]);
+          const yScale = d3.scale.linear().range([0, CHART_HEIGHT]).domain([maxDepsPerYear, 0]);
 
           // Captions:
           svg
@@ -157,7 +155,11 @@ angular.module("ricardo.directives.countryStatuses", []).directive("countryStatu
             .append("title")
             .text(
               (year) =>
-                `En ${year}, ${depsPerYear[year].depsCount} dépendance${depsPerYear[year].depsCount > 1 ? "s" : ""}`,
+                `${$filter("translate")("IN_YEAR")} ${year}, ${depsPerYear[year].depsCount} ${
+                  depsPerYear[year].depsCount > 1
+                    ? $filter("translate")("DEPENDENCIES")
+                    : $filter("translate")("DEPENDENCY")
+                }`,
             );
           rectGroups
             .append("rect")
