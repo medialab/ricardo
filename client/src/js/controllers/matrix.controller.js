@@ -5,10 +5,9 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
   "$routeParams",
   "$location",
   "apiService",
-  "dataTableService",
   "utils",
   "METADATA_TABLE_HEADERS",
-  function ($scope, $route, $routeParams, $location, apiService, dataTableService, utils, METADATA_TABLE_HEADERS) {
+  function ($scope, $route, $routeParams, $location, apiService, utils, METADATA_TABLE_HEADERS) {
     $scope.flowChoices = [
       {
         type: { value: "total", writable: true },

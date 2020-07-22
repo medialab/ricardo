@@ -5,8 +5,7 @@ angular
 
   /* directive with watch and draw function */
   .directive("brushingTimeline", [
-    "$timeout",
-    function ($timeout) {
+    function () {
       return {
         restrict: "E",
         replace: false,

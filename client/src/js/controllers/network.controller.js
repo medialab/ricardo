@@ -1,10 +1,9 @@
 angular.module("ricardo.controllers.network", []).controller("network", [
   "$scope",
-  "$location",
   "apiService",
   "utils",
   "reportingYears",
-  function ($scope, $location, apiService, utils, reportingYears) {
+  function ($scope, apiService, utils, reportingYears) {
     $scope.showlegend = false;
 
     $scope.allYears = reportingYears.sort(function (a, b) {

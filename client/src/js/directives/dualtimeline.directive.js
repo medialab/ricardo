@@ -4,8 +4,7 @@ angular
 
   /* directive with watch, update and draw functions */
   .directive("dualTimeline", [
-    "$timeout",
-    function ($timeout) {
+    function () {
       return {
         restrict: "E",
         template: '<div id="dual-timeline-container"></div>',

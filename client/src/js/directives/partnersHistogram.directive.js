@@ -4,8 +4,7 @@
  * and a line with bars which represent the commercial balance.
  */
 angular.module("ricardo.directives.partnersHistogram", []).directive("partnersHistogram", [
-  "$timeout",
-  function ($timeout) {
+  function () {
     return {
       restrict: "E",
       template: '<div id="partners-histogram-container"></div>',

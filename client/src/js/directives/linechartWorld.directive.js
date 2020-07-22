@@ -5,10 +5,7 @@ angular
   .module("ricardo.directives.linechartWorld", [])
 
   .directive("linechartWorld", [
-    "fileService",
-    "apiService",
-    "$timeout",
-    function (fileService, apiService, $timeout) {
+    function () {
       return {
         restrict: "E",
         template: '<div id="linechart-world-container"></div>',

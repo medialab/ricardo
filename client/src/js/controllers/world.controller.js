@@ -3,26 +3,12 @@ import { initParams, getListItemId } from "../utils";
 angular.module("ricardo.controllers.world", []).controller("world", [
   "$scope",
   "$route",
-  "$location",
-  "$anchorScroll",
   "apiService",
-  "dataTableService",
   "utils",
   "reportingWorldFlows",
   "reportingWorldPartner",
   "WORLD_TABLE_HEADERS",
-  function (
-    $scope,
-    $route,
-    $location,
-    $anchorScroll,
-    apiService,
-    dataTableService,
-    utils,
-    reportingWorldFlows,
-    reportingWorldPartner,
-    WORLD_TABLE_HEADERS,
-  ) {
+  function ($scope, $route, apiService, utils, reportingWorldFlows, reportingWorldPartner, WORLD_TABLE_HEADERS) {
     // data process for multilinechart
     initWorldMultiChart(reportingWorldPartner);
 

@@ -3,9 +3,7 @@ angular
   .module("ricardo.directives.navbar", [])
 
   .directive("navbar", [
-    "fileService",
-    "$timeout",
-    function (fileService, $timeout) {
+    function () {
       return {
         restrict: "A",
         replace: false,

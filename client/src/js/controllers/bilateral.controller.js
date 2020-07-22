@@ -13,10 +13,7 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
   "cfSource",
   "cfTarget",
   "apiService",
-  "dataTableService",
   "utils",
-  "DEFAULT_REPORTING",
-  "DEFAULT_PARTNER",
   "TABLE_HEADERS",
   function (
     $scope,
@@ -27,10 +24,7 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
     cfSource,
     cfTarget,
     apiService,
-    dataTableService,
     utils,
-    DEFAULT_REPORTING,
-    DEFAULT_PARTNER,
     TABLE_HEADERS,
   ) {
     /*
