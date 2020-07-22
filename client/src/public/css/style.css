@@ -986,9 +986,15 @@ div.inline-select div.ui-select-choices-row:focus span {
   background-color: #e2ac13;
 }
 
+div.inline-select div.ui-select-choices-row span.ui-select-highlight {
+  padding: 0;
+  font-weight: 800;
+}
+
 div.inline-select div.ui-select-match .text-muted {
   padding-right: 15px;
 }
+
 /* END INLINE SELECT */
 
 .btnLineChart {
@@ -1751,7 +1757,6 @@ div #reporting-entities-container {
   padding: 0;
   margin: 0;
 }
-
 
 h4.titleMultiLine {
   flex-direction: column;
