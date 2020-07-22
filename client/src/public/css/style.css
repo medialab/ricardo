@@ -1772,6 +1772,13 @@ h4.titleMultiLine > div {
   margin-bottom: 20px;
 }
 
-.h4.titleMultiLine > div:last-child {
+.comparison h4.titleMultiLine > div:last-child {
   margin-top: 20px;
+}
+
+.comparison span.entity span.close-btn {
+  padding: 0;
+}
+.comparison span.entity {
+  margin-right: 5px;
 }

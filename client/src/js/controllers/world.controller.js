@@ -242,10 +242,12 @@ angular.module("ricardo.controllers.world", []).controller("world", [
           initParams($route, $scope, [
             {
               name: "reporting",
+              isArray: true,
               list: $scope.reportingCountryEntities,
-              getItemId: getListItemId,
+              getItemId: (e) => e.RICid,
             },
           ]);
+          initReporting();
         });
       init();
     };
@@ -584,7 +586,6 @@ angular.module("ricardo.controllers.world", []).controller("world", [
     /*
      * Date triggers
      */
-
     $scope.$watchCollection("[selectedMinDate, selectedMaxDate]", function (newVal, oldVal) {
       if (newVal !== undefined && newVal !== oldVal && newVal[0] != newVal[1]) {
         $scope.selectedMinDate = newVal[0];
@@ -608,6 +609,15 @@ angular.module("ricardo.controllers.world", []).controller("world", [
     /*
      * Linechart functions
      */
+    function initReporting() {
+      $scope.reporting.map((entity) => {
+        entity["color"] = $scope.lineColors.pop();
+        return entity;
+      });
+      initLinechart($scope.reporting, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);
+      updateTableData();
+    }
+
     $scope.pushReporting = function (elm) {
       if ($scope.reporting.length >= 5) return;
       if (
@@ -654,7 +664,7 @@ angular.module("ricardo.controllers.world", []).controller("world", [
      */
     $scope.resetDD = function (t) {
       if (t === "country") {
-        $scope.entities.sourceCountryEntity1.selected = undefined;
+        $scope.entities.sourceCountryEntity.selected = undefined;
       }
     };
 

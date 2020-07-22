@@ -314,7 +314,7 @@
         </div>
         <div class="subtitle">{{'LINE_CHART_SELECT' | translate }}</div>
         <div>
-          <span ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}"
+          <span class="entity" ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}"
             >{{elm.RICname}}
             <span class="close-btn">
               <i class="fa fa-times-circle"></i>

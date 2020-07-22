@@ -121,7 +121,6 @@ angular.module("ricardo.controllers.country", []).controller("country", [
     ];
     $scope.grouped = $scope.groups[0];
 
-    $scope.linechartCurrency = {};
     $scope.linechartCurrencyChoices = [
       {
         type: { value: "sterling", writable: true },
@@ -132,8 +131,8 @@ angular.module("ricardo.controllers.country", []).controller("country", [
         name: { value: "Percent", writable: true },
       },
     ];
+    $scope.linechartCurrency = $scope.linechartCurrencyChoices[0];
 
-    $scope.linechartFlow = {};
     $scope.linechartFlowChoices = [
       {
         type: { value: "total", writable: true },
@@ -148,6 +147,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
         name: { value: "Imports", writable: true },
       },
     ];
+    $scope.linechartFlow = $scope.linechartFlowChoices[0];
 
     /*
      * All var declarations
@@ -180,15 +180,6 @@ angular.module("ricardo.controllers.country", []).controller("country", [
      * Linecharts default config
      */
     $scope.lineColors = ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c"];
-    $scope.linechartCurrency = {
-      type: { value: "sterling", writable: true },
-      name: { value: "Sterling", writable: true },
-    };
-    $scope.linechartFlow = {
-      type: { value: "total", writable: true },
-      name: { value: "Total", writable: true },
-    };
-
     $scope.view = "country";
     $scope.missingData = [];
     /*
@@ -372,10 +363,19 @@ angular.module("ricardo.controllers.country", []).controller("country", [
             $scope.reportingContinentEntities.push(elm);
           });
 
+          initParams($route, $scope, [
+            {
+              name: "reporting",
+              isArray: true,
+              list: $scope.RICentitiesDD.concat($scope.reportingContinentEntities),
+              getItemId: (e) => e.RICid,
+            },
+          ]);
+          initReporting();
           /*
            * Line chart world
            */
-          $scope.reporting = [];
+          $scope.reporting = $scope.reporting || [];
           $scope.entities.sourceCountryEntity = {};
           $scope.entities.sourceColonialEntity = {};
           $scope.entities.sourceGeoEntity = {};
@@ -473,11 +473,11 @@ angular.module("ricardo.controllers.country", []).controller("country", [
       $scope.rawYearsRange_forSup = d3.range($scope.selectedMinDate + 1, $scope.rawMaxDate + 1);
 
       updateTableData();
-      // initLinechart($scope.reporting, $scope.linechartFlow.type.value,
-      //   $scope.linechartCurrency.type.value);
     }
 
     function updateTableData() {
+      if (!$scope.tableData) return;
+
       //filter tableData by date
       var tableData = $scope.tableData.filter(function (d) {
         return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
@@ -524,6 +524,14 @@ angular.module("ricardo.controllers.country", []).controller("country", [
     /*
      * Push item in array to display line chart
      */
+    function initReporting() {
+      $scope.reporting.map((entity) => {
+        entity["color"] = $scope.lineColors.pop();
+        return entity;
+      });
+      initLinechart($scope.reporting, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);
+      updateTableData();
+    }
 
     $scope.pushReporting = function (elm) {
       if ($scope.reporting.length >= 5) return;
@@ -595,6 +603,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
      * Partners histo triggers functions and init function partner Histo
      */
     function initPartnerHisto(data) {
+      if (!$scope.tableData) return;
       var data = [];
       var temp = $scope.tableData;
       // Select data between date selected

@@ -115,13 +115,6 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
         ],
         getItemId: getListItemId,
       },
-      {
-        name: "reporting",
-        list: $scope.entities,
-        getItemId: (e) => {
-          return e;
-        },
-      },
     ]);
 
     function updateLayoutChoices(partner) {
