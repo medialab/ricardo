@@ -1,3 +1,5 @@
+import { initParams } from "../utils";
+
 /**
  * Rates exchange format :
  * {
@@ -14,11 +16,11 @@
  */
 angular.module("ricardo.controllers.rates", []).controller("rates", [
   "$scope",
+  "$route",
   "$routeParams",
-  "$location",
   "apiService",
   "DEFAULT_CURRENCY",
-  function ($scope, $routeParams, $location, apiService, DEFAULT_CURRENCY) {
+  function ($scope, $route, $routeParams, apiService, DEFAULT_CURRENCY) {
     $scope.view = "rates";
     $scope.loaded = false;
 
@@ -41,9 +43,9 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
     // The choices and selected choice to sort currencies as they appear in the
     // curves list:
     const SORT_ALPHA = "alpha";
-    const SORT_ALPHA_REVERSED = "alpha_reversed";
-    const HIGHEST_RATE = "highest_rate";
-    const AVERAGE_RATE = "average_rate";
+    const SORT_ALPHA_REVERSED = "alpha-reversed";
+    const HIGHEST_RATE = "highest-rate";
+    const AVERAGE_RATE = "average-rate";
     $scope.sortChoices = [
       { id: SORT_ALPHA, label: "RATES_SORT_ALPHA" },
       { id: SORT_ALPHA_REVERSED, label: "RATES_SORT_ALPHA_REVERSED" },
@@ -63,6 +65,7 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
      * INITIALISATION:
      * ***************
      */
+    initParams($route, $scope, [{ name: "sortChoice" }, { name: "currencyFilter" }]);
     apiService.getExchangeRates().then((result) => {
       // Prepare data:
       let minYear = Infinity;
@@ -111,11 +114,14 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
     $scope.selectCurrency = (currency) => {
       $scope.currency = currency;
       $scope.currencyRates = convertRates($scope.currencyRatesToPound, currency, $scope.boundaries);
-      $scope.currencyFilter = "";
       $scope.refreshCurrenciesList();
 
       // Update URL:
-      $location.url(`/rates/${currency}`);
+      $route.updateParams({
+        currency: $scope.currency,
+        sortChoice: $scope.sortChoice,
+        currencyFilter: $scope.currencyFilter,
+      });
     };
 
     $scope.refreshCurrenciesList = () => {
@@ -194,7 +200,9 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
       const lcQuery = (query || "").toLowerCase();
       const filteredList = Object.keys(currencyRates.rates).filter((str) => dict[str].toLowerCase().includes(lcQuery));
       const filteredListWithRates = filteredList.filter((str) => !!Object.keys(currencyRates.rates[str]).length);
-      const filteredListWithoutRates = filteredList.filter((str) => !Object.keys(currencyRates.rates[str]).length).sort();
+      const filteredListWithoutRates = filteredList
+        .filter((str) => !Object.keys(currencyRates.rates[str]).length)
+        .sort();
       let sortedListWithRates;
 
       switch (sortChoice) {
@@ -223,7 +231,7 @@ angular.module("ricardo.controllers.rates", []).controller("rates", [
           break;
       }
 
-      return sortedListWithRates.concat(filteredListWithoutRates)
+      return sortedListWithRates.concat(filteredListWithoutRates);
     }
 
     /**
