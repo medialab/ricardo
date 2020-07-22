@@ -90,6 +90,21 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-12 well">
+      <h4>Political status of {{entities.sourceEntity.selected.RICname}}</h4>
+      <p class="paragraphViz">Lorem ipsum dolores sit amet.</p>
+      <div>
+        <country-statuses
+          sovereignty-data="sovereigntyData"
+          dependencies-data="dependenciesData"
+          boundaries="boundaries"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
       <h4 class="titleMultiLine">
         <div>
           {{ 'PARTNER_HISTO_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'PARTNER_HISTO_2' |

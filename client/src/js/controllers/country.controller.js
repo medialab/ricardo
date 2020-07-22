@@ -185,6 +185,14 @@ angular.module("ricardo.controllers.country", []).controller("country", [
     $scope.actualCurrency = "pound sterling";
 
     /*
+     * Country statuses data
+     */
+    $scope.statusesData = {};
+    $scope.sovereigntyData = {};
+    $scope.dependenciesData = [];
+    $scope.boundaries = { minYear: null, maxYear: null };
+
+    /*
      * First init with local storage
      */
     $scope.entities.sourceEntity.selected = $scope.reportingEntities
@@ -280,6 +288,8 @@ angular.module("ricardo.controllers.country", []).controller("country", [
 
           $scope.selectedMinDate = $scope.selectedMinDate || d3.min(dates);
           $scope.selectedMaxDate = $scope.selectedMaxDate || d3.max(dates);
+
+          initCountryStatuses();
 
           data.flows = data.flows.filter(function (d) {
             if (d.imp || d.exp !== 0) return d;
@@ -437,12 +447,10 @@ angular.module("ricardo.controllers.country", []).controller("country", [
      */
     $scope.$watchCollection("[selectedMinDate, selectedMaxDate]", function (newValue, oldValue) {
       if (newValue !== oldValue && newValue[0] != newValue[1]) {
-        // update date selected
-        $scope.selectedMinDate = newValue[0];
-        $scope.selectedMaxDate = newValue[1];
         // update local storage
         updateDateRange();
         initPartnerHisto($scope.tableData);
+        updateCountryStatuses();
       }
     });
 
@@ -838,6 +846,81 @@ angular.module("ricardo.controllers.country", []).controller("country", [
           }
         });
       }
+    }
+
+    function initCountryStatuses() {
+      apiService.getGeoPolHistData().then(data => {
+        $scope.statusesData = data;
+        updateCountryStatuses()
+      })
+    }
+
+    function updateCountryStatuses() {
+      const { entities, statusInTime } = $scope.statusesData || {};
+      const reporting = $scope.entities.sourceEntity.selected;
+      const minYear = $scope.selectedMinDate;
+      const maxYear = $scope.selectedMaxDate;
+
+      if (!entities || !statusInTime) return;
+
+      // Search for entity in GeoPolHist corpus:
+      const gphReportingEntity = entities.find((entity) => reporting.RICname === entity.GPH_name);
+
+      // If no entity has been found, reset related data:
+      if (!gphReportingEntity) {
+        $scope.sovereigntyData = {};
+        $scope.dependenciesData = [];
+        $scope.boundaries = { minYear, maxYear };
+        return;
+      }
+
+      const entitiesIndex = entities.reduce(
+        (iter, entity) => ({
+          ...iter,
+          [entity.GPH_code]: entity,
+        }),
+        {},
+      );
+      const sovereigntyStatuses = {
+        Sovereign: true,
+        "Sovereign (limited)": true,
+        "Sovereign (unrecognized)": true,
+      };
+      const dependenciesStatuses = {
+        "Became colony of": true,
+        "Became part of": true,
+        "Became dependency of": true,
+        "Became protectorate of": true,
+        "Became vassal of": true,
+        "Became possession of": true,
+      };
+      $scope.sovereigntyData = [];
+      $scope.dependenciesData = [];
+      statusInTime.forEach(({ GPH_code, sovereign_GPH_code, GPH_status, start_year, end_year }) => {
+        // Check years boundaries:
+        if (+start_year > +maxYear || end_year < minYear) return;
+
+        const startYear = Math.max(start_year, minYear);
+        const endYear = Math.min(end_year, maxYear);
+
+        if (sovereigntyStatuses[GPH_status] && GPH_code === gphReportingEntity.GPH_code) {
+          $scope.sovereigntyData.push({
+            relation: GPH_status,
+            startYear: startYear,
+            endYear: endYear,
+          });
+        }
+        if (dependenciesStatuses[GPH_status] && sovereign_GPH_code === gphReportingEntity.GPH_code) {
+          $scope.dependenciesData.push({
+            id: GPH_code,
+            label: entitiesIndex[GPH_code].GPH_name,
+            relation: GPH_status,
+            startYear: startYear,
+            endYear: endYear,
+          });
+        }
+      });
+      $scope.boundaries = { minYear, maxYear };
     }
 
     function changeInPercent(reporting_id, yValue, data, color, callback) {

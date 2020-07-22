@@ -408,9 +408,9 @@ angular
         },
         getGeoPolHistData: function () {
           return Promise.all([
-            getCsvPromise("/data/GeoPolHist_entities.csv"),
-            getCsvPromise("/data/GeoPolHist_status.csv"),
-            getCsvPromise("/data/GeoPolHist_entities_status_in_time.csv"),
+            getCsvPromise("/csv/GeoPolHist_entities.csv"),
+            getCsvPromise("/csv/GeoPolHist_status.csv"),
+            getCsvPromise("/csv/GeoPolHist_entities_status_in_time.csv"),
           ]).then(([entities, status, statusInTime]) => ({
             status,
             entities,

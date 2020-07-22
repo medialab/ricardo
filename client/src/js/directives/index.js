@@ -21,6 +21,7 @@ import "./reportingSynth.directive.js";
 import "./reportingWorld.directive.js";
 import "./worldTitle.directive.js";
 import "./exchangeRateCurves.directive.js";
+import "./countryStatuses.directive.js";
 
 angular.module("ricardo.directives", [
   "ricardo.directives.navbar",
@@ -43,4 +44,5 @@ angular.module("ricardo.directives", [
   "ricardo.directives.reportingSynth",
   "ricardo.directives.numberFlows",
   "ricardo.directives.exchangeRateCurves",
+  "ricardo.directives.countryStatuses",
 ]);
