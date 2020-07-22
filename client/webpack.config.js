@@ -182,7 +182,7 @@ module.exports = (function makeWebpackConfig() {
       }),
     );
     config.optimization = {
-      minimize: false,
+      minimize: true,
     };
   }
 
