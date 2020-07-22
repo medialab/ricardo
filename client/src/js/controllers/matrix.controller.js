@@ -68,18 +68,59 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
       },
       {
         name: "matrixLayout",
-        list: $scope.matrixLayoutChoices,
+        list: [
+          {
+            type: { value: "years", writable: true },
+            name: { value: "Number of Reporting Years", writable: true },
+          },
+          {
+            type: { value: "partnerAvg", writable: true },
+            name: { value: "Partners in Average", writable: true },
+          },
+          {
+            type: { value: "alphabet", writable: true },
+            name: { value: "Reporting Name", writable: true },
+          },
+        ],
         getItemId: getListItemId,
       },
       {
         name: "matrixColorBy",
-        list: $scope.matrixColorChoices,
+        list: [
+          {
+            type: { value: "sourcetype", writable: true },
+            name: { value: "Source Type", writable: true },
+          },
+          {
+            type: { value: "type", writable: true },
+            name: { value: "Reporting Type", writable: true },
+          },
+          {
+            type: { value: "continent", writable: true },
+            name: { value: "Reporting Continent", writable: true },
+          },
+          {
+            type: { value: "partner", writable: true },
+            name: { value: "Number of Partners", writable: true },
+          },
+          {
+            type: { value: "partner_intersect", writable: true },
+            name: { value: "Number of Mirror Partners", writable: true },
+          },
+          ,
+          {
+            type: { value: "reference", writable: true },
+            name: { value: "World Partner", writable: true },
+          },
+        ],
         getItemId: getListItemId,
       },
       {
         name: "reporting",
         list: $scope.entities,
-        getItemId: getListItemId,
+        getItemId: (e) => {
+          return e;
+        },
       },
     ]);
 
@@ -112,7 +153,7 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
         ];
     }
     updateLayoutChoices($scope.partner.type.value);
-    $scope.matrixLayout = $scope.matrixLayoutChoices[0];
+    $scope.matrixLayout = $scope.matrixLayout || $scope.matrixLayoutChoices[0];
 
     function updateColorChoices(partner) {
       if (partner === "bilateral")
@@ -159,7 +200,7 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
         ];
     }
     updateColorChoices($scope.partner.type.value);
-    $scope.matrixColorBy = $scope.matrixColorChoices[0];
+    $scope.matrixColorBy = $scope.matrixColorBy || $scope.matrixColorChoices[0];
 
     $scope.changeFlow = function (flow) {
       $scope.chartFlow = flow;

@@ -84,7 +84,7 @@ angular
       $routeProvider.when("/bilateral/:entitySource/:entityTarget?", {
         templateUrl: "partials/bilateral.html",
         controller: "bilateral",
-        reloadOnUrl: false,
+        reloadOnUrl: true,
         reloadOnSearch: false,
         resolve: {
           reportingEntities: function (apiService) {

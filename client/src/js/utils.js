@@ -18,7 +18,6 @@ export function initParams($route, $scope, params) {
       } else {
         $scope[param.name] = urlParams[param.name];
       }
-      console.log("param", param.name, $scope[param.name]);
     }
 
     // Just a watcher to update the url

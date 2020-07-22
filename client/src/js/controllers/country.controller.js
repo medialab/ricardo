@@ -217,8 +217,8 @@ angular.module("ricardo.controllers.country", []).controller("country", [
       localStorage.removeItem("sourceEntitySelected");
       return $location.url("/country");
     }
+
     // Init the data
-    init($scope.entities.sourceEntity.selected.RICid, $scope.currency);
     initParams($route, $scope, [
       {
         name: "selectedMinDate",
@@ -252,6 +252,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
         getItemId: getListItemId,
       },
     ]);
+    init($scope.entities.sourceEntity.selected.RICid, $scope.currency);
 
     function initTabLineChart(result, yearSelected, type, ric) {
       for (var i = $scope.rawMinDate; i <= $scope.rawMaxDate; i++) {
@@ -295,8 +296,8 @@ angular.module("ricardo.controllers.country", []).controller("country", [
             return d.year;
           });
 
-          $scope.selectedMinDate = d3.min(dates);
-          $scope.selectedMaxDate = d3.max(dates);
+          $scope.selectedMinDate = $scope.selectedMinDate || d3.min(dates);
+          $scope.selectedMaxDate = $scope.selectedMaxDate || d3.max(dates);
 
           data.flows = data.flows.filter(function (d) {
             if (d.imp || d.exp !== 0) return d;
@@ -429,24 +430,8 @@ angular.module("ricardo.controllers.country", []).controller("country", [
             timelineData.push(td);
           });
 
-          // if(flow.length===1 && flow[0]===null) console.log(flow)
           $scope.timelineData = timelineData;
-          //$scope.$apply();
-          /*
-           * Display filters selection and init partner histogram
-           */
-          $scope.ordered = {
-            type: { value: "tot", writable: true },
-            name: { value: "Average share on Total", writable: true },
-          };
-          $scope.grouped = {
-            type: { value: 0, writable: true },
-            name: { value: "None", writable: true },
-          };
-          $scope.filtered = {
-            type: { value: "all", writable: true },
-            name: { value: "All", writable: true },
-          };
+
           initPartnerHisto($scope.tableData);
 
           /*

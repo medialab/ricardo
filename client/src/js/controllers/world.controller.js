@@ -54,8 +54,6 @@ angular.module("ricardo.controllers.world", []).controller("world", [
     $scope.lineColors = ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c"];
 
     $scope.view = "world";
-    // $scope.yValue = "exp"
-    // $scope.conversion = "sterling";
     $scope.tableData = [
       {
         reporting_id: null,
@@ -124,6 +122,71 @@ angular.module("ricardo.controllers.world", []).controller("world", [
     ];
     $scope.worldPartner = $scope.worldPartnerChoices[0];
 
+    /*
+     * Config buttons of linechart
+     */
+    $scope.linechartCurrencyChoices = [
+      {
+        type: { value: "sterling", writable: true },
+        name: { value: "Sterling", writable: true },
+      },
+      {
+        type: { value: "value", writable: true },
+        name: { value: "Percent", writable: true },
+      },
+    ];
+    $scope.linechartCurrency = $scope.linechartCurrencyChoices[0];
+
+    $scope.linechartFlowChoices = [
+      {
+        type: { value: "total", writable: true },
+        name: { value: "Total", writable: true },
+      },
+      {
+        type: { value: "exp", writable: true },
+        name: { value: "Exports", writable: true },
+      },
+      {
+        type: { value: "imp", writable: true },
+        name: { value: "Imports", writable: true },
+      },
+    ];
+    $scope.linechartFlow = $scope.linechartFlowChoices[0];
+
+    initParams($route, $scope, [
+      {
+        name: "multichartLayout",
+        list: $scope.multichartLayoutChoices,
+        getItemId: getListItemId,
+      },
+      {
+        name: "multichartFlow",
+        list: $scope.multiFlowChoices,
+        getItemId: getListItemId,
+      },
+      {
+        name: "selectedMinDate",
+      },
+      {
+        name: "selectedMaxDate",
+      },
+      {
+        name: "worldPartner",
+        list: $scope.worldPartnerChoices,
+        getItemId: getListItemId,
+      },
+      {
+        name: "linechartCurrency",
+        list: $scope.linechartCurrencyChoices,
+        getItemId: getListItemId,
+      },
+      {
+        name: "linechartFlow",
+        list: $scope.linechartFlowChoices,
+        getItemId: getListItemId,
+      },
+    ]);
+
     var worldFlowsYearsFormat, worldFlows_filtered;
 
     $scope.changeWorldPartner = function (worldPartner) {
@@ -175,10 +238,14 @@ angular.module("ricardo.controllers.world", []).controller("world", [
           type_filter: "country,group,city",
         })
         .then(function (result) {
-          $scope.reportingCountryEntities1 = result;
-          // $scope.reportingCountryEntities1 = result.filter(function (d) {
-          //     return d.type === "country"
-          // });
+          $scope.reportingCountryEntities = result;
+          initParams($route, $scope, [
+            {
+              name: "reporting",
+              list: $scope.reportingCountryEntities,
+              getItemId: getListItemId,
+            },
+          ]);
         });
       init();
     };
@@ -191,53 +258,10 @@ angular.module("ricardo.controllers.world", []).controller("world", [
     $scope.changeMultiLayout = function (layout) {
       $scope.multichartLayout = layout;
     };
-    /*
-     * Config buttons of linechart
-     */
-
-    $scope.linechartCurrency = {};
-    $scope.linechartCurrencyChoices = [
-      {
-        type: { value: "sterling", writable: true },
-        name: { value: "Sterling", writable: true },
-      },
-      {
-        type: { value: "value", writable: true },
-        name: { value: "Percent", writable: true },
-      },
-    ];
-
-    $scope.linechartFlow = {};
-    $scope.linechartFlowChoices = [
-      {
-        type: { value: "total", writable: true },
-        name: { value: "Total", writable: true },
-      },
-      {
-        type: { value: "exp", writable: true },
-        name: { value: "Exports", writable: true },
-      },
-      {
-        type: { value: "imp", writable: true },
-        name: { value: "Imports", writable: true },
-      },
-    ];
-
-    $scope.linechartCurrency = {
-      type: { value: "sterling", writable: true },
-      name: { value: "Sterling", writable: true },
-    };
-    $scope.linechartFlow = {
-      type: { value: "total", writable: true },
-      name: { value: "Total", writable: true },
-    };
 
     /*
      *  Init the timelines
      */
-
-    // init();
-
     function init() {
       /*
        * Init arrays for filters in linechart viz
@@ -256,64 +280,19 @@ angular.module("ricardo.controllers.world", []).controller("world", [
       /*
        * Check if dates were in localstorage
        */
-      // var minDate = parseInt(localStorage.getItem('selectedMinDate'));
-      // var maxDate = parseInt(localStorage.getItem('selectedMaxDate'));
-      // $scope.selectedMinDate = minDate ?
-      //   minDate : $scope.rawMinDate;
-      // $scope.selectedMaxDate = maxDate ?
-      //   maxDate :$scope.rawMaxDate;
-      $scope.selectedMinDate = $scope.rawMinDate;
-      $scope.selectedMaxDate = $scope.rawMaxDate;
+      $scope.selectedMinDate = $scope.selectedMinDate || $scope.rawMinDate;
+      $scope.selectedMaxDate = $scope.selectedMaxDate || $scope.rawMaxDate;
 
       if ($scope.selectedMaxDate > 1938) $scope.selectedMaxDate = 1938;
 
-      // $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
-      // $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
-
       $scope.timelineData = worldFlowsYearsFormat;
       $scope.tableData = worldFlowsYearsFormat;
-      // $scope.$apply()
       updateDateRange();
-
-      initParams($route, $scope, [
-        {
-          name: "multichartLayout",
-          list: $scope.multichartLayoutChoices,
-          getItemId: getListItemId,
-        },
-        {
-          name: "multichartFlow",
-          list: $scope.multiFlowChoices,
-          getItemId: getListItemId,
-        },
-        {
-          name: "selectedMinDate",
-        },
-        {
-          name: "selectedMaxDate",
-        },
-        {
-          name: "worldPartner",
-          list: $scope.worldPartnerChoices,
-          getItemId: getListItemId,
-        },
-        {
-          name: "linechartCurrency",
-          list: $scope.linechartCurrency,
-          getItemId: getListItemId,
-        },
-        {
-          name: "linechartFlow",
-          list: $scope.linechartFlow,
-          getItemId: getListItemId,
-        },
-      ]);
     }
 
     /*
      * Init world multi line chart functions
      */
-
     function initWorldMultiChart(data) {
       // console.log(data)
       $scope.flowWorld = d3
@@ -584,15 +563,11 @@ angular.module("ricardo.controllers.world", []).controller("world", [
       $scope.rawYearsRange_forInf = d3.range($scope.rawMinDate, $scope.selectedMaxDate);
       $scope.rawYearsRange_forSup = d3.range($scope.selectedMinDate + 1, $scope.rawMaxDate + 1);
       updateTableData();
-      // if ($scope.reporting.length > 0)
-      //   initLinechart($scope.reporting, $scope.linechartFlow.type.value,
-      //   $scope.linechartCurrency.type.value);
     }
 
     /*
      * Update table data
      */
-
     function updateTableData() {
       $scope.tableData = worldFlowsYearsFormat.filter(function (d) {
         return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
@@ -688,6 +663,7 @@ angular.module("ricardo.controllers.world", []).controller("world", [
      */
     $scope.change = function (item) {
       $scope.pushReporting(item);
+      console.log(item);
     };
 
     $scope.changeCurrency = function (currency) {

@@ -140,7 +140,7 @@
               <ui-select-match class="ui-select-match" placeholder="Country"></ui-select-match>
               <ui-select-choices
                 class="ui-select-choices"
-                repeat="item in reportingCountryEntities1 | filter: $select.search"
+                repeat="item in reportingCountryEntities | filter: $select.search"
               >
                 <div ng-bind-html="item.RICname | highlight: $select.search"></div>
               </ui-select-choices>
