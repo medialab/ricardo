@@ -33,19 +33,30 @@ angular
     "ricardo.services.country",
     "ricardo.directives",
   ])
-  .run(function ($rootScope, $location, $anchorScroll, $timeout, cfpLoadingBar) {
-    $rootScope.$on("$routeChangeStart", function () {
-      cfpLoadingBar.start();
-    });
-    $rootScope.$on("$routeChangeSuccess", function () {
-      cfpLoadingBar.complete();
-      $timeout(function () {
-        if ($location.hash()) {
-          $anchorScroll();
-        }
+  .run([
+    "$rootScope",
+    "$location",
+    "$anchorScroll",
+    "$timeout",
+    "cfpLoadingBar",
+    function ($rootScope, $location, $anchorScroll, $timeout, cfpLoadingBar) {
+      $rootScope.$on("$routeChangeStart", function () {
+        cfpLoadingBar.start();
       });
-    });
-  })
+      $rootScope.$on("$routeChangeSuccess", function () {
+        cfpLoadingBar.complete();
+        $timeout(function () {
+          if ($location.hash()) {
+            $anchorScroll();
+          }
+        });
+      });
+      $rootScope.$on("$routeChangeError ", function (e) {
+        cfpLoadingBar.complete();
+        console.log(e);
+      });
+    },
+  ])
   .config([
     "$routeProvider",
     "$locationProvider",
@@ -67,9 +78,12 @@ angular
         templateUrl: "partials/home.html",
         controller: "home",
         resolve: {
-          blogRSS: function (apiService) {
-            return apiService.getBlogRSS();
-          },
+          blogRSS: [
+            "apiService",
+            function (apiService) {
+              return apiService.getBlogRSS();
+            },
+          ],
         },
       });
       $routeProvider.when("/bilateral", {
@@ -87,9 +101,12 @@ angular
         reloadOnUrl: true,
         reloadOnSearch: false,
         resolve: {
-          reportingEntities: function (apiService) {
-            return apiService.getBilateralEntities();
-          },
+          reportingEntities: [
+            "apiService",
+            function (apiService) {
+              return apiService.getBilateralEntities();
+            },
+          ],
         },
       });
       $routeProvider.when("/country/:country", {
@@ -98,11 +115,14 @@ angular
         reloadOnUrl: true,
         reloadOnSearch: false,
         resolve: {
-          reportingEntities: function (apiService) {
-            return apiService.getReportingEntities({
-              type_filter: "country,group,city",
-            });
-          },
+          reportingEntities: [
+            "apiService",
+            function (apiService) {
+              return apiService.getReportingEntities({
+                type_filter: "country,group,city",
+              });
+            },
+          ],
         },
       });
       $routeProvider.when("/country", {
@@ -120,21 +140,30 @@ angular
         reloadOnUrl: true,
         reloadOnSearch: false,
         resolve: {
-          reportingWorldFlows: function (apiService) {
-            return apiService.getWorldFlows();
-          },
-          reportingWorldPartner: function (apiService) {
-            return apiService.getWorldAvailable();
-          },
+          reportingWorldFlows: [
+            "apiService",
+            function (apiService) {
+              return apiService.getWorldFlows();
+            },
+          ],
+          reportingWorldPartner: [
+            "apiService",
+            function (apiService) {
+              return apiService.getWorldAvailable();
+            },
+          ],
         },
       });
       $routeProvider.when("/network", {
         templateUrl: "partials/network.html",
         controller: "network",
         resolve: {
-          reportingYears: function (apiService) {
-            return apiService.getReportingYears();
-          },
+          reportingYears: [
+            "apiService",
+            function (apiService) {
+              return apiService.getReportingYears();
+            },
+          ],
         },
       });
       $routeProvider.when("/metadata/:flowtype", {
@@ -181,14 +210,17 @@ angular
       cfpLoadingBarProvider.includeBar = false;
     },
   ])
-  .config(function ($translateProvider) {
-    $translateProvider.useStaticFilesLoader({
-      prefix: "i18n/locale-",
-      suffix: ".json",
-    });
-    var language = navigator.languages ? navigator.languages[0] : navigator.language || navigator.userLanguage;
+  .config([
+    "$translateProvider",
+    function ($translateProvider) {
+      $translateProvider.useStaticFilesLoader({
+        prefix: "i18n/locale-",
+        suffix: ".json",
+      });
+      var language = navigator.languages ? navigator.languages[0] : navigator.language || navigator.userLanguage;
 
-    if (language.indexOf("fr") > -1) language = "fr-FR";
-    else language = "en-EN";
-    $translateProvider.use(language);
-  });
+      if (language.indexOf("fr") > -1) language = "fr-FR";
+      else language = "en-EN";
+      $translateProvider.use(language);
+    },
+  ]);

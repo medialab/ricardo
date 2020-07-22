@@ -19,9 +19,12 @@ function getCsvPromise(path) {
 /* Services */
 angular
   .module("ricardo.services", [])
-  .config(function ($httpProvider) {
-    delete $httpProvider.defaults.headers.common["X-Requested-With"];
-  })
+  .config([
+    "$httpProvider",
+    function ($httpProvider) {
+      delete $httpProvider.defaults.headers.common["X-Requested-With"];
+    },
+  ])
   .factory("fileService", [
     "$http",
     "$q",

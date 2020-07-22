@@ -1,8 +1,11 @@
 angular
   .module("ricardo.services.country", [])
-  .config(function ($httpProvider) {
-    delete $httpProvider.defaults.headers.common["X-Requested-With"];
-  })
+  .config([
+    "$httpProvider",
+    function ($httpProvider) {
+      delete $httpProvider.defaults.headers.common["X-Requested-With"];
+    },
+  ])
   .factory("countryService", function () {
     return {
       rollupYears: function (leaves) {
