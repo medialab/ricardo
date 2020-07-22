@@ -1,3 +1,6 @@
+/**
+ * Default getId function for item list based on the inline-select.
+ */
 export function getListItemId(item) {
   return item.type.value;
 }
@@ -54,7 +57,7 @@ export function initParams($route, $scope, params) {
             return $route.updateParams(urlParams);
           }
         },
-        true, // for deep watch
+        true, // for deep watch (only available on `$watch`, not on `$watchCollection`)
       );
     });
   });
