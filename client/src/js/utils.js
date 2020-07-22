@@ -3,12 +3,12 @@ export function getListItemId(item) {
 }
 
 /**
- *  Check if param is in the url and make a watch on it
- *
- *     name: string,
- *     isArray: boolean
- *     list: array,
- *     getItemId: (item: any): any
+ *  Check if param is in the url and make a watch on it for url sync.
+ *  The params attribute is an array of :
+ *     name: string  // the name of the parameter (in scope and url, it's the same)
+ *     isArray?: boolean // if the parameter is an array
+ *     list: array // the list of possible value for the param
+ *     getItemId?: (item: any): any // function that return the id of the element. Ie the url we only put the id.
  */
 export function initParams($route, $scope, params) {
   let urlParams = Object.assign({}, $route.current.params);
@@ -34,13 +34,13 @@ export function initParams($route, $scope, params) {
     // Watch the params to sync the url query parameters
     const watchlist = params.filter((e) => !e.isArray).map((e) => e.name);
     $scope.$watchCollection(`[${watchlist.join(", ")}]`, function (newVal, oldVal) {
-        newVal.forEach((item, index) => {
-          if (oldVal[index] !== newVal[index]) {
-            const param = params.find((e) => e.name == watchlist[index]);
-            urlParams[param.name] = param.getItemId ? param.getItemId(item) : item;
-          }
-        });
-        return $route.updateParams(urlParams);
+      newVal.forEach((item, index) => {
+        if (oldVal[index] !== newVal[index]) {
+          const param = params.find((e) => e.name == watchlist[index]);
+          urlParams[param.name] = param.getItemId ? param.getItemId(item) : item;
+        }
+      });
+      return $route.updateParams(urlParams);
     });
 
     // Deep Watch the array params to sync the url query parameters
@@ -54,7 +54,7 @@ export function initParams($route, $scope, params) {
             return $route.updateParams(urlParams);
           }
         },
-        true,
+        true, // for deep watch
       );
     });
   });
