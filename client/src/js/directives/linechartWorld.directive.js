@@ -42,9 +42,6 @@ angular
                 d3.selectAll("div#missingDataLineChart").remove();
               });
           }
-          // scope.$watch("flowType",function(newValue,oldValue){
-          //   updateLineChart(newValue)
-          // })
           scope.$watchCollection("[ngData,startDate,endDate]", function (newValue, oldValue) {
             if (newValue[0] && newValue[0].length > 0) {
               yValue = newValue[0][0].flowType;
@@ -52,13 +49,6 @@ angular
               var maxDate = newValue[2];
               currency = scope.currency.name.value;
 
-              newValue[0].forEach(function (e) {
-                //plot data anyway
-                if (e.color === undefined) {
-                  console.log("color not defined");
-                  // e.color=scope.reporting.filter(function(r){return r.RICid===e.key})[0]["color"]
-                }
-              });
               linechart(newValue[0], yValue, minDate, maxDate);
 
               //check/alert the new added reporting has all null value
@@ -91,7 +81,7 @@ angular
           var x = d3.time.scale().range([0, chartWidth]);
 
           var y = d3.scale.linear().range([chartHeight, 0]);
-          // var yValue=scope.ngData[0].flowType
+
           /*
            * Lines
            */
@@ -119,7 +109,6 @@ angular
             .orient("right")
             .ticks(5)
             .tickSize(width)
-            //.tickFormat(d3.format("s"))
             .tickFormat(function (d, i) {
               var prefix = d3.formatPrefix(d);
               if (i == 0) {
@@ -244,10 +233,10 @@ angular
             focus.append("circle").attr("r", 3).attr("pointer-events", "none");
 
             focus.append("text").attr("y", -10).attr("pointer-events", "none");
+
             /*
              * Voronoi
              */
-
             var voronoi = d3.geom
               .voronoi()
               .x(function (d) {
@@ -271,16 +260,13 @@ angular
                 .attr("pointer-events", "all");
             }
 
-            var voronoiGraph = voronoiGroup
-              .selectAll("path")
-              // .data(voronoi(d3.merge(data.map(function(d) { return d.values.filter(function(d){return d[yValue]}); }))))
-              .data(
-                voronoi(
-                  dataFiltered.filter(function (d) {
-                    return d[yValue];
-                  }),
-                ),
-              );
+            var voronoiGraph = voronoiGroup.selectAll("path").data(
+              voronoi(
+                dataFiltered.filter(function (d) {
+                  return d[yValue];
+                }),
+              ),
+            );
 
             voronoiGraph
               .attr("d", function (d) {

@@ -158,10 +158,7 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
                 $scope.selectedMinDate = minDate;
                 $scope.selectedMaxDate = maxDate;
               } else {
-                // $scope.selectedMinDate = Math.max( $scope.selectedMinDate, $scope.rawMinDate )
                 $scope.selectedMinDate = $scope.rawMinDate;
-
-                // $scope.selectedMaxDate = Math.min( $scope.selectedMaxDate, $scope.rawMaxDate )
                 $scope.selectedMaxDate = $scope.rawMaxDate;
               }
 
@@ -213,7 +210,6 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
     /*
      * Watch if entities and dates change
      */
-
     $scope.$watch("entities.sourceEntity.selected", function (newValue, oldValue) {
       if (newValue && newValue.RICid !== oldValue.RICid) {
         // set data in local storage
@@ -309,7 +305,6 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
       /*
        * Second step : add mirror_flow to flow
        */
-
       data.flows.forEach(function (d) {
         var mirror = mirrorFlows_byYear[d.year];
         if (mirror) {
@@ -325,7 +320,6 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
     /*
      * Datatable initalisation & functions
      */
-
     $scope.gridOptions = {
       data: "tableData",
       paginationPageSizes: [50],

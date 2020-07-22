@@ -15,7 +15,6 @@ angular
           scope.$watch("ngData", function (newValue, oldValue) {
             if (newValue) {
               var data = group_flows(newValue);
-              console.log(newValue, data);
               draw(data);
             }
           });
@@ -76,7 +75,6 @@ angular
             return nbFlows.sort(function (a, b) {
               return d3.ascending(a.key, b.key);
             });
-            // return nbFlows.sort(function(a,b){ return d3.ascending(flow_map[a.key],flow_map[b.key])})
           }
           var margin = { top: 20, right: 20, bottom: 20, left: 20 },
             width = document.querySelector("#number-flows-container").offsetWidth - margin.left - margin.right,
@@ -186,10 +184,6 @@ angular
                   return d.nb_flows !== 0;
                 });
 
-                // selectBar.push({
-                //   partner:"total",
-                //   nb_flows: d3.sum(selectBar,function(d){return d.nb_flows})
-                // })
                 tooltip_title.html("<h5>Number of " + yName + " Flows in " + d + "</h5");
                 // create table
                 // tooltip_table.html("<p>By "+categoryName+"</p>")
@@ -206,8 +200,6 @@ angular
                   .attr("height", "6")
                   .attr("fill", function (d) {
                     return color(d.partner);
-                    // if(d.partner!=="total") return color(d.partner);
-                    // else return "none"
                   });
 
                 // create the second column for each segment.
@@ -301,14 +293,6 @@ angular
                 return color(d.key);
               });
 
-            // layer.selectAll("rect")
-            //     .data(function(d) { return d.values; })
-            //     .enter().append("rect")
-            //     .attr("x", function(d) {return x(new Date(d.year,0,1))-barwidth/2; })
-            //     .attr("y", function(d) { return y(d.y + d.y0); })
-            //     .attr("height", function(d) { return y(d.y0) - y(d.y + d.y0); })
-            //     .attr("width", barwidth- 1);
-
             layer.each(function (data, index) {
               var e = d3.select(this);
               e.selectAll("rect")
@@ -319,7 +303,6 @@ angular
                   return x(new Date(d.year, 0, 1)) - barwidth / 2;
                 })
                 .attr("y", function (d, i) {
-                  // return y(d.y + d.y0)
                   if (index !== 0 && layers[index - 1].values[i].y === 0) indexIter[i] += 1;
                   if (d.y > 0 && y(d.y0) - y(d.y + d.y0) < 2) indexIterH[i] += 2 - (y(d.y0) - y(d.y + d.y0));
                   return y(d.y + d.y0) - 2 * (index - indexIter[i]) - indexIterH[i];
@@ -327,7 +310,6 @@ angular
                 .attr("height", function (d) {
                   if (y(d.y0) - y(d.y + d.y0) === 0) return y(d.y0) - y(d.y + d.y0);
                   else return d3.max([y(d.y0) - y(d.y + d.y0), 2]);
-                  // return y(d.y0) - y(d.y + d.y0)
                 })
                 .attr("width", barwidth - 1)
                 .style("opacity", 0.7)

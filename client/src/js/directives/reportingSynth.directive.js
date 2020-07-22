@@ -79,9 +79,6 @@ angular
             "World sum partners": 2,
             "World Federico Tena": 3,
             "Multiple world partners": 4,
-            // "World estimated|World as reported":3,
-            // "World sum partners|World estimated":3,
-            // "World sum partners|World as reported":3
           };
           var source_map = {
             Primary: 0,
@@ -195,7 +192,6 @@ angular
                 color_domain.sort(function (a, b) {
                   return d3.ascending(source_map[a], source_map[b]);
                 });
-                // case "sourcetype":  color_domain.sort(function(a, b){ return d3.descending(a,b)})
                 break;
               case "type":
                 color_domain.sort(function (a, b) {
@@ -227,8 +223,6 @@ angular
               return +d.year;
             });
             if (curveBy === "partner" || curveBy === "partner_intersect") {
-              // var max=d3.max(data,function(d){return d.partner.length});
-              // var threshold_out=["less than 10","10 to 50","50 to 100","more than 100"]
               var threshold_out = [0, 1, 10, 50];
               var threshold_in = [1, 10, 50];
             } else if (curveBy === "mirror_rate") {
@@ -259,7 +253,6 @@ angular
               .entries(data);
             //extend missing points with null values
             nbReportings.forEach(function (d) {
-              // for (var i = $scope.rawMinDate; i<=$scope.rawMaxDate;i++){
               d.values.forEach(function (v) {
                 v.key = +v.key;
               });
@@ -292,9 +285,6 @@ angular
           }
           function draw_legend(color_domain) {
             svg_legend.selectAll("*").remove();
-            // var title=svg_legend.append("text")
-            //           .text("Number of Reportings Color by "+categoryName)
-            //           .attr("font-size",11)
 
             var legend = svg_legend.selectAll(".legend").data(color_domain).enter().append("g").attr("class", "legend");
             legend
@@ -351,8 +341,6 @@ angular
               });
 
             var layers = stack(data);
-            // var minDate=d3.min(data[0].values,function(d){return +d.key});
-            // var maxDate=d3.max(data[0].values,function(d){return +d.key});
 
             var barwidth = Math.floor(width / (maxDate - minDate));
             var maxReporting = d3.max(layers, function (d) {
@@ -400,11 +388,6 @@ angular
             y.domain([0, maxReporting]);
 
             svg.selectAll("*").remove();
-            // svg.append("text")
-            //    .text("↓ Order by")
-            //    .attr("text-anchor","end")
-            //    .attr("font-size","11px")
-            //    .attr("transform","translate(-10,"+(height)+")")
             svg
               .append("text")
               .text("↓ Number of Reporting Years")
@@ -601,9 +584,6 @@ angular
                 .attr("height", function (d) {
                   if (y(d.y0) - y(d.y + d.y0) === 0) return y(d.y0) - y(d.y + d.y0);
                   else return d3.max([y(d.y0) - y(d.y + d.y0), 2]);
-                  // return y(d.y0) - y(d.y + d.y0)
-                  // if((y(d.y0) - y(d.y + d.y0))<=2) return 2;
-                  // else return y(d.y0) - y(d.y + d.y0);
                 })
                 .attr("width", barwidth - 1)
                 .style("opacity", function (d) {

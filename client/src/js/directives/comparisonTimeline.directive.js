@@ -36,7 +36,6 @@ angular
           function draw(data) {
             diffSource = function (d) {
               if (!isNaN(d.exp_mirror) && !isNaN(d.imp) && d.imp !== null && d.exp_mirror !== null) {
-                // return ( d.imp_mirror - d.exp ) / d.exp ;
                 return (d.imp - d.exp_mirror) / d.imp;
               }
             };
@@ -47,7 +46,6 @@ angular
 
             diffTarget = function (d) {
               if (!isNaN(d.exp) && !isNaN(d.imp_mirror) && d.exp !== null && d.imp_mirror !== null) {
-                // return ( d.imp - d.exp_mirror ) / d.exp_mirror ;
                 return (d.exp - d.imp_mirror) / d.exp;
               }
             };
@@ -132,25 +130,14 @@ angular
               .attr("height", height + margin.top + margin.bottom)
               .append("g")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-            // svg.append("clipPath")
-            //   .attr("id", "clip")
-            //   .append("rect")
-            //   .attr("width", width)
-            //   .attr("height", height);
 
             data.forEach(function (d) {
               d.date = new Date(d.year, 0, 1);
             });
 
-            svg
-              .select(".x.axis")
-              //.duration(750)
-              .call(xAxis);
+            svg.select(".x.axis").call(xAxis);
 
-            svg
-              .select(".y.axis")
-              //.duration(750)
-              .call(yAxis);
+            svg.select(".y.axis").call(yAxis);
 
             svg.append("path").datum(data).attr("class", "line-compare").attr("d", diffSourceLine);
 
@@ -218,19 +205,6 @@ angular
               .attr("cy", diffTargetLine.y())
               .attr("r", 1.5)
               .attr("fill", "#663333");
-
-            // //add clip
-            // svg.selectAll("path,circle").attr("clip-path", "url(#clip)");
-            /*
-             * Zero line
-             */
-            // svg.append("line")
-            //      .attr("x1", 0)
-            //      .attr("y1", y(0))
-            //      .attr("x2", width)
-            //      .attr("y2", y(0))
-            //      .attr("stroke-width", 1)
-            //      .attr("stroke", "#663333");
 
             /*
              * Axis

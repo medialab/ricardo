@@ -37,7 +37,6 @@ angular.module("ricardo.directives.partnersHistogram", []).directive("partnersHi
         /*
          * Displaying functionx
          */
-
         function removeSvgElements(chart) {
           chart.selectAll("text.legend").remove();
           chart.selectAll("rect.bar").remove();
@@ -47,7 +46,6 @@ angular.module("ricardo.directives.partnersHistogram", []).directive("partnersHi
         /*
          * Partner Histo tools functions
          */
-
         function cleanids(str) {
           return str.replace(/\W/g, "");
         }
@@ -112,10 +110,10 @@ angular.module("ricardo.directives.partnersHistogram", []).directive("partnersHi
           sum = 0,
           RICentities = scope.countryData,
           chart;
+
         /*
          * Start pure work of visualisation
          */
-
         function partnersHistogram(data, order, indexYears, minDate, maxDate) {
           data.forEach(function (d) {
             if (d.key === "***NA") d.key = "Unknown";
@@ -123,7 +121,6 @@ angular.module("ricardo.directives.partnersHistogram", []).directive("partnersHi
           //order data by ordered again
           data = data.sort(function (a, b) {
             if (order === "name") return d3.ascending(a.key, b.key);
-            // else return d3.descending(a["avg_" + order ],b["avg_" + order ])
             else
               return d3.descending(
                 a["avg_" + order] ? a["avg_" + order] : 0,
@@ -231,7 +228,6 @@ angular.module("ricardo.directives.partnersHistogram", []).directive("partnersHi
                   .transition()
                   .style("opacity", 0.9);
               })
-              //.on('mouseenter', this.onmouseover)
               .on("mouseout", function (d) {
                 return tooltip.transition().style("opacity", 0);
               })

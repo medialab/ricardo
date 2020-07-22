@@ -56,7 +56,6 @@ angular
               return d.attributes[colorBy];
             });
             legend_data = d3.set(legend_data).values();
-            // console.log(legend_data);
             var flare = getFlare(legend_data, nodes_data);
 
             flare.x0 = 0;
@@ -268,14 +267,6 @@ angular
                 d.color = "#eee";
               });
             }
-            // scope.filter.undo("neighbors","legend")
-            //      .nodesBy(function(n){
-            //       data.forEach(function(d){
-            //         if(d.children && n.attributes[colorBy].toString()===d.label) filterNode.push(n);
-            //       })
-            //       if (filterNode.length>0) return filterNode;
-            //      },"legend")
-            //      .apply();
             scope.$apply();
           }
           function highlightNull(legend) {

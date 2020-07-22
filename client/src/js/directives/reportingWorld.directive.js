@@ -30,7 +30,6 @@ angular
             "World Federico Tena": "#109618",
             World_best_guess: "#316395",
           };
-          // var partnerColors=d3.scale.category10()
 
           function partnerColors(partner) {
             return categoryColors[partner];
@@ -102,12 +101,6 @@ angular
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-          // svg.append("clipPath")
-          //     .attr("id", "clip")
-          //     .append("rect")
-          //     .attr("width", width)
-          //     .attr("height", height);
-
           var line = d3.svg
             .line()
             .defined(function (d) {
@@ -128,18 +121,6 @@ angular
             .x(function (d) {
               return x(new Date(d.year, 0, 1));
             });
-          // .y0(height/3)
-          // .y1(function(d) { return y(d[yValue]); });
-          // .y0(function(d) { return y(d.y0); })
-          // .y1(function(d) { return y(d.y0 + d.y); });
-
-          // var voronoi = d3.geom.voronoi()
-          //         .x(function(d) { return x(new Date(d.year,0,1)); })
-          //         .y(function(d) { return y(d.y0+d.y/2); })
-          //         // .clipExtent([[-margin.left, -margin.top], [width + margin.right, height + margin.bottom]]);
-          //         .clipExtent([[0,0],[width,height]])
-
-          // var bisect = d3.bisector(function(d) { return d.date;}).left;
 
           //////////////////////////////////////////////////////
           ////////////////// Tooltips Setup //////////////////
@@ -178,7 +159,6 @@ angular
             });
 
             x.domain([new Date(scope.startDate - 1, 0, 1), new Date(scope.endDate + 1, 0, 1)]);
-            // y.domain([0,maxFlow])
 
             var dataFiltered = data_flatten.filter(function (d) {
               return d.year >= x.domain()[0].getFullYear() && d.year <= x.domain()[1].getFullYear();
@@ -187,14 +167,6 @@ angular
             var maxFlow = d3.max(dataFiltered, function (d) {
               return d.values[yValue];
             });
-            //compute ymax for mutliples
-            // data.forEach(function(n) {
-            //   var nestedFiltered=n.values.filter(function(d){
-            //     return d.year>=x.domain()[0].getFullYear() && d.year<= x.domain()[1].getFullYear();
-            //   })
-            //   n.maxFlow = d3.max(nestedFiltered, function(d) { return d[yValue]; });
-            // });
-            // var maxFlow=d3.max(nested,function(d){return d.maxFlow;})
             y.domain([0, maxFlow]);
 
             if (layout === "multiple") {
@@ -218,12 +190,7 @@ angular
                   .attr("class", "multiple");
 
                 multi_g.each(function (d, i) {
-                  // y.domain([0, d.maxFlow]);
                   var e = d3.select(this);
-                  // var prefix = d3.formatPrefix(y.domain()[1]/2);
-                  // var scale=y.domain()[1]/(prefix.scale(y.domain()[1]/2)*2)
-                  // console.log(d3.round(prefix.scale(y.domain()[1]/2))*scale)
-                  // yAxis.tickValues([0,d3.round(prefix.scale(y.domain()[1]/2))*scale])
                   e.append("path")
                     .attr("class", "area-total")
                     .attr("d", function (d) {
@@ -275,25 +242,7 @@ angular
                     .style("opacity", 0)
                     .style("pointer-events", "none");
 
-                  // baselineEnter.append("text")
-                  //         .text(function(d){ return format(Math.round(d[yValue]))+ ' £';})
-                  //         .attr("text-anchor","middle")
-                  //         .attr("x", function(d){return x(new Date(d.year,0,1))})
-                  //         .attr("y", function(d){return y(d[yValue])-5;})
-                  //         .style("opacity",0)
-                  //         .style("pointer-events","none")
                   baseline.exit().remove();
-
-                  // e.append("text")
-                  //   .attr("class","partner")
-                  //   .text(function(d){ return d.key})
-                  //   .attr("text-anchor","start")
-                  //   .attr("y",height/3-margin.top)
-                  //   .attr("font-size",15)
-                  // e.append("g")
-                  //       .attr("class", "x axis")
-                  //       .attr("transform", "translate(0,"+height/5+")")
-                  //       .call(xAxis);
 
                   e.append("g")
                     .attr("class", "y axis")
@@ -375,12 +324,8 @@ angular
                       .duration(duration)
                       .call(yAxis)
                       .style("opacity", 1)
-                      // .call(yAxis.tickValues(y.domain()))
                       .call(customAxis);
                   });
-                // svg.selectAll(".multiple").selectAll("text")
-                //     .transition().duration(duration)
-                //     .style("opacity",1)
                 svg.select(".x.axis").transition().duration(duration).call(xAxis);
               }
             } //if multiple layout
@@ -571,7 +516,6 @@ angular
                       if (d3.event.pageX - margin.left < (9 * width) / 10) return d3.event.pageX + 20 + "px";
                       else return d3.event.pageX - 220 + "px";
                     })
-                    // .style("top", (d3.event.pageY+75) + "px")
                     .style("top", "650px");
 
                   var mouse = d3.mouse(this),
@@ -580,7 +524,6 @@ angular
                     d0 = new Date(mouseYear, 0, 1),
                     d1 = new Date(mouseYear + 1, 0, 1),
                     d = mouse - d0 > d1 - mouse ? d1 : d0;
-                  // console.log(d)
                   var selectData = data_flatten.filter(function (e) {
                     return e.year === d.getFullYear();
                   });
@@ -598,7 +541,6 @@ angular
                       }),
                     ]);
 
-                    // y_tip.domain(v.exp_continent.map(function(d){return d.continent}))
                     tooltip.select(".tip_group").selectAll("g").remove();
                     var tip_partner = tooltip
                       .select(".tip_group")

@@ -73,8 +73,6 @@ angular
 
             var endStart = end - start;
             var barWidth = Math.floor(width / endStart);
-            // var expNbReportings = data.filter(function (d) { return d.type === "Exp"});
-            // var impNbReportings = data.filter(function (d) { return d.type === "Imp"});
 
             if (svg.select("g").empty()) {
               svg
@@ -160,11 +158,7 @@ angular
               .on("brush", function () {
                 if (brush.empty()) {
                   brush.clear();
-                  // dispatch.brushing(x.domain())
                 }
-                // else{
-                //   dispatch.brushing(brush.extent())
-                // }
               })
               .on("brushend", brushended);
 
@@ -180,15 +174,9 @@ angular
 
               if (brush.empty()) {
                 brush.extent(x.domain());
-                // dispatch.brushed(x.domain())
-                // dispatch.brushing(x.domain())
-              } else {
-                // dispatch.brushed(brush.extent())
-                // dispatch.brushing(brush.extent())
               }
               applyBrush();
             }
-            //selection.selectAll("g.brush").remove();
             var gBrush = svg.select(".brush");
 
             if (gBrush.empty()) {

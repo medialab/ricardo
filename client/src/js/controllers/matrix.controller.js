@@ -197,7 +197,6 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
 
     $scope.changeFlow = function (flow) {
       $scope.chartFlow = flow;
-      // reprocess(reportingByYear,flowsByYear)
       $scope.nbFlows = $scope.numberFlows.filter(function (d) {
         return d.expimp === flow.type.value;
       });
@@ -260,8 +259,6 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
           d.year = +d.year;
           d.partner = [];
           d.partner_continent = [];
-          // d.partners.split(",").forEach(function(p){
-          if (d.partners === undefined) console.log(d);
           d.partners.forEach(function (p) {
             d.partner_continent.push(p.split("+")[1]);
             d.partner.push(p.split("+")[0]);
@@ -278,9 +275,7 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
 
           var continents = [];
           var continent_keys = d3.keys(partner_continent);
-          // var imp_keys= d3.keys(imp_continent);
           continent_keys.forEach(function (d) {
-            // continent.push(exp_keys);
             continents.push({
               continent: d,
               number: partner_continent[d],
@@ -293,7 +288,6 @@ angular.module("ricardo.controllers.matrix", []).controller("matrix", [
 
         dataFiltered.forEach(function (d) {
           if (d.partners_mirror.length > 0 && d.partner.length > 0) {
-            // d.partner_mirror=d.partners_mirror.split(",")
             d.partner_intersect = d.partners_mirror.filter(function (value) {
               return d.partner.indexOf(value.split("-")[0]) > -1;
             });

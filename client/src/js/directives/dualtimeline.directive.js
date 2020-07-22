@@ -18,7 +18,6 @@ angular
         link: function (scope, element, attrs) {
           scope.$watchCollection("[ngData, endDate, startDate]", function (newValue, oldValue) {
             if (newValue[0]) {
-              // scope.$apply();
               draw(newValue[0]);
             }
           });
@@ -26,7 +25,6 @@ angular
           var x, y, xAxis, yAxis, areaImp, areaExp, lineImp, lineExp;
 
           function draw(data) {
-            // document.querySelector('#dual-timeline-container').innerHTML = null;
             d3.select("#dual-timeline-container").select("svg").remove();
             var margin = { top: 20, right: 0, bottom: 30, left: 0 },
               width = document.querySelector("#dual-timeline-container").offsetWidth - margin.left - margin.right,
@@ -138,12 +136,6 @@ angular
               .attr("class", "dualTimeline")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            // svg.append("clipPath")
-            //   .attr("id", "clip")
-            //   .append("rect")
-            //   .attr("width", width)
-            //   .attr("height", height);
-
             data.forEach(function (d) {
               d.date = new Date(d.year, 0, 1);
             });
@@ -231,7 +223,6 @@ angular
               .attr("stroke-width", 1)
               .attr("stroke", "rgba(230, 230, 230, 0.4)");
 
-            // svg.selectAll("path,circle").attr("clip-path", "url(#clip)");
             /*
              * Add axis to svg
              */
@@ -298,7 +289,6 @@ angular
                 [-margin.left, -margin.top],
                 [width + margin.right, height + margin.bottom],
               ]);
-            // .clipExtent([[0,0],[width,height]])
 
             var voronoiGroup = svg.select(".voronoi");
 

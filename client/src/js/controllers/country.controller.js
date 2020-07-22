@@ -273,6 +273,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
       });
       return yearSelected;
     }
+
     /*
      * Calling the API to init country selection
      */
@@ -311,7 +312,6 @@ angular.module("ricardo.controllers.country", []).controller("country", [
               continent: d.continent,
             };
           });
-          // $scope.RICentitiesDD=[...data.RICentities.partners]
           $scope.RICentitiesDD = [];
           data.RICentities.partners.forEach(function (d) {
             $scope.RICentitiesDD.push(d);
@@ -623,7 +623,6 @@ angular.module("ricardo.controllers.country", []).controller("country", [
       /*
        * Here we lost type information of entity. Need to use addTypePartner().
        */
-
       var partners = d3
         .nest()
         .key(function (d) {
@@ -786,18 +785,10 @@ angular.module("ricardo.controllers.country", []).controller("country", [
               })
               .then(function (result) {
                 var yearSelected = [];
-                // yearSelected = lineChartService.initTabLineChart(result,
-                //   yearSelected, d.type, d.RICid, $scope.selectedMinDate,
-                //   $scope.selectedMaxDate)
                 yearSelected = initTabLineChart(result, yearSelected, d.type, d.RICid);
                 var linechartData = initLineChart2(linechart_flows, yearSelected, d.RICid, yValue, d.color);
                 if (linechartData.length === partners.length) $scope.linechartData = linechartData;
               });
-            // factorise these lines
-            // $scope.yValue = yValue;
-            // $scope.linechartCurrency= {
-            //   type: {value :"sterling",writable: true},
-            //   name: {value:"Sterling",writable: true}};
           } else {
             apiService
               .getContinentFlows({
@@ -806,22 +797,14 @@ angular.module("ricardo.controllers.country", []).controller("country", [
               })
               .then(function (result) {
                 var yearSelected = [];
-                // yearSelected = lineChartService.initTabLineChart(result, yearSelected,
-                //   d.type, d.RICname, $scope.selectedMinDate, $scope.selectedMaxDate)
                 yearSelected = initTabLineChart(result, yearSelected, d.type, d.RICid);
                 var linechartData = initLineChart2(linechart_flows, yearSelected, d.RICid, yValue, d.color);
                 if (linechartData.length === partners.length) $scope.linechartData = linechartData;
               });
-            // $scope.yValue = yValue;
-            // $scope.linechartCurrency = {
-            //   type: {value :"sterling",writable: true},
-            // name: {value:"Sterling",writable: true}};
-            // $scope.messagePercent = 0;
           }
         });
       }
 
-      // var partnersPct = [];
       var linechartData = [];
       if (partners.length > 0 && conversion === "value") {
         partners.forEach(function (d) {
@@ -834,9 +817,6 @@ angular.module("ricardo.controllers.country", []).controller("country", [
               })
               .then(function (result) {
                 var yearSelected = [];
-                // yearSelected = lineChartService.initTabLineChart(result,
-                //   yearSelected, d.type, d.RICid, $scope.selectedMinDate,
-                //   $scope.selectedMaxDate)
                 yearSelected = initTabLineChart(result, yearSelected, d.type, d.RICid);
                 changeInPercent($scope.entities.sourceEntity.selected.RICid, yValue, yearSelected, d.color, function (
                   tab,
@@ -845,14 +825,6 @@ angular.module("ricardo.controllers.country", []).controller("country", [
                   linechartData.push(tab);
 
                   if (linechartData.length === partners.length) $scope.linechartData = linechartData;
-                  // console.log($scope.linechartData)
-                  // $scope.yValue = yValue;
-                  // $scope.linechartCurrency = {
-                  //   type: {value :"value",writable: true},
-                  //   name: {value:"Percent",writable: true}
-                  // };
-                  // $scope.actualCurrency = "percent";
-                  // $scope.messagePercent = 1;
                 });
               });
           } else {
@@ -863,9 +835,6 @@ angular.module("ricardo.controllers.country", []).controller("country", [
               })
               .then(function (result) {
                 var yearSelected = [];
-                // yearSelected = lineChartService.initTabLineChart(
-                //   result, yearSelected, d.type, d.RICname, $scope.selectedMinDate,
-                //   $scope.selectedMaxDate)
                 yearSelected = initTabLineChart(result, yearSelected, d.type, d.RICid);
 
                 changeInPercent($scope.entities.sourceEntity.selected.RICid, yValue, yearSelected, d.color, function (
@@ -873,28 +842,11 @@ angular.module("ricardo.controllers.country", []).controller("country", [
                 ) {
                   tab.key = d.RICid;
                   linechartData.push(tab);
-                  // partnersPct.push(tab);
-                  // partnersPct.forEach ( function (d) {
-                  //   linechartData.push(d);
-                  // });
                   if (linechartData.length === partners.length) $scope.linechartData = linechartData;
-                  // $scope.yValue = yValue;
-                  // $scope.linechartCurrency = {
-                  //   type: {value :"value",writable: true},
-                  //   name: {value:"Percent",writable: true}};
-                  // $scope.actualCurrency = "percent";
-                  // $scope.messagePercent = 1;
                 });
               });
           }
         });
-        // $scope.yValue = yValue;
-        // $scope.linechartCurrency = {
-        //   type: {value :"value",writable: true},
-        //   name: {value:"Percent",writable: true}
-        // };
-        // $scope.actualCurrency = "percent";
-        // $scope.messagePercent = 1;
       }
     }
 
@@ -908,25 +860,6 @@ angular.module("ricardo.controllers.country", []).controller("country", [
         .then(function (result) {
           // we could don't need this array if api data have good format
           var worldFlowsYears = result.flows;
-
-          // var worldFlowsYearsFormat = [];
-          // worldFlowsYears.forEach( function (d) {
-          //   worldFlowsYearsFormat.push({
-          //     reporting_id: d.reporting_id,
-          //     type: null,
-          //     partner_id: partner_id,
-          //     year: d.year,
-          //     imp:d.imp,
-          //     exp:d.exp,
-          //     total:d.total,
-          //     currency: "sterling",
-          //     sources: d.sources
-          //   });
-          // })
-
-          // console.log(worldFlowsYears)
-          // worldFlowsYearsFormat = lineChartService.adjustArrayTime(
-          //   worldFlowsYearsFormat, $scope.selectedMinDate, $scope.selectedMaxDate)
 
           // need a new algo to delete two forEach
           var pctArray = [];
@@ -966,21 +899,6 @@ angular.module("ricardo.controllers.country", []).controller("country", [
       }
       return ratio;
     }
-
-    /*
-     * Api call to take data with sources for dataTable
-     */
-    //disable takeData function for viewTable model in country.html
-    // $scope.takeData = function (){
-    // apiService
-    //   .getFlows({
-    //     reporting_ids: $scope.entities.sourceEntity.selected.RICid,
-    //     with_sources:1
-    //   })
-    //   .then(function (data) {
-    //     $scope.tableDataSources = data.flows;
-    //   })
-    // }
 
     /*
      * Display and sort table data
