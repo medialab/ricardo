@@ -1,6 +1,21 @@
 import crossfilter from "crossfilter";
 import * as d3 from "d3";
 
+/**
+ * Small helper to use d3.csv with promises:
+ */
+function getCsvPromise(path) {
+  return new Promise((resolve, reject) => {
+    d3.csv(path, (error, request) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(request);
+      }
+    });
+  });
+}
+
 /* Services */
 angular
   .module("ricardo.services", [])
@@ -387,6 +402,17 @@ angular
           );
 
           return deferred.promise;
+        },
+        getGeoPolHistData: function () {
+          return Promise.all([
+            getCsvPromise("/data/GeoPolHist_entities.csv"),
+            getCsvPromise("/data/GeoPolHist_status.csv"),
+            getCsvPromise("/data/GeoPolHist_entities_status_in_time.csv"),
+          ]).then(([entities, status, statusInTime]) => ({
+            status,
+            entities,
+            statusInTime,
+          }));
         },
         getBlogRSS: function (params) {
           var deferred = $q.defer();

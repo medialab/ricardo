@@ -1,0 +1,21 @@
+GPH_status,priority_order,COW_status,UN_status,definition
+Dissolved into,6,,,non political status
+Sovereign,5,Sovereign,UN member state; UN observer state,https://en.wikipedia.org/wiki/Sovereign_state
+Associated state of,4,,Self-governing associated state,https://en.wikipedia.org/wiki/Associated_state
+Sovereign (limited),4,,,sovereign and dependent state
+Sovereign (unrecognised),4,,Non-UN member state recognised by at least one UN member state;  Non-UN member state recognised only by other  non-UN member state; non UN-member state not recognised by any state,sovereign and independent state without diplomatic recognition; https://en.wikipedia.org/wiki/List_of_states_with_limited_recognition
+Colony of,3,Colony of,Non-self-governing territory,https://en.wikipedia.org/wiki/United_Nations_list_of_Non-Self-Governing_Territories 
+Dependency of,3,,Autonomous territory; Constituent country; Crown dependency;  Dependent territory; External territory;  Self-governing oversea administrative region; Special administrative region; Sui generis collectivity; Unincorporated and (un)organized territory,https://en.wikipedia.org/wiki/Dependent_territory; https://en.wikipedia.org/wiki/Autonomous_administrative_division
+Possession of,3,Possession of,,
+Protectorate of,3,Protectorate of,,https://en.wikipedia.org/wiki/Protectorate
+Leased to,2,Leased to,Concession; Lease,https://en.wikipedia.org/wiki/Concessions_and_leases_in_international_relations
+Mandated to,2,Mandated to,,https://en.wikipedia.org/wiki/League_of_Nations_mandate
+Occupied by,2,Occupied by,,https://en.wikipedia.org/wiki/Military_occupation; https://en.wikipedia.org/wiki/List_of_military_occupations 
+Vassal of,2,,,https://en.wikipedia.org/wiki/Vassal_state; https://en.wikipedia.org/wiki/Tributary_state
+Claimed by,1,Claimed by,Territorial claim,https://en.wikipedia.org/wiki/List_of_territorial_disputes
+Neutral or demilitarized zone of,1,Neutral or demilitarized zone of,Neutral zone; demilitarized zone,https://en.wikipedia.org/wiki/Neutral_zone_(territorial_entity); https://en.wikipedia.org/wiki/Demilitarized_zone 
+Discovered,0,,,non political status
+Part of,0,Part of,Oversea territory/collectivity,non-sovereign entity part of another entity
+Unknown,0,,,no information about the status of the entity
+Informal,-1,,,"3 ""fictive"" entities: Australia, Germany, Italia"
+International,-1,,,"4 international organizations: Concessions in China, Inter-Allied Commission of Control, League of Nations, United Nations"
