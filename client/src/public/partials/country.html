@@ -56,34 +56,6 @@
         {{ 'COUNTRY_VIEW_DUAL_LEGEND' | translate }}
       </p>
       <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></dual-timeline>
-      <div class="legend">
-        <div class="legend-item">
-          <div class="square import"></div>
-          Import
-        </div>
-        <div class="legend-item">
-          <div class="square export"></div>
-          Export
-        </div>
-        <div class="legend-item">
-          <div class="line available"></div>
-          {{ 'AVAILABLE' | translate }}
-        </div>
-        <div class="legend-item">
-          <div class="line unavailable"></div>
-          {{ 'UNAVAILABLE' | translate }}
-        </div>
-        <div class="legend-item">{{ 'CURRENCY' | translate }} <strong>pound sterling</strong></div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="container">
-  <div class="row">
-    <div id="countryBrushing" class="col-sm-12 well">
-      <h4>
-        {{ 'BRUSHING' | translate }} {{entities.sourceEntity.selected.RICname}}
-      </h4>
       <brushing-timeline
         ng-data="timelineData"
         start-date="selectedMinDate"
@@ -110,6 +82,7 @@
           <div class="line unavailable"></div>
           {{ 'UNAVAILABLE' | translate }}
         </div>
+        <div class="legend-item">{{ 'CURRENCY' | translate }} <strong>pound sterling</strong></div>
       </div>
     </div>
   </div>
