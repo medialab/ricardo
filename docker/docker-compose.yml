@@ -5,7 +5,7 @@ services:
     volumes:
       - ${PROJECT_PATH}/api:/ricardo/api
     build:
-      context: ./api
+      context: ${PROJECT_PATH}/docker/api
       dockerfile: ./Dockerfile
     environment:
       - MODE=${MODE}
@@ -20,7 +20,7 @@ services:
     volumes:
       - ${PROJECT_PATH}/client:/ricardo/client
     build:
-      context: ./client
+      context: ${PROJECT_PATH}/docker/client
       dockerfile: ./Dockerfile
     environment:
       - MODE=${MODE}
