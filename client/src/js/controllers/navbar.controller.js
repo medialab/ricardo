@@ -3,7 +3,7 @@ angular.module("ricardo.controllers.navbar", []).controller("navbar", [
   "$location",
   function ($scope, $location) {
     $scope.isActive = function (viewLocation) {
-      return viewLocation === $location.path();
+      return $location.path().indexOf(viewLocation) === 0;
     };
     $scope.views = [
       { slug: "world", label: "World" },
