@@ -28,9 +28,9 @@
         {{ 'FROM' | translate }}
         <div class="inline-select">
           <ui-select ng-model="selectedMinDate" theme="bootstrap" ng-change="selectMinDate(selectedMinDate)">
-            <ui-select-match class="ui-select-match" placeholder="'SELECT_MIN_YEAR' | translate"
-              >{{$select.selected}}</ui-select-match
-            >
+            <ui-select-match class="ui-select-match" placeholder="{{ 'SELECT_MIN_YEAR' | translate }}">
+              {{$select.selected}}
+            </ui-select-match>
             <ui-select-choices class="ui-select-choices" repeat="item in minDateRange | filter: $select.search">
               <div ng-bind-html="item | highlight: $select.search"></div>
             </ui-select-choices>
@@ -40,7 +40,7 @@
         {{ 'TO' | translate}}
         <div class="inline-select">
           <ui-select ng-model="selectedMaxDate" theme="bootstrap" ng-change="selectMaxDate(selectedMaxDate)">
-            <ui-select-match class="ui-select-match" placeholder="'SELECT_MAX_YEAR' | translate"
+            <ui-select-match class="ui-select-match" placeholder="{{ 'SELECT_MAX_YEAR' | translate }}"
               >{{$select.selected}}</ui-select-match
             >
             <ui-select-choices class="ui-select-choices" repeat="item in maxDateRange | filter: $select.search">
@@ -49,6 +49,31 @@
           </ui-select>
         </div>
       </h4>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4>{{'PARTNER_STATUSES_TITLE' | translate}}</h4>
+      <p class="paragraphViz">{{'PARTNER_STATUSES_INTRO' | translate}}</p>
+      <div>
+        <political-statuses
+          sovereignty-data="sovereigntyData"
+          dependencies-data="dependenciesData"
+          boundaries="boundaries"
+        />
+        <div class="legend">
+          <div class="legend-item">
+            <div class="square" ng-style="{ backgroundColor: '#cc6666' }"></div>
+            {{'DEPENDENCIES_CAPTION' | translate}}
+          </div>
+          <div class="legend-item">
+            <div class="square" ng-style="{ backgroundColor: 'rgba(0,0,0,0.1)' }"></div>
+            {{'SOVEREIGNTY_CAPTION' | translate}}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
