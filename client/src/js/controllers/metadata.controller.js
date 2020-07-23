@@ -1,5 +1,5 @@
 import { initParams, getListItemId } from "../utils";
-angular.module("ricardo.controllers.matrix", []).controller("matrix", [
+angular.module("ricardo.controllers.metadata", []).controller("metadata", [
   "$scope",
   "$route",
   "$routeParams",

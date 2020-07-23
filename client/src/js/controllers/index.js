@@ -1,7 +1,7 @@
 import "./bilateral.controller.js";
 import "./reporting.controller.js";
 import "./home.controller.js";
-import "./matrix.controller.js";
+import "./metadata.controller.js";
 import "./navbar.controller.js";
 import "./network.controller.js";
 import "./translate.controller.js";
@@ -16,6 +16,6 @@ angular.module("ricardo.controllers", [
   "ricardo.controllers.world",
   "ricardo.controllers.rates",
   "ricardo.controllers.network",
-  "ricardo.controllers.matrix",
+  "ricardo.controllers.metadata",
   "ricardo.controllers.home",
 ]);

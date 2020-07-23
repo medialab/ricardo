@@ -172,8 +172,8 @@ angular
         },
       });
       $routeProvider.when("/metadata/:flowtype", {
-        templateUrl: "partials/matrix.html",
-        controller: "matrix",
+        templateUrl: "partials/metadata.html",
+        controller: "metadata",
         reloadOnUrl: true,
         reloadOnSearch: false,
       });
