@@ -8,6 +8,7 @@ angular.module("ricardo.controllers.navbar", []).controller("navbar", [
     $scope.views = [
       { slug: "world", label: "World" },
       { slug: "reporting", label: "Reporting" },
+      { slug: "partner", label: "Partner" },
       { slug: "bilateral", label: "Bilateral" },
     ];
     $scope.dataViews = [

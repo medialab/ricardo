@@ -139,6 +139,30 @@ angular
           return `/reporting`;
         },
       });
+      $routeProvider.when("/partner/:partner", {
+        templateUrl: "partials/partner.html",
+        controller: "partner",
+        reloadOnUrl: false,
+        reloadOnSearch: false,
+        resolve: {
+          partnerEntities: [
+            "apiService",
+            function (apiService) {
+              // TODO:
+              // Load the actual partners list, instead of the reportings list:
+              return apiService.getReportingEntities({
+                type_filter: "country,group,city",
+              });
+            },
+          ],
+        },
+      });
+      $routeProvider.when("/partner", {
+        redirectTo: function () {
+          const partner = localStorage.getItem("latestSelectedPartner") || DEFAULT_PARTNER;
+          return `/partner/${partner}`;
+        },
+      });
       $routeProvider.when("/world", {
         templateUrl: "partials/world.html",
         controller: "world",

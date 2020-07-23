@@ -1,0 +1,54 @@
+<div class="container container-page">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1 class="title-border">{{ 'PARTNER_INTRO_TITLE' | translate }}</h1>
+      <p>{{ 'PARTNER_INTRO_PARA' | translate }}</p>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row timeline-cont">
+    <div class="col-sm-12 well">
+      <h4 class="titleDualTL">
+        {{ 'PARTNER_TITLE_1' | translate }}
+        <div class="inline-select">
+          <ui-select ng-model="partner" theme="bootstrap" ng-change="selectPartner(partner)">
+            <ui-select-match class="ui-select-match" placeholder="{{ 'SELECT_PARTNER' | translate }}">
+              {{$select.selected.label}}
+            </ui-select-match>
+            <ui-select-choices
+              class="ui-select-choices"
+              repeat="item.id as item in partnersList | filter: $select.search"
+            >
+              <div ng-bind-html="item.label | highlight: $select.search"></div>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+
+        {{ 'FROM' | translate }}
+        <div class="inline-select">
+          <ui-select ng-model="selectedMinDate" theme="bootstrap" ng-change="selectMinDate(selectedMinDate)">
+            <ui-select-match class="ui-select-match" placeholder="'SELECT_MIN_YEAR' | translate"
+              >{{$select.selected}}</ui-select-match
+            >
+            <ui-select-choices class="ui-select-choices" repeat="item in minDateRange | filter: $select.search">
+              <div ng-bind-html="item | highlight: $select.search"></div>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+
+        {{ 'TO' | translate}}
+        <div class="inline-select">
+          <ui-select ng-model="selectedMaxDate" theme="bootstrap" ng-change="selectMaxDate(selectedMaxDate)">
+            <ui-select-match class="ui-select-match" placeholder="'SELECT_MAX_YEAR' | translate"
+              >{{$select.selected}}</ui-select-match
+            >
+            <ui-select-choices class="ui-select-choices" repeat="item in maxDateRange | filter: $select.search">
+              <div ng-bind-html="item | highlight: $select.search"></div>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+      </h4>
+    </div>
+  </div>
+</div>
