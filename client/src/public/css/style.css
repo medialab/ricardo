@@ -989,11 +989,12 @@ div.inline-select div.ui-select-choices-row:focus span {
 
 div.inline-select div.ui-select-choices-row span.ui-select-highlight {
   padding: 0;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 div.inline-select div.ui-select-match .text-muted {
   padding-right: 15px;
+  font-weight: 600;
 }
 
 div.inline-select div.ui-select-match .ui-select-match-text {
