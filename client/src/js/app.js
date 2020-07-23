@@ -2,7 +2,7 @@
 import angular from "angular";
 import "./services.js";
 import "./config.js";
-import "./country.services.js";
+import "./reporting.services.js";
 import "./filters.js";
 import "./controllers/index.js";
 import "./directives/index.js";
@@ -30,7 +30,7 @@ angular
     "ricardo.filters",
     "ricardo.controllers",
     "ricardo.services",
-    "ricardo.services.country",
+    "ricardo.services.reporting",
     "ricardo.directives",
   ])
   .run([
@@ -109,9 +109,9 @@ angular
           ],
         },
       });
-      $routeProvider.when("/country/:country", {
-        templateUrl: "partials/country.html",
-        controller: "country",
+      $routeProvider.when("/reporting/:reporting", {
+        templateUrl: "partials/reporting.html",
+        controller: "reporting",
         reloadOnUrl: true,
         reloadOnSearch: false,
         resolve: {
@@ -125,13 +125,18 @@ angular
           ],
         },
       });
+      $routeProvider.when("/reporting", {
+        redirectTo: function () {
+          let reporting = DEFAULT_REPORTING;
+          if (localStorage.getItem("sourceEntitySelected")) {
+            reporting = JSON.parse(localStorage.getItem("sourceEntitySelected")).RICid;
+          }
+          return `/reporting/${reporting}`;
+        },
+      });
       $routeProvider.when("/country", {
         redirectTo: function () {
-          let country = DEFAULT_REPORTING;
-          if (localStorage.getItem("sourceEntitySelected")) {
-            country = JSON.parse(localStorage.getItem("sourceEntitySelected")).RICid;
-          }
-          return `/country/${country}`;
+          return `/reporting`;
         },
       });
       $routeProvider.when("/world", {

@@ -33,12 +33,12 @@
  *     maxYear
  *   }
  */
-angular.module("ricardo.directives.countryStatuses", []).directive("countryStatuses", [
+angular.module("ricardo.directives.politicalStatuses", []).directive("politicalStatuses", [
   "$filter",
   function ($filter) {
     return {
       restrict: "E",
-      template: '<div class="country-statuses-chart"></div>',
+      template: '<div class="political-statuses-chart"></div>',
       replace: false,
       scope: {
         sovereigntyData: "=",

@@ -1,10 +1,10 @@
 import { initParams, getListItemId } from "../utils";
 
 /*
- * Country view Controller : api call and data manipulation to serve four
+ * Reporting view Controller : api call and data manipulation to serve four
  * visualisations (dualtimeline, brushing, partner histogram & linechart)
  */
-angular.module("ricardo.controllers.country", []).controller("country", [
+angular.module("ricardo.controllers.reporting", []).controller("reporting", [
   "$scope",
   "$route",
   "$routeParams",
@@ -12,7 +12,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
   "cfSource",
   "apiService",
   "utils",
-  "countryService",
+  "reportingService",
   "reportingEntities",
   "TABLE_HEADERS",
   function (
@@ -23,7 +23,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
     cfSource,
     apiService,
     utils,
-    countryService,
+    reportingService,
     reportingEntities,
     TABLE_HEADERS,
   ) {
@@ -185,7 +185,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
     $scope.actualCurrency = "pound sterling";
 
     /*
-     * Country statuses data
+     * Political statuses data
      */
     $scope.statusesData = {};
     $scope.sovereigntyData = {};
@@ -197,14 +197,14 @@ angular.module("ricardo.controllers.country", []).controller("country", [
      */
     $scope.entities.sourceEntity.selected = $scope.reportingEntities
       .filter(function (e) {
-        return e.RICid === $routeParams.country;
+        return e.RICid === $routeParams.reporting;
       })
       .shift();
 
-    // If the country slug doesn't exist, we remove it from the localstorage and redirect to `/country`
+    // If the reporting slug doesn't exist, we remove it from the localstorage and redirect to `/reporting`
     if (!$scope.entities.sourceEntity.selected) {
       localStorage.removeItem("sourceEntitySelected");
-      return $location.url("/country");
+      return $location.url("/reporting");
     }
 
     // Init the data
@@ -289,7 +289,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
           $scope.selectedMinDate = $scope.selectedMinDate || d3.min(dates);
           $scope.selectedMaxDate = $scope.selectedMaxDate || d3.max(dates);
 
-          initCountryStatuses();
+          initPoliticalStatuses();
 
           data.flows = data.flows.filter(function (d) {
             if (d.imp || d.exp !== 0) return d;
@@ -450,7 +450,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
         // update local storage
         updateDateRange();
         initPartnerHisto($scope.tableData);
-        updateCountryStatuses();
+        updatePoliticalStatuses();
       }
     });
 
@@ -458,7 +458,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
       if (newValue !== oldValue && newValue) {
         // update local storage
         localStorage.setItem("sourceEntitySelected", newValue);
-        return $location.url(`/country/${newValue.RICid}`);
+        return $location.url(`/reporting/${newValue.RICid}`);
       }
     });
 
@@ -589,7 +589,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
         .key(function (d) {
           return d.year;
         })
-        .rollup(countryService.rollupYears)
+        .rollup(reportingService.rollupYears)
         .entries(data)
         .forEach(function (y) {
           indexYears[y.key] = y.values;
@@ -629,11 +629,11 @@ angular.module("ricardo.controllers.country", []).controller("country", [
         .key(function (d) {
           return d.year;
         })
-        .rollup(countryService.rollupYears)
+        .rollup(reportingService.rollupYears)
         .entries(data);
 
-      partners = countryService.addTypePartner(partners, data);
-      partners = countryService.valuesToPartners(partners, indexYears);
+      partners = reportingService.addTypePartner(partners, data);
+      partners = reportingService.valuesToPartners(partners, indexYears);
 
       if ($scope.filtered.type.value !== "all")
         partners = partners.filter(function (d) {
@@ -661,11 +661,11 @@ angular.module("ricardo.controllers.country", []).controller("country", [
         .key(function (d) {
           return d.year;
         })
-        .rollup(countryService.rollupYears)
+        .rollup(reportingService.rollupYears)
         .entries(data);
 
-      partners = countryService.addTypePartner(partners, data);
-      partners = countryService.valuesToPartners(partners, indexYears);
+      partners = reportingService.addTypePartner(partners, data);
+      partners = reportingService.valuesToPartners(partners, indexYears);
 
       if ($scope.filtered.type.value !== "all")
         partners = partners.filter(function (d) {
@@ -700,11 +700,11 @@ angular.module("ricardo.controllers.country", []).controller("country", [
         .key(function (d) {
           return d.year;
         })
-        .rollup(countryService.rollupYears)
+        .rollup(reportingService.rollupYears)
         .entries(data);
 
-      partners = countryService.addTypePartner(partners, data);
-      partners = countryService.valuesToPartners(partners, indexYears);
+      partners = reportingService.addTypePartner(partners, data);
+      partners = reportingService.valuesToPartners(partners, indexYears);
 
       if (filter.type.value !== "all")
         partners = partners.filter(function (d) {
@@ -848,14 +848,14 @@ angular.module("ricardo.controllers.country", []).controller("country", [
       }
     }
 
-    function initCountryStatuses() {
+    function initPoliticalStatuses() {
       apiService.getGeoPolHistData().then(data => {
         $scope.statusesData = data;
-        updateCountryStatuses()
+        updatePoliticalStatuses()
       })
     }
 
-    function updateCountryStatuses() {
+    function updatePoliticalStatuses() {
       const { entities, statusInTime } = $scope.statusesData || {};
       const reporting = $scope.entities.sourceEntity.selected;
       const minYear = $scope.selectedMinDate;
@@ -1007,7 +1007,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
           });
 
           var fileName =
-            "RICardo - Country - " +
+            "RICardo - Reporting - " +
             $scope.entities.sourceEntity.selected.RICid +
             " - " +
             $scope.selectedMinDate +
@@ -1038,7 +1038,7 @@ angular.module("ricardo.controllers.country", []).controller("country", [
           });
 
           var fileName =
-            "RICardo - Country - " +
+            "RICardo - Reporting - " +
             $scope.entities.sourceEntity.selected.RICid +
             " - " +
             $scope.selectedMinDate +

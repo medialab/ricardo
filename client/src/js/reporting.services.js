@@ -1,12 +1,12 @@
 angular
-  .module("ricardo.services.country", [])
+  .module("ricardo.services.reporting", [])
   .config([
     "$httpProvider",
     function ($httpProvider) {
       delete $httpProvider.defaults.headers.common["X-Requested-With"];
     },
   ])
-  .factory("countryService", function () {
+  .factory("reportingService", function () {
     return {
       rollupYears: function (leaves) {
         var nb_exps_not_null = leaves.filter(function (l) {

@@ -7,7 +7,7 @@ angular.module("ricardo.controllers.navbar", []).controller("navbar", [
     };
     $scope.views = [
       { slug: "world", label: "World" },
-      { slug: "country", label: "Country" },
+      { slug: "reporting", label: "Reporting" },
       { slug: "bilateral", label: "Bilateral" },
     ];
     $scope.dataViews = [

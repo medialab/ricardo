@@ -1,5 +1,5 @@
 import "./bilateral.controller.js";
-import "./country.controller.js";
+import "./reporting.controller.js";
 import "./home.controller.js";
 import "./matrix.controller.js";
 import "./navbar.controller.js";
@@ -12,7 +12,7 @@ angular.module("ricardo.controllers", [
   "ricardo.controllers.navbar",
   "ricardo.controllers.TranslateController",
   "ricardo.controllers.bilateral",
-  "ricardo.controllers.country",
+  "ricardo.controllers.reporting",
   "ricardo.controllers.world",
   "ricardo.controllers.rates",
   "ricardo.controllers.network",
