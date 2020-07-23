@@ -32,8 +32,10 @@ def ric_entities_data(ids=[]):
     return rics
 
 
-def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources,group_reporting_by="", search_by_reporting=False):
+def flows_data(reporting_ids, partner_ids, original_currency, from_year, to_year, with_sources, group_reporting_by="", search_by_reporting=False):
     cursor = get_db().cursor()
+
+    reports_clause =""" AND reporting_slug IN ("%s")"""%'","'.join(reporting_ids) if len(reporting_ids)>0 else ""
     partners_clause =""" AND partner_slug IN ("%s")"""%'","'.join(partner_ids) if len(partner_ids)>0 else ""
     # world_partner_clause = "AND partner_slug NOT LIKE 'Worl%%'" if "Worldbestguess" not in partner_ids else ""
     from_year_clause = """ AND year>%s"""%from_year if from_year!="" else ""
@@ -43,39 +45,83 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
     flow_field = "Flow*Unit/ifnull(rate,1)" if not original_currency else "Flow*Unit"
     source_field = """,group_concat(Source,"|")""" if with_sources else ""
 
-    if group_reporting_by=="":
-        cursor.execute("""SELECT reporting_slug,partner_slug,partner,year,group_concat(expimp,"|"),group_concat(%s,"|"),currency%s
-                      FROM flow_joined
-                      where reporting_slug IN ("%s")
-                      %s
-                      and flow is not null
-                      and partner_slug is not null
-                      GROUP BY reporting,partner,year
-                      ORDER BY  year ASC
-                      """%(flow_field, source_field,'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause)
-                )
+    if group_reporting_by == "":
+        cursor.execute("""
+            SELECT
+                reporting_slug,
+                partner_slug,
+                partner,
+                year,
+                group_concat(expimp,"|"),
+                group_concat(%s,"|"),
+                currency%s
+            FROM
+                flow_joined
+            WHERE
+                flow IS NOT NULL
+                AND partner_slug IS NOT NULL
+                %s
+            GROUP BY
+                reporting,
+                partner,
+                year
+            ORDER BY
+                year ASC
+            """%(flow_field, source_field, reports_clause+partners_clause+from_year_clause+to_year_clause)
+        )
+
     elif group_reporting_by=="continent": # in these 2 usecases, reporting_ids are continents
-        if search_by_reporting:  # In this usecase, partner_ids are actually reporting_ids
-            cursor.execute("""SELECT reporting_slug, partner_continent,partner_continent, year, group_concat(expimp,"|"), group_concat(%s,"|"), currency%s
-                      FROM flow_joined
-                      WHERE reporting_slug IN ("%s") AND partner_continent IN ("%s")
-                      %s
-                      AND ( flow IS NOT null)
-                      and partner_slug is not null
-                      GROUP BY partner_continent, reporting_slug, year
-                      ORDER BY year ASC
-                      """%(flow_field,source_field,'","'.join(partner_ids),'","'.join(reporting_ids),from_year_clause+to_year_clause)
-                )
+        if search_by_reporting:           # In this usecase, partner_ids are actually reporting_ids
+            cursor.execute("""
+                SELECT
+                    reporting_slug,
+                    partner_continent,
+                    partner_continent,
+                    year,
+                    group_concat(expimp,"|"),
+                    group_concat(%s,"|"),
+                    currency%s
+                FROM
+                    flow_joined
+                WHERE
+                    reporting_slug IN ("%s")
+                    AND partner_continent IN ("%s")
+                    %s
+                    AND ( flow IS NOT null)
+                    AND partner_slug IS NOT NULL
+                GROUP BY
+                    partner_continent,
+                    reporting_slug,
+                    year
+                ORDER BY
+                    year ASC
+                """%(flow_field,source_field,'","'.join(partner_ids),'","'.join(reporting_ids),from_year_clause+to_year_clause)
+            )
         else:
-            cursor.execute("""SELECT reporting_continent,partner_slug,partner,year,group_concat(expimp,"|"),group_concat(%s,"|"),currency%s
-                      FROM flow_joined
-                      where reporting_continent IN ("%s") AND partner_continent NOT IN ("%s")
-                      %s
-                      AND ( flow IS NOT null)
-                      and partner_slug is not null
-                      GROUP BY reporting_continentt, partner, year
-                      ORDER BY year ASC
-                      """%(flow_field,source_field,'","'.join(reporting_ids),'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause)
+            cursor.execute("""
+                SELECT
+                    reporting_continent,
+                    partner_slug,
+                    partner,
+                    year,
+                    group_concat(expimp,"|"),
+                    group_concat(%s,"|"),
+                    currency%s
+                FROM
+                    flow_joined
+                WHERE
+                    reporting_continent IN ("%s")
+                    AND partner_continent NOT IN ("%s")
+                    %s
+                    AND ( flow IS NOT NULL)
+                    AND partner_slug IS NOT NULL
+                GROUP BY
+                    reporting_continentt,
+                    partner,
+                    year
+                ORDER BY
+                    year ASC
+                """%(flow_field,source_field,'","'.join(reporting_ids),'","'.join(reporting_ids),partners_clause+from_year_clause+to_year_clause)
                 )
 
     flows=[]
@@ -146,7 +192,7 @@ def flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,wit
 
     return flows
 
-def get_flows_sources(reporting_ids,partner_ids,from_year,to_year):
+def get_flows_sources(reporting_ids, partner_ids, from_year, to_year):
     cursor = get_db().cursor()
     partners_clause =""" AND partner_slug IN ("%s")"""%'","'.join(partner_ids) if len(partner_ids)>0 else ""
     from_year_clause = """ AND year>%s"""%from_year if from_year!="" else ""
@@ -648,13 +694,19 @@ def get_continent_nb_partners(from_year, to_year):
 
     return json.dumps(json_response,encoding="UTF8")
 
-def get_flows(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources):
+def get_flows(reporting_ids, partner_ids, original_currency, from_year, to_year, with_sources):
     json_response={}
-    json_response["flows"]=flows_data(reporting_ids,partner_ids,original_currency,from_year,to_year,with_sources)
+    json_response["flows"] = flows_data(reporting_ids, partner_ids, original_currency, from_year, to_year, with_sources)
     if len(partner_ids)==0:
         partner_ids=list(set(_["partner_id"] for _ in json_response["flows"]))
     partners = ric_entities_data(partner_ids) if len(partner_ids)>0 else []
     json_response["RICentities"]={"reportings":ric_entities_data(reporting_ids),"partners":partners}
+
+    print "test"
+    print reporting_ids
+    print len(reporting_ids)
+    print partner_ids
+    print len(partner_ids)
 
     if len(reporting_ids)==1 and len(partner_ids)==1:
         #bilateral : add mirror

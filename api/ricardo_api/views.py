@@ -27,11 +27,19 @@ def flows():
     from_year = request.args.get('from', '')
     to_year = request.args.get('to', '')
 
-    if reporting_ids=="":
-        abort(400)
+    # if there is no reporting and partner ids, then we return a 400
+    if not reporting_ids and not partner_ids:
+         abort(400)
 
     try:
-        json_data=models.get_flows(reporting_ids.split(","),partner_ids.split(",")if partner_ids!='' else [],original_currency,from_year,to_year,with_sources)
+        json_data=models.get_flows(
+            reporting_ids.split(",")if reporting_ids!='' else [],
+            partner_ids.split(",")if partner_ids!='' else [],
+            original_currency,
+            from_year,
+            to_year,
+            with_sources
+        )
     except Exception as e:
         app.logger.exception("exception occurs in flows")
         abort(500)
