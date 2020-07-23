@@ -26,8 +26,7 @@ export function initParams($route, $scope, params) {
           );
         } else {
           $scope[param.name] = param.list
-            .filter((item) => (param.getItemId ? param.getItemId(item) : item) + "" === urlParams[param.name] + "")
-            .shift();
+            .find((item) => (param.getItemId ? param.getItemId(item) : item) + "" === urlParams[param.name] + "");
         }
       } else {
         $scope[param.name] = urlParams[param.name];
@@ -39,7 +38,7 @@ export function initParams($route, $scope, params) {
     $scope.$watchCollection(`[${watchlist.join(", ")}]`, function (newVal, oldVal) {
       newVal.forEach((item, index) => {
         if (oldVal[index] !== newVal[index]) {
-          const param = params.find((e) => e.name == watchlist[index]);
+          const param = params.find((e) => e.name + "" === watchlist[index] + "");
           urlParams[param.name] = param.getItemId ? param.getItemId(item) : item;
         }
       });
