@@ -148,9 +148,7 @@ angular
           partnerEntities: [
             "apiService",
             function (apiService) {
-              // TODO:
-              // Load the actual partners list, instead of the reportings list:
-              return apiService.getReportingEntities({
+              return apiService.getPartnerEntities({
                 type_filter: "country,group,city",
               });
             },

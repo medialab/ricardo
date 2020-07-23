@@ -116,7 +116,7 @@ angular.module("ricardo.directives.politicalStatuses", []).directive("politicalS
                 .axis()
                 .scale(xScale)
                 .orient("bottom")
-                .ticks(10)
+                .ticks(boundaries.maxYear - boundaries.minYear < 5 ? 1 : 10)
                 .outerTickSize(0)
                 .tickFormat((d) => d.toString()),
             );

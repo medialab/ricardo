@@ -166,6 +166,24 @@ angular
           );
           return deferred.promise;
         },
+        getPartnerEntities: function (params) {
+          var deferred = $q.defer();
+          var serviceUrl = "/partner_entities";
+          $http({
+            method: "GET",
+            url: BASE_API_URL + serviceUrl,
+            params: params,
+            cache: true,
+          }).then(
+            function success(data) {
+              deferred.resolve(data.data);
+            },
+            function error() {
+              deferred.reject("An error occured while fetching file");
+            },
+          );
+          return deferred.promise;
+        },
         getBilateralEntities: function (params) {
           var deferred = $q.defer();
           var serviceUrl = "/bilateral_entities";

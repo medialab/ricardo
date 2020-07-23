@@ -111,16 +111,29 @@ def reporting_years():
 
 @app.route('/reporting_entities')
 def reporting_entities():
-    type_filter = request.args.get('type_filter',None) #["countries","city","colonial_area","geographic_area"])
-    to_partner_ids = request.args.get('partners_ids',None)
-    types=type_filter.split(",") if type_filter else []
+    type_filter = request.args.get('type_filter', None) #["countries","city","colonial_area","geographic_area"])
+    to_partner_ids = request.args.get('partners_ids', None)
+    types = type_filter.split(",") if type_filter else []
     try:
-        json_data=models.get_reporting_entities(types,to_partner_ids.split(",") if to_partner_ids else [])
+        json_data = models.get_reporting_or_partner_entities(types, to_partner_ids.split(",") if to_partner_ids else [], "reporting")
     except Exception:
         raise
         abort(500)
 
-    return Response(json_data, status=200, mimetype='application/json')
+    return Response(json_data, status = 200, mimetype = 'application/json')
+
+@app.route('/partner_entities')
+def partner_entities():
+    type_filter = request.args.get('type_filter', None) #["countries","city","colonial_area","geographic_area"])
+    from_reporting_ids = request.args.get('reporting_ids', None)
+    types = type_filter.split(",") if type_filter else []
+    try:
+        json_data = models.get_reporting_or_partner_entities(types, from_reporting_ids.split(",") if from_reporting_ids else [], "partner")
+    except Exception:
+        raise
+        abort(500)
+
+    return Response(json_data, status = 200, mimetype = 'application/json')
 
 @app.route('/bilateral_entities')
 def bilateral_entities():

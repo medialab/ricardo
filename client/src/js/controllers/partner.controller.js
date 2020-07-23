@@ -55,7 +55,7 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
 
       apiService
         .getFlows({
-          reporting_ids: $scope.partner,
+          partner_ids: $scope.partner,
           with_sources: 1,
         })
         .then((data) => {
@@ -74,8 +74,8 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
       if ("selectedMaxDate" in state) $scope.selectedMaxDate = state.selectedMaxDate;
 
       // Set initial values if missing:
-      if (!$scope.selectedMinDate) $scope.selectedMinDate = Infinity;
-      if (!$scope.selectedMaxDate) $scope.selectedMaxDate = -Infinity;
+      if (!$scope.selectedMinDate) $scope.selectedMinDate = -Infinity;
+      if (!$scope.selectedMaxDate) $scope.selectedMaxDate = Infinity;
 
       // Check absolute extrema:
       $scope.selectedMinDate = Math.min(Math.max($scope.selectedMinDate, $scope.minDate), $scope.maxDate - 1);

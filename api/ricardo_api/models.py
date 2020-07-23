@@ -778,56 +778,51 @@ def get_reporting_years():
   return json.dumps(json_response,encoding="UTF8")
 
 
-def get_reporting_entities(types=[],to_partner_ids=[]):
-
+def get_reporting_or_partner_entities(types=[],related_to_ids=[],type="reporting"):
+    from_prefix = type
+    to_prefix = "partner" if type == "reporting" else "reporting"
     cursor = get_db().cursor()
     if "continent" in types:
         types.remove("continent")
-        cursor.execute("""SELECT reporting_continent
+        cursor.execute("""SELECT [FROM_PREFIX]_continent
                           FROM flow_joined
-                          group by reporting_continent ORDER BY count(*) DESC""")
-        json_response=[]
+                          group by [FROM_PREFIX]_continent ORDER BY count(*) DESC""".replace("[FROM_PREFIX]", from_prefix))
+        json_response = []
         for (continent) in cursor:
             json_response.append({
-            "RICname":continent[0],
-            "type":"continent",
+                "RICname": continent[0],
+                "type": "continent",
             })
 
-        if len(types)==0:
+        if len(types) == 0:
             # nothing to add so return
-            return json.dumps(json_response,encoding="UTF8")
+            return json.dumps(json_response, encoding = "UTF8")
     else:
-        json_response=[]
-    type_clause='reporting_type IN ("%s")'%'","'.join(types) if len(types)>0 else ""
-    partner_clause=" partner_slug IN ('%s') "%"','".join(to_partner_ids) if len(to_partner_ids)>0 else ""
-    if type_clause!="" or partner_clause!="":
-        where_clause = " AND ".join(_ for _ in [type_clause,partner_clause] if _ != "")
-        where_clause = "WHERE "+where_clause if where_clause!="" else ""
+        json_response = []
+    type_clause = '[FROM_PREFIX]_type IN ("%s")'%'","'.join(types) if len(types) > 0 else ""
+    related_to_clause = " [TO_PREFIX]_slug IN ('%s') "%"','".join(related_to_ids) if len(related_to_ids) > 0 else ""
+    if type_clause != "" or related_to_clause != "":
+        where_clause = " AND ".join(_ for _ in [type_clause,related_to_clause] if _ != "")
+        where_clause = "WHERE " + where_clause if where_clause != "" else ""
     else:
-        where_clause =""
+        where_clause = ""
 
-    sql="""SELECT distinct reporting_slug,reporting,reporting_type,reporting_continent
-                          FROM flow_joined
-                          %s"""%(where_clause)
-    # sql="""select reporting_slug,reporting,reporting_type,reporting_continent
-    #       from (
-    #       SELECT reporting_slug,reporting,reporting_type,reporting_continent, group_concat(distinct partner_slug) as partner
-    #       FROM flow_joined
-    #       %s
-    #       group by reporting_slug)
-    #       where partner is not 'WorldFedericoTena'
-    #     """%(where_clause)
+    sql = ("""SELECT distinct [FROM_PREFIX]_slug,[FROM_PREFIX],[FROM_PREFIX]_type,[FROM_PREFIX]_continent
+              FROM flow_joined
+              %s"""%where_clause) \
+              .replace("[FROM_PREFIX]", from_prefix) \
+              .replace("[TO_PREFIX]", to_prefix)
     cursor.execute(sql)
 
     for (id,r,t,continent) in cursor:
         json_response.append({
-            "RICid":id,
-            "RICname":r,
-            "type":t,
-            "continent":continent
-            })
-    json_response=sorted(json_response, key=lambda k: k['RICid'])
-    return json.dumps(json_response,encoding="UTF8")
+            "RICid": id,
+            "RICname": r,
+            "type": t,
+            "continent": continent
+        })
+    json_response = sorted(json_response, key = lambda k: k['RICid'])
+    return json.dumps(json_response,encoding = "UTF8")
 
 def get_bilateral_entities():
 
