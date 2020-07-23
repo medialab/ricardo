@@ -252,9 +252,9 @@
           {{ 'LINE_CHART_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'LINE_CHART_2' | translate }}
           <div class="inline-select">
             <ui-select
-              ng-model="entities.sourceCountryEntity1.selected"
+              ng-model="entities.sourceCountryEntity.selected"
               theme="bootstrap"
-              ng-change="change(entities.sourceCountryEntity1.selected)"
+              ng-change="change(entities.sourceCountryEntity.selected)"
             >
               <ui-select-match
                 class="ui-select-match"
@@ -263,7 +263,7 @@
               ></ui-select-match>
               <ui-select-choices
                 class="ui-select-choices"
-                repeat="item in reportingCountryEntities1 | filter: $select.search"
+                repeat="item in reportingCountryEntities | filter: $select.search"
               >
                 <div ng-bind-html="item.RICname | highlight: $select.search"></div>
               </ui-select-choices>
@@ -339,7 +339,11 @@
         </div>
         <div class="subtitle">{{'LINE_CHART_SELECT' | translate }}</div>
         <div>
-          <span class="entity" ng-repeat="elm in reporting" ng-click="removeReporting(elm)" ng-style="{color:elm.color}"
+          <span
+            class="entity"
+            ng-repeat="elm in comparison"
+            ng-click="removeComparison(elm)"
+            ng-style="{color:elm.color}"
             >{{elm.RICname}}
             <span class="close-btn">
               <i class="fa fa-times-circle"></i>

@@ -152,19 +152,17 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
       sourceGeoEntity: {},
       sourceContinentEntity: {},
       sourceWorldEntity: {},
-      sourceCountryEntity1: {},
     };
 
     /*
      * Arrays of entities for linechart
      */
-    $scope.reporting = [];
+    $scope.comparison = [];
     $scope.reportingCountryEntities = [];
     $scope.reportingColonialEntities = [];
     $scope.reportingGeoEntities = [];
     $scope.reportingContinentEntities = [];
     $scope.reportingWorldEntities = [];
-    $scope.reportingCountryEntities1 = [];
 
     /*
      * Linecharts default config
@@ -365,7 +363,7 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
 
           initParams($route, $scope, [
             {
-              name: "reporting",
+              name: "comparison",
               isArray: true,
               list: $scope.RICentitiesDD.concat($scope.reportingContinentEntities),
               getItemId: (e) => e.RICid,
@@ -375,7 +373,7 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
           /*
            * Line chart world
            */
-          $scope.reporting = $scope.reporting || [];
+          $scope.comparison = $scope.comparison || [];
           $scope.entities.sourceCountryEntity = {};
           $scope.entities.sourceColonialEntity = {};
           $scope.entities.sourceGeoEntity = {};
@@ -481,13 +479,13 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         return d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate;
       });
 
-      var partner_selected = $scope.reporting.map(function (d) {
+      var partner_selected = $scope.comparison.map(function (d) {
         return d.RICid;
       });
       var tableDataSources = tableData;
       if (partner_selected.length > 0) {
         tableDataSources = [];
-        $scope.reporting.forEach(function (r) {
+        $scope.comparison.forEach(function (r) {
           if (r.type !== "continent")
             var dataFiltered = tableData.filter(function (d) {
               return d.partner_id === r.RICid;
@@ -523,18 +521,18 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
      * Push item in array to display line chart
      */
     function initReporting() {
-      $scope.reporting.map((entity) => {
+      $scope.comparison.map((entity) => {
         entity["color"] = $scope.lineColors.pop();
         return entity;
       });
-      initLinechart($scope.reporting, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);
+      initLinechart($scope.comparison, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);
       updateTableData();
     }
 
-    $scope.pushReporting = function (elm) {
-      if ($scope.reporting.length >= 5) return;
+    $scope.pushComparison = function (elm) {
+      if ($scope.comparison.length >= 5) return;
       if (
-        $scope.reporting
+        $scope.comparison
           .map(function (d) {
             return d.RICid;
           })
@@ -542,33 +540,33 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
       )
         return;
       elm["color"] = $scope.lineColors.pop();
-      $scope.reporting.push(elm);
+      $scope.comparison.push(elm);
       $scope.resetDD(elm.type);
-      initLinechart($scope.reporting, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);
+      initLinechart($scope.comparison, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);
       updateTableData();
     };
 
     /*
      * Remove item of the array of reporting to display line chart world
      */
-    $scope.removeReporting = function (elm) {
+    $scope.removeComparison = function (elm) {
       if (
-        $scope.reporting
+        $scope.comparison
           .map(function (d) {
             return d.RICid;
           })
           .indexOf(elm.RICid) < 0
       )
         return;
-      var i = $scope.reporting
+      var i = $scope.comparison
         .map(function (d) {
           return d.RICid;
         })
         .indexOf(elm.RICid);
       $scope.lineColors.push(elm["color"]);
-      $scope.reporting.splice(i, 1);
+      $scope.comparison.splice(i, 1);
       d3.select("#linechart-world-container > svg").remove();
-      initLinechart($scope.reporting, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);
+      initLinechart($scope.comparison, $scope.linechartFlow.type.value, $scope.linechartCurrency.type.value);
       updateTableData();
     };
 
@@ -577,7 +575,7 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
      */
 
     $scope.resetDD = function (t) {
-      $scope.entities.sourceCountryEntity1.selected = undefined;
+      $scope.entities.sourceCountryEntity.selected = undefined;
       $scope.entities.sourceWorldEntity.selected = undefined;
       $scope.entities.sourceContinentEntity.selected = undefined;
     };
@@ -719,36 +717,36 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
      *  Linechart triggers
      */
     $scope.change = function (item) {
-      $scope.pushReporting(item);
+      $scope.pushComparison(item);
     };
     $scope.changeCountry = function (country) {
-      $scope.pushReporting(country);
+      $scope.pushComparison(country);
     };
 
     $scope.changeColonial = function (colonial) {
-      $scope.pushReporting(colonial);
+      $scope.pushComparison(colonial);
     };
 
     $scope.changeGeo = function (geo) {
-      $scope.pushReporting(geo);
+      $scope.pushComparison(geo);
     };
 
     $scope.changeContinent = function (continent) {
-      $scope.pushReporting(continent);
+      $scope.pushComparison(continent);
     };
 
     $scope.changeWorld = function (world) {
-      $scope.pushReporting(world);
+      $scope.pushComparison(world);
     };
 
     $scope.changeCurrency = function (currency) {
-      initLinechart($scope.reporting, $scope.linechartFlow.type.value, currency.type.value);
+      initLinechart($scope.comparison, $scope.linechartFlow.type.value, currency.type.value);
       $scope.linechartCurrency = currency;
       $scope.messagePercent = currency.type.value === "value";
     };
 
     $scope.changeFlow = function (flow) {
-      initLinechart($scope.reporting, flow.type.value, $scope.linechartCurrency.type.value);
+      initLinechart($scope.comparison, flow.type.value, $scope.linechartCurrency.type.value);
       $scope.linechartFlow = flow;
     };
 
@@ -849,10 +847,10 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
     }
 
     function initPoliticalStatuses() {
-      apiService.getGeoPolHistData().then(data => {
+      apiService.getGeoPolHistData().then((data) => {
         $scope.statusesData = data;
-        updatePoliticalStatuses()
-      })
+        updatePoliticalStatuses();
+      });
     }
 
     function updatePoliticalStatuses() {
