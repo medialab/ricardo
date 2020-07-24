@@ -16,8 +16,6 @@ var ENV = process.env.npm_lifecycle_event;
 var isTest = ENV === "test" || ENV === "test-watch";
 var isProd = ENV === "build";
 
-isProd = true;
-
 module.exports = (function makeWebpackConfig() {
   /**
    * Config
