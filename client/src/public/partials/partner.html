@@ -69,9 +69,9 @@
       <p class="paragraphViz">{{'PARTNER_STATUSES_INTRO' | translate}}</p>
       <div>
         <political-statuses
-          sovereignty-data="sovereigntyData"
-          dependencies-data="dependenciesData"
-          boundaries="boundaries"
+          gph-data="gphData"
+          partner="partner"
+          boundaries="{minYear: selectedMinDate, maxYear: selectedMaxDate}"
         />
         <div class="legend">
           <div class="legend-item">

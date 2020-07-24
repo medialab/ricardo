@@ -40,10 +40,7 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
     $scope.flows = null;
 
     // Political statuses data:
-    $scope.statusesData = {};
-    $scope.sovereigntyData = {};
-    $scope.dependenciesData = [];
-    $scope.boundaries = { minYear: null, maxYear: null };
+    $scope.gphData = {};
 
     /**
      * ACTIONS:
@@ -89,7 +86,6 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
       $scope.maxDateRange = d3.range($scope.selectedMinDate + 1, $scope.maxDate);
 
       $scope.updateQueryParams();
-      $scope.updatePoliticalStatuses();
     };
     $scope.selectMinDate = (selectedMinDate) => $scope.selectDates({ selectedMinDate });
     $scope.selectMaxDate = (selectedMaxDate) => $scope.selectDates({ selectedMaxDate });
@@ -102,81 +98,12 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
       });
     };
 
-    $scope.updatePoliticalStatuses = () => {
-      const { entities, statusInTime } = $scope.statusesData || {};
-      const partner = $scope.partner;
-      const minYear = $scope.selectedMinDate;
-      const maxYear = $scope.selectedMaxDate;
-
-      if (!entities || !statusInTime) return;
-
-      // Search for entity in GeoPolHist corpus:
-      const gphPartnerEntity = entities.find((entity) => partner === entity.GPH_name);
-
-      // If no entity has been found, reset related data:
-      if (!gphPartnerEntity) {
-        $scope.sovereigntyData = {};
-        $scope.dependenciesData = [];
-        $scope.boundaries = { minYear, maxYear };
-        return;
-      }
-
-      const entitiesIndex = entities.reduce(
-        (iter, entity) => ({
-          ...iter,
-          [entity.GPH_code]: entity,
-        }),
-        {},
-      );
-      const sovereigntyStatuses = {
-        Sovereign: true,
-        "Sovereign (limited)": true,
-        "Sovereign (unrecognized)": true,
-      };
-      const dependenciesStatuses = {
-        "Became colony of": true,
-        "Became part of": true,
-        "Became dependency of": true,
-        "Became protectorate of": true,
-        "Became vassal of": true,
-        "Became possession of": true,
-      };
-      $scope.sovereigntyData = [];
-      $scope.dependenciesData = [];
-      statusInTime.forEach(({ GPH_code, sovereign_GPH_code, GPH_status, start_year, end_year }) => {
-        // Check years boundaries:
-        if (+start_year > +maxYear || end_year < minYear) return;
-
-        const startYear = Math.max(start_year, minYear);
-        const endYear = Math.min(end_year, maxYear);
-
-        if (sovereigntyStatuses[GPH_status] && GPH_code === gphPartnerEntity.GPH_code) {
-          $scope.sovereigntyData.push({
-            relation: GPH_status,
-            startYear: startYear,
-            endYear: endYear,
-          });
-        }
-        if (dependenciesStatuses[GPH_status] && sovereign_GPH_code === gphPartnerEntity.GPH_code) {
-          $scope.dependenciesData.push({
-            id: GPH_code,
-            label: entitiesIndex[GPH_code].GPH_name,
-            relation: GPH_status,
-            startYear: startYear,
-            endYear: endYear,
-          });
-        }
-      });
-      $scope.boundaries = { minYear, maxYear };
-    };
-
     /**
      * INITIALISATION:
      * ***************
      */
     apiService.getGeoPolHistData().then((data) => {
-      $scope.statusesData = data;
-      $scope.updatePoliticalStatuses();
+      $scope.gphData = data;
       $scope.selectPartner($scope.partner);
     });
   },

@@ -94,9 +94,9 @@
       <p class="paragraphViz">{{'REPORTING_STATUSES_INTRO' | translate}}</p>
       <div>
         <political-statuses
-          sovereignty-data="sovereigntyData"
-          dependencies-data="dependenciesData"
-          boundaries="boundaries"
+          gph-data="statusesData"
+          partner="entities.sourceEntity.selected.RICname"
+          boundaries="{minYear: selectedMinDate, maxYear: selectedMaxDate}"
         />
         <div class="legend">
           <div class="legend-item">

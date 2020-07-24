@@ -41,22 +41,91 @@ angular.module("ricardo.directives.politicalStatuses", []).directive("politicalS
       template: '<div class="political-statuses-chart"></div>',
       replace: false,
       scope: {
-        sovereigntyData: "=",
-        dependenciesData: "=",
+        gphData: "=",
+        partner: "=",
         boundaries: "=",
       },
       link: function (scope, element) {
         const CHART_HEIGHT = 100;
         const X_AXIS_HEIGHT = 20;
+        const SOVEREIGNTY_STATUSES = {
+          Sovereign: true,
+          "Sovereign (limited)": true,
+          "Sovereign (unrecognized)": true,
+        };
+        const DEPENDENCIES_STATUSES = {
+          "Became colony of": true,
+          "Became part of": true,
+          "Became dependency of": true,
+          "Became protectorate of": true,
+          "Became vassal of": true,
+          "Became possession of": true,
+        };
 
         element.on("$destroy", () => {
           flushDOM(element[0]);
         });
 
-        scope.$watchCollection("[sovereigntyData, dependenciesData, boundaries]", (newValue, oldValue) => {
-          const [sovereigntyData, dependenciesData, boundaries] = newValue;
-          render(element[0], sovereigntyData, dependenciesData, boundaries);
+        scope.$watchCollection("[gphData, partner, boundaries]", (newValue, oldValue) => {
+          const [gphData, partner, boundaries] = newValue;
+          const vizData = prepareData(gphData, partner, boundaries);
+          render(element[0], vizData.sovereigntyData, vizData.dependenciesData, boundaries);
         });
+
+        /**
+         * This function takes the full GPH dataset and other relevant arguments
+         * and generate proper indices for rendering.
+         */
+        function prepareData(gphData, partner, boundaries) {
+          const { entities, statusInTime } = gphData;
+          const { minYear, maxYear } = boundaries;
+          const result = {
+            sovereigntyData: [],
+            dependenciesData: [],
+          };
+
+          if (!entities || !statusInTime) return result;
+
+          // Search for entity in GeoPolHist corpus:
+          const gphPartnerEntity = entities.find((entity) => partner === entity.GPH_name);
+
+          // If no entity has been found, reset related data:
+          if (!gphPartnerEntity) return result;
+
+          const entitiesIndex = entities.reduce(
+            (iter, entity) => ({
+              ...iter,
+              [entity.GPH_code]: entity,
+            }),
+            {},
+          );
+          statusInTime.forEach(({ GPH_code, sovereign_GPH_code, GPH_status, start_year, end_year }) => {
+            // Check years boundaries:
+            if (+start_year > +maxYear || end_year < minYear) return;
+
+            const startYear = Math.max(start_year, minYear);
+            const endYear = Math.min(end_year, maxYear);
+
+            if (SOVEREIGNTY_STATUSES[GPH_status] && GPH_code === gphPartnerEntity.GPH_code) {
+              result.sovereigntyData.push({
+                relation: GPH_status,
+                startYear: startYear,
+                endYear: endYear,
+              });
+            }
+            if (DEPENDENCIES_STATUSES[GPH_status] && sovereign_GPH_code === gphPartnerEntity.GPH_code) {
+              result.dependenciesData.push({
+                id: GPH_code,
+                label: entitiesIndex[GPH_code].GPH_name,
+                relation: GPH_status,
+                startYear: startYear,
+                endYear: endYear,
+              });
+            }
+          });
+
+          return result;
+        }
 
         /**
          * This function flushed the whole DOM for this component.

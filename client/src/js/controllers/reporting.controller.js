@@ -186,9 +186,6 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
      * Political statuses data
      */
     $scope.statusesData = {};
-    $scope.sovereigntyData = {};
-    $scope.dependenciesData = [];
-    $scope.boundaries = { minYear: null, maxYear: null };
 
     /*
      * First init with local storage
@@ -274,170 +271,171 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
      * Calling the API to init country selection
      */
     function init(sourceID, currency) {
-      apiService
-        .getFlows({
+      Promise.all([
+        apiService.getFlows({
           reporting_ids: sourceID,
           with_sources: 1,
-        })
-        .then(function (data) {
-          var dates = data.flows.map(function (d) {
-            return d.year;
-          });
-
-          $scope.selectedMinDate = $scope.selectedMinDate || d3.min(dates);
-          $scope.selectedMaxDate = $scope.selectedMaxDate || d3.max(dates);
-
-          initPoliticalStatuses();
-
-          data.flows = data.flows.filter(function (d) {
-            if (d.imp || d.exp !== 0) return d;
-          });
-          $scope.tableData = data.flows;
-
-          if (cfSource.size() > 0) {
-            cfSource.year().filterAll();
-            cfSource.clear();
-          }
-
-          $scope.actualCurrency = data.flows[0].currency;
-          $scope.RICentities = {};
-
-          data.RICentities.partners.forEach(function (d) {
-            $scope.RICentities["" + d.RICid] = {
-              RICname: d.RICname,
-              type: d.type,
-              RICid: d.RICid,
-              continent: d.continent,
-            };
-          });
-          $scope.RICentitiesDD = [];
-          data.RICentities.partners.forEach(function (d) {
-            $scope.RICentitiesDD.push(d);
-            if ($scope.RICentitiesDD[$scope.RICentitiesDD.length - 1].RICname.indexOf("World ") !== 0)
-              $scope.RICentitiesDD[$scope.RICentitiesDD.length - 1].RICname = d.RICname + "[" + d.type + "]";
-          });
-
-          /*
-           *  Init all entities by types filters for linechart viz
-           */
-          $scope.reportingCountryEntities = $scope.RICentitiesDD.filter(function (d) {
-            return d.type === "country";
-          });
-          $scope.reportingColonialEntities = $scope.RICentitiesDD.filter(function (d) {
-            return d.type === "colonial_area";
-          });
-          $scope.reportingGeoEntities = $scope.RICentitiesDD.filter(function (d) {
-            return d.type === "geographical_area" && d.RICname.indexOf("World ") !== 0;
-          });
-          $scope.reportingWorldEntities = $scope.RICentitiesDD.filter(function (d) {
-            return d.type === "geographical_area" && d.RICname.indexOf("World ") === 0;
-          });
-
-          $scope.reportingCountryEntities1 = $scope.RICentitiesDD.filter(function (d) {
-            return d.RICname.indexOf("World ") !== 0;
-          });
-
-          /*
-           * Special methods for continent
-           */
-          var continents = d3
-            .nest()
-            .key(function (d) {
-              return d.continent;
-            })
-            .entries(
-              $scope.RICentitiesDD.filter(function (d) {
-                return d.continent;
-              }),
-            )
-            .map(function (d) {
-              return d.key;
-            });
-
-          $scope.reportingContinentEntities = [];
-
-          continents.forEach(function (d) {
-            var elm = { RICname: d, type: "continent", RICid: d };
-            $scope.reportingContinentEntities.push(elm);
-          });
-
-          initParams($route, $scope, [
-            {
-              name: "comparison",
-              isArray: true,
-              list: $scope.RICentitiesDD.concat($scope.reportingContinentEntities),
-              getItemId: (e) => e.RICid,
-            },
-          ]);
-          initReporting();
-          /*
-           * Line chart world
-           */
-          $scope.comparison = $scope.comparison || [];
-          $scope.entities.sourceCountryEntity = {};
-          $scope.entities.sourceColonialEntity = {};
-          $scope.entities.sourceGeoEntity = {};
-          $scope.entities.sourceContinentEntity = {};
-          $scope.entities.sourceWorldEntity = {};
-
-          $scope.rawMinDate = d3.min(data.flows, function (d) {
-            return d.year;
-          });
-          $scope.rawMaxDate = d3.max(data.flows, function (d) {
-            return d.year;
-          });
-
-          $scope.rawYearsRange = d3.range($scope.rawMinDate, $scope.rawMaxDate + 1);
-          $scope.rawYearsRange_forInf = d3.range($scope.rawMinDate, $scope.selectedMaxDate);
-          $scope.rawYearsRange_forSup = d3.range($scope.selectedMinDate + 1, $scope.rawMaxDate + 1);
-          /*
-           * Build data for timeline
-           */
-          data.flows.forEach(function (d) {
-            d.type = $scope.RICentities["" + d.partner_id].type;
-            d.continent = $scope.RICentities[d.partner_id + ""].continent;
-          });
-          var onlyWorld = data.flows.every(function (d) {
-            return d.continent === "World";
-          });
-          if (onlyWorld) $scope.missingBilateral = true;
-
-          cfSource.add(data.flows);
-
-          // delete world flows, maybe api action ?
-          cfSource.partner().filter(function (p) {
-            return !/^World/.test(p);
-          });
-          var flowsPerYear = cfSource.years().top(Infinity);
-          // arrrrrg CFSource kill me ! we need to do a hard copy.
-          flowsPerYear = JSON.parse(JSON.stringify(flowsPerYear));
-          cfSource.partner().filterAll();
-
-          var timelineData = [];
-
-          flowsPerYear.sort(function (a, b) {
-            return d3.ascending(a.key, b.key);
-          });
-          flowsPerYear.forEach(function (d) {
-            var td = $.extend(d.value, {
-              year: new Date(d.key).getFullYear(),
-            });
-            if (!td.exp) td.exp = null;
-            if (!td.imp) td.imp = null;
-            if (!td.tot) td.tot = null;
-            timelineData.push(td);
-          });
-
-          $scope.timelineData = timelineData;
-
-          initPartnerHisto($scope.tableData);
-
-          /*
-           * Save all object in localStorage
-           */
-          localStorage.removeItem("sourceEntitySelected");
-          localStorage.setItem("sourceEntitySelected", JSON.stringify($scope.entities.sourceEntity.selected));
+        }),
+        apiService.getGeoPolHistData(),
+      ]).then(function ([data, gphData]) {
+        var dates = data.flows.map(function (d) {
+          return d.year;
         });
+
+        $scope.selectedMinDate = $scope.selectedMinDate || d3.min(dates);
+        $scope.selectedMaxDate = $scope.selectedMaxDate || d3.max(dates);
+
+        data.flows = data.flows.filter(function (d) {
+          if (d.imp || d.exp !== 0) return d;
+        });
+        $scope.tableData = data.flows;
+
+        $scope.statusesData = gphData;
+
+        if (cfSource.size() > 0) {
+          cfSource.year().filterAll();
+          cfSource.clear();
+        }
+
+        $scope.actualCurrency = data.flows[0].currency;
+        $scope.RICentities = {};
+
+        data.RICentities.partners.forEach(function (d) {
+          $scope.RICentities["" + d.RICid] = {
+            RICname: d.RICname,
+            type: d.type,
+            RICid: d.RICid,
+            continent: d.continent,
+          };
+        });
+        $scope.RICentitiesDD = [];
+        data.RICentities.partners.forEach(function (d) {
+          $scope.RICentitiesDD.push(d);
+          if ($scope.RICentitiesDD[$scope.RICentitiesDD.length - 1].RICname.indexOf("World ") !== 0)
+            $scope.RICentitiesDD[$scope.RICentitiesDD.length - 1].RICname = d.RICname + "[" + d.type + "]";
+        });
+
+        /*
+         *  Init all entities by types filters for linechart viz
+         */
+        $scope.reportingCountryEntities = $scope.RICentitiesDD.filter(function (d) {
+          return d.type === "country";
+        });
+        $scope.reportingColonialEntities = $scope.RICentitiesDD.filter(function (d) {
+          return d.type === "colonial_area";
+        });
+        $scope.reportingGeoEntities = $scope.RICentitiesDD.filter(function (d) {
+          return d.type === "geographical_area" && d.RICname.indexOf("World ") !== 0;
+        });
+        $scope.reportingWorldEntities = $scope.RICentitiesDD.filter(function (d) {
+          return d.type === "geographical_area" && d.RICname.indexOf("World ") === 0;
+        });
+
+        $scope.reportingCountryEntities1 = $scope.RICentitiesDD.filter(function (d) {
+          return d.RICname.indexOf("World ") !== 0;
+        });
+
+        /*
+         * Special methods for continent
+         */
+        var continents = d3
+          .nest()
+          .key(function (d) {
+            return d.continent;
+          })
+          .entries(
+            $scope.RICentitiesDD.filter(function (d) {
+              return d.continent;
+            }),
+          )
+          .map(function (d) {
+            return d.key;
+          });
+
+        $scope.reportingContinentEntities = [];
+
+        continents.forEach(function (d) {
+          var elm = { RICname: d, type: "continent", RICid: d };
+          $scope.reportingContinentEntities.push(elm);
+        });
+
+        initParams($route, $scope, [
+          {
+            name: "comparison",
+            isArray: true,
+            list: $scope.RICentitiesDD.concat($scope.reportingContinentEntities),
+            getItemId: (e) => e.RICid,
+          },
+        ]);
+        initReporting();
+        /*
+         * Line chart world
+         */
+        $scope.comparison = $scope.comparison || [];
+        $scope.entities.sourceCountryEntity = {};
+        $scope.entities.sourceColonialEntity = {};
+        $scope.entities.sourceGeoEntity = {};
+        $scope.entities.sourceContinentEntity = {};
+        $scope.entities.sourceWorldEntity = {};
+
+        $scope.rawMinDate = d3.min(data.flows, function (d) {
+          return d.year;
+        });
+        $scope.rawMaxDate = d3.max(data.flows, function (d) {
+          return d.year;
+        });
+
+        $scope.rawYearsRange = d3.range($scope.rawMinDate, $scope.rawMaxDate + 1);
+        $scope.rawYearsRange_forInf = d3.range($scope.rawMinDate, $scope.selectedMaxDate);
+        $scope.rawYearsRange_forSup = d3.range($scope.selectedMinDate + 1, $scope.rawMaxDate + 1);
+        /*
+         * Build data for timeline
+         */
+        data.flows.forEach(function (d) {
+          d.type = $scope.RICentities["" + d.partner_id].type;
+          d.continent = $scope.RICentities[d.partner_id + ""].continent;
+        });
+        var onlyWorld = data.flows.every(function (d) {
+          return d.continent === "World";
+        });
+        if (onlyWorld) $scope.missingBilateral = true;
+
+        cfSource.add(data.flows);
+
+        // delete world flows, maybe api action ?
+        cfSource.partner().filter(function (p) {
+          return !/^World/.test(p);
+        });
+        var flowsPerYear = cfSource.years().top(Infinity);
+        // arrrrrg CFSource kill me ! we need to do a hard copy.
+        flowsPerYear = JSON.parse(JSON.stringify(flowsPerYear));
+        cfSource.partner().filterAll();
+
+        var timelineData = [];
+
+        flowsPerYear.sort(function (a, b) {
+          return d3.ascending(a.key, b.key);
+        });
+        flowsPerYear.forEach(function (d) {
+          var td = $.extend(d.value, {
+            year: new Date(d.key).getFullYear(),
+          });
+          if (!td.exp) td.exp = null;
+          if (!td.imp) td.imp = null;
+          if (!td.tot) td.tot = null;
+          timelineData.push(td);
+        });
+
+        $scope.timelineData = timelineData;
+
+        initPartnerHisto($scope.tableData);
+
+        /*
+         * Save all object in localStorage
+         */
+        localStorage.removeItem("sourceEntitySelected");
+        localStorage.setItem("sourceEntitySelected", JSON.stringify($scope.entities.sourceEntity.selected));
+      });
     }
 
     /*
@@ -448,7 +446,6 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         // update local storage
         updateDateRange();
         initPartnerHisto($scope.tableData);
-        updatePoliticalStatuses();
       }
     });
 
@@ -844,81 +841,6 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
           }
         });
       }
-    }
-
-    function initPoliticalStatuses() {
-      apiService.getGeoPolHistData().then((data) => {
-        $scope.statusesData = data;
-        updatePoliticalStatuses();
-      });
-    }
-
-    function updatePoliticalStatuses() {
-      const { entities, statusInTime } = $scope.statusesData || {};
-      const reporting = $scope.entities.sourceEntity.selected;
-      const minYear = $scope.selectedMinDate;
-      const maxYear = $scope.selectedMaxDate;
-
-      if (!entities || !statusInTime) return;
-
-      // Search for entity in GeoPolHist corpus:
-      const gphReportingEntity = entities.find((entity) => reporting.RICname === entity.GPH_name);
-
-      // If no entity has been found, reset related data:
-      if (!gphReportingEntity) {
-        $scope.sovereigntyData = {};
-        $scope.dependenciesData = [];
-        $scope.boundaries = { minYear, maxYear };
-        return;
-      }
-
-      const entitiesIndex = entities.reduce(
-        (iter, entity) => ({
-          ...iter,
-          [entity.GPH_code]: entity,
-        }),
-        {},
-      );
-      const sovereigntyStatuses = {
-        Sovereign: true,
-        "Sovereign (limited)": true,
-        "Sovereign (unrecognized)": true,
-      };
-      const dependenciesStatuses = {
-        "Became colony of": true,
-        "Became part of": true,
-        "Became dependency of": true,
-        "Became protectorate of": true,
-        "Became vassal of": true,
-        "Became possession of": true,
-      };
-      $scope.sovereigntyData = [];
-      $scope.dependenciesData = [];
-      statusInTime.forEach(({ GPH_code, sovereign_GPH_code, GPH_status, start_year, end_year }) => {
-        // Check years boundaries:
-        if (+start_year > +maxYear || end_year < minYear) return;
-
-        const startYear = Math.max(start_year, minYear);
-        const endYear = Math.min(end_year, maxYear);
-
-        if (sovereigntyStatuses[GPH_status] && GPH_code === gphReportingEntity.GPH_code) {
-          $scope.sovereigntyData.push({
-            relation: GPH_status,
-            startYear: startYear,
-            endYear: endYear,
-          });
-        }
-        if (dependenciesStatuses[GPH_status] && sovereign_GPH_code === gphReportingEntity.GPH_code) {
-          $scope.dependenciesData.push({
-            id: GPH_code,
-            label: entitiesIndex[GPH_code].GPH_name,
-            relation: GPH_status,
-            startYear: startYear,
-            endYear: endYear,
-          });
-        }
-      });
-      $scope.boundaries = { minYear, maxYear };
     }
 
     function changeInPercent(reporting_id, yValue, data, color, callback) {
