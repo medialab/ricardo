@@ -32,9 +32,6 @@ ENV NODE_ENV production
 
 RUN apk --update add --no-cache git
 
-RUN mkdir /client
-RUN mkdir /WorldTradeWeb
-
 USER node
 
 COPY --chown=node:node client /client
@@ -52,9 +49,6 @@ FROM nginx:alpine
 
 ENV API_PORT=8000
 ENV API_HOST=api
-
-
-RUN mkdir /ricardo
 
 # GET the exploration website from build image
 COPY --from=static_client --chown=nginx:nginx /client/build /ricardo/client

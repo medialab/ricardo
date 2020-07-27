@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ricardo
+
+namePrefix: ricardo-
+
+bases:
+  - ../../base/
+
+resources:
+  - ingress.yml
+
+patchesStrategicMerge:
+  - env.yml
+
+secretGenerator:
+- name: api
+  literals:
+    - secret_key=super_secret
+
+commonLabels:
+  stage: development
+
+images:
+  - name: gitlab.sciences-po.fr:4567/medialab/ricardo/ricardo-api
+    newTag: 'master'
+  - name: gitlab.sciences-po.fr:4567/medialab/ricardo/ricardo-client
+    newTag: 'master'
