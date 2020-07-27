@@ -4,136 +4,185 @@
 
 This project contains 2 applications:
 
-* [`ricardo_api`](API.md)': a [Flask](http://flask.pocoo.org/) application exposing a REST API serving data from the sqlite database in JSON format.
-* `client`: an HTML5 angular.js application displaying data vizualisations from the ricardo API.
+- [`ricardo_api`](API.md)': a [Flask](http://flask.pocoo.org/) application exposing a REST API serving data from the sqlite database in JSON format.
+- `client`: an HTML5 angular.js application displaying data vizualisations from the ricardo API.
+
+## Ricardo - Web Application (client)
+
+### Installation
+
+If you want to run your instance of RICardo locally on your machine, be sure you have the following requirements installed.
+
+#### Requirements
+
+- [Git](http://git-scm.com/book/en/Getting-Started-Installing-Git)
+- [Node / npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+
+#### Installation steps
+
+Clone RICardo from the command line:
+
+```
+$ git clone https://github.com/medialab/ricardo.git
+```
+
+Browse to RICardo root folder:
+
+```
+$ cd ricardo
+```
+
+Browse to RICardo client root folder:
+
+```
+$ cd ricardo/client
+```
+
+Install client-side dependencies:
+
+```
+$ npm install
+```
+
+Edit configuration file
+
+```
+$ cd src/js
+$ cp config.sample.js config.js
+$ vi config.js
+# edit config.js and add the correct root to API
+'use strict';
+
+angular.module('ricardo')
+  .constant('BASE_API_URL', 'http://localhost:5000')
+```
+
+You can now run RICardo with the following command :
+
+```
+$ npm start
+```
+
+Once this is running, go to [http://localhost:8080/](http://localhost:8080/)
+
+You can build the RICardo application with the following command :
+
+```
+$ npm run build
+```
+
+The build will be available in the `dist` folder.
+
+### Angular app structure
+
+Controllers are located under the `src/js/controllers` folder with one file per controller, and you should reference them in the file `src/js/controllers/index.js`.
+
+Directives are located under the `src/js/directives` folder with one file per directive, and you should reference them in the file `src/js/directives/index.js`. Every chart component should have a directive.
+
+Angular partials are located under the folder `src/public/partials`.
+
+Api calls are done in the service `src/js/services.js`.
+
+All files under the `src/public` folder are static.
+
+CSS files must be referenced in the file `src/js/style.js`. The build process generates one CSS file from this JS file, and include it (with a style tag) in the `index.html`.
+
+The same philosophy is applied to js dependencies, with the file `src/js/external_dependencies`.
+
+## Ricardo - API
+
+### Installation
+
+If you want to run the RICardo API locally on your machine, be sure you have the following requirements installed.
+
+#### Requirements
+
+- [python 2.7](https://www.python.org/downloads/)
+- [pip](https://pypi.org/project/pip/)
+
+#### Database
 
 The dataset needed to run this application is available in the [ricardo data repository](http://github.com/medialab/ricardo_data).
+You can follow the readme of the project to know how to build the database.
+It should produce a file called `RICardo_viz.sqlite`
+You must copy `RICardo_viz.sqlite` in the folder`api/ricardo_api`.
 
-## Docker Installation
+You can change the path of the database by editing the `api/ricardo_api/config.py` if needed.
 
+#### Installation steps
 
-### Build local images
-
-+ Build your own images from the source code:
-
-  ```bash
-  docker-compose -f docker-compose.dev.yml build
-  ```
-
-### Run the stack
-
-
-Start containers with the following command, which will run Ricardo and display all of its logs in the console until stopped by pressing `Ctrl+C`.
-
-```bash
-docker-compose -f docker-compose.dev.yml up
-```
-
-Or run the containers as a background daemon:
-
-```bash
-docker-compose -f docker-compose.dev.yml up -d
-```
-
-
-### Stop the stack
-
-
-Stop containers with the following command:
-
-```bash
-docker-compose -f docker-compose.dev.yml stop
-```
-
-You also can stop containers and delete them: 
-```bash
-docker-compose -f docker-compose.dev.yml down
-```
-
-### Logs
-
-You can inspect the logs of the various Docker containers using:
-
-```bash
-docker-compose -f docker-compose.dev.yml logs
-```
-or with option `-f` to track real time logging:
-```bash
-docker-compose -f docker-compose.dev.yml logs -f
-```
-
-### Custom `docker-compose.yml`
-
-If you want to change reference configuration  in `docker-compose.dev.yml`, you can copy/paste it `docker-compose.yml`:
-```bash
-cp docker-compose.dev.yml docker-compose.yml
-```
-It's useful to change variables like the data's reference commit (`DATA_VERSION_REF`), enable debug, test others configurations related to your host.
-
-If you do that you don't need to specify `-f docker-compose.dev.yml` argument anymore.
-
-## Manual Installation
-
-### Requirements
-
-Python 2.7, pip, node, npm, and [bower](http://bower.io/).
-
-To install bower:
-
-```bash
-(sudo) npm install -g bower
-```
-
-To install pip
-```bash
-sudo easy_install pip
-```
-
-# Install to el Capitan
-change python version, brew install python 
-
-### Database
-
-Move the `RICardo_visualisation.sqlite` database file to `api/ricardo_api` (you can change the path of the database by editing the `api/ricardo_api/config.py` if needed.
-
-### Server dependencies
-
-To install the server dependencies (you should probably use a `virtualenv`):
+Go into the Api folder of the project
 
 ```
 cd api
+```
+
+Install the server dependencies
+
+```
 pip install -r requirements.txt
 ```
 
-### Client dependencies
+Launch the server
 
 ```
-bower install
-```
-
-Then copy and edit the config:
-
-```
-cd client
-cp js/config.sample.js js/config.js
-vim js/config.js
-```
-
-## Usage
-
-### Running the API server
-
-```
-cd api
 python runserver.py
 ```
 
-### Running the client
-
-Just serve the `client` folder.
+### API structure (flask framework)
 
 ```
-# With python, for instance
-cd client
-python -m SimpleHTTPServer
++api/
+|__+ricardo_api
+	|__ __init.py__ 					-> connection to database
+	|__config.py 						-> information element of database
+	|__models.py 						-> methods to get and transform datas from DB to JSON api responses
+	|__views.py 						-> routes to serve datas
+	|__RICardo_visualisation.sqlite
 ```
+
+### API responses
+
+```
+# RICentities
+List all entities from the database
+
+# reporting_entities
+List entities which has reported Imp/Exp flows.
+
+# flows
+The main raw data API. flows will provide the exp/imp flows between countries.
+
+# continent_flows
+Flows aggregated by continent
+
+# flows_sources
+Provide a list of all sources used in a flow API call.
+Used to get them all at once without repeating them in flow.
+```
+
+## Docker
+
+### Run the stack with docker-compose
+
+At the root of this project, there is a folder `docker` that contains a [https://docs.docker.com/compose/](docker-compose) stack
+for the development.
+
+You can run it by following those steps :
+
+```
+cd docker
+docker-compose up
+```
+
+It will start for you the project stack with :
+
+- An nginx that serves the client on port **80**
+- the API
+
+In `DEV` mode (check the file `.env`), the auto-reload of the code is enabled.
+
+### Build the project images
+
+The docker images of the project (ie. API & client) are build automatically by a gitlab process (see `.gitlab-ci.yml`).
+Those images are build with the Dockerfiles `client/Dockerfile` & `api/Dockerfile`.
