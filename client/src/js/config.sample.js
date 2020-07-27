@@ -39,4 +39,13 @@ angular
     { field: "sourcetype", displayName: "sourcetype" },
     { field: "continent", displayName: "continent" },
     { field: "type", displayName: "reporting type" },
+  ])
+  .constant("LINE_CHART_CURRENCY", [
+    { type: { value: "sterling", writable: true }, name: { value: "Sterling", writable: true } },
+    { type: { value: "value", writable: true }, name: { value: "Percent", writable: true } },
+  ])
+  .constant("LINE_CHART_FLOW_TYPES", [
+    { type: { value: "total", writable: true }, name: { value: "Total", writable: true } },
+    { type: { value: "exp", writable: true }, name: { value: "Exports", writable: true } },
+    { type: { value: "imp", writable: true }, name: { value: "Imports", writable: true } },
   ]);

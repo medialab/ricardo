@@ -53,7 +53,6 @@ angular
       });
       $rootScope.$on("$routeChangeError ", function (e) {
         cfpLoadingBar.complete();
-        console.log(e);
       });
     },
   ])

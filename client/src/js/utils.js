@@ -25,8 +25,9 @@ export function initParams($route, $scope, params) {
             (item) => urlParams[param.name].split("|").indexOf(param.getItemId ? param.getItemId(item) : item) > -1,
           );
         } else {
-          $scope[param.name] = param.list
-            .find((item) => (param.getItemId ? param.getItemId(item) : item) + "" === urlParams[param.name] + "");
+          $scope[param.name] = param.list.find(
+            (item) => (param.getItemId ? param.getItemId(item) : item) + "" === urlParams[param.name] + "",
+          );
         }
       } else {
         $scope[param.name] = urlParams[param.name];

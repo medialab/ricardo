@@ -87,3 +87,98 @@
     </div>
   </div>
 </div>
+
+<!-- Start: World Comparison -->
+<div class="container comparison">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <!-- Title with form -->
+      <h4 class="titleMultiLine">
+        <div>
+          {{ 'LINE_CHART_1' | translate }} {{partnersDict[partner]}} {{ 'LINE_CHART_2' | translate }}
+          <div class="inline-select">
+            <ui-select
+              ng-model="comparisonPartnerEntity.selected"
+              theme="bootstrap"
+              ng-change="comparisonPush(comparisonPartnerEntity.selected)"
+            >
+              <ui-select-match
+                class="ui-select-match"
+                placeholder="Partners"
+                ng-style="{color:elm.color}"
+              ></ui-select-match>
+              <ui-select-choices class="ui-select-choices" repeat="item in partnersList | filter: $select.search">
+                <div ng-bind-html="item.label | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+        </div>
+        <div>
+          {{selectedMinDate}} – {{selectedMaxDate}}, in
+          <div class="inline-select">
+            <ui-select ng-model="$parent.comparisonCurrency" theme="bootstrap">
+              <ui-select-match class="ui-select-match" placeholder="Select sterling or percent"
+                >{{$select.selected.name.value}}</ui-select-match
+              >
+              <ui-select-choices
+                class="ui-select-choices"
+                repeat="item in comparisonCurrencyList | filter: $select.search"
+              >
+                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+          for
+          <div class="inline-select">
+            <ui-select ng-model="$parent.comparisonFlowType" theme="bootstrap">
+              <ui-select-match class="ui-select-match" placeholder="Select type flow"
+                >{{$select.selected.name.value}}</ui-select-match
+              >
+              <ui-select-choices
+                class="ui-select-choices"
+                repeat="item in comparisonFlowTypeList | filter: $select.search"
+              >
+                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+        </div>
+        <div class="subtitle">{{'LINE_CHART_SELECT' | translate }}</div>
+        <div>
+          <span
+            class="entity"
+            ng-repeat="elm in comparison"
+            ng-click="comparisonRemove(elm)"
+            ng-style="{color:elm.color}"
+            >{{elm.label}}
+            <span class="close-btn">
+              <i class="fa fa-times-circle"></i>
+            </span>
+            <span ng-if="!$last">, </span>
+          </span>
+        </div>
+      </h4>
+      <div ng-show="messagePercent">
+        <p class="paragraphViz">
+          The percentages are based on
+          <a href="/#worldTrade">world sum partners</a> of {{partnersDict[partner]}}
+        </p>
+      </div>
+      <div id="select-lineChart">
+        <div class="row">
+          <div class="col-sm-12">
+            <linechart-world
+              ng-data="comparisonData"
+              currency="comparisonCurrency"
+              start-date="selectedMinDate"
+              end-date="selectedMaxDate"
+              view="'country'"
+            >
+            </linechart-world>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End: World Comparison -->

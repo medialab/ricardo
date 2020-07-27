@@ -15,6 +15,8 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
   "reportingService",
   "reportingEntities",
   "TABLE_HEADERS",
+  "LINE_CHART_CURRENCY",
+  "LINE_CHART_FLOW_TYPES",
   function (
     $scope,
     $route,
@@ -26,6 +28,8 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
     reportingService,
     reportingEntities,
     TABLE_HEADERS,
+    LINE_CHART_CURRENCY,
+    LINE_CHART_FLOW_TYPES,
   ) {
     /*
      * Message error if no data
@@ -111,33 +115,11 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
     ];
     $scope.grouped = $scope.groups[0];
 
-    $scope.linechartCurrencyChoices = [
-      {
-        type: { value: "sterling", writable: true },
-        name: { value: "Sterling", writable: true },
-      },
-      {
-        type: { value: "value", writable: true },
-        name: { value: "Percent", writable: true },
-      },
-    ];
-    $scope.linechartCurrency = $scope.linechartCurrencyChoices[0];
+    $scope.linechartCurrencyChoices = LINE_CHART_CURRENCY;
+    $scope.linechartCurrency = LINE_CHART_CURRENCY[0];
 
-    $scope.linechartFlowChoices = [
-      {
-        type: { value: "total", writable: true },
-        name: { value: "Total", writable: true },
-      },
-      {
-        type: { value: "exp", writable: true },
-        name: { value: "Exports", writable: true },
-      },
-      {
-        type: { value: "imp", writable: true },
-        name: { value: "Imports", writable: true },
-      },
-    ];
-    $scope.linechartFlow = $scope.linechartFlowChoices[0];
+    $scope.linechartFlowChoices = LINE_CHART_FLOW_TYPES;
+    $scope.linechartFlow = LINE_CHART_FLOW_TYPES[0];
 
     /*
      * All var declarations

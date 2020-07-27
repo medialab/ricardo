@@ -1786,4 +1786,5 @@ h4.titleMultiLine > div {
 }
 .comparison span.entity {
   margin-right: 5px;
+  cursor: pointer;
 }

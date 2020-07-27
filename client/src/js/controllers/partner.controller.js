@@ -7,7 +7,9 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
   "$routeParams",
   "apiService",
   "partnerEntities",
-  function ($scope, $route, $routeParams, apiService, partnerEntities) {
+  "LINE_CHART_CURRENCY",
+  "LINE_CHART_FLOW_TYPES",
+  function ($scope, $route, $routeParams, apiService, partnerEntities, LINE_CHART_CURRENCY, LINE_CHART_FLOW_TYPES) {
     $scope.view = "partner";
     $scope.loaded = false;
 
@@ -106,5 +108,90 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
       $scope.gphData = data;
       $scope.selectPartner($scope.partner);
     });
+
+    loadTradeComparison($scope, apiService, LINE_CHART_CURRENCY, LINE_CHART_FLOW_TYPES);
   },
 ]);
+
+function loadTradeComparison($scope, apiService, LINE_CHART_CURRENCY, LINE_CHART_FLOW_TYPES) {
+  /*
+   * Init state
+   */
+  // Default color for the cuvers
+  $scope.comparisonLineColors = ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c"];
+  // list of selected partner
+  $scope.comparison = [];
+  // Data for the chart
+  $scope.comparisonData = [];
+  // Comparison currency
+  $scope.comparisonCurrencyList = LINE_CHART_CURRENCY;
+  $scope.comparisonCurrency = LINE_CHART_CURRENCY[0];
+  // Comparison flow type
+  $scope.comparisonFlowTypeList = LINE_CHART_FLOW_TYPES;
+  $scope.comparisonFlowType = LINE_CHART_FLOW_TYPES[0];
+  // Partner var for the inline-select
+  $scope.comparisonPartnerEntity = {};
+
+  /**
+   * ACTIONS
+   * ***************
+   */
+  // For the change on the inline-select
+  $scope.comparisonPush = function (comparisonPartnerEntity) {
+    if ($scope.comparison.length >= 5) return;
+    if ($scope.comparison.findIndex((e) => e.id === comparisonPartnerEntity.id) === -1) {
+      $scope.comparison.push(Object.assign(comparisonPartnerEntity, { color: $scope.comparisonLineColors.pop() }));
+    }
+    $scope.comparisonPartnerEntity = {};
+  };
+
+  // For the change on the inline-select
+  $scope.comparisonRemove = function (comparisonPartnerEntity) {
+    $scope.comparison = $scope.comparison.filter((e) => e.id !== comparisonPartnerEntity.id);
+    $scope.comparisonLineColors.push(comparisonPartnerEntity.color);
+  };
+
+  $scope.comparisonReload = function () {
+    $scope.comparisonData = null;
+    Promise.all(
+      $scope.comparison.map((entity) => {
+        return apiService
+          .getFlows({
+            reporting_ids: entity.id,
+            partner_ids: $scope.partner,
+            with_sources: 1,
+            from_year: $scope.selectedMinDate,
+            to_year: $scope.selectedMaxDate,
+          })
+          .then((result) => {
+            return {
+              values: result.flows,
+              color: entity.color,
+              key: entity.id,
+              flowType: $scope.comparisonFlowType.type.value,
+            };
+          });
+      }),
+    ).then((result) => {
+      $scope.comparisonData = result;
+    });
+  };
+
+  /**
+   * WATCHERS
+   * ***************
+   */
+  $scope.$watchCollection(
+    "[partner, selectedMinDate, selectedMaxDate, comparison, comparisonCurrency, comparisonFlowType]",
+    function (newVal, oldVal) {
+      $scope.comparisonReload();
+    },
+  );
+  $scope.$watch(
+    "",
+    function (newVal, oldVal) {
+      $scope.comparisonReload();
+    },
+    true,
+  );
+}
