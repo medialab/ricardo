@@ -5,7 +5,7 @@ const {density} = require('graphology-metrics');
 const {modularity} = require('graphology-metrics');
 const pagerank = require('graphology-pagerank');
 const louvain = require('graphology-communities-louvain');
-const gexf = require('graphology-gexf/browser');
+const gexf = require('graphology-gexf/node');
 const async = require('async');
 const fs = require('fs');
 const GTAP = require('./GTAP.js');
@@ -24,9 +24,8 @@ const DB =  ( () => {
 })();
 
 
-const computeGraph = (year, done) =>{
-  //Metrics output
-
+const computeGraph = (args, done) => {
+  const {year, geoloc_RICentities} = args
   // {
   //   entities:{
   //     entitySlug:{
@@ -41,14 +40,14 @@ const computeGraph = (year, done) =>{
   // }exports
 
 
-  DB.get().all(`SELECT * FROM flow_aggregated
+  DB.get().all(`SELECT * FROM flow_joined
     WHERE
       flow is not null and rate is not null AND
       year = ${year} AND
       (partner is not null AND (partner not LIKE 'world%' OR partner = 'World_best_guess'))
       `, 
     function(err, rows) {
-      
+      if(err) done(err)
       const graph = new DirectedGraph()
       const totalTrade = {'Imp':0, 'Exp':0}
       const nbMirrorFlows = {'by_source_type':{},'by_reporting_type':{},'by_partner_type':{}}
@@ -187,120 +186,149 @@ const computeGraph = (year, done) =>{
           graph.setEdgeAttribute(e, 'weight', graph.getEdgeAttribute(e, 'targetWeight'))
         return acc + 1;
       }
-      else
+      else{
+        graph.setEdgeAttribute(e, 'weight', graph.getEdgeAttribute(e, 'sourceWeight') || graph.getEdgeAttribute(e, 'targetWeight'))
         return acc;
+      }
     },0);
     metrics.nbMirrorFlows = nbMirrorFlows;
+    if ((year >= 1834 && year <= 1913) || (year >= 1924 && year <= 1939)) {
+      const periode = y => { 
+        if (y<=1860) return '1834-1860-pré-première-période';
+        if (y<=1913) return '1861-1913-première-mondialisation';
+        return '1924-1939-désintégration';
+      };
+        
+      let sageocsv = ''
+      graph.forEach((source, target, sourceAttributes, targetAttributes, edge, edgeAttributes) => {
+        if(geoloc_RICentities.hasOwnProperty(source) && geoloc_RICentities.hasOwnProperty(target))
+          sageocsv += `${source},${target},${graph.getEdgeAttribute(edge,'weight')},${year},${periode(year)}\n`
+      });
+      metrics.sageocsv=sageocsv;
+    }
 
       //Write gexf
       if (conf.writeGexf){
-        const gexfString = gexf.write(graph);
-        fs.writeFile(`./data/networks/${year}.gexf`, gexfString, 'utf8', (err) => {
-          if (err)
-            done(err);
-          else{
-            done(null, metrics);   
-          }
-        })
+        fs.writeFileSync(`./data/networks/${year}.gexf`, gexf.write(graph), 'utf8');
       }
-      else
-        done(null, metrics);
+      done(null, metrics);
   });
 }
 
-
-// prepare list of years to compute from cn*onfig
-const years = []
-for (year = conf.startDate; year <= conf.endDate; year++) {
-      years.push(year)
-}
-// throw computation in async mode
-async.map(years, computeGraph, (err, metrics) =>{
-   //merge metrics
-   const gapMinderMetrics = []
-   const networksMetrics =[]
-   const metricsByYear = {networks:{density:{},nb_reportings:{},nb_flows:{},modularity:{}},entities:{}}
-   const general_stat = {}
-   const nbMirrorFlows = {'by_source_type':{},'by_reporting_type':{},'by_partner_type':{}}
-
-   metrics.forEach(m => {
-
-      // aggregating nbMirrorFlows
-      for (by in m.nbMirrorFlows){
-        for (p in m.nbMirrorFlows[by]){
-          nbMirrorFlows[by][p] = (nbMirrorFlows[by][p] || 0) + m.nbMirrorFlows[by][p] 
-        }
+async.waterfall([
+(cb) => {
+// load RICentities geoloc
+  DB.get().all('SELECT * FROM RICentities', function(err,rows) {
+    // create a filter on geoloc-ed RICentities
+    geoloc_RICentities = {}
+    rows.forEach( r => {
+      if (r.lat && r.lat != '') {
+        geoloc_RICentities[r['slug']] = r
       }
-      general_stat['nbMirrorFlows'] = nbMirrorFlows
+    })
+    cb(null, geoloc_RICentities)
+  })
+},
+(geoloc_RICentities, cb) => {
+  // prepare list of years to compute from cnnfig
+  const years = []
+  for (year = conf.startDate; year <= conf.endDate; year++) {
+        years.push({year, geoloc_RICentities})
+  }
+  // throw computation in async mode
+  async.map(years, computeGraph, (err, metrics) =>{
+    //merge metrics
+    const gapMinderMetrics = []
+    const networksMetrics =[]
+    const metricsByYear = {networks:{density:{},nb_reportings:{},nb_flows:{},modularity:{}},entities:{}}
+    const general_stat = {}
+    const nbMirrorFlows = {'by_source_type':{},'by_reporting_type':{},'by_partner_type':{}}
+    let sageocsv = `idorigine,iddestination,volume,annee,periode\n`
+    metrics.forEach(m => {
+        if (m.sageocsv)
+          sageocsv += m.sageocsv
+        // aggregating nbMirrorFlows
+        for (by in m.nbMirrorFlows){
+          for (p in m.nbMirrorFlows[by]){
+            nbMirrorFlows[by][p] = (nbMirrorFlows[by][p] || 0) + m.nbMirrorFlows[by][p] 
+          }
+        }
+        general_stat['nbMirrorFlows'] = nbMirrorFlows
 
-      // to be factorized later
-      metricsByYear.networks.density[m.year] = m.networks.density;
-      metricsByYear.networks.modularity[m.year] = m.networks.modularity;
-      metricsByYear.networks.nb_reportings[m.year] = m.networks.nb_reportings;
-      metricsByYear.networks.nb_flows[m.year] = m.networks.nb_flows;
-      // networks metrics only
-      networksMetric = {year:m.year};
-      for (a in m.networks)
-        networksMetric[a] = m.networks[a];
-      networksMetrics.push(networksMetric);
+        // to be factorized later
+        metricsByYear.networks.density[m.year] = m.networks.density;
+        metricsByYear.networks.modularity[m.year] = m.networks.modularity;
+        metricsByYear.networks.nb_reportings[m.year] = m.networks.nb_reportings;
+        metricsByYear.networks.nb_flows[m.year] = m.networks.nb_flows;
+        // networks metrics only
+        networksMetric = {year:m.year};
+        for (a in m.networks)
+          networksMetric[a] = m.networks[a];
+        networksMetrics.push(networksMetric);
 
-      
-      for (e in m.entities){
-
-        // gapminder viz data formatting
-        // check if entity is a reporting (i.e. has world trade reports)
-        gapMinderMetrics.push({
-            year: m.year,
-            entity: m.entities[e].label,
-            type: m.entities[e].type,
-            isReporting: m.entities[e].reporting || false,
-            continent: m.entities[e].continent,
-            pagerank: m.entities[e].pagerank,
-            worldTrade: m.entities[e].world_Imp || 0 + m.entities[e].world_Exp || 0,
-            worldTradePart: m.entities[e].worldTradePart || null,
-            herfindahl: m.entities[e].herfindahl,
-            inHerfindahl: m.entities[e].inHerfindahl,
-            outHerfindahl: m.entities[e].outHerfindahl,
-            inDegree: m.entities[e].inDegree,
-            outDegree: m.entities[e].outDegree,
-            weightedInDegree: m.entities[e].weightedInDegree,
-            weightedOutDegree: m.entities[e].weightedOutDegree,
-            RIX: m.entities[e].RIX 
-        })  
         
-        // generic output
-        if(!metricsByYear.entities[e])
-          metricsByYear.entities[e] = {}
+        for (e in m.entities){
 
-        for (p in m.entities[e]){
-          if(!metricsByYear.entities[e][p])
-            metricsByYear.entities[e][p]={}
-          if (['type','label','continent'].indexOf(p) !== -1)
-            metricsByYear.entities[e][p] = m.entities[e][p]
-          else
-            metricsByYear.entities[e][p][m.year] = m.entities[e][p]
+          // gapminder viz data formatting
+          // check if entity is a reporting (i.e. has world trade reports)
+          gapMinderMetrics.push({
+              year: m.year,
+              entity: m.entities[e].label,
+              type: m.entities[e].type,
+              isReporting: m.entities[e].reporting || false,
+              continent: m.entities[e].continent,
+              pagerank: m.entities[e].pagerank,
+              worldTrade: m.entities[e].world_Imp || 0 + m.entities[e].world_Exp || 0,
+              worldTradePart: m.entities[e].worldTradePart || null,
+              herfindahl: m.entities[e].herfindahl,
+              inHerfindahl: m.entities[e].inHerfindahl,
+              outHerfindahl: m.entities[e].outHerfindahl,
+              inDegree: m.entities[e].inDegree,
+              outDegree: m.entities[e].outDegree,
+              weightedInDegree: m.entities[e].weightedInDegree,
+              weightedOutDegree: m.entities[e].weightedOutDegree,
+              RIX: m.entities[e].RIX 
+          })  
+          
+          // generic output
+          if(!metricsByYear.entities[e])
+            metricsByYear.entities[e] = {}
+
+          for (p in m.entities[e]){
+            if(!metricsByYear.entities[e][p])
+              metricsByYear.entities[e][p]={}
+            if (['type','label','continent'].indexOf(p) !== -1)
+              metricsByYear.entities[e][p] = m.entities[e][p]
+            else
+              metricsByYear.entities[e][p][m.year] = m.entities[e][p]
+          }
         }
-      }
-   })
-   
-   const output_filename = `metrics_${conf.startDate}_${conf.endDate}.json`
-   
-   fs.writeFile(`./data/${output_filename}`, JSON.stringify(metricsByYear,null, 2), 'utf8', (err)=>{
-      if (err) console.log(`error : couldn't write ${output_filename}`);
-      else console.log(`writing to ${output_filename}`);
-    });
-  fs.writeFile(`./data/${conf.gapMinder_metric_filename}`, JSON.stringify(gapMinderMetrics, null, 2), 'utf8', (err)=>{
-      if (err) console.log(`error : couldn't write ${conf.gapMinder_metric_filename}`);
-      else console.log(`writing to ${conf.gapMinder_metric_filename}`);
-    });
-  fs.writeFile(`./data/${conf.network_metric_filename}`, JSON.stringify(networksMetrics, null, 2), 'utf8', (err)=>{
-      if (err) console.log(`error : couldn't write ${conf.network_metric_filename}`);
-      else console.log(`writing to ${conf.network_metric_filename}`);
-    });
-  fs.writeFile(`./data/${conf.general_stat_filename}`, JSON.stringify(general_stat, null, 2), 'utf8', (err)=>{
-      if (err) console.log(`error : couldn't write ${conf.general_stat_filename}`);
-      else console.log(`writing to ${conf.general_stat_filename}`);
-    });
-})
-
-DB.get().close();
+    })
+    
+    const output_filename = `metrics_${conf.startDate}_${conf.endDate}.json`
+    
+    fs.writeFile(`./data/${output_filename}`, JSON.stringify(metricsByYear,null, 2), 'utf8', (err)=>{
+        if (err) console.log(`error : couldn't write ${output_filename}`);
+        else console.log(`writing to ${output_filename}`);
+      });
+    fs.writeFile(`./data/${conf.gapMinder_metric_filename}`, JSON.stringify(gapMinderMetrics, null, 2), 'utf8', (err)=>{
+        if (err) console.log(`error : couldn't write ${conf.gapMinder_metric_filename}`);
+        else console.log(`writing to ${conf.gapMinder_metric_filename}`);
+      });
+    fs.writeFile(`./data/${conf.network_metric_filename}`, JSON.stringify(networksMetrics, null, 2), 'utf8', (err)=>{
+        if (err) console.log(`error : couldn't write ${conf.network_metric_filename}`);
+        else console.log(`writing to ${conf.network_metric_filename}`);
+      });
+    fs.writeFile(`./data/${conf.general_stat_filename}`, JSON.stringify(general_stat, null, 2), 'utf8', (err)=>{
+        if (err) console.log(`error : couldn't write ${conf.general_stat_filename}`);
+        else console.log(`writing to ${conf.general_stat_filename}`);
+      });
+    fs.writeFile(`./data/SAGEO_RICardo_edges.csv`, sageocsv, 'utf8', (err)=>{
+      if (err) console.log(`error : couldn't write SAGEOCSV ${err}`);
+      else console.log(`writing to SAGEOCSVS`);});
+  })
+},
+() => {
+  DB.get().close();
+}
+])
