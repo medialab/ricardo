@@ -98,37 +98,26 @@
           {{ 'LINE_CHART_1' | translate }} {{partnersDict[partner]}} {{ 'LINE_CHART_2' | translate }}
           <div class="inline-select">
             <ui-select
-              ng-model="comparisonPartnerEntity.selected"
+              ng-model="comparisonReporterEntity.selected"
               theme="bootstrap"
-              ng-change="comparisonPush(comparisonPartnerEntity.selected)"
+              ng-change="comparisonPush(comparisonReporterEntity.selected)"
             >
               <ui-select-match
                 class="ui-select-match"
-                placeholder="Partners"
+                placeholder="Reporter"
                 ng-style="{color:elm.color}"
               ></ui-select-match>
-              <ui-select-choices class="ui-select-choices" repeat="item in partnersList | filter: $select.search">
+              <ui-select-choices
+                class="ui-select-choices"
+                repeat="item in comparisonReporterList | filter: $select.search"
+              >
                 <div ng-bind-html="item.label | highlight: $select.search"></div>
               </ui-select-choices>
             </ui-select>
           </div>
         </div>
         <div>
-          {{selectedMinDate}} – {{selectedMaxDate}}, in
-          <div class="inline-select">
-            <ui-select ng-model="$parent.comparisonCurrency" theme="bootstrap">
-              <ui-select-match class="ui-select-match" placeholder="Select sterling or percent"
-                >{{$select.selected.name.value}}</ui-select-match
-              >
-              <ui-select-choices
-                class="ui-select-choices"
-                repeat="item in comparisonCurrencyList | filter: $select.search"
-              >
-                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-              </ui-select-choices>
-            </ui-select>
-          </div>
-          for
+          {{selectedMinDate}} – {{selectedMaxDate}}, in {{comparisonCurrency.name.value}} for
           <div class="inline-select">
             <ui-select ng-model="$parent.comparisonFlowType" theme="bootstrap">
               <ui-select-match class="ui-select-match" placeholder="Select type flow"
@@ -182,3 +171,28 @@
   </div>
 </div>
 <!-- End: World Comparison -->
+
+<!-- Start: Data table -->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 text-center shdt">
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-default" ng-model="tableDisplay" btn-checkbox>
+          {{ 'DOWNLOAD_1' | translate }}
+        </button>
+        <button type="button" ng-click="tableDownloadCSV()" class="btn btn-default">
+          {{ 'DOWNLOAD_2' | translate }}
+        </button>
+        <button type="button" ng-click="tableDownloadCSVOrginalCurrency()" class="btn btn-default">
+          {{ 'DOWNLOAD_3' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div ng-if="tableDisplay" class="row table-cont">
+    <div class="col-sm-12 grid-cont">
+      <div class="grid gridStyle" ui-grid="gridOptions" ui-grid-pagination></div>
+    </div>
+  </div>
+</div>
+<!-- End: Data table -->

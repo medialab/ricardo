@@ -7,9 +7,21 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
   "$routeParams",
   "apiService",
   "partnerEntities",
+  "utils",
+  "TABLE_HEADERS",
   "LINE_CHART_CURRENCY",
   "LINE_CHART_FLOW_TYPES",
-  function ($scope, $route, $routeParams, apiService, partnerEntities, LINE_CHART_CURRENCY, LINE_CHART_FLOW_TYPES) {
+  function (
+    $scope,
+    $route,
+    $routeParams,
+    apiService,
+    partnerEntities,
+    utils,
+    TABLE_HEADERS,
+    LINE_CHART_CURRENCY,
+    LINE_CHART_FLOW_TYPES,
+  ) {
     $scope.view = "partner";
     $scope.loaded = false;
 
@@ -59,6 +71,7 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
         })
         .then((data) => {
           $scope.flows = data.flows;
+          console.log($scope.flows);
 
           const dates = $scope.flows.map((d) => d.year);
           $scope.minDate = d3.min(dates);
@@ -109,71 +122,81 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
       $scope.selectPartner($scope.partner);
     });
 
+    // Load the world trade comparison block
     loadTradeComparison($scope, apiService, LINE_CHART_CURRENCY, LINE_CHART_FLOW_TYPES);
+
+    // Load the table component
+    loadTableComponent($scope, TABLE_HEADERS);
   },
 ]);
 
+/**
+ * Load & manage the world trade comparison chart.
+ */
 function loadTradeComparison($scope, apiService, LINE_CHART_CURRENCY, LINE_CHART_FLOW_TYPES) {
   /*
    * Init state
+   * *****************
    */
   // Default color for the cuvers
   $scope.comparisonLineColors = ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c"];
-  // list of selected partner
+  // list of selected reporter
   $scope.comparison = [];
+  // Partner var for the inline-select
+  $scope.comparisonReporterEntity = {};
+  $scope.comparisonReporterList = [];
   // Data for the chart
   $scope.comparisonData = [];
   // Comparison currency
-  $scope.comparisonCurrencyList = LINE_CHART_CURRENCY;
   $scope.comparisonCurrency = LINE_CHART_CURRENCY[0];
   // Comparison flow type
   $scope.comparisonFlowTypeList = LINE_CHART_FLOW_TYPES;
   $scope.comparisonFlowType = LINE_CHART_FLOW_TYPES[0];
-  // Partner var for the inline-select
-  $scope.comparisonPartnerEntity = {};
 
   /**
    * ACTIONS
    * ***************
    */
   // For the change on the inline-select
-  $scope.comparisonPush = function (comparisonPartnerEntity) {
+  $scope.comparisonPush = function (comparisonReporterEntity) {
     if ($scope.comparison.length >= 5) return;
-    if ($scope.comparison.findIndex((e) => e.id === comparisonPartnerEntity.id) === -1) {
-      $scope.comparison.push(Object.assign(comparisonPartnerEntity, { color: $scope.comparisonLineColors.pop() }));
+    if ($scope.comparison.findIndex((e) => e.id === comparisonReporterEntity.id) === -1) {
+      $scope.comparison.push(Object.assign(comparisonReporterEntity, { color: $scope.comparisonLineColors.pop() }));
     }
-    $scope.comparisonPartnerEntity = {};
+    $scope.comparisonReporterEntity = {};
   };
 
   // For the change on the inline-select
-  $scope.comparisonRemove = function (comparisonPartnerEntity) {
-    $scope.comparison = $scope.comparison.filter((e) => e.id !== comparisonPartnerEntity.id);
-    $scope.comparisonLineColors.push(comparisonPartnerEntity.color);
+  $scope.comparisonRemove = function (comparisonReporterEntity) {
+    $scope.comparison = $scope.comparison.filter((e) => e.id !== comparisonReporterEntity.id);
+    $scope.comparisonLineColors.push(comparisonReporterEntity.color);
   };
 
-  $scope.comparisonReload = function () {
+  $scope.comparisonReload = function (flows, minDate, maxDate, comparison, flowType) {
+    // Compute reporter list
+    if (flows)
+      $scope.comparisonReporterList = $scope.flows
+        .map((flow) => {
+          return { id: flow.reporting_id, label: flow.reporting_name };
+        })
+        .filter((value, index, self) => self.findIndex((e) => e.id === value.id) === index)
+        .sort((a, b) => (a.label.toUpperCase() < b.label.toUpperCase() ? -1 : 1));
+
+    // Compute comparison data
     $scope.comparisonData = null;
-    Promise.all(
-      $scope.comparison.map((entity) => {
-        return apiService
-          .getFlows({
-            reporting_ids: entity.id,
-            partner_ids: $scope.partner,
-            with_sources: 1,
-            from_year: $scope.selectedMinDate,
-            to_year: $scope.selectedMaxDate,
-          })
-          .then((result) => {
-            return {
-              values: result.flows,
-              color: entity.color,
-              key: entity.id,
-              flowType: $scope.comparisonFlowType.type.value,
-            };
-          });
-      }),
-    ).then((result) => {
-      $scope.comparisonData = result;
+    $scope.comparisonData = comparison.map((entity) => {
+      return {
+        color: entity.color,
+        key: entity.id,
+        flowType: flowType.type.value,
+        values: flows.filter((flow) => {
+          if (flow.reporting_id === entity.id && minDate <= flow.year <= maxDate) {
+            return true;
+          } else {
+            return false;
+          }
+        }),
+      };
     });
   };
 
@@ -181,17 +204,69 @@ function loadTradeComparison($scope, apiService, LINE_CHART_CURRENCY, LINE_CHART
    * WATCHERS
    * ***************
    */
-  $scope.$watchCollection(
-    "[partner, selectedMinDate, selectedMaxDate, comparison, comparisonCurrency, comparisonFlowType]",
-    function (newVal, oldVal) {
-      $scope.comparisonReload();
-    },
-  );
   $scope.$watch(
-    "",
+    "comparison",
     function (newVal, oldVal) {
-      $scope.comparisonReload();
+      $scope.comparisonReload(
+        $scope.flows,
+        $scope.selectedMinDate,
+        $scope.selectedMaxDate,
+        newVal,
+        $scope.comparisonFlowType,
+      );
     },
     true,
   );
+  $scope.$watchCollection("[partner, selectedMinDate, selectedMaxDate, flows, comparisonFlowType]", function (
+    newVal,
+    oldVal,
+  ) {
+    $scope.comparisonReload(newVal[3], newVal[1], newVal[2], $scope.comparison, newVal[4]);
+  });
+}
+
+function loadTableComponent($scope, TABLE_HEADERS) {
+  /*
+   * Init state
+   * *****************
+   */
+  $scope.tableDisplay = false;
+  $scope.gridOptions = {
+    data: "flows",
+    paginationPageSizes: [50],
+    paginationPageSize: 50,
+    columnDefs: TABLE_HEADERS,
+    columnFooterHeight: 45,
+    enableHorizontalScrollbar: 2,
+    enableVerticalScrollbar: 1,
+  };
+
+  /**
+   * ACTIONS
+   * ***************
+   */
+  $scope.tableDownloadCSV = function () {
+    utils.downloadCSV(
+      $scope.flows,
+      TABLE_HEADERS.map((h) => h.displayName),
+      TABLE_HEADERS.map((h) => h.field),
+      `RICardo - partner - ${$scope.partner} - ${$scope.selectedMinDate} - ${$scope.selectedMaDate}`,
+    );
+  };
+  $scope.tableDownloadCSVOrginalCurrency = function () {
+    apiService
+      .getFlows({
+        partner_ids: $scope.partner,
+        with_sources: 1,
+        original_currency: 1,
+      })
+      .then(function (result) {
+        utils.downloadCSV(
+          $scope.flows,
+          TABLE_HEADERS.map((h) => h.displayName),
+          TABLE_HEADERS.map((h) => h.field),
+          `RICardo - partner - ${$scope.partner} - ${$scope.selectedMinDate} - ${$scope.selectedMaDate} - Original currency`,
+        );
+      });
+  };
 }
