@@ -49,6 +49,7 @@ def flows_data(reporting_ids, partner_ids, original_currency, from_year, to_year
         cursor.execute("""
             SELECT
                 reporting_slug,
+                reporting,
                 partner_slug,
                 partner,
                 year,
@@ -75,6 +76,7 @@ def flows_data(reporting_ids, partner_ids, original_currency, from_year, to_year
             cursor.execute("""
                 SELECT
                     reporting_slug,
+                    reporting,
                     partner_continent,
                     partner_continent,
                     year,
@@ -100,6 +102,7 @@ def flows_data(reporting_ids, partner_ids, original_currency, from_year, to_year
         else:
             cursor.execute("""
                 SELECT
+                    reporting_continent,
                     reporting_continent,
                     partner_slug,
                     partner,
@@ -129,9 +132,9 @@ def flows_data(reporting_ids, partner_ids, original_currency, from_year, to_year
     last_y={}
     for fields in cursor:
         if with_sources:
-            (r_id,p_id,p_name,y,expimp_g,flow_g,currency,source_g)=fields
+            (r_id,r_name,p_id,p_name,y,expimp_g,flow_g,currency,source_g)=fields
         else:
-            (r_id,p_id,p_name,y,expimp_g,flow_g,currency)=fields
+            (r_id,r_name,p_id,p_name,y,expimp_g,flow_g,currency)=fields
 
         imports=[]
         exports=[]
@@ -167,6 +170,7 @@ def flows_data(reporting_ids, partner_ids, original_currency, from_year, to_year
         for missing_year in (last_y[p_id]+i+1 for i in range(y-(last_y[p_id]+1))):
             flows.append({
                 "reporting_id":r_id,
+                "reporting_name":r_name,
                 "partner_id":p_id,
                 "partner_name":p_name,
                 "year":missing_year,
@@ -177,6 +181,7 @@ def flows_data(reporting_ids, partner_ids, original_currency, from_year, to_year
                 })
         flows.append({
             "reporting_id":r_id,
+            "reporting_name":r_name,
             "partner_id":p_id,
             "partner_name":p_name,
             "year":y,
