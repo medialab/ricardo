@@ -18,6 +18,7 @@ angular
         link: function (scope, element, attrs) {
           scope.$watch("ngData", function (newValue, oldValue) {
             if (newValue && scope.ngData) {
+              svg.selectAll("*").remove();
               barChart(scope.ngData, 1787, 1938);
             }
           });
@@ -35,19 +36,15 @@ angular
           });
 
           var tooltipBar = d3.select("body").append("div").attr("class", "circle-tooltip");
-
           var brush;
-
           var margin = { top: 20, right: 0, bottom: 40, left: 0 },
             width = document.querySelector("#bar-chart-container").offsetWidth,
             height = 60;
 
           var x = d3.time.scale().range([0, width]);
-
           var y = d3.scale.linear().range([height, 0]);
 
           var xAxis = d3.svg.axis().scale(x).orient("bottom");
-
           var yAxis = d3.svg.axis().scale(y).orient("right").ticks(4).tickSize(0);
 
           var svg = d3

@@ -127,6 +127,9 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
 
     // Load the table component
     loadTableComponent($scope, TABLE_HEADERS);
+
+    // Load the citation ref component
+    loadCitationComponent($scope);
   },
 ]);
 
@@ -172,6 +175,9 @@ function loadTradeComparison($scope, apiService, LINE_CHART_CURRENCY, LINE_CHART
     $scope.comparisonLineColors.push(comparisonReporterEntity.color);
   };
 
+  /**
+   * Main function that handle the recomptation of the chart
+   */
   $scope.comparisonReload = function (flows, minDate, maxDate, comparison, flowType) {
     // Compute reporter list
     if (flows)
@@ -225,11 +231,10 @@ function loadTradeComparison($scope, apiService, LINE_CHART_CURRENCY, LINE_CHART
   });
 }
 
+/**
+ * Load & manage the table component
+ */
 function loadTableComponent($scope, TABLE_HEADERS) {
-  /*
-   * Init state
-   * *****************
-   */
   $scope.tableDisplay = false;
   $scope.gridOptions = {
     data: "flows",
@@ -240,11 +245,6 @@ function loadTableComponent($scope, TABLE_HEADERS) {
     enableHorizontalScrollbar: 2,
     enableVerticalScrollbar: 1,
   };
-
-  /**
-   * ACTIONS
-   * ***************
-   */
   $scope.tableDownloadCSV = function () {
     utils.downloadCSV(
       $scope.flows,
@@ -269,4 +269,24 @@ function loadTableComponent($scope, TABLE_HEADERS) {
         );
       });
   };
+}
+
+function loadCitationComponent($scope) {
+  $scope.citationData = null;
+  $scope.$watch("flows", function (newVal, oldVal) {
+    if (newVal) {
+      let dataAsMap = newVal
+        .map((flow) => {
+          return { year: flow.year, nb_reporting: 1 };
+        })
+        .reduce((acc, current) => {
+          acc[current.year] = (acc[current.year] || 0) + 1;
+          return acc;
+        }, {});
+
+      $scope.citationData = Object.keys(dataAsMap).map((key) => {
+        return { year: +key, nb_reporting: dataAsMap[key] };
+      });
+    }
+  });
 }

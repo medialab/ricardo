@@ -88,6 +88,25 @@
   </div>
 </div>
 
+<!-- Start: Retporter citation-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4>{{'PARTNER_REPORTER_CITATION_TITLE' | translate}} {{partnersDict[partner]}}</h4>
+      <div>
+        <bar-chart
+          ng-data="citationData"
+          start-date="selectedMinDate"
+          end-date="selectedMaxDate"
+          raw-start-date="minDateRange"
+          raw-end-date="maxDateRange"
+        ></bar-chart>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End: Retporter citation-->
+
 <!-- Start: World Comparison -->
 <div class="container comparison">
   <div class="row">

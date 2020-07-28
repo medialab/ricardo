@@ -158,6 +158,7 @@
   "PARTNER_TITLE_1": "The trade partner ",
   "PARTNER_STATUSES_TITLE": "Political statuses",
   "PARTNER_STATUSES_INTRO": "This chart represents the evolution of the selected trade partner's dependencies count. It also shows the periods of sovereignty.",
+  "PARTNER_REPORTER_CITATION_TITLE": "Reporting number that reference",
   "BILATERAL_INTRO_TITLE": "Bilateral",
   "BILATERAL_INTRO_PARA": "Bilateral shows trade between a reporting country and one of its partners (Country type). It compares the availability of bilateral trade statistics in the two selected countries. It estimates the divergence in the mirror flows from the point of view of the reporting country (see Glossary for the definition of terms).",
   "BILATERAL_1": "Trade between ",
