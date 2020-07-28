@@ -18,8 +18,6 @@ angular
           view: "=",
         },
         link: function (scope, element, attrs) {
-          console.log(scope.ngData);
-
           function noData(entity, minDate, maxDate) {
             d3.select("#linechart-world-container")
               .append("div")
@@ -42,7 +40,6 @@ angular
               });
           }
           scope.$watchCollection("[ngData,startDate,endDate]", function (newValue, oldValue) {
-            console.log(scope.ngData);
             if (newValue[0] && newValue[0].length > 0) {
               yValue = newValue[0][0].flowType;
               var minDate = newValue[1];

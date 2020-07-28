@@ -30,7 +30,11 @@ export function initParams($route, $scope, params) {
           );
         }
       } else {
-        $scope[param.name] = urlParams[param.name];
+        if (param.isArray) {
+          $scope[param.name] = urlParams[param.name].split("|");
+        } else {
+          $scope[param.name] = urlParams[param.name];
+        }
       }
     }
 

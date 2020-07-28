@@ -19,7 +19,7 @@ angular
           scope.$watch("ngData", function (newValue, oldValue) {
             if (newValue && scope.ngData) {
               svg.selectAll("*").remove();
-              barChart(scope.ngData, 1787, 1938);
+              barChart(scope.ngData, scope.rawStartDate, scope.rawEndDate);
             }
           });
 

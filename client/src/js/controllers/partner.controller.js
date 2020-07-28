@@ -1,3 +1,5 @@
+import { initParams, getListItemId } from "../utils";
+
 /*
  * Partner view Controller :
  */
@@ -71,7 +73,6 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
         })
         .then((data) => {
           $scope.flows = data.flows;
-          console.log($scope.flows);
 
           const dates = $scope.flows.map((d) => d.year);
           $scope.minDate = d3.min(dates);
@@ -123,20 +124,27 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
     });
 
     // Load the world trade comparison block
-    loadTradeComparison($scope, apiService, LINE_CHART_CURRENCY, LINE_CHART_FLOW_TYPES);
+    loadTradeComparison($route, $scope, apiService, LINE_CHART_CURRENCY, LINE_CHART_FLOW_TYPES);
 
     // Load the table component
     loadTableComponent($scope, TABLE_HEADERS);
 
     // Load the citation ref component
     loadCitationComponent($scope);
+
+    // sync url params
+    initParams($route, $scope, [
+      { name: "selectedMinDate" },
+      { name: "selectedMaxDate" },
+      { name: "comparisonFlowType", list: LINE_CHART_FLOW_TYPES, getItemId: getListItemId },
+    ]);
   },
 ]);
 
 /**
  * Load & manage the world trade comparison chart.
  */
-function loadTradeComparison($scope, apiService, LINE_CHART_CURRENCY, LINE_CHART_FLOW_TYPES) {
+function loadTradeComparison($route, $scope, apiService, LINE_CHART_CURRENCY, LINE_CHART_FLOW_TYPES) {
   /*
    * Init state
    * *****************
@@ -144,7 +152,7 @@ function loadTradeComparison($scope, apiService, LINE_CHART_CURRENCY, LINE_CHART
   // Default color for the cuvers
   $scope.comparisonLineColors = ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c"];
   // list of selected reporter
-  $scope.comparison = [];
+  $scope.comparison = null;
   // Partner var for the inline-select
   $scope.comparisonReporterEntity = {};
   $scope.comparisonReporterList = [];
@@ -162,7 +170,7 @@ function loadTradeComparison($scope, apiService, LINE_CHART_CURRENCY, LINE_CHART
    */
   // For the change on the inline-select
   $scope.comparisonPush = function (comparisonReporterEntity) {
-    if ($scope.comparison.length >= 5) return;
+    if ($scope.comparison && $scope.comparison.length >= 5) return;
     if ($scope.comparison.findIndex((e) => e.id === comparisonReporterEntity.id) === -1) {
       $scope.comparison.push(Object.assign(comparisonReporterEntity, { color: $scope.comparisonLineColors.pop() }));
     }
@@ -176,43 +184,70 @@ function loadTradeComparison($scope, apiService, LINE_CHART_CURRENCY, LINE_CHART
   };
 
   /**
-   * Main function that handle the recomptation of the chart
+   * Main function that handle the recomputation of the chart
    */
   $scope.comparisonReload = function (flows, minDate, maxDate, comparison, flowType) {
     // Compute reporter list
-    if (flows)
-      $scope.comparisonReporterList = $scope.flows
+    if (flows) {
+      $scope.comparisonReporterList = flows
         .map((flow) => {
           return { id: flow.reporting_id, label: flow.reporting_name };
         })
         .filter((value, index, self) => self.findIndex((e) => e.id === value.id) === index)
         .sort((a, b) => (a.label.toUpperCase() < b.label.toUpperCase() ? -1 : 1));
 
+      // it's the init
+      if (!comparison) {
+        if ($route.current.params["comparison"]) {
+          $scope.comparison = [];
+          $route.current.params["comparison"].split("|").forEach((id) => {
+            let item = $scope.comparisonReporterList.find((e) => e.id === id);
+            if (item) {
+              $scope.comparisonPush(item);
+            }
+            comparison = $scope.comparison;
+          });
+        } else {
+          comparison = [];
+          $scope.comparison = comparison;
+        }
+      }
+    }
+
     // Compute comparison data
-    $scope.comparisonData = null;
-    $scope.comparisonData = comparison.map((entity) => {
-      return {
-        color: entity.color,
-        key: entity.id,
-        flowType: flowType.type.value,
-        values: flows.filter((flow) => {
-          if (flow.reporting_id === entity.id && minDate <= flow.year <= maxDate) {
-            return true;
-          } else {
-            return false;
-          }
-        }),
-      };
-    });
+    if (comparison) {
+      $scope.comparisonData = null;
+      $scope.comparisonData = comparison.map((entity) => {
+        return {
+          color: entity.color,
+          key: entity.id,
+          flowType: flowType.type.value,
+          values: flows.filter((flow) => {
+            if (flow.reporting_id === entity.id && minDate <= flow.year <= maxDate) {
+              return true;
+            } else {
+              return false;
+            }
+          }),
+        };
+      });
+    }
   };
 
   /**
    * WATCHERS
    * ***************
    */
+  $scope.$watchCollection("[partner, selectedMinDate, selectedMaxDate, flows, comparisonFlowType]", function (
+    newVal,
+    oldVal,
+  ) {
+    $scope.comparisonReload(newVal[3], newVal[1], newVal[2], $scope.comparison, newVal[4]);
+  });
   $scope.$watch(
     "comparison",
     function (newVal, oldVal) {
+      // update the chart
       $scope.comparisonReload(
         $scope.flows,
         $scope.selectedMinDate,
@@ -220,15 +255,18 @@ function loadTradeComparison($scope, apiService, LINE_CHART_CURRENCY, LINE_CHART
         newVal,
         $scope.comparisonFlowType,
       );
+      // update params
+      let urlParams = Object.assign({}, $route.current.params);
+      if (newVal) {
+        urlParams.comparison = newVal.map((e) => e.id).join("|");
+      } else {
+        delete urlParams.comparison;
+      }
+
+      $route.updateParams(urlParams);
     },
     true,
   );
-  $scope.$watchCollection("[partner, selectedMinDate, selectedMaxDate, flows, comparisonFlowType]", function (
-    newVal,
-    oldVal,
-  ) {
-    $scope.comparisonReload(newVal[3], newVal[1], newVal[2], $scope.comparison, newVal[4]);
-  });
 }
 
 /**
