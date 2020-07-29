@@ -1788,3 +1788,13 @@ h4.titleMultiLine > div {
   margin-right: 5px;
   cursor: pointer;
 }
+
+.dataviz {
+  display: block;
+  width: 100%;
+}
+
+.heatmaps {
+  max-height: 500px;
+  overflow: hidden;
+}

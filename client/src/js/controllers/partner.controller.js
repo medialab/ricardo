@@ -132,11 +132,16 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
     // Load the citation ref component
     loadCitationComponent($scope);
 
+    // Load the reporting heatmap  component
+    loadReportingHeatMapComponent($scope);
+
     // sync url params
     initParams($route, $scope, [
       { name: "selectedMinDate" },
       { name: "selectedMaxDate" },
       { name: "comparisonFlowType", list: LINE_CHART_FLOW_TYPES, getItemId: getListItemId },
+      { name: "heatmapOrder", list: $scope.heatmapOrderList },
+      { name: "heatmapField", list: $scope.heatmapFieldList, getItemId: (a) => a.id },
     ]);
   },
 ]);
@@ -309,6 +314,9 @@ function loadTableComponent($scope, TABLE_HEADERS) {
   };
 }
 
+/**
+ * Load & manage the citation component.
+ */
 function loadCitationComponent($scope) {
   $scope.citationData = null;
   $scope.$watch("flows", function (newVal, oldVal) {
@@ -326,5 +334,112 @@ function loadCitationComponent($scope) {
         return { year: +key, nb_reporting: dataAsMap[key] };
       });
     }
+  });
+}
+
+/**
+ * Load & manage the heatmap component..
+ */
+function loadReportingHeatMapComponent($scope) {
+  $scope.heatmapDataSource = null;
+  $scope.heatmapData = null;
+  $scope.heatmapIndexYear = null;
+  $scope.heatmapReporterList = null;
+  $scope.heatmapOrder = null;
+  $scope.heatmapColor = "#663333";
+  $scope.heatmapLegend = false;
+  $scope.heatmapOpacity = true;
+  $scope.heatmapOrderList = ["Name", "First year", "Number of years"];
+  $scope.heatmapOrder = $scope.heatmapOrderList[0];
+  $scope.heatmapFieldList = [
+    { id: "total", label: "Total" },
+    { id: "imp", label: "Import" },
+    { id: "exp", label: "Export" },
+  ];
+  $scope.heatmapField = $scope.heatmapFieldList[0];
+
+  /**
+   * Given the data computed and the order + field ,
+   * this function transform it to valid format for the heatmap directive.
+   */
+  $scope.heatmapDataTransform = function (data, order, field) {
+    let result = angular.copy(data);
+    if (data && order && field) {
+      // Make the transfo for the field
+      result = result.map((reporter) => {
+        const reporterData = reporter.data;
+        Object.keys(reporterData).forEach((year) => {
+          if (reporterData[year][field.id]) reporterData[year] = reporterData[year][field.id];
+          else reporterData[year] = 0;
+        });
+        return {
+          id: reporter.key,
+          label: reporter.label,
+          data: reporterData,
+        };
+      });
+
+      // Make the order
+      let getValueForOrdering = (a) => a.label.toUpperCase();
+      switch (order) {
+        case $scope.heatmapOrderList[1]:
+          getValueForOrdering = (a) => Object.keys(a.data)[0];
+          break;
+        case $scope.heatmapOrderList[2]:
+          getValueForOrdering = (a) => Object.keys(a.data).length * -1;
+          break;
+      }
+      result.sort((a, b) => (getValueForOrdering(a) < getValueForOrdering(b) ? -1 : 1));
+    }
+    return result;
+  };
+
+  $scope.$watch("flows", function (newVal, oldVal) {
+    if (newVal) {
+      // Recompute reporterlist
+      let reporterMap = newVal
+        .map((flow) => {
+          return { id: flow.reporting_id, name: flow.reporting_name };
+        })
+        .reduce((acc, current) => {
+          acc[current.id] = current.name;
+          return acc;
+        }, {});
+      $scope.heatmapReporterList = Object.keys(reporterMap).map((key) => {
+        return { RICid: key, RICname: reporterMap[key] };
+      });
+
+      // Recompute data
+      $scope.heatmapDataSource = Object.keys(reporterMap).map((key) => {
+        return {
+          id: key,
+          label: reporterMap[key],
+          data: newVal
+            .filter((flow) => flow.reporting_id === key && flow.total)
+            .reduce((acc, current) => {
+              if (acc[current.year]) {
+                acc[current.year] = {
+                  exp: (current.exp || 0) + acc[current.year].exp,
+                  imp: (current.imp || 0) + acc[current.year].imp,
+                  total: (current.total || 0) + acc[current.year].total,
+                };
+              } else {
+                acc[current.year] = { exp: current.exp || 0, imp: current.imp || 0, total: current.total || 0 };
+              }
+              return acc;
+            }, {}),
+        };
+      });
+
+      $scope.heatmapData = $scope.heatmapDataTransform(
+        $scope.heatmapDataSource,
+        $scope.heatmapOrder,
+        $scope.heatmapField,
+      );
+    }
+  });
+
+  $scope.$watchCollection("[heatmapOrder, heatmapField]", function (newValue, oldValue) {
+    $scope.heatmapData = $scope.heatmapDataTransform($scope.heatmapDataSource, newValue[0], newValue[1]);
   });
 }

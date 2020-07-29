@@ -22,6 +22,7 @@ import "./reportingWorld.directive.js";
 import "./worldTitle.directive.js";
 import "./exchangeRateCurves.directive.js";
 import "./politicalStatuses.directive.js";
+import "./heatmap.directive.js";
 
 angular.module("ricardo.directives", [
   "ricardo.directives.navbar",
@@ -45,4 +46,5 @@ angular.module("ricardo.directives", [
   "ricardo.directives.numberFlows",
   "ricardo.directives.exchangeRateCurves",
   "ricardo.directives.politicalStatuses",
+  "ricardo.directives.heatmap",
 ]);

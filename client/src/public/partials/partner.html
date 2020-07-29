@@ -88,7 +88,7 @@
   </div>
 </div>
 
-<!-- Start: Retporter citation-->
+<!-- Start: Reporter citation -->
 <div class="container">
   <div class="row">
     <div class="col-sm-12 well">
@@ -105,7 +105,70 @@
     </div>
   </div>
 </div>
-<!-- End: Retporter citation-->
+<!-- End: Reporter citation -->
+
+<!-- Start: Reporter Heatmap -->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4 class="titleMultiLine">
+        <div>
+          {{'PARTNER_REPORTER_HEATMAP_TITLE_1' | translate}} {{partnersDict[partner]}}
+          {{'PARTNER_REPORTER_HEATMAP_TITLE_2' | translate}} {{'PARTNER_REPORTER_HEATMAP_TITLE_ORDER' | translate}}
+          <div class="inline-select">
+            <ui-select ng-model="$parent.heatmapOrder" theme="bootstrap">
+              <ui-select-match
+                class="ui-select-match"
+                placeholder="{{ 'PARTNER_HEATMAP_ORDER_PLACEHOLDER' | translate }}"
+              >
+                {{$select.selected}}
+              </ui-select-match>
+              <ui-select-choices class="ui-select-choices" repeat="item in heatmapOrderList | filter: $select.search">
+                <div ng-bind-html="item | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+        </div>
+        <div>
+          {{'PARTNER_REPORTER_HEATMAP_TITLE_FIELD' | translate}}
+          <div class="inline-select">
+            <ui-select ng-model="$parent.heatmapField" theme="bootstrap">
+              <ui-select-match
+                class="ui-select-match"
+                placeholder="{{ 'PARTNER_HEATMAP_FIELD_PLACEHOLDER' | translate }}"
+              >
+                {{$select.selected.label}}
+              </ui-select-match>
+              <ui-select-choices class="ui-select-choices" repeat="item in heatmapFieldList | filter: $select.search">
+                <div ng-bind-html="item.label | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+        </div>
+      </h4>
+      <div>
+        <div>
+          <heatmap class="dataviz" data="{}" start-date="minDate" end-date="maxDate" legend="'top'"></heatmap>
+        </div>
+        <div class="heatmaps">
+          <div class="heatmap" ng-repeat="reporter in heatmapData">
+            {{reporter.label}}
+            <heatmap
+              class="dataviz"
+              data="reporter.data"
+              start-date="minDate"
+              end-date="maxDate"
+              legend="heatmapLegend"
+              color="heatmapColor"
+              opacity="heatmapOpacity"
+            ></heatmap>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End: Reporter Heatmap-->
 
 <!-- Start: World Comparison -->
 <div class="container comparison">
