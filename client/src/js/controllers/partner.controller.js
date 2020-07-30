@@ -341,9 +341,8 @@ function loadCitationComponent($scope) {
  * Load & manage the heatmap component..
  */
 function loadReportingHeatMapComponent($scope) {
-  $scope.heatmapDataSource = null;
-  $scope.heatmapData = null;
-  $scope.heatmapIndexYear = null;
+  $scope.heatmapDataSource = null; // Array<{id:string, label:string, data:{[year:number]:{total:number, imp:number, exp:number, currency}}}>
+  $scope.heatmapData = null; // Array<{id:string, label:string, tooltip:(data, min, max):string, data:{[year:number]:number}}>
   $scope.heatmapReporterList = null;
   $scope.heatmapOrder = null;
   $scope.heatmapColor = "#663333";
@@ -357,6 +356,11 @@ function loadReportingHeatMapComponent($scope) {
     { id: "exp", label: "Export" },
   ];
   $scope.heatmapField = $scope.heatmapFieldList[0];
+  $scope.heatmapShowAll = false;
+  $scope.heatmapShowAllToggle = function () {
+    console.log("Coucou");
+    $scope.heatmapShowAll = !$scope.heatmapShowAll;
+  };
 
   /**
    * Given the data computed and the order + field ,
@@ -367,7 +371,7 @@ function loadReportingHeatMapComponent($scope) {
     if (data && order && field) {
       // Make the transfo for the field
       result = result.map((reporter) => {
-        const reporterData = reporter.data;
+        const reporterData = angular.copy(reporter.data);
         Object.keys(reporterData).forEach((year) => {
           if (reporterData[year][field.id]) reporterData[year] = reporterData[year][field.id];
           else reporterData[year] = 0;
@@ -376,6 +380,16 @@ function loadReportingHeatMapComponent($scope) {
           id: reporter.key,
           label: reporter.label,
           data: reporterData,
+          tooltip: (data, min, max) => {
+            return `
+              <h3>${reporter.label} - ${data.year}</h3>
+              <ul>
+                <li><strong>Total :</strong> ${Math.round(reporter.data[data.year].total)}</li>
+                <li><strong>Import :</strong> ${Math.round(reporter.data[data.year].imp)} </li>
+                <li><strong>Export :</strong> ${Math.round(reporter.data[data.year].exp)}</li>
+              </ul>
+              <span>Values are in <strong>${reporter.data[data.year].currency}</strong></span>`;
+          },
         };
       });
 
@@ -419,12 +433,18 @@ function loadReportingHeatMapComponent($scope) {
             .reduce((acc, current) => {
               if (acc[current.year]) {
                 acc[current.year] = {
+                  currency: current.currency,
                   exp: (current.exp || 0) + acc[current.year].exp,
                   imp: (current.imp || 0) + acc[current.year].imp,
                   total: (current.total || 0) + acc[current.year].total,
                 };
               } else {
-                acc[current.year] = { exp: current.exp || 0, imp: current.imp || 0, total: current.total || 0 };
+                acc[current.year] = {
+                  currency: current.currency,
+                  exp: current.exp || 0,
+                  imp: current.imp || 0,
+                  total: current.total || 0,
+                };
               }
               return acc;
             }, {}),

@@ -17,6 +17,8 @@ angular
           legend: "=",
           // {boolean} Should we compute opacity for the heatmap ?
           opacity: "=",
+          // {(data, minValue, maxValue):string} function that takes the data and generate the texte for the tooltip
+          tooltipFunction: "=",
         },
         link: function (scope, element, attrs) {
           /**
@@ -27,18 +29,19 @@ angular
           const defaultColor = "#000000";
           const defaultLegend = null;
           const defaultOpacity = true;
+          const defaultTooltip = (data, min, max) => `${data.year} - ${Math.round(data.value)}`;
           const minOpacity = 0.2;
           const rootElement = element[0];
           const width = element[0].offsetWidth;
           const height = 0;
           const heightForLegend = 25;
-          var svg, chart, chartData;
+          var svg, chart, chartData, tooltip;
 
           /**
            * Init D3
            */
+          tooltip = d3.select(rootElement).append("div").attr("class", "heatmap-tooltip");
           svg = d3.select(rootElement).append("svg").attr("width", width).attr("height", height);
-
           chart = svg.append("g").attr("transform", `translate(0, 0)`);
 
           /**
@@ -60,12 +63,13 @@ angular
           /**
            * (re)Generate the chart from the data.
            */
-          function update(_data, _startDate, _endDate, _color, _legend, _opacity) {
+          function update(_data, _startDate, _endDate, _color, _legend, _opacity, _tooltip) {
             const startDate = _startDate || defaultStartDate;
             const endDate = _endDate || defaultEndDate;
             const color = _color || defaultColor;
             const legend = _legend || defaultLegend;
             const opacity = _opacity !== null && _opacity !== undefined ? _opacity : defaultOpacity;
+            const tooltipText = _tooltip || defaultTooltip;
             // Compute the barsize
             const barSize = Math.floor(width / (endDate - startDate));
 
@@ -121,6 +125,19 @@ angular
                     result = minOpacity + pourcent * 0.7;
                   }
                   return result;
+                })
+                .on("mouseover", function (e) {
+                  tooltip
+                    .html(tooltipText(e, minValue, maxValue))
+                    .transition()
+                    .duration(200)
+                    .style("visibility", "visible");
+                })
+                .on("mouseout", function (e) {
+                  tooltip.transition().duration(200).style("visibility", "hidden");
+                })
+                .on("mousemove", function (e) {
+                  tooltip.style("left", d3.event.x + 10 + "px").style("top", d3.event.y + 10 + "px");
                 });
             }
           }
@@ -128,13 +145,24 @@ angular
           /**
            * Watchers
            */
-          scope.$watchCollection("[startDate, endDate, color, legend, opacity]", function (newValue, oldValue) {
-            update(scope.data, newValue[0], newValue[1], newValue[2], newValue[3], newValue[4]);
+          scope.$watchCollection("[startDate, endDate, color, legend, opacity, tooltipFunction]", function (
+            newValue,
+            oldValue,
+          ) {
+            update(scope.data, newValue[0], newValue[1], newValue[2], newValue[3], newValue[4], newValue[5]);
           });
           scope.$watch(
             "data",
             function (newValue, oldValue) {
-              update(newValue, scope.startDate, scope.endDate, scope.color, scope.legend, scope.opacity);
+              update(
+                newValue,
+                scope.startDate,
+                scope.endDate,
+                scope.color,
+                scope.legend,
+                scope.opacity,
+                scope.tooltipFunction,
+              );
             },
             true,
           );

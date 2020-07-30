@@ -150,7 +150,7 @@
         <div>
           <heatmap class="dataviz" data="{}" start-date="minDate" end-date="maxDate" legend="'top'"></heatmap>
         </div>
-        <div class="heatmaps">
+        <div class="heatmaps" ng-class="{'show':heatmapShowAll}">
           <div class="heatmap" ng-repeat="reporter in heatmapData">
             {{reporter.label}}
             <heatmap
@@ -161,8 +161,15 @@
               legend="heatmapLegend"
               color="heatmapColor"
               opacity="heatmapOpacity"
+              tooltip-function="reporter.tooltip"
             ></heatmap>
           </div>
+        </div>
+        <div class="show-more">
+          <a ng-click="heatmapShowAllToggle()">
+            <span ng-if="!heatmapShowAll">{{'SHOW' | translate}}</span>
+            <span ng-if="heatmapShowAll">{{'HIDE' | translate}}</span>
+          </a>
         </div>
       </div>
     </div>
