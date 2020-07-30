@@ -356,6 +356,11 @@ function loadReportingHeatMapComponent($scope) {
     { id: "exp", label: "Export" },
   ];
   $scope.heatmapField = $scope.heatmapFieldList[0];
+  $scope.heatmapShowAll = false;
+  $scope.heatmapShowAllToggle = function () {
+    console.log("Coucou");
+    $scope.heatmapShowAll = !$scope.heatmapShowAll;
+  };
 
   /**
    * Given the data computed and the order + field ,

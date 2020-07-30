@@ -9,6 +9,10 @@
  * 1200px (lg)
  */
 
+a {
+  cursor: pointer;
+}
+
 .alert {
   top: 50%;
   left: 50%;
@@ -1794,9 +1798,12 @@ h4.titleMultiLine > div {
   width: 100%;
 }
 
-.heatmaps.close {
+.heatmaps {
   max-height: 500px;
   overflow: hidden;
+}
+.heatmaps.show {
+  max-height: inherit;
 }
 
 .heatmap-tooltip {
@@ -1828,4 +1835,16 @@ h4.titleMultiLine > div {
   font-style: italic;
   font-size: 10px;
   text-align: center;
+}
+
+.show-more {
+  text-align: center;
+  border-top: 1px solid #e2ac13;
+  margin: 20px auto 0 auto;
+  width: 50%;
+  padding: 20px 0 0 0;
+}
+
+.show-more a {
+  font-weight: bold;
 }
