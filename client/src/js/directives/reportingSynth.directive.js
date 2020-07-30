@@ -52,6 +52,7 @@ angular
           });
 
           element.on("$destroy", function () {
+            d3.select("#reporting-synth-axis").selectAll("*").remove();
             d3.select("#reporting-synth-container").selectAll("*").remove();
           });
 
@@ -318,6 +319,7 @@ angular
             });
           }
           function draw(data) {
+            d3.select("#reporting-synth-container").selectAll("*").remove();
             var svg = d3
               .select("#reporting-synth-container")
               .append("svg")
