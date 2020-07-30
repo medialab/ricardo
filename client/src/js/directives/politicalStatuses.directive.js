@@ -46,21 +46,10 @@ angular.module("ricardo.directives.politicalStatuses", []).directive("politicalS
         boundaries: "=",
       },
       link: function (scope, element) {
-        const CHART_HEIGHT = 100;
+        const CHART_HEIGHT = 40;
         const X_AXIS_HEIGHT = 20;
-        const SOVEREIGNTY_STATUSES = {
-          Sovereign: true,
-          "Sovereign (limited)": true,
-          "Sovereign (unrecognized)": true,
-        };
-        const DEPENDENCIES_STATUSES = {
-          "Became colony of": true,
-          "Became part of": true,
-          "Became dependency of": true,
-          "Became protectorate of": true,
-          "Became vassal of": true,
-          "Became possession of": true,
-        };
+
+        
 
         element.on("$destroy", () => {
           flushDOM(element[0]);
@@ -69,7 +58,7 @@ angular.module("ricardo.directives.politicalStatuses", []).directive("politicalS
         scope.$watchCollection("[gphData, partner, boundaries]", (newValue, oldValue) => {
           const [gphData, partner, boundaries] = newValue;
           const vizData = prepareData(gphData, partner, boundaries);
-          render(element[0], vizData.sovereigntyData, vizData.dependenciesData, boundaries);
+          render(element[0], vizData.sovereigntyData, vizData.nonSovereigntyData, vizData.dependenciesData, boundaries);
         });
 
         /**
@@ -77,14 +66,28 @@ angular.module("ricardo.directives.politicalStatuses", []).directive("politicalS
          * and generate proper indices for rendering.
          */
         function prepareData(gphData, partner, boundaries) {
-          const { entities, statusInTime } = gphData;
+
+          const { entities, statusInTime, status } = gphData;
           const { minYear, maxYear } = boundaries;
           const result = {
             sovereigntyData: [],
+            nonSovereigntyData: [],
             dependenciesData: [],
           };
+          
 
-          if (!entities || !statusInTime) return result;
+          if (!entities || !statusInTime || !status) return result;
+
+          const SOVEREIGNTY_STATUSES = status
+                                        .filter(s => s.group === "Sovereign (all)")
+                                        .reduce( (acc,s) => {
+                                          acc[s.GPH_status] = true
+                                          return acc}, {});
+          const DEPENDENCIES_STATUSES = status
+                                        .filter(s => ["Non sovereign", "Part of"].includes(s.group))
+                                        .reduce( (acc,s) => {
+                                          acc[s.GPH_status] = true
+                                          return acc}, {});
 
           // Search for entity in GeoPolHist corpus:
           const gphPartnerEntity = entities.find((entity) => partner === entity.GPH_name);
@@ -109,6 +112,14 @@ angular.module("ricardo.directives.politicalStatuses", []).directive("politicalS
             if (SOVEREIGNTY_STATUSES[GPH_status] && GPH_code === gphPartnerEntity.GPH_code) {
               result.sovereigntyData.push({
                 relation: GPH_status,
+                startYear: startYear,
+                endYear: endYear,
+              });
+            }
+            if (DEPENDENCIES_STATUSES[GPH_status] && GPH_code === gphPartnerEntity.GPH_code) {
+              result.nonSovereigntyData.push({
+                relation: GPH_status,
+                label: entitiesIndex[GPH_code].GPH_name,
                 startYear: startYear,
                 endYear: endYear,
               });
@@ -138,7 +149,7 @@ angular.module("ricardo.directives.politicalStatuses", []).directive("politicalS
          * This function flushes the whole previously generated DOM, to build a
          * full new one.
          */
-        function render(domRoot, sovereigntyData, dependenciesData, boundaries) {
+        function render(domRoot, sovereigntyData, nonSovereigntyData, dependenciesData, boundaries) {
           flushDOM(domRoot);
 
           // Prepare data:
@@ -176,32 +187,36 @@ angular.module("ricardo.directives.politicalStatuses", []).directive("politicalS
           const yScale = d3.scale.linear().range([0, CHART_HEIGHT]).domain([maxDepsPerYear, 0]);
 
           // Captions:
+          const axisXPosition = xScale(Math.max(boundaries.minYear, 1816));
           svg
             .append("g")
             .attr("class", "x axis")
-            .attr("transform", `translate(${leftPadding},${CHART_HEIGHT + topPadding})`)
+            .attr("transform", `translate(0,${CHART_HEIGHT + topPadding})`)
             .call(
               d3.svg
                 .axis()
                 .scale(xScale)
                 .orient("bottom")
-                .ticks(boundaries.maxYear - boundaries.minYear < 5 ? 1 : 10)
+                .ticks(Math.max(boundaries.maxYear,1816) - boundaries.minYear < 5 ? 1 : 10)
                 .outerTickSize(0)
                 .tickFormat((d) => d.toString()),
             );
+          const yAxisTicks = yScale.ticks(2)
+            .filter(tick => Number.isInteger(tick));
+          
           svg
             .append("g")
             .attr("class", "y axis")
-            .attr("transform", `translate(0,${topPadding})`)
-            .call(d3.svg.axis().scale(yScale).orient("right").ticks(3).tickSize(width))
-            .call((g) => g.selectAll("text").attr("x", 4).attr("dy", -4).attr("font-size", "0.85em"));
+            .attr("transform", `translate(${axisXPosition},${topPadding})`)
+            .call(d3.svg.axis().scale(yScale).orient("right").tickValues(yAxisTicks).tickSize(width).tickFormat(d3.format('d')))
+            .call((g) => g.selectAll("text").attr("x",4).attr("dy", -4).attr("font-size", "0.85em"));
 
-          // Represent sovereignty
+          // Represent non sovereignty
           chart
             .append("g")
             .attr("class", "sovereignty-chart")
             .selectAll("rect")
-            .data(sovereigntyData)
+            .data(nonSovereigntyData)
             .enter()
             .append("rect")
             .style("fill", "rgba(0, 0, 0, 0.1)")
