@@ -1794,7 +1794,38 @@ h4.titleMultiLine > div {
   width: 100%;
 }
 
-.heatmaps {
+.heatmaps.close {
   max-height: 500px;
   overflow: hidden;
+}
+
+.heatmap-tooltip {
+  position: fixed;
+  visibility: "hidden";
+  opacity: 0.8;
+  padding: 10px;
+  background: #333;
+  color: #ddd;
+  border: 0;
+  border-radius: 5px;
+}
+
+.heatmap-tooltip h3 {
+  color: #ddd;
+  font-weight: bold;
+  margin: 3px 5px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.heatmap-tooltip ul {
+  list-style-type: none;
+  margin: 5px 0;
+  padding: 0;
+}
+
+.heatmap-tooltip span {
+  font-style: italic;
+  font-size: 10px;
+  text-align: center;
 }
