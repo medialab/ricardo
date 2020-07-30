@@ -79,6 +79,7 @@ angular
             xScaling.domain([startDate, endDate]);
             //remove everything
             svg.attr("height", barSize).select(".x.axis").remove();
+            yScaling.range([barSize, 0]);
             if (legend !== null) {
               xAxis.orient(legend);
               // update the height of the SVG + create the axis group
@@ -93,14 +94,17 @@ angular
             }
 
             if (_data) {
-              const data = Object.keys(_data).map((year) => {
-                return { year: +year, value: _data[year] };
-              });
+              const data = Object.keys(_data)
+                .map((year) => {
+                  return { year: +year, value: _data[year] };
+                })
+                .filter((row) => startDate <= row.year <= endDate);
               // Compute Min & Max value
               const minValue = d3.min(data.map((e) => e.value));
               const maxValue = d3.max(data.map((e) => e.value));
 
               // Update data of the SVG
+              chartData.selectAll(".bar").remove();
               chartData
                 .selectAll(".bar")
                 .data(data)
