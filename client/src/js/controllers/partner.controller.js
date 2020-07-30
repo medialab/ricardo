@@ -341,14 +341,13 @@ function loadCitationComponent($scope) {
  * Load & manage the heatmap component..
  */
 function loadReportingHeatMapComponent($scope) {
-  $scope.heatmapDataSource = null; // Array<{id:string, label:string, data:{[year:number]:{total:number, imp:number, exp:number, currency}}}>
+  $scope.heatmapDataSource = null; // Array<{id:string, label:string, total:{total:number, exp:number, imp:number}, data:{[year:number]:{total:number, imp:number, exp:number, currency}}}>
   $scope.heatmapData = null; // Array<{id:string, label:string, tooltip:(data, min, max):string, data:{[year:number]:number}}>
   $scope.heatmapReporterList = null;
   $scope.heatmapOrder = null;
-  $scope.heatmapColor = "#663333";
   $scope.heatmapLegend = false;
   $scope.heatmapOpacity = true;
-  $scope.heatmapOrderList = ["Name", "First year", "Number of years"];
+  $scope.heatmapOrderList = ["Name", "First year", "Number of years", "Average trade volume"];
   $scope.heatmapOrder = $scope.heatmapOrderList[0];
   $scope.heatmapFieldList = [
     { id: "total", label: "Total" },
@@ -358,8 +357,19 @@ function loadReportingHeatMapComponent($scope) {
   $scope.heatmapField = $scope.heatmapFieldList[0];
   $scope.heatmapShowAll = false;
   $scope.heatmapShowAllToggle = function () {
-    console.log("Coucou");
     $scope.heatmapShowAll = !$scope.heatmapShowAll;
+  };
+  $scope.heatmapColors = ["#f9b702", "#f46a00", "#f90202"];
+  $scope.heatmapQuantile = { total: [0, 0], imp: [0, 0], exp: [0, 0] };
+  $scope.heatmapGetColorsViaQuantile = function (values, field) {
+    let color = $scope.heatmapColors[2];
+    if (values[field] < $scope.heatmapQuantile[field][1]) {
+      color = $scope.heatmapColors[1];
+    }
+    if (values[field] < $scope.heatmapQuantile[field][0]) {
+      color = $scope.heatmapColors[0];
+    }
+    return color;
   };
 
   /**
@@ -379,6 +389,8 @@ function loadReportingHeatMapComponent($scope) {
         return {
           id: reporter.key,
           label: reporter.label,
+          color: $scope.heatmapGetColorsViaQuantile(reporter.average, field.id),
+          average: reporter.average[field.id], // used for the order
           data: reporterData,
           tooltip: (data, min, max) => {
             return `
@@ -401,6 +413,9 @@ function loadReportingHeatMapComponent($scope) {
           break;
         case $scope.heatmapOrderList[2]:
           getValueForOrdering = (a) => Object.keys(a.data).length * -1;
+          break;
+        case $scope.heatmapOrderList[3]:
+          getValueForOrdering = (a) => a.average * -1;
           break;
       }
       result.sort((a, b) => (getValueForOrdering(a) < getValueForOrdering(b) ? -1 : 1));
@@ -425,31 +440,57 @@ function loadReportingHeatMapComponent($scope) {
 
       // Recompute data
       $scope.heatmapDataSource = Object.keys(reporterMap).map((key) => {
+        const filterFlows = newVal.filter((flow) => flow.reporting_id === key && flow.total);
         return {
           id: key,
           label: reporterMap[key],
-          data: newVal
-            .filter((flow) => flow.reporting_id === key && flow.total)
-            .reduce((acc, current) => {
-              if (acc[current.year]) {
-                acc[current.year] = {
-                  currency: current.currency,
-                  exp: (current.exp || 0) + acc[current.year].exp,
-                  imp: (current.imp || 0) + acc[current.year].imp,
-                  total: (current.total || 0) + acc[current.year].total,
-                };
-              } else {
-                acc[current.year] = {
-                  currency: current.currency,
-                  exp: current.exp || 0,
-                  imp: current.imp || 0,
-                  total: current.total || 0,
-                };
+          average: filterFlows.reduce(
+            (acc, current, index, source) => {
+              //we compute the total till the last line
+              acc.total += current.total || 0;
+              acc.imp += current.imp || 0;
+              acc.exp += current.exp || 0;
+              // if we are at the end, we divide per the legnth to have the average
+              if (index === source.length - 1) {
+                acc.total = acc.total / source.length;
+                acc.imp = acc.imp / source.length;
+                acc.exp = acc.exp / source.length;
               }
               return acc;
-            }, {}),
+            },
+            { total: 0, exp: 0, imp: 0 },
+          ),
+          data: filterFlows.reduce((acc, current) => {
+            if (acc[current.year]) {
+              acc[current.year] = {
+                currency: current.currency,
+                exp: (current.exp || 0) + acc[current.year].exp,
+                imp: (current.imp || 0) + acc[current.year].imp,
+                total: (current.total || 0) + acc[current.year].total,
+              };
+            } else {
+              acc[current.year] = {
+                currency: current.currency,
+                exp: current.exp || 0,
+                imp: current.imp || 0,
+                total: current.total || 0,
+              };
+            }
+            return acc;
+          }, {}),
         };
       });
+
+      const reportingAverageTotal = $scope.heatmapDataSource
+        .map((e) => e.average.total)
+        .sort((a, b) => (a < b ? -1 : 1));
+      const reportingAverageImp = $scope.heatmapDataSource.map((e) => e.average.imp).sort((a, b) => (a < b ? -1 : 1));
+      const reportingAverageExp = $scope.heatmapDataSource.map((e) => e.average.exp).sort((a, b) => (a < b ? -1 : 1));
+      $scope.heatmapQuantile = {
+        total: [d3.quantile(reportingAverageTotal, 0.33), d3.quantile(reportingAverageTotal, 0.66)],
+        exp: [d3.quantile(reportingAverageExp, 0.33), d3.quantile(reportingAverageExp, 0.66)],
+        imp: [d3.quantile(reportingAverageImp, 0.33), d3.quantile(reportingAverageImp, 0.66)],
+      };
 
       $scope.heatmapData = $scope.heatmapDataTransform(
         $scope.heatmapDataSource,
