@@ -74,16 +74,20 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
             .axis()
             .scale(xScale)
             .orient("bottom")
-            .ticks(4)
-            .outerTickSize(0)
-            .innerTickSize(4)
             .tickFormat((d) => d.toString());
+          const yAxis = d3.svg
+            .axis()
+            .scale(yScale)
+            .orient("left")
+            .ticks(2)
+            .tickSize(domWidth - 2 * padding);
 
           // Draw actual curves
           for (const currency in data.rates) {
             const curve = getCurve(currency, refCurrency, data.rates[currency], dict, {
               xAxis,
               xScale,
+              yAxis,
               yScale,
               width: domWidth,
               height: CURVE_HEIGHT,
@@ -131,7 +135,7 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
          * Returns a DOM element that displays the curve of the evolution of the
          * exchange rate for a given currency:
          */
-        function getCurve(currency, refCurrency, rates, dict, { xAxis, xScale, yScale, width, height }) {
+        function getCurve(currency, refCurrency, rates, dict, { xAxis, xScale, yAxis, yScale, width, height }) {
           const elRoot = document.createElement("li");
           elRoot.setAttribute("data-currency", currency);
           const label = !!Object.keys(rates).length ? dict[currency] : `${dict[currency]} (aucune donnée)`;
@@ -188,6 +192,7 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis);
+          svg.append("g").attr("class", "y axis").attr("transform", `translate(${width},0)`).call(yAxis);
 
           // Draw points:
           pointsGroup
