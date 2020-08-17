@@ -158,7 +158,7 @@ angular
               });
             });
 
-            x.domain([new Date(scope.startDate - 1, 0, 1), new Date(scope.endDate + 1, 0, 1)]);
+            x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
 
             var dataFiltered = data_flatten.filter(function (d) {
               return d.year >= x.domain()[0].getFullYear() && d.year <= x.domain()[1].getFullYear();
@@ -599,14 +599,21 @@ angular
                   }
                   //tick highlighting
                   svg.selectAll(".highlight").remove();
+                  var date_anchor =  function(d) { 
+                    var xPos = d3.select(this).node().getBBox().x;
+                    var tWidth = d3.select(this).node().getBBox().width;
+                    if (xPos - tWidth / 2 < 0) return "start";
+                    else if (xPos + tWidth / 2 > width) return "end";
+                    else return "middle";
+                  }
                   var text = svg
                     .append("text")
                     .attr("class", "highlight")
                     .attr("x", x(d))
                     .attr("y", height + 17)
                     .attr("font-size", "0.85em")
-                    .attr("text-anchor", "middle")
-                    .text(d.getFullYear());
+                    .text(d.getFullYear())
+                    .attr("text-anchor", date_anchor);
 
                   // Define the gradient
                   var gradient = svg
@@ -654,8 +661,8 @@ angular
                     .attr("x", x(d))
                     .attr("y", height + 17)
                     .attr("font-size", "0.85em")
-                    .attr("text-anchor", "middle")
-                    .text(d.getFullYear());
+                    .text(d.getFullYear())
+                    .attr("text-anchor", date_anchor);
                 })
                 .on("mouseout", function (d) {
                   tooltip.transition().style("opacity", 0);

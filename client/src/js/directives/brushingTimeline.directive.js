@@ -117,11 +117,9 @@ angular
             data.forEach(function (d) {
               d.date = new Date(d.year, 0, 1);
             });
-
+            // in this contaxt startDate and endDate are the rawMin and rawMax.
             x.domain(
-              d3.extent(data, function (d) {
-                return d.date;
-              }),
+              [new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]
             );
             y.domain([
               0,

@@ -260,7 +260,7 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         }),
         apiService.getGeoPolHistData(),
       ]).then(function ([data, gphData]) {
-        var dates = data.flows.map(function (d) {
+        var dates = data.flows.filter(d => !/^World/.test(d.partner_id)).map(function (d) {
           return d.year;
         });
 
@@ -360,10 +360,12 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         $scope.entities.sourceContinentEntity = {};
         $scope.entities.sourceWorldEntity = {};
 
-        $scope.rawMinDate = d3.min(data.flows, function (d) {
-          return d.year;
+        // there is something fishy with World flows in the reporting context.
+        // Keep them to be used in the detailed curves but discard them from min / max years calculations.
+        $scope.rawMinDate = d3.min(data.flows.filter(d => !/^World/.test(d.partner_id)), function (d) {
+            return d.year;
         });
-        $scope.rawMaxDate = d3.max(data.flows, function (d) {
+        $scope.rawMaxDate = d3.max(data.flows.filter(d => !/^World/.test(d.partner_id)), function (d) {
           return d.year;
         });
 

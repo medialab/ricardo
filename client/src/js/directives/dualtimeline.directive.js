@@ -59,7 +59,7 @@ angular
                 }
               });
 
-            x.domain([new Date(scope.startDate - 1, 0, 1), new Date(scope.endDate + 1, 0, 1)]);
+            x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
             y.domain([
               0,
               d3.max(
@@ -366,13 +366,22 @@ angular
                 /*
                  * Add date
                  */
+                var date_anchor =  function(d) { 
+                  var xPos = d3.select(this).node().getBBox().x;
+                  var tWidth = d3.select(this).node().getBBox().width;
+                  if (xPos - tWidth / 2 < 0) return "start";
+                  else if (xPos + tWidth / 2 > width) return "end";
+                  else return "middle";
+                }
+                // this date will be hidden by a rect later...
                 var text = svg
                   .append("text")
                   .attr("class", "lineDateText")
-                  .attr("x", x(new Date(d.year, 0, 1)) - 15)
+                  .attr("x", x(new Date(d.year, 0, 1)))
                   .attr("y", 147)
                   .attr("font-size", "0.85em")
                   .text(d.year)
+                  .attr("text-anchor", date_anchor)
                   .attr("pointer-events", "none");
 
                 /*
@@ -422,13 +431,15 @@ angular
                 /*
                  * Add date
                  */
-                var textDate = svg
+                // a new date to be rendered above the background we have just displayed...
+                svg
                   .append("text")
                   .attr("class", "lineDateText")
-                  .attr("x", x(new Date(d.year, 0, 1)) - 14)
+                  .attr("x", x(new Date(d.year, 0, 1)))
                   .attr("y", 147)
                   .attr("font-size", "0.85em")
                   .text(d.year)
+                  .attr("text-anchor", date_anchor)
                   .attr("pointer-events", "none");
               }
             }
