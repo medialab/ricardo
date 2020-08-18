@@ -568,14 +568,16 @@ body > .container {
 }
 
 .container-links {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-top: 10em;
-  padding-bottom: 6em;
+  padding-top: 6em;
+  padding-bottom: 2em;
 }
 
-.container-links .col-md-3 {
+
+.container-links .col-md-3,
+.container-links .col-md-6,
+.container-links .col-sm-3,
+.container-links .col-sm-6
+ {
   position: relative;
   display: flex;
   align-items: center;
@@ -605,27 +607,6 @@ body > .container {
   border-radius: 1.5em;
 }
 
-.box-bg-world {
-  margin-right: -3em;
-  margin-top: -1em;
-}
-
-.box-bg-country {
-  margin-top: 2em;
-}
-
-.box-bg-metadata {
-  margin-left: -4em;
-  margin-top: -2em;
-}
-
-.box-bg-world:before,
-.box-bg-country:before,
-.box-bg-bilateral:before,
-.box-bg-metadata:before {
-  transform: scale(0.8);
-}
-
 .box-bg:before {
   content: "";
   position: absolute;
@@ -642,11 +623,19 @@ body > .container {
   background: transparent url("../img/bg_home_country.png") no-repeat left top;
 }
 
+.box-bg-partner:before {
+  background: transparent url("../img/bg_home_partner.png") no-repeat left top;
+}
+
 .box-bg-bilateral:before {
   background: transparent url("../img/bg_home_bilateral.png") no-repeat left top;
 }
 
 .box-bg-metadata:before {
+  background: transparent url("../img/bg_home_metadata.png") no-repeat left top;
+}
+
+.box-bg-rates:before {
   background: transparent url("../img/bg_home_metadata.png") no-repeat left top;
 }
 
@@ -733,41 +722,25 @@ h2.title-border {
   background-color: #e2ac13;
 }
 
+.box-bg {
+  padding-top: 0em;
+  padding-right: 2em;
+  padding-bottom: 10em;
+  padding-left: 2em;
+}
+
 /* Responsive */
 @media (min-width: 1270px) {
-  .box-bg-country {
-    margin-left: -6em;
-  }
-
-  .box-bg-bilateral {
-    margin-right: -6em;
-  }
-
+  
   .box-bg-world:before,
   .box-bg-country:before,
   .box-bg-bilateral:before,
-  .box-bg-metadata:before {
+  .box-bg-partner:before,
+  .box-bg-metadata:before,
+  .box-bg-rates:before {
     transform: scale(1);
-  }
-
-  .box-bg-world:before {
-    top: -6em;
-    left: -4em;
-  }
-
-  .box-bg-country:before {
-    top: -6em;
-    right: 0;
-  }
-
-  .box-bg-bilateral:before {
-    top: -5em;
-    left: -3em;
-  }
-
-  .box-bg-metadata:before {
-    top: -4em;
-    right: -4em;
+    top: 2em;
+    left: 6em;
   }
 }
 
@@ -776,22 +749,6 @@ h2.title-border {
     overflow: hidden;
     width: 100%;
     margin-bottom: 10em;
-  }
-
-  .box-bg-world,
-  .box-bg-country,
-  .box-bg-bilateral,
-  .box-bg-metadata {
-    margin-top: 0;
-    margin-bottom: 6em;
-  }
-
-  .box-bg-world {
-    margin-right: 0;
-  }
-
-  .box-bg-metadata {
-    margin-left: 0;
   }
 }
 
