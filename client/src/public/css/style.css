@@ -636,7 +636,7 @@ body > .container {
 }
 
 .box-bg-rates:before {
-  background: transparent url("../img/bg_home_metadata.png") no-repeat left top;
+  background: transparent url("../img/bg_home_rates.png") no-repeat left top;
 }
 
 .box-container:hover {
