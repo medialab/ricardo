@@ -570,93 +570,41 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
       $scope.heatmapField = $scope.heatmapFieldList[0]
 
       if (!$scope.tableData) return;
-      var data = [];
-      var temp = $scope.tableData;
-      // Select data between date selected
-      temp.forEach(function (d) {
-        if (d.year >= $scope.selectedMinDate && d.year <= $scope.selectedMaxDate) {
-          data.push(d);
-        }
-      });
+      // filter and copy
+      // filter data without world reference
+      var data = $scope.tableData.filter(function (p) {
+        return !/^World/.test(p.partner_id);
+      });;
+     
       var indexYears = buildIndexYears(data);
       $scope.indexYears = indexYears;
-
-      // filter data without world reference
-      data = data.filter(function (p) {
-        return !/^World/.test(p.partner_id);
-      });
 
       /*
        * Here we lost type information of entity. Need to use addTypePartner().
        */
       var partners = d3
         .nest()
+        // group flows by partner
         .key(function (d) {
-          return d[$scope.grouped.type.value ? "continent" : "partner_name"];
+          return d.partner_name
         })
+        // group flows by year
         .key(function (d) {
           return d.year;
         })
+        // calculat metrics
         .rollup(reportingService.rollupYears)
         .entries(data);
-
-      partners = reportingService.addTypePartner(partners, data);
       partners = reportingService.valuesToPartners(partners, indexYears);
-
-      if ($scope.filtered.type.value !== "all")
-        partners = partners.filter(function (d) {
-          return d.type === $scope.filtered.type.value;
-        });
-      $scope.partnersData = partners;
-      $scope.heatmapDataSource = partners.map(p => ({
-        key: p.key,
-        label: p.key,
-        data: p.years.reduce( (acc, y) => Object.assign({ [y.key]: {total:y.pct_tot, imp: y.pct_imp, exp: y.pct_exp}}, acc) , {}),
-        average: {total: p.avg_tot, imp: p.avg_imp, exp: p.avg_exp}
-      }))
+      $scope.heatmapDataSource = partners
       $scope.heatmapData = $scope.heatmapDataTransform($scope.heatmapDataSource, $scope.heatmapOrder, $scope.heatmapFieldList)
       $scope.heatmapShowAll = false;
       $scope.heatmapShowAllToggle = function () {
         $scope.heatmapShowAll = !$scope.heatmapShowAll;
       };
       // normalize opacity on the global scale
-      $scope.opacityRange = [0, d3.max(partners.reduce((acc, p) => acc.concat(p.years.map(y => y.pct_tot)), []))]
+      $scope.opacityRange = [0, d3.max(partners.reduce((acc, p) => acc.concat(Object.values(p.data).map(y => y.total)), []))]
     }
-
-    $scope.changeGroup = function (group) {
-      $scope.grouped = group;
-
-      var data = $scope.tableData;
-      var indexYears = buildIndexYears(data);
-      $scope.indexYears = indexYears;
-
-      data = data.filter(function (p) {
-        return !/^World/.test(p.partner_id);
-      });
-
-      var partners = d3
-        .nest()
-        .key(function (d) {
-          return d[group.type.value ? "continent" : "partner_name"];
-        })
-        .key(function (d) {
-          return d.year;
-        })
-        .rollup(reportingService.rollupYears)
-        .entries(data);
-
-      partners = reportingService.addTypePartner(partners, data);
-      partners = reportingService.valuesToPartners(partners, indexYears);
-
-      if ($scope.filtered.type.value !== "all")
-        partners = partners.filter(function (d) {
-          return d.type === $scope.filtered.type.value;
-        });
-
-      $scope.partnersData = partners;
-
-      if (partners.length === 0) $scope.missingPartner = true;
-    };
 
     /**
    * Given the data computed and the order + field ,
@@ -707,40 +655,6 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
       }
       // should not go here
       return data;
-    };
-
-    $scope.changeFilter = function (filter) {
-      $scope.filtered = filter;
-
-      var data = $scope.tableData;
-      var indexYears = buildIndexYears(data);
-      $scope.indexYears = indexYears;
-
-      data = data.filter(function (p) {
-        return !/^World/.test(p.partner_id);
-      });
-
-      var partners = d3
-        .nest()
-        .key(function (d) {
-          return d[$scope.grouped.type.value ? "continent" : "partner_name"];
-        })
-        .key(function (d) {
-          return d.year;
-        })
-        .rollup(reportingService.rollupYears)
-        .entries(data);
-
-      partners = reportingService.addTypePartner(partners, data);
-      partners = reportingService.valuesToPartners(partners, indexYears);
-
-      if (filter.type.value !== "all")
-        partners = partners.filter(function (d) {
-          return d.type === filter.type.value;
-        });
-
-      $scope.partnersData = partners;
-      if (partners.length === 0) $scope.missingPartner = true;
     };
 
     /*

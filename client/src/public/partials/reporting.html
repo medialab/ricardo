@@ -250,8 +250,7 @@
     <div class="col-sm-12 well">
       <h4 class="titleMultiLine">
         <div>
-          {{'PARTNER_HEATMAP_TITLE_1' | translate}} {{entities.sourceEntity.selected.RICname}}
-          {{'PARTNER_HEATMAP_TITLE_2' | translate}} {{'PARTNER_HEATMAP_TITLE_ORDER_BY' | translate}}
+          {{'PARTNER_HEATMAP_TITLE_1' | translate}} {{entities.sourceEntity.selected.RICname}}, {{'PARTNER_HEATMAP_TITLE_ORDER_BY' | translate}} 
           <div class="inline-select">
             <ui-select ng-model="$parent.heatmapOrder" theme="bootstrap">
               <ui-select-match
@@ -266,26 +265,65 @@
             </ui-select>
           </div>
         </div>
-        <div>
-          {{'PARTNER_REPORTER_HEATMAP_TITLE_FIELD' | translate}}
-          <div class="inline-select">
-            <ui-select ng-model="$parent.heatmapField" theme="bootstrap">
-              <ui-select-match
-                class="ui-select-match"
-                placeholder="{{ 'PARTNER_HEATMAP_FIELD_PLACEHOLDER' | translate }}"
-              >
-                {{$select.selected.label}}
-              </ui-select-match>
-              <ui-select-choices class="ui-select-choices" repeat="item in heatmapFieldList | filter: $select.search">
-                <div ng-bind-html="item.label | highlight: $select.search"></div>
-              </ui-select-choices>
-            </ui-select>
-          </div>
+        <div> {{'PARTNER_HEATMAP_TITLE_2' | translate}}           
+              <div class="inline-select">
+                <ui-select ng-model="$parent.heatmapField" theme="bootstrap">
+                  <ui-select-match
+                    class="ui-select-match"
+                    placeholder="{{ 'PARTNER_HEATMAP_FIELD_PLACEHOLDER' | translate }}"
+                  >
+                    {{$select.selected.label}}
+                  </ui-select-match>
+                  <ui-select-choices class="ui-select-choices" repeat="item in heatmapFieldList | filter: $select.search">
+                    <div ng-bind-html="item.label | highlight: $select.search"></div>
+                  </ui-select-choices>
+                </ui-select>
+              </div>
         </div>
       </h4>
+      <!--
+      <p class="paragraphViz">
+        {{ 'REPORTING_PARTNER_HISTO' | translate }}
+      </p>
+      <ul>
+        <li class="paragraphViz">
+          {{ 'REPORTING_PARTNER_HISTO_1' | translate }}
+        </li>
+        <li class="paragraphViz">
+          {{ 'REPORTING_PARTNER_HISTO_2' | translate }}
+        </li>
+      </ul>
+      <div class="legend-item">
+        A = reporting / B = partner
+      </div>
+      <div class="legend-item">
+        Exp A -> B = exports {{ 'FROM' | translate }} A {{ 'TO' | translate }} B
+      </div>
+      <div class="legend-item">
+        ExpA = total exports A
+      </div>
+      <br />
+      <div class="legend-item">
+        {{ 'PARTNER_HISTO_LEG_1' | translate }} = Exp A->B / ExpA * 100
+      </div>
+      <div class="legend-item">
+        {{ 'PARTNER_HISTO_LEG_2' | translate }} = (Exp A->B – Imp A->B) / (Exp A->B + Imp A->B)
+      </div>-->
+      <div class="partnersHistoLegend">
+        <div class="legend-item">
+          <svg height="15" width="500">
+            <rect x="0" y="0" width="10" height="10" style="fill: #f90202;opacity: 0.2" />
+            <rect x="12" y="0" width="10" height="10" style="fill: #f90202;opacity: 0.5" />
+            <rect x="24" y="0" width="10" height="10" style="fill: #f90202;opacity: 0.8" />
+            <text x="40" y="9" fill="black" >
+              {{ 'PARTNER_HEATMAP_COLOR' | translate }}
+            </text>
+          </svg>
+        </div>
+      </div>
       <div>
         <div>
-          <heatmap class="dataviz" data="{}" start-date="rawMinDate" end-date="rawMawDate" legend="'top'"></heatmap>
+          <heatmap class="dataviz" data="{}" start-date="rawMinDate" end-date="rawMaxDate" legend="'top'"></heatmap>
         </div>
         <div class="heatmaps" ng-class="{'show':heatmapShowAll}">
           <div class="heatmap" ng-repeat="partner in heatmapData">
