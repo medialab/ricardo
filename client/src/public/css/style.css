@@ -1689,10 +1689,10 @@ div #reporting-entities-container {
   height: 100%;
 }
 .points-group .point {
-  width: 30px;
+  width: 10px;
   height: 30px;
   margin-top: -15px;
-  margin-left: -15px;
+  margin-left: -5px;
   position: absolute;
 }
 .points-group .point::after {
@@ -1712,7 +1712,7 @@ div #reporting-entities-container {
   position: absolute;
   background: #333;
   color: #ddd;
-  padding: 2px;
+  padding: 5px;
   border: 0;
   border-radius: 5px;
   opacity: 0;

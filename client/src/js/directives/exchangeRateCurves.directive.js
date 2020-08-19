@@ -240,10 +240,10 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
               return tooltip
                 .html(
                   `<p>${$filter("translate")("IN_YEAR")} ${d[0]} :</p>
-                   <p>1 ${dict[refCurrency]} = ${formatRate(d[1])} ${dict[currency]}</p>`,
+                   <p>${formatRate(d[1])} ${dict[currency]} = 1 ${dict[refCurrency]}</p>`,
                 )
                 .style("left", d3.event.pageX - width / 2 + "px")
-                .style("top", d3.event.pageY - height - 5 + "px")
+                .style("top", d3.event.pageY - height - 15 + "px")
                 .style("opacity", 0.9);
             })
             .on("mouseout", () => tooltip.style("opacity", 0));
