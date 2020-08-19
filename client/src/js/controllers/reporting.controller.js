@@ -80,29 +80,6 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
     ];
     $scope.filtered = $scope.filters[0];
 
-    $scope.ordered = {
-      type: { value: "tot", writable: true },
-      name: { value: "Average share on Total", writable: true },
-    };
-    $scope.orders = [
-      {
-        type: { value: "tot", writable: true },
-        name: { value: "Average share on Total", writable: true },
-      },
-      {
-        type: { value: "imp", writable: true },
-        name: { value: "Average share on Imports", writable: true },
-      },
-      {
-        type: { value: "exp", writable: true },
-        name: { value: "Average share on Exports", writable: true },
-      },
-      {
-        type: { value: "name", writable: true },
-        name: { value: "Name", writable: true },
-      },
-    ];
-
     $scope.groups = [
       {
         type: { value: 0, writable: true },
@@ -160,7 +137,6 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
     $scope.yValue = "total";
     $scope.conversion = "sterling";
     $scope.filter = "all";
-    $scope.order = "tot";
     $scope.currency = 0;
     $scope.actualCurrency = "pound sterling";
 
@@ -197,16 +173,8 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         list: $scope.filters,
         getItemId: getListItemId,
       },
-      {
-        name: "ordered",
-        list: $scope.orders,
-        getItemId: getListItemId,
-      },
-      {
-        name: "grouped",
-        list: $scope.groups,
-        getItemId: getListItemId,
-      },
+      { name: "heatmapOrder", list: $scope.heatmapOrderList, getItemId: (a) => a.id  },
+      { name: "heatmapField", list: $scope.heatmapFieldList, getItemId: (a) => a.id },
       {
         name: "linechartCurrency",
         list: $scope.linechartCurrencyChoices,
@@ -441,6 +409,11 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
       }
     });
 
+    // heatmap triggers
+    $scope.$watchCollection("[heatmapOrder, heatmapField]", function (newValue, oldValue) {
+      $scope.heatmapData = $scope.heatmapDataTransform($scope.heatmapDataSource, newValue[0], newValue[1]);
+    }); 
+
     /*
      * Update data table
      */
@@ -580,6 +553,22 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
      * Partners histo triggers functions and init function partner Histo
      */
     function initPartnerHisto(data) {
+
+
+      $scope.heatmapOrderList = [
+        { id: "average", label: "Average trade volume" },
+        { id: "nb_years", label: "Number of years" },
+        { id: "name", label: "Name" },
+        { id: "first_year", label: "First year" }
+      ];
+      $scope.heatmapOrder = $scope.heatmapOrderList[0];
+      $scope.heatmapFieldList = [
+        { id: "total", label: "Total" },
+        { id: "imp", label: "Import" },
+        { id: "exp", label: "Export" },
+      ];
+      $scope.heatmapField = $scope.heatmapFieldList[0]
+
       if (!$scope.tableData) return;
       var data = [];
       var temp = $scope.tableData;
@@ -619,6 +608,19 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
           return d.type === $scope.filtered.type.value;
         });
       $scope.partnersData = partners;
+      $scope.heatmapDataSource = partners.map(p => ({
+        key: p.key,
+        label: p.key,
+        data: p.years.reduce( (acc, y) => Object.assign({ [y.key]: {total:y.pct_tot, imp: y.pct_imp, exp: y.pct_exp}}, acc) , {}),
+        average: {total: p.avg_tot, imp: p.avg_imp, exp: p.avg_exp}
+      }))
+      $scope.heatmapData = $scope.heatmapDataTransform($scope.heatmapDataSource, $scope.heatmapOrder, $scope.heatmapFieldList)
+      $scope.heatmapShowAll = false;
+      $scope.heatmapShowAllToggle = function () {
+        $scope.heatmapShowAll = !$scope.heatmapShowAll;
+      };
+      // normalize opacity on the global scale
+      $scope.opacityRange = [0, d3.max(partners.reduce((acc, p) => acc.concat(p.years.map(y => y.pct_tot)), []))]
     }
 
     $scope.changeGroup = function (group) {
@@ -656,8 +658,55 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
       if (partners.length === 0) $scope.missingPartner = true;
     };
 
-    $scope.changeOrder = function (order) {
-      $scope.ordered = order;
+    /**
+   * Given the data computed and the order + field ,
+   * this function transform it to valid format for the heatmap directive.
+   */
+    $scope.heatmapDataTransform = function (data, order, field) {
+      //let result = angular.copy(data);
+      if (data && order && field) {
+        // Make the transfo for the field
+        const result = data.map((partner) => {
+          const partnerData = Object.keys(partner.data).reduce((acc, year) => 
+            Object.assign(acc, {[year]: partner.data[year][field.id] || 0}), {});
+          
+          return {
+            id: partner.key,
+            label: partner.label,
+            average: partner.average[field.id], // used for the order
+            data: partnerData,
+            tooltip: (data, min, max) => {
+              return `
+                <h3>${partner.label} - ${data.year}</h3>
+                <ul>
+                  <li><strong>Total :</strong> ${Math.round(partner.data[data.year].total)}%</li>
+                  <li><strong>Import :</strong> ${Math.round(partner.data[data.year].imp)}% </li>
+                  <li><strong>Export :</strong> ${Math.round(partner.data[data.year].exp)}%</li>
+                </ul>
+                <span>Values are in <strong>${partner.data[data.year].currency}</strong></span>`;
+            },
+          };
+        });
+
+        
+        // Make the order
+        let getValueForOrdering = (a) => a.label.toUpperCase();
+        switch (order.id) {
+          case "first_year":
+            getValueForOrdering = (a) => Object.keys(a.data)[0];
+            break;
+          case "nb_years":
+            getValueForOrdering = (a) => Object.keys(a.data).length * -1;
+            break;
+          case "average":
+            getValueForOrdering = (a) => a.average * -1;
+            break;
+        }
+        result.sort((a, b) => (getValueForOrdering(a) < getValueForOrdering(b) ? -1 : 1));
+        return result;
+      }
+      // should not go here
+      return data;
     };
 
     $scope.changeFilter = function (filter) {

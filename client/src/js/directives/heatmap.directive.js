@@ -19,6 +19,8 @@ angular
           opacity: "=",
           // {(data, minValue, maxValue):string} function that takes the data and generate the texte for the tooltip
           tooltipFunction: "=",
+          // [min:number, max:number] values used to set the opacity scale. Default to min max of data
+          opacityRange: "="
         },
         link: function (scope, element, attrs) {
           /**
@@ -56,6 +58,8 @@ angular
             .tickFormat((d) => d.toString());
           // Axis Y
           var yScaling = d3.scale.linear().range([height, 0]).domain([0, 1]);
+          // Opacity
+          var oScaling = d3.scale.linear().range([minOpacity, 1])
 
           // Init chart (for data)
           chartData = chart.append("g").attr("class", "data");
@@ -63,12 +67,13 @@ angular
           /**
            * (re)Generate the chart from the data.
            */
-          function update(_data, _startDate, _endDate, _color, _legend, _opacity, _tooltip) {
+          function update(_data, _startDate, _endDate, _color, _legend, _opacity, _opacityRange, _tooltip) {
             const startDate = _startDate || defaultStartDate;
             const endDate = _endDate || defaultEndDate;
             const color = _color || defaultColor;
             const legend = _legend || defaultLegend;
             const opacity = _opacity !== null && _opacity !== undefined ? _opacity : defaultOpacity;
+            const opacityRange = _opacityRange // default to min max data see below
             const tooltipText = _tooltip || defaultTooltip;
             // Compute the barsize
             const barSize = Math.floor(width / (endDate - startDate));
@@ -80,6 +85,7 @@ angular
             //remove everything
             svg.attr("height", barSize).select(".x.axis").remove();
             yScaling.range([barSize, 0]);
+            
             if (legend !== null) {
               xAxis.orient(legend);
               // update the height of the SVG + create the axis group
@@ -102,7 +108,8 @@ angular
               // Compute Min & Max value
               const minValue = d3.min(data.map((e) => e.value));
               const maxValue = d3.max(data.map((e) => e.value));
-
+              //opacity scaling default to min/max
+              oScaling.domain(_opacityRange || [minValue, maxValue])
               // Update data of the SVG
               chartData.selectAll(".bar").remove();
               chartData
@@ -123,12 +130,7 @@ angular
                 })
                 .style({ fill: color })
                 .style("opacity", function (row) {
-                  let result = 1;
-                  if (opacity && maxValue - minValue > 0) {
-                    const pourcent = Math.round(((row.value - minValue) / (maxValue - minValue)) * 100) / 100;
-                    result = minOpacity + pourcent * 0.7;
-                  }
-                  return result;
+                  return oScaling(row.value)
                 })
                 .on("mouseover", function (e) {
                   tooltip
@@ -149,11 +151,11 @@ angular
           /**
            * Watchers
            */
-          scope.$watchCollection("[startDate, endDate, color, legend, opacity, tooltipFunction]", function (
+          scope.$watchCollection("[startDate, endDate, color, legend, opacity, opacityRange, tooltipFunction]", function (
             newValue,
             oldValue,
           ) {
-            update(scope.data, newValue[0], newValue[1], newValue[2], newValue[3], newValue[4], newValue[5]);
+            update(scope.data, newValue[0], newValue[1], newValue[2], newValue[3], newValue[4], newValue[5], newValue[6]);
           });
           scope.$watch(
             "data",
@@ -165,7 +167,8 @@ angular
                 scope.color,
                 scope.legend,
                 scope.opacity,
-                scope.tooltipFunction,
+                scope.opacityRange,
+                scope.tooltipFunction
               );
             },
             true,
