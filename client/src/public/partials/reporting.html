@@ -94,8 +94,7 @@
       <p class="paragraphViz">{{'REPORTING_STATUSES_INTRO' | translate}}</p>
       <div>
         <political-statuses
-          gph-data="statusesData"
-          partner="entities.sourceEntity.selected.RICname"
+          data="entityStatusesData"
           boundaries="{minYear: selectedMinDate, maxYear: selectedMaxDate}"
         />
         <div class="legend">
@@ -112,138 +111,6 @@
     </div>
   </div>
 </div>
-<!-- <div class="container">
-  <div class="row">
-    <div class="col-sm-12 well">
-      <h4 class="titleMultiLine">
-        <div>
-          {{ 'PARTNER_HISTO_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'PARTNER_HISTO_2' |
-          translate }} {{ 'PARTNER_HISTO_ORDER_BY' | translate }}
-          <div class="inline-select">
-            <ui-select ng-model="$parent.ordered" theme="bootstrap" ng-change="changeOrder(ordered)">
-              <ui-select-match class="ui-select-match" placeholder="Order by..."
-                >{{$select.selected.name.value}}</ui-select-match
-              >
-              <ui-select-choices class="ui-select-choices" repeat="item in orders | filter: $select.search">
-                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-              </ui-select-choices>
-            </ui-select>
-          </div>
-        </div>
-        <div>
-          {{ 'PARTNER_HISTO_FILTER_ON' | translate }}
-          <div class="inline-select">
-            <ui-select ng-model="$parent.filtered" theme="bootstrap" ng-change="changeFilter(filtered)">
-              <ui-select-match class="ui-select-match" placeholder="Filter on..."
-                >{{$select.selected.name.value}}</ui-select-match
-              >
-              <ui-select-choices class="ui-select-choices" repeat="item in filters | filter: $select.search">
-                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-              </ui-select-choices>
-            </ui-select>
-          </div>
-          {{ 'PARTNER_HISTO_GROUP_BY' | translate }}
-          <div class="inline-select">
-            <ui-select ng-model="$parent.grouped" theme="bootstrap" ng-change="changeGroup(grouped)">
-              <ui-select-match class="ui-select-match" placeholder="Group by..."
-                >{{$select.selected.name.value}}</ui-select-match
-              >
-              <ui-select-choices class="ui-select-choices" repeat="item in groups | filter: $select.search">
-                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
-              </ui-select-choices>
-            </ui-select>
-          </div>
-        </div>
-      </h4>
-      <p class="paragraphViz">
-        {{ 'REPORTING_PARTNER_HISTO' | translate }}
-      </p>
-      <ul>
-        <li class="paragraphViz">
-          {{ 'REPORTING_PARTNER_HISTO_1' | translate }}
-        </li>
-        <li class="paragraphViz">
-          {{ 'REPORTING_PARTNER_HISTO_2' | translate }}
-        </li>
-      </ul>
-      <div class="legend-item">
-        A = reporting / B = partner
-      </div>
-      <div class="legend-item">
-        Exp A -> B = exports {{ 'FROM' | translate }} A {{ 'TO' | translate }} B
-      </div>
-      <div class="legend-item">
-        ExpA = total exports A
-      </div>
-      <br />
-      <div class="legend-item">
-        {{ 'PARTNER_HISTO_LEG_1' | translate }} = Exp A->B / ExpA * 100
-      </div>
-      <div class="legend-item">
-        {{ 'PARTNER_HISTO_LEG_2' | translate }} = (Exp A->B – Imp A->B) / (Exp A->B + Imp A->B)
-      </div>
-      <div class="partnersHistoLegend">
-        <div class="legend-item">
-          <svg height="35" width="300">
-            <circle cx="25" cy="18" r="12" stroke="black" stroke-width="1" fill="transparent" />
-            <circle cx="25" cy="18" r="3" stroke="black" stroke-width="1" fill="black" />
-            <text x="45" y="20" fill="black">
-              {{ 'PARTNER_HISTO_LEG_1' | translate }}
-            </text>
-          </svg>
-        </div>
-        <div class="legend-item">
-          <svg height="35" width="300">
-            <rect x="15" y="0" width="10" height="15" style="fill: #663333;" />
-            <rect x="25" y="15" width="10" height="15" style="fill: #cc6666;" />
-            <text x="40" y="20" fill="black">
-              {{ 'PARTNER_HISTO_LEG_2' | translate }}
-            </text>
-          </svg>
-        </div>
-        <div class="legend-item">
-          <svg height="35" width="300">
-            <rect x="15" y="0" width="10" height="15" style="fill: #663333; opacity: 0.3;" />
-            <rect x="25" y="15" width="10" height="15" style="fill: #cc6666; opacity: 0.3;" />
-            <text x="40" y="20" fill="black">
-              Only export or import available
-            </text>
-          </svg>
-        </div>
-      </div>
-      <div id="select-doubleChart">
-        <div class="row">
-          <div class="col-sm-12">
-            <div ng-show="missingPartner" class="alert">
-              <div class="modal-body">
-                <p>There is <strong>no data available</strong> in the database for this filter</p>
-                <p>
-                  between {{selectedMinDate}} and {{selectedMaxDate}}
-                </p>
-                <p>
-                  Choose another one or change date selection, thank you !
-                </p>
-              </div>
-              <div class="modal-footer">
-                <button class="btn btn-default" ng-click="okPartner()">
-                  OK
-                </button>
-              </div>
-            </div>
-            <partners-histogram
-              ng-data="partnersData"
-              start-date="selectedMinDate"
-              end-date="selectedMaxDate"
-              index-years="indexYears"
-              country-data="entities.sourceEntity.selected"
-              order-data="ordered.type.value"
-            ></partners-histogram>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div> -->
 <!-- Start: partner Heatmap -->
 <div class="container">
   <div class="row">
@@ -281,34 +148,6 @@
               </div>
         </div>
       </h4>
-      <!--
-      <p class="paragraphViz">
-        {{ 'REPORTING_PARTNER_HISTO' | translate }}
-      </p>
-      <ul>
-        <li class="paragraphViz">
-          {{ 'REPORTING_PARTNER_HISTO_1' | translate }}
-        </li>
-        <li class="paragraphViz">
-          {{ 'REPORTING_PARTNER_HISTO_2' | translate }}
-        </li>
-      </ul>
-      <div class="legend-item">
-        A = reporting / B = partner
-      </div>
-      <div class="legend-item">
-        Exp A -> B = exports {{ 'FROM' | translate }} A {{ 'TO' | translate }} B
-      </div>
-      <div class="legend-item">
-        ExpA = total exports A
-      </div>
-      <br />
-      <div class="legend-item">
-        {{ 'PARTNER_HISTO_LEG_1' | translate }} = Exp A->B / ExpA * 100
-      </div>
-      <div class="legend-item">
-        {{ 'PARTNER_HISTO_LEG_2' | translate }} = (Exp A->B – Imp A->B) / (Exp A->B + Imp A->B)
-      </div>-->
       <div class="partnersHistoLegend">
         <div class="legend-item">
           <svg height="15" width="500">

@@ -69,8 +69,7 @@
       <p class="paragraphViz">{{'PARTNER_STATUSES_INTRO' | translate}}</p>
       <div>
         <political-statuses
-          gph-data="gphData"
-          partner="partner"
+          data="partnerGPHStatus"
           boundaries="{minYear: selectedMinDate, maxYear: selectedMaxDate}"
         />
         <div class="legend">
@@ -92,7 +91,7 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-12 well">
-      <h4>{{'PARTNER_REPORTER_CITATION_TITLE' | translate}} {{partnersDict[partner]}}</h4>
+      <h4>{{'PARTNER_REPORTER_CITATION_TITLE' | translate}} {{partnersDict[partner].label}}</h4>
       <div>
         <bar-chart
           ng-data="citationData"
@@ -113,7 +112,7 @@
     <div class="col-sm-12 well">
       <h4 class="titleMultiLine">
         <div>
-          {{'PARTNER_REPORTER_HEATMAP_TITLE_1' | translate}} {{partnersDict[partner]}}
+          {{'PARTNER_REPORTER_HEATMAP_TITLE_1' | translate}} {{partnersDict[partner].label}}
           {{'PARTNER_REPORTER_HEATMAP_TITLE_2' | translate}} {{'PARTNER_REPORTER_HEATMAP_TITLE_ORDER' | translate}}
           <div class="inline-select">
             <ui-select ng-model="$parent.heatmapOrder" theme="bootstrap">
@@ -184,7 +183,7 @@
       <!-- Title with form -->
       <h4 class="titleMultiLine">
         <div>
-          {{ 'LINE_CHART_1' | translate }} {{partnersDict[partner]}} {{ 'LINE_CHART_2' | translate }}
+          {{ 'LINE_CHART_1' | translate }} {{partnersDict[partner].label}} {{ 'LINE_CHART_2' | translate }}
           <div class="inline-select">
             <ui-select
               ng-model="comparisonReporterEntity.selected"
@@ -239,7 +238,7 @@
       <div ng-show="messagePercent">
         <p class="paragraphViz">
           The percentages are based on
-          <a href="/#worldTrade">world sum partners</a> of {{partnersDict[partner]}}
+          <a href="/#worldTrade">world sum partners</a> of {{partnersDict[partner].label}}
         </p>
       </div>
       <div id="select-lineChart">

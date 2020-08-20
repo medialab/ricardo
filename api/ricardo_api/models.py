@@ -806,19 +806,20 @@ def get_reporting_or_partner_entities(types=[],related_to_ids=[],type="reporting
     else:
         where_clause = ""
 
-    sql = ("""SELECT distinct [FROM_PREFIX]_slug,[FROM_PREFIX],[FROM_PREFIX]_type,[FROM_PREFIX]_continent
+    sql = ("""SELECT distinct [FROM_PREFIX]_slug,[FROM_PREFIX],[FROM_PREFIX]_type,[FROM_PREFIX]_continent, [FROM_PREFIX]_GPH_code
               FROM flow_joined
               %s"""%where_clause) \
               .replace("[FROM_PREFIX]", from_prefix) \
               .replace("[TO_PREFIX]", to_prefix)
     cursor.execute(sql)
 
-    for (id,r,t,continent) in cursor:
+    for (id,r,t,continent, GPH_code) in cursor:
         json_response.append({
             "RICid": id,
             "RICname": r,
             "type": t,
-            "continent": continent
+            "continent": continent,
+            "GPH_code": GPH_code
         })
     json_response = sorted(json_response, key = lambda k: k['RICid'])
     return json.dumps(json_response,encoding = "UTF8")

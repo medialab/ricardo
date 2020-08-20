@@ -38,9 +38,10 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
       id: ricEntry.RICid,
       label: ricEntry.RICname,
       type: ricEntry.type,
+      GPH_code: ricEntry.GPH_code
     }));
     // A dictionary of partner labels, indexed by IDs:
-    $scope.partnersDict = $scope.partnersList.reduce((iter, partner) => ({ ...iter, [partner.id]: partner.label }), {});
+    $scope.partnersDict = $scope.partnersList.reduce((iter, partner) => ({ ...iter, [partner.id]: partner }), {});
 
     // The extrema years range (only depends on the data):
     $scope.minDate = null;
@@ -65,7 +66,7 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
     $scope.selectPartner = (partner) => {
       $scope.partner = partner;
       $scope.updateQueryParams();
-
+      $scope.partnerGPHStatus = $scope.gphData[$scope.partnersDict[partner].GPH_code]
       apiService
         .getFlows({
           partner_ids: $scope.partner,

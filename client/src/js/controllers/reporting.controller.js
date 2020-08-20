@@ -232,16 +232,13 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
           return d.year;
         });
 
-        $scope.selectedMinDate = $scope.selectedMinDate || d3.min(dates);
-        $scope.selectedMaxDate = $scope.selectedMaxDate || d3.max(dates);
-
         data.flows = data.flows.filter(function (d) {
           if (d.imp || d.exp !== 0) return d;
         });
         $scope.tableData = data.flows;
 
         $scope.statusesData = gphData;
-
+        $scope.entityStatusesData = gphData[$scope.entities.sourceEntity.selected.GPH_code]
         if (cfSource.size() > 0) {
           cfSource.year().filterAll();
           cfSource.clear();
@@ -404,6 +401,8 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
       if (newValue !== oldValue && newValue) {
         // update local storage
         localStorage.setItem("sourceEntitySelected", newValue);
+        // filter GPH data
+        $scope.entityStatusesData = $scope.statusesData[newValue.GPH_code]
         return $location.url(`/reporting/${newValue.RICid}`);
       }
     });
