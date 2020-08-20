@@ -1765,7 +1765,7 @@ h4.titleMultiLine > div {
 
 .heatmap-tooltip {
   position: fixed;
-  visibility: "hidden";
+  visibility: hidden;
   opacity: 0.8;
   padding: 10px;
   background: #333;
