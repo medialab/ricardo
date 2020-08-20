@@ -117,9 +117,9 @@ angular
             data.forEach(function (d) {
               d.date = new Date(d.year, 0, 1);
             });
-            // in this contaxt startDate and endDate are the rawMin and rawMax.
+            
             x.domain(
-              [new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]
+              [new Date(scope.rawStartDate, 0, 1), new Date(scope.rawEndDate, 0, 1)]
             );
             y.domain([
               0,
@@ -301,9 +301,8 @@ angular
             }
 
             // Brush
-
             brush
-              .extent([new Date(scope.startDate), new Date(scope.endDate)])
+              .extent([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)])
               .on("brush", function () {
                 if (brush.empty()) {
                   brush.clear();
