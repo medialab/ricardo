@@ -302,13 +302,15 @@ angular
 
             // Brush
             brush
-              .extent([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)])
               .on("brush", function () {
                 if (brush.empty()) {
                   brush.clear();
                 }
               })
               .on("brushend", brushended);
+            
+            // first update to apply potential date selections retrieved from URL
+            updateBrush();
 
             function brushended() {
               if (!d3.event.sourceEvent) return; // only transition after input
