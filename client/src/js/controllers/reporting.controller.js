@@ -397,7 +397,6 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
       if (newValue !== oldValue && newValue[0] != newValue[1]) {
         // update local storage
         updateDateRange();
-        initPartnerHisto($scope.tableData);
       }
     });
 
@@ -411,7 +410,8 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
 
     // heatmap triggers
     $scope.$watchCollection("[heatmapOrder, heatmapField]", function (newValue, oldValue) {
-      $scope.heatmapData = $scope.heatmapDataTransform($scope.heatmapDataSource, newValue[0], newValue[1]);
+      [$scope.heatmapData, $scope.opacityRange] = $scope.heatmapDataTransform($scope.heatmapDataSource, newValue[0], newValue[1]);
+    
     }); 
 
     /*
@@ -554,12 +554,11 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
      */
     function initPartnerHisto(data) {
 
-
       $scope.heatmapOrderList = [
-        { id: "average", label: "Average trade volume" },
-        { id: "nb_years", label: "Number of years" },
-        { id: "name", label: "Name" },
-        { id: "first_year", label: "First year" }
+        { id: "average", label: "AVERAGE_SHARE" },
+        { id: "nb_years", label: "NUMBER_YEARS" },
+        { id: "name", label: "NAME" },
+        { id: "first_year", label: "FIRST_YEAR" }
       ];
       $scope.heatmapOrder = $scope.heatmapOrderList[0];
       $scope.heatmapFieldList = [
@@ -596,14 +595,12 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         .rollup(reportingService.rollupYears)
         .entries(data);
       partners = reportingService.valuesToPartners(partners, indexYears);
-      $scope.heatmapDataSource = partners
-      $scope.heatmapData = $scope.heatmapDataTransform($scope.heatmapDataSource, $scope.heatmapOrder, $scope.heatmapFieldList)
+      $scope.heatmapDataSource = partners;
+      [$scope.heatmapData, $scope.opacityRange] = $scope.heatmapDataTransform($scope.heatmapDataSource, $scope.heatmapOrder, $scope.heatmapFieldList);
       $scope.heatmapShowAll = false;
       $scope.heatmapShowAllToggle = function () {
         $scope.heatmapShowAll = !$scope.heatmapShowAll;
       };
-      // normalize opacity on the global scale
-      $scope.opacityRange = [0, d3.max(partners.reduce((acc, p) => acc.concat(Object.values(p.data).map(y => y.total)), []))]
     }
 
     /**
@@ -611,13 +608,15 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
    * this function transform it to valid format for the heatmap directive.
    */
     $scope.heatmapDataTransform = function (data, order, field) {
-      //let result = angular.copy(data);
+      let maxValue = 0; 
       if (data && order && field) {
         // Make the transfo for the field
         const result = data.map((partner) => {
-          const partnerData = Object.keys(partner.data).reduce((acc, year) => 
-            Object.assign(acc, {[year]: partner.data[year][field.id] || 0}), {});
-          
+          const partnerData = Object.keys(partner.data).reduce((acc, year) => {
+            if (maxValue < partner.data[year][field.id])
+              maxValue = partner.data[year][field.id]
+            return Object.assign(acc, {[year]: partner.data[year][field.id] || 0})
+          }, {});
           return {
             id: partner.key,
             label: partner.label,
@@ -651,10 +650,11 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
             break;
         }
         result.sort((a, b) => (getValueForOrdering(a) < getValueForOrdering(b) ? -1 : 1));
-        return result;
+        return [result, [0, maxValue]];
       }
-      // should not go here
-      return data;
+      else 
+        // return empty dataset
+        return [[], [0, 100]];
     };
 
     /*

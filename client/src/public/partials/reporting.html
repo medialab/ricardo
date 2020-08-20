@@ -257,10 +257,10 @@
                 class="ui-select-match"
                 placeholder="{{ 'PARTNER_HEATMAP_ORDER_PLACEHOLDER' | translate }}"
               >
-                {{$select.selected.label}}
+                {{$select.selected.label | translate}}
               </ui-select-match>
               <ui-select-choices class="ui-select-choices" repeat="item in heatmapOrderList | filter: $select.search">
-                <div ng-bind-html="item.label | highlight: $select.search"></div>
+                <div ng-bind-html="item.label | translate | highlight: $select.search"></div>
               </ui-select-choices>
             </ui-select>
           </div>
