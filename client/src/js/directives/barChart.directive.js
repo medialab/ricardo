@@ -18,7 +18,7 @@ angular
         link: function (scope, element, attrs) {
           scope.$watch("ngData", function (newValue, oldValue) {
             if (newValue && scope.ngData) {
-              svg.selectAll("*").remove();
+              d3.select("#bar-chart-container svg").remove();
               barChart(scope.ngData, scope.rawStartDate, scope.rawEndDate);
             }
           });
@@ -47,24 +47,25 @@ angular
           var xAxis = d3.svg.axis().scale(x).orient("bottom");
           var yAxis = d3.svg.axis().scale(y).orient("right").ticks(4).tickSize(0);
 
-          var svg = d3
+          
+          function customAxis(g) {
+            g.selectAll("text").attr("x", 4).attr("dy", -4).attr("font-size", "0.85em");
+          }
+
+          function barChart(data, start, end) {
+            var svg = d3
             .select("#bar-chart-container")
             .append("svg")
             .attr("width", width)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-          function customAxis(g) {
-            g.selectAll("text").attr("x", 4).attr("dy", -4).attr("font-size", "0.85em");
-          }
-
-          function barChart(data, start, end) {
+           
             x.domain([new Date(start, 0, 1), new Date(end, 0, 1)]);
             y.domain([
               0,
               d3.max(data, function (d) {
-                return d.nb_reporting;
+                return d.nbEntities || d.nb_reporting;
               }),
             ]);
 
@@ -91,10 +92,10 @@ angular
                 })
                 .attr("width", barWidth)
                 .attr("y", function (d) {
-                  return y(d.nb_reporting);
+                  return y(d.nbEntities || d.nb_reporting);
                 })
                 .attr("height", function (d) {
-                  return height - y(d.nb_reporting);
+                  return height - y(d.nbEntities || d.nb_reporting);
                 })
                 .style({ fill: "#cc6666" });
 
@@ -130,10 +131,10 @@ angular
                 })
                 .attr("width", barWidth)
                 .attr("y", function (d) {
-                  return y(d.nb_reporting);
+                  return y(d.nbEntities || d.nb_reporting);
                 })
                 .attr("height", function (d) {
-                  return height - y(d.nb_reporting);
+                  return height - y(d.nbEntities || d.nb_reporting);
                 });
 
               svg.select(".x.axis").transition().duration(500).call(xAxis);
@@ -142,10 +143,6 @@ angular
               svg.select(".line100").attr("y1", y(100)).attr("y2", y(100));
             }
 
-            function type(d) {
-              d.nb_reporting = +d.nb_reporting;
-              return d;
-            }
 
             // Brush
             brush = d3.svg

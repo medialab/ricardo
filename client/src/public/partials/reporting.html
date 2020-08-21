@@ -109,6 +109,24 @@
     </div>
   </div>
 </div>
+<!-- Start: Partner citation -->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4>{{'REPORTING_PARTNER_CITATION_TITLE' | translate}} {{entities.sourceEntity.selected.RICname}}</h4>
+      <div>
+        <bar-chart
+          ng-data="citationData"
+          start-date="selectedMinDate"
+          end-date="selectedMaxDate"
+          raw-start-date="rawMinDate"
+          raw-end-date="rawMaxDate"
+        ></bar-chart>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End: Partner citation -->
 <!-- Start: partner Heatmap -->
 <div class="container">
   <div class="row">

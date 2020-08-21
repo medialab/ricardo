@@ -135,6 +135,7 @@
   "REPORTING_PARTNER_HISTO": "In this graph, the partners of the reporting are compared by calculating two indicators:",
   "REPORTING_PARTNER_HISTO_1": "the average bilateral trade share estimated for available years over the selected period",
   "REPORTING_PARTNER_HISTO_2": "the relative bilateral trade balance estimated for each available year over the selected period",
+  "REPORTING_PARTNER_CITATION_TITLE": "Number of trade partners cited by",
   "POLITICAL_STATUSES_TITLE": "Political statuses",
   "POLITICAL_STATUSES_INTRO": "This chart represents the selected entity's dependencies count. It also shows the periods of non-sovereignty.",
   "POLITICAL_STATUSES_MISSING": "No GeoPolHist data avaialabe for this entity.",

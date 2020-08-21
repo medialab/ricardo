@@ -322,9 +322,9 @@ function loadCitationComponent($scope) {
   $scope.citationData = null;
   $scope.$watch("flows", function (newVal, oldVal) {
     if (newVal) {
-      let dataAsMap = newVal
+      let dataAsMap = newVal.filter(flow => flow.total)
         .map((flow) => {
-          return { year: flow.year, nb_reporting: 1 };
+          return { year: flow.year, nbEntities: 1 };
         })
         .reduce((acc, current) => {
           acc[current.year] = (acc[current.year] || 0) + 1;
@@ -332,7 +332,7 @@ function loadCitationComponent($scope) {
         }, {});
 
       $scope.citationData = Object.keys(dataAsMap).map((key) => {
-        return { year: +key, nb_reporting: dataAsMap[key] };
+        return { year: +key, nbEntities: dataAsMap[key] };
       });
     }
   });

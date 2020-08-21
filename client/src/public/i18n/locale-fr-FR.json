@@ -135,6 +135,7 @@
   "REPORTING_PARTNER_HISTO": "Dans ce graphique, on compare les partenaires du pays déclarant en calculant deux indicateurs:",
   "REPORTING_PARTNER_HISTO_1": "la part moyenne du commerce bilatéral estimé pour les années disponibles au cours de la période sélectionnée",
   "REPORTING_PARTNER_HISTO_2": "le solde commercial bilatéral relatif estimé pour chaque année disponible sur la période sélectionnée",
+  "REPORTING_PARTNER_CITATION_TITLE": "Nombre de partenaires commerciaux cités par",
   "POLITICAL_STATUSES_TITLE": "Statut politique",
   "POLITICAL_STATUSES_INTRO": "Ce graphique représente le nombre d'entités dépendantes de l'entité sélectionnée sur la période, ainsi que ses périodes de non-souveraineté.",
   "POLITICAL_STATUSES_MISSING": "Pas de données GeoPolHist disponibles pour cette entité.",

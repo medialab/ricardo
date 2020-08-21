@@ -231,7 +231,7 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         var dates = data.flows.filter(d => !/^World/.test(d.partner_id)).map(function (d) {
           return d.year;
         });
-
+        loadCitationComponent($scope)
         data.flows = data.flows.filter(function (d) {
           if (d.imp || d.exp !== 0) return d;
         });
@@ -412,7 +412,7 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
     $scope.$watchCollection("[heatmapOrder, heatmapField]", function (newValue, oldValue) {
       [$scope.heatmapData, $scope.opacityRange] = $scope.heatmapDataTransform($scope.heatmapDataSource, newValue[0], newValue[1]);
     
-    }); 
+    });
 
     /*
      * Update data table
@@ -916,5 +916,27 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
           utils.downloadCSV(result.flows, headers, order, fileName);
         });
     };
+    /**
+     * Load & manage the citation component.
+     */
+    function loadCitationComponent($scope) {
+      $scope.citationData = null;
+      $scope.$watch("tableData", function (newVal, oldVal) {
+        if (newVal) {
+          let dataAsMap = newVal.filter(f => f.continent !== 'World' && f.total)
+            .map((flow) => {
+              return { year: flow.year, nbPartner: 1 };
+            })
+            .reduce((acc, current) => {
+              acc[current.year] = (acc[current.year] || 0) + 1;
+              return acc;
+            }, {});
+          $scope.citationData = Object.keys(dataAsMap).map((key) => {
+            return { year: +key, nbEntities: dataAsMap[key] };
+          });
+        }
+      });
+    }
   },
 ]);
+
