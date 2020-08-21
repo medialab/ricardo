@@ -333,7 +333,8 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         $scope.rawMaxDate = d3.max(data.flows.filter(d => !/^World/.test(d.partner_id)), function (d) {
           return d.year;
         });
-
+        $scope.selectedMinDate=$scope.rawMinDate;
+        $scope.selectedMaxDate=$scope.rawMaxDate;
         $scope.rawYearsRange = d3.range($scope.rawMinDate, $scope.rawMaxDate + 1);
         $scope.rawYearsRange_forInf = d3.range($scope.rawMinDate, $scope.selectedMaxDate);
         $scope.rawYearsRange_forSup = d3.range($scope.selectedMinDate + 1, $scope.rawMaxDate + 1);
