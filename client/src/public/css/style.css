@@ -1763,7 +1763,7 @@ h4.titleMultiLine > div {
   max-height: inherit;
 }
 
-.heatmap-tooltip {
+.heatmap-tooltip, .politicalstatus-tooltip {
   position: fixed;
   visibility: hidden;
   opacity: 0.8;

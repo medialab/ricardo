@@ -34,7 +34,6 @@
  *   }
  */
 angular.module("ricardo.directives.politicalStatuses", []).directive("politicalStatuses", [
-  "$filter",
   function () {
     return {
       restrict: "E",
@@ -45,9 +44,8 @@ angular.module("ricardo.directives.politicalStatuses", []).directive("politicalS
         boundaries: "=",
       },
       link: function (scope, element) {
-        const CHART_HEIGHT = 40;
-        const X_AXIS_HEIGHT = 20;
-
+        const BAR_HEIGHT = 20;
+        const X_AXIS_HEIGHT = 25;
         // events
         element.on("$destroy", () => {
           flushDOM(element[0]);
@@ -77,11 +75,11 @@ angular.module("ricardo.directives.politicalStatuses", []).directive("politicalS
 
 
           // Initialize stage and commons:
-          const topPadding = 20;
+          const topPadding = 0;
           const leftPadding = 25;
           const width = domRoot.parentElement.offsetWidth;
           const chartWidth = width;
-          const height = CHART_HEIGHT + X_AXIS_HEIGHT + topPadding;
+          const height = BAR_HEIGHT + X_AXIS_HEIGHT ;
           const svg = d3.select(domRoot).append("svg").attr("width", width).attr("height", height);
           const chart = svg.append("g").attr("transform", `translate(0,${topPadding})`);
 
@@ -89,39 +87,46 @@ angular.module("ricardo.directives.politicalStatuses", []).directive("politicalS
           const chartMinX = xPageScale(Math.max(boundaries.minYear, 1816))
 
           const xScale = d3.scale.linear().range([chartMinX,chartWidth]).domain([Math.max(boundaries.minYear, 1816), boundaries.maxYear])
-          const yScale = d3.scale.linear().range([0, CHART_HEIGHT]).domain([entityStatusesData.maxDepsPerYear, 0]);
-
+          const tooltip = d3.select(domRoot).append("div").attr("class", "politicalstatus-tooltip");
           // Captions:
           svg
             .append("g")
             .attr("class", "x axis")
-            .attr("transform", `translate(0,${CHART_HEIGHT + topPadding})`)
+            .attr("transform", `translate(0,${BAR_HEIGHT})`)
             .call(
               d3.svg
                 .axis()
                 .scale(xScale)
                 .orient("bottom")
-                .ticks(Math.max(boundaries.maxYear,1816) - boundaries.minYear < 5 ? 1 : 10)
+                .tickValues(xScale.ticks().filter(t => Number.isInteger(t)))
                 .outerTickSize(0)
-                .tickFormat((d) => d.toString()),
+                .tickFormat(d3.format('d'))
             );
 
           // Represent non sovereignty
-          // color scale on sov status TO DO
-          chart
-            .append("g")
-            .attr("class", "sovereignty-chart")
-            .selectAll("rect")
-            .data(entityStatusesData.nonSovereigntyData.concat(entityStatusesData.sovereigntyData))
-            .enter()
-            .append("rect")
-            .style("fill", "rgba(0, 0, 0, 0.1)")
-            .attr("data-start-year", ({ startYear }) => startYear)
-            .attr("data-end-year", ({ endYear }) => endYear)
-            .attr("x", ({ startYear }) => xScale(startYear))
-            .attr("y", -topPadding)
-            .attr("width", ({ startYear, endYear }) => xScale(endYear) - xScale(startYear))
-            .attr("height", CHART_HEIGHT /2 );
+          // hatch pattern
+          const pattern = svg
+            .append('defs')
+            .append('pattern')
+              .attr('id', 'diagonalHatch')
+              .attr('patternUnits', 'userSpaceOnUse')
+              .attr('patternTransform', "rotate(45 0 0)")
+              .attr('width', 6)
+              .attr('height', 6);
+          pattern.append('line')
+              .attr('x1', 1)
+              .attr('y1', 0)
+              .attr('x2', 1)
+              .attr('y2', 6)
+              .attr('stroke', '#000')
+              .attr('stroke-width', 1);
+          pattern.append('line')
+              .attr('x1', 2)
+              .attr('y1', 0)
+              .attr('x2', 2)
+              .attr('y2', 6)
+              .attr('stroke', '#EEE')
+              .attr('stroke-width', 1);
 
           // Represent dependencies
           chart
@@ -135,10 +140,84 @@ angular.module("ricardo.directives.politicalStatuses", []).directive("politicalS
             .attr("data-start-year", ({ startYear }) => startYear)
             .attr("data-end-year", ({ endYear }) => endYear)
             .attr("x", ({ startYear }) => xScale(startYear+0.05))
-            .attr("y", CHART_HEIGHT/2 -topPadding )
+            .attr("y", 0 )
             .attr("width", ({ startYear, endYear }) => xScale(endYear+0.9) - xScale(startYear) ) //, xScale(1817) - xScale(1816)))
-            .attr("height", CHART_HEIGHT/2 );
-         
+            .attr("height", BAR_HEIGHT )
+            .on("mouseover", function (e) {
+              tooltip
+                .html(`Sovereign<br>${e.depsCount} dependencies from ${e.startYear} to ${e.endYear}`)
+                .transition()
+                .duration(200)
+                .style("visibility", "visible");
+            })
+            .on("mouseout", function (e) {
+              tooltip.transition().duration(200).style("visibility", "hidden");
+            })
+            .on("mousemove", function (e) {
+              tooltip.style("left", d3.event.x + 10 + "px").style("top", d3.event.y + 10 + "px");
+            });
+
+          // color scale on sov status TO DO
+          chart
+            .append("g")
+            .attr("class", "sovereignty-chart")
+            .selectAll("rect")
+            .data(entityStatusesData.sovereigntyData)
+            .enter()
+            .append("rect")
+            .style("fill", ({isSovereign}) => isSovereign ? "rgba(0, 0, 0, 0)": "url(#diagonalHatch)")
+            .attr("data-start-year", ({ startYear }) => startYear)
+            .attr("data-end-year", ({ endYear }) => endYear)
+            .attr("x", ({ startYear }) => xScale(startYear))
+            .attr("y", 0)
+            .attr("width", ({ startYear, endYear }) => xScale(endYear) - xScale(startYear))
+            .attr("height", BAR_HEIGHT )
+            .on("mouseover", function (e) {
+              tooltip
+                .html(`${e.GPH_status === 'Informal'?'Informal':'Non-sovereign'} from ${e.startYear} to ${e.endYear}`)
+                .transition()
+                .duration(200)
+                .style("visibility", "visible");
+            })
+            .on("mouseout", function (e) {
+              tooltip.transition().duration(200).style("visibility", "hidden");
+            })
+            .on("mousemove", function (e) {
+              tooltip.style("left", d3.event.x + 10 + "px").style("top", d3.event.y + 10 + "px");
+            });
+          
+          // moved the resulting legend into template because of translation....
+          // const legend = chart.append('g')
+          //   .attr("class", "legend")
+          //   .attr('transform',`translate(0,${BAR_HEIGHT + X_AXIS_HEIGHT})` )  
+          // legend.append("rect")
+          //   .attr('x',0)
+          //   .attr('y',0)
+          //   .attr('width',12)
+          //   .attr('height',12)
+          //   .style('fill', "url(#diagonalHatch)")
+          
+          // legend.append('text')
+          //   .attr('x', 17)
+          //   .attr('y', 10)
+          //   .attr('class', 'legend-item')
+          //   .attr('fill', '#333')
+          //   .text($filter('translate')('SOVEREIGNTY_CAPTION'));
+          // [0.2,0.5,0.8].forEach((o,i) => {
+          //   legend.append("rect")
+          //     .attr('x',180+i*18)
+          //     .attr('y',0)
+          //     .attr('width',12)
+          //     .attr('height',12)
+          //     .style('fill', `rgba(180, 0, 0,${o})`);
+          // })
+            
+          // legend.append('text')
+          //   .attr('x', 185 + 3*18)
+          //   .attr('y', 10)
+          //   .attr('class', 'legend-item')
+          //   .attr('fill', '#333')
+          //   .text($filter('translate')('DEPENDENCIES_CAPTION'))
         }
       },
     };

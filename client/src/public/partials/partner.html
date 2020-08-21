@@ -65,23 +65,21 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-12 well">
-      <h4>{{'PARTNER_STATUSES_TITLE' | translate}}</h4>
-      <p class="paragraphViz">{{'PARTNER_STATUSES_INTRO' | translate}}</p>
-      <div>
+      <h4>{{'POLITICAL_STATUSES_TITLE' | translate}}&nbsp;<a href="https://medialab.github.io/GeoPolHist/{{partnersDict[partner].GPH_code ? '#/country/' + partnersDict[partner].GPH_code :''}}">GeoPolHist</a>&nbsp;{{partnersDict[partner].label}}</h4>
+      <p ng-if="partnersDict[partner].GPH_code" class="paragraphViz">{{'POLITICAL_STATUSES_INTRO' | translate}}</p>
+      <p ng-if="!partnersDict[partner].GPH_code" class="paragraphViz">{{'POLITICAL_STATUSES_MISSING' | translate}}</p>
+      <div ng-if="partnersDict[partner].GPH_code">
         <political-statuses
           data="partnerGPHStatus"
           boundaries="{minYear: selectedMinDate, maxYear: selectedMaxDate}"
         />
-        <div class="legend">
-          <div class="legend-item">
-            <div class="square" ng-style="{ backgroundColor: '#cc6666' }"></div>
-            {{'DEPENDENCIES_CAPTION' | translate}}
-          </div>
-          <div class="legend-item">
-            <div class="square" ng-style="{ backgroundColor: 'rgba(0,0,0,0.1)' }"></div>
-            {{'SOVEREIGNTY_CAPTION' | translate}}
-          </div>
-        </div>
+        <svg width="100%" height="20px"><g class="legend" >
+          <rect x="0" y="0" width="12" height="12" style="fill: url(&quot;#diagonalHatch&quot;);"></rect>
+          <text x="17" y="10" class="legend-item" fill="#333" translate="POLITICAL_STATUSES_SOVEREIGNTY_CAPTION"></text>
+          <rect x="180" y="0" width="12" height="12" style="fill: rgba(180, 0, 0, 0.2);"></rect>
+          <rect x="198" y="0" width="12" height="12" style="fill: rgba(180, 0, 0, 0.5);"></rect>
+          <rect x="216" y="0" width="12" height="12" style="fill: rgba(180, 0, 0, 0.8);"></rect>
+          <text x="239" y="10" class="legend-item" fill="#333" translate="POLITICAL_STATUSES_DEPENDENCIES_CAPTION"></text></g></svg>    
       </div>
     </div>
   </div>
