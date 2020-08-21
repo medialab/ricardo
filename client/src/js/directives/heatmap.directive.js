@@ -51,11 +51,7 @@ angular
            */
           // Axis X
           var xScaling = d3.scale.linear().range([0, width]);
-          var xAxis = d3.svg
-            .axis()
-            .scale(xScaling)
-            .orient("bottom")
-            .tickFormat((d) => d.toString());
+          
           // Axis Y
           var yScaling = d3.scale.linear().range([height, 0]).domain([0, 1]);
           // Opacity
@@ -76,24 +72,34 @@ angular
             const opacityRange = _opacityRange // default to min max data see below
             const tooltipText = _tooltip || defaultTooltip;
             // Compute the barsize
-            const barSize = Math.floor(width / (endDate - startDate));
+            const barWidth = Math.floor(width / (endDate - startDate));
+            // if possible make square but limit bar height
+            const barHeight = Math.min(barWidth, 20);
 
             // Legend & Axis
             //-----------
             // Complete X & Y axis
             xScaling.domain([startDate, endDate]);
+            var xAxis = d3.svg
+              .axis()
+              .scale(xScaling)
+              .orient("bottom")
+              .tickValues(xScaling.ticks().filter(t => Number.isInteger(t)))
+              .outerTickSize(0)
+              .tickFormat(d3.format('d'));
+
             //remove everything
-            svg.attr("height", barSize).select(".x.axis").remove();
-            yScaling.range([barSize, 0]);
+            svg.attr("height", barHeight).select(".x.axis").remove();
+            yScaling.range([barHeight, 0]);
             
             if (legend !== null) {
               xAxis.orient(legend);
               // update the height of the SVG + create the axis group
               svg
-                .attr("height", barSize + heightForLegend)
+                .attr("height", barHeight + heightForLegend)
                 .append("g")
                 .attr("class", "x axis")
-                .attr("transform", `translate(0, ${legend === "bottom" ? barSize : heightForLegend})`)
+                .attr("transform", `translate(0, ${legend === "bottom" ? barHeight : heightForLegend})`)
                 .call(xAxis);
               // position chart
               chart.attr("transform", `translate(0, ${legend === "top" ? heightForLegend : 0})`);
@@ -118,7 +124,7 @@ angular
                 .enter()
                 .append("rect")
                 .attr("class", "bar")
-                .attr("width", barSize)
+                .attr("width", barWidth)
                 .attr("x", function (row) {
                   return xScaling(row.year);
                 })
@@ -126,7 +132,7 @@ angular
                   return 1;
                 })
                 .attr("height", function (row) {
-                  return barSize;
+                  return barHeight;
                 })
                 .style({ fill: color })
                 .style("opacity", function (row) {
