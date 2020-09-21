@@ -1,7 +1,12 @@
 <div class="container container-page">
   <div class="row">
     <div class="col-sm-12">
-      <h1 class="title-border">{{ 'WORLD_INTRO' | translate }}</h1>
+      <h1 class="title-border flex-title">
+        {{ 'WORLD_INTRO' | translate }} {{ 'FROM' | translate }}
+        <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf"></inline-select-year>
+        {{ 'TO' | translate }}
+        <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup"></inline-select-year>
+      </h1>
       <p>{{ 'WORLD_INTRO_PARA' | translate }}</p>
     </div>
   </div>
@@ -9,7 +14,7 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-12 well">
-      <h4>
+      <h4 class="flex-title">
         {{ 'WORLD_COMPARE_TITLE' | translate }} in
         <div class="inline-select">
           <ui-select
@@ -39,10 +44,6 @@
             </ui-select-choices>
           </ui-select>
         </div>
-        {{ 'FROM' | translate }}
-        <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf"></inline-select-year>
-        {{ 'TO' | translate }}
-        <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup"></inline-select-year>
       </h4>
       <reporting-world
         class="dataviz"
@@ -75,7 +76,7 @@
     </div>
     <div class="col-sm-12 well">
       <div class="timeline-cont">
-        <h4>
+        <h4 class="flex-title">
           {{ 'WORLD_VIEW_TITLE' | translate }} with
           <div class="inline-select">
             <ui-select ng-model="$parent.worldPartner" theme="bootstrap" ng-change="changeWorldPartner(worldPartner)">
@@ -135,7 +136,7 @@
       </div>
     </div>
     <div class="col-sm-12 well comparison">
-      <h4 class="titleMultiLine">
+      <h4 class="titleMultiLine flex-title">
         <div>
           {{ 'WORLD_COMPARAISON' | translate }}
           <div class="inline-select">

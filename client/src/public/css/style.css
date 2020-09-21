@@ -913,11 +913,6 @@ div.inline-select {
   vertical-align: bottom;
 }
 
-h1 span.ui-select-match-text {
-  font-size: 2em;
-  margin-top: -13px;
-}
-
 div.inline-select.pull-right {
   margin-left: auto;
 }
@@ -933,7 +928,6 @@ div.inline-select .form-control {
   color: #e2ac13;
   background-color: #fafafa;
   border-bottom: 1px solid #e2ac13;
-  font-size: 16px;
   font-weight: 400;
   width: 100% !important;
 }
@@ -963,6 +957,17 @@ div.inline-select div.ui-select-match .text-muted {
 
 div.inline-select div.ui-select-match .ui-select-match-text {
   font-weight: 600;
+}
+
+div.inline-select div.ui-select-match .btn {
+  font-size: inherit;
+  height: auto;
+}
+
+div.inline-select div.ui-select-match.btn-default-focus {
+  text-decoration: inherit;
+  outline-offset: 0;
+  border-bottom: inherit;
 }
 /* END INLINE SELECT */
 
@@ -996,8 +1001,6 @@ div.inline-select div.ui-select-match .ui-select-match-text {
 h4 {
   margin-bottom: 0;
   padding-bottom: 5px;
-  display: flex;
-  align-items: center;
 }
 
 .axis path,
@@ -1813,4 +1816,9 @@ h4.titleMultiLine > div {
 .hightlight-inline-variable {
   color: #e2ac13;
   font-weight: 600;
+}
+
+.flex-title {
+  display: flex;
+  align-items: center;
 }

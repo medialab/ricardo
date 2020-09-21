@@ -64,16 +64,8 @@
 <div class="container container-page">
   <div class="row">
     <div class="col-sm-12">
-      <h1 class="title-border">{{ 'BILATERAL_INTRO_TITLE' | translate }}</h1>
-      <p>{{ 'BILATERAL_INTRO_PARA' | translate }}</p>
-    </div>
-  </div>
-</div>
-<div class="container">
-  <div class="row">
-    <div class="col-sm-12 well">
-      <h4>
-        {{ 'BILATERAL_1' | translate }}
+      <h1 class="title-border flex-title">
+        {{ 'BILATERAL_INTRO_TITLE' | translate }}
         <inline-select-country
           ng-model="entities.sourceEntity.selected"
           list="reportingEntities"
@@ -91,6 +83,23 @@
         <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf"></inline-select-year>
         {{ 'TO' | translate }}
         <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup"></inline-select-year>
+      </h1>
+      <p>{{ 'BILATERAL_INTRO_PARA' | translate }}</p>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4>
+        {{ 'BILATERAL_1' | translate }}
+        <span class="hightlight-inline-variable"> {{entities.sourceEntity.selected.RICname}} </span>
+        {{ 'AND' | translate }}
+        <span class="hightlight-inline-variable">{{entities.targetEntity.selected.RICname}}</span>
+        {{ 'FROM' | translate }}
+        <span class="hightlight-inline-variable">{{selectedMinDate}}</span>
+        {{ 'TO' | translate }}
+        <span class="hightlight-inline-variable">{{selectedMaxDate}}</span>
         {{ 'BILATERAL_2' | translate }} {{entities.sourceEntity.selected.RICname}}
       </h4>
       <dual-timeline class="dataviz" ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate">

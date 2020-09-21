@@ -10,7 +10,7 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-12 well">
-      <h4>
+      <h4 class="flex-title">
         {{ 'RATES_TITLE' | translate }}
         <div class="inline-select">
           <ui-select ng-model="currency" theme="bootstrap" ng-change="selectCurrency(currency)">
@@ -27,14 +27,16 @@
         </div>
         {{ 'RATES_TITLE_SORTED_BY' | translate }}
         <div class="inline-select">
-          <ui-select ng-model="sortChoice" theme="bootstrap" ng-change="selectSortChoice(sortChoice)" search-enabled="false">
+          <ui-select
+            ng-model="sortChoice"
+            theme="bootstrap"
+            ng-change="selectSortChoice(sortChoice)"
+            search-enabled="false"
+          >
             <ui-select-match class="ui-select-match" placeholder="{{ 'SELECT_RATES_SORT' | translate }}">
               {{$select.selected.label | translate}}
             </ui-select-match>
-            <ui-select-choices
-              class="ui-select-choices"
-              repeat="item.id as item in sortChoices"
-            >
+            <ui-select-choices class="ui-select-choices" repeat="item.id as item in sortChoices">
               <div ng-bind-html="item.label | translate"></div>
             </ui-select-choices>
           </ui-select>
