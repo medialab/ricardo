@@ -29,6 +29,7 @@ angular
           var x, y, xAxis, yAxis, areaImp, areaExp, lineImp, lineExp;
 
           function draw(data) {
+            d3.select("#dual-timeline-container > svg").remove();
             var margin = { top: 20, right: 0, bottom: 30, left: 0 },
               width = rootElement.offsetWidth - margin.left - margin.right,
               height = 180 - margin.top - margin.bottom;
