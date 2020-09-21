@@ -6,7 +6,6 @@ angular
     function () {
       return {
         restrict: "E",
-        template: '<div id="reporting-world-container"></div>',
         scope: {
           ngData: "=",
           startDate: "=",
@@ -15,6 +14,13 @@ angular
           layout: "=",
         },
         link: function (scope, element, attrs) {
+          // Manage the lifecycle of the container
+          const rootElement = element[0];
+          const container = d3.select(rootElement).append("div").attr("id", "reporting-world-container");
+          element.on("$destroy", function () {
+            d3.select("#reporting-world-container").remove();
+          });
+
           scope.$watchCollection("[ngData,startDate,endDate,flowType,layout]", function (newValue, oldValue) {
             if (newValue[0]) {
               yValue = newValue[3].type.value;
@@ -36,7 +42,7 @@ angular
           }
 
           var margin = { top: 20, right: 0, bottom: 40, left: 0 },
-            width = document.querySelector("#reporting-world-container").offsetWidth - margin.left - margin.right,
+            width = rootElement.offsetWidth - margin.left - margin.right,
             height = 300,
             offsetHeight = 10,
             partners = 4;
@@ -93,8 +99,7 @@ angular
             g.selectAll("text").attr("x", 4).attr("dy", -4).attr("font-size", "0.85em");
             g.selectAll("line").style("stroke", "grey");
           }
-          var svg = d3
-            .select("#reporting-world-container")
+          var svg = container
             .append("svg")
             .attr("height", height + margin.top + margin.bottom)
             .attr("width", width + margin.left + margin.right)
@@ -599,13 +604,13 @@ angular
                   }
                   //tick highlighting
                   svg.selectAll(".highlight").remove();
-                  var date_anchor =  function(d) { 
+                  var date_anchor = function (d) {
                     var xPos = d3.select(this).node().getBBox().x;
                     var tWidth = d3.select(this).node().getBBox().width;
                     if (xPos - tWidth / 2 < 0) return "start";
                     else if (xPos + tWidth / 2 > width) return "end";
                     else return "middle";
-                  }
+                  };
                   var text = svg
                     .append("text")
                     .attr("class", "highlight")

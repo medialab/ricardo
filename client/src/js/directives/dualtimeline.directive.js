@@ -7,14 +7,19 @@ angular
     function () {
       return {
         restrict: "E",
-        template: '<div id="dual-timeline-container"></div>',
-        replace: false,
         scope: {
           ngData: "=",
           startDate: "=",
           endDate: "=",
         },
         link: function (scope, element, attrs) {
+          // Manage the lifecycle of the container
+          const rootElement = element[0];
+          const container = d3.select(rootElement).append("div").attr("id", "dual-timeline-container");
+          element.on("$destroy", function () {
+            d3.select("#dual-timeline-container").remove();
+          });
+
           scope.$watchCollection("[ngData, endDate, startDate]", function (newValue, oldValue) {
             if (newValue[0]) {
               draw(newValue[0]);
@@ -24,10 +29,10 @@ angular
           var x, y, xAxis, yAxis, areaImp, areaExp, lineImp, lineExp;
 
           function draw(data) {
-            d3.select("#dual-timeline-container").select("svg").remove();
             var margin = { top: 20, right: 0, bottom: 30, left: 0 },
-              width = document.querySelector("#dual-timeline-container").offsetWidth - margin.left - margin.right,
+              width = rootElement.offsetWidth - margin.left - margin.right,
               height = 180 - margin.top - margin.bottom;
+
             /*
              * Config axis
              */
@@ -126,8 +131,7 @@ angular
                 return y(d.exp);
               });
 
-            var svg = d3
-              .select("#dual-timeline-container")
+            var svg = container
               .append("svg")
               .attr("width", width + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
@@ -366,13 +370,13 @@ angular
                 /*
                  * Add date
                  */
-                var date_anchor =  function(d) { 
+                var date_anchor = function (d) {
                   var xPos = d3.select(this).node().getBBox().x;
                   var tWidth = d3.select(this).node().getBBox().width;
                   if (xPos - tWidth / 2 < 0) return "start";
                   else if (xPos + tWidth / 2 > width) return "end";
                   else return "middle";
-                }
+                };
                 // this date will be hidden by a rect later...
                 var text = svg
                   .append("text")

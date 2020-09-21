@@ -109,8 +109,14 @@
       <p class="paragraphViz">
         {{ 'REPORTING_VIEW_DUAL_LEGEND' | translate }}
       </p>
-      <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></dual-timeline>
+      <dual-timeline
+        class="dataviz"
+        ng-data="timelineData"
+        start-date="selectedMinDate"
+        end-date="selectedMaxDate"
+      ></dual-timeline>
       <brushing-timeline
+        class="dataviz"
         ng-data="timelineData"
         start-date="selectedMinDate"
         end-date="selectedMaxDate"
@@ -150,6 +156,7 @@
       </h4>
       <div>
         <bar-chart
+          class="dataviz"
           ng-data="citationData"
           start-date="selectedMinDate"
           end-date="selectedMaxDate"
