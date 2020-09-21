@@ -1,17 +1,8 @@
 <div class="container container-page">
   <div class="row">
     <div class="col-sm-12">
-      <h1 class="title-border">{{ 'RATES_INTRO' | translate }}</h1>
-      <p>{{ 'RATES_INTRO_PARA' | translate }}</p>
-    </div>
-  </div>
-</div>
-<!---->
-<div class="container">
-  <div class="row">
-    <div class="col-sm-12 well">
-      <h4 class="flex-title">
-        {{ 'RATES_TITLE' | translate }}
+      <h1 class="title-border flex-title">
+        {{ 'RATES_INTRO' | translate }}
         <div class="inline-select">
           <ui-select ng-model="currency" theme="bootstrap" ng-change="selectCurrency(currency)">
             <ui-select-match class="ui-select-match" placeholder="{{ 'SELECT_CURRENCY' | translate }}">
@@ -25,6 +16,18 @@
             </ui-select-choices>
           </ui-select>
         </div>
+      </h1>
+      <p>{{ 'RATES_INTRO_PARA' | translate }}</p>
+    </div>
+  </div>
+</div>
+<!---->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4 class="flex-title">
+        {{ 'RATES_TITLE' | translate }}
+        <span class="hightlight-inline-variable">&nbsp;{{currency}}&nbsp;</span>
         {{ 'RATES_TITLE_SORTED_BY' | translate }}
         <div class="inline-select">
           <ui-select

@@ -115,7 +115,7 @@
   "WORLD_LINES_1": "In this graph the ",
   "WORLD_LINES_2": " of a country is the ",
   "WORLD_TRADE": "total trade",
-  "RATES_INTRO": "Exchange rates",
+  "RATES_INTRO": "Exchange rates to",
   "RATES_INTRO_PARA": "The \"exchange rates\"  view compares the evolution of exchange rates between a selected currency and all the other ones, on the whole period represented in the corpus.",
   "RATES_TITLE": "Rates to ",
   "RATES_TITLE_SORTED_BY": " variations, ordered by ",
