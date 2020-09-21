@@ -8,8 +8,6 @@ angular
     function () {
       return {
         restrict: "E",
-        replace: false,
-        template: '<div id="brushing-timeline-container"></div>',
         scope: {
           ngData: "=",
           startDate: "=",
@@ -21,6 +19,13 @@ angular
           mirrorLines: "@",
         },
         link: function (scope, element, attrs) {
+          // Manage the lifecycle of the container
+          const rootElement = element[0];
+          const container = d3.select(rootElement).append("div").attr("id", "brushing-timeline-container");
+          element.on("$destroy", function () {
+            d3.select("#brushing-timeline-container").remove();
+          });
+
           scope.mirrorLines = !!scope.mirrorLines;
 
           scope.$watch("ngData", function (newValue, oldValue) {
@@ -36,7 +41,7 @@ angular
           });
 
           var margin = { top: 6, right: 0, bottom: 6, left: 0 },
-            width = document.querySelector("#brushing-timeline-container").offsetWidth - margin.left - margin.right,
+            width = rootElement.offsetWidth - margin.left - margin.right,
             svgHeight = scope.mirrorLines ? 140 : 70,
             height = 20,
             hOffset = svgHeight - height - margin.bottom - margin.top,
@@ -104,10 +109,7 @@ angular
           var brush = d3.svg.brush().x(x);
 
           function draw(data) {
-            d3.select("#brushing-timeline-container").select("svg").remove();
-
-            var svg = d3
-              .select("#brushing-timeline-container")
+            var svg = container
               .append("svg")
               .attr("width", width + margin.left + margin.right)
               .attr("height", svgHeight + margin.top + margin.bottom)
@@ -117,10 +119,8 @@ angular
             data.forEach(function (d) {
               d.date = new Date(d.year, 0, 1);
             });
-            
-            x.domain(
-              [new Date(scope.rawStartDate, 0, 1), new Date(scope.rawEndDate, 0, 1)]
-            );
+
+            x.domain([new Date(scope.rawStartDate, 0, 1), new Date(scope.rawEndDate, 0, 1)]);
             y.domain([
               0,
               d3.max(data, function (d) {
@@ -308,7 +308,7 @@ angular
                 }
               })
               .on("brushend", brushended);
-            
+
             // first update to apply potential date selections retrieved from URL
             updateBrush();
 

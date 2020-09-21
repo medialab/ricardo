@@ -7,7 +7,6 @@ angular
     function () {
       return {
         restrict: "E",
-        template: '<div id="bar-chart-container"></div>',
         scope: {
           ngData: "=",
           startDate: "=",
@@ -16,6 +15,13 @@ angular
           rawEndDate: "=",
         },
         link: function (scope, element, attrs) {
+          // Manage the lifecycle of the container
+          const rootElement = element[0];
+          const container = d3.select(rootElement).append("div").attr("id", "bar-chart-container");
+          element.on("$destroy", function () {
+            d3.select("#bar-chart-container").remove();
+          });
+
           scope.$watch("ngData", function (newValue, oldValue) {
             if (newValue && scope.ngData) {
               d3.select("#bar-chart-container svg").remove();
@@ -38,7 +44,7 @@ angular
           var tooltipBar = d3.select("body").append("div").attr("class", "circle-tooltip");
           var brush;
           var margin = { top: 20, right: 0, bottom: 40, left: 0 },
-            width = document.querySelector("#bar-chart-container").offsetWidth,
+            width = rootElement.offsetWidth,
             height = 60;
 
           var x = d3.time.scale().range([0, width]);
@@ -47,20 +53,18 @@ angular
           var xAxis = d3.svg.axis().scale(x).orient("bottom");
           var yAxis = d3.svg.axis().scale(y).orient("right").ticks(4).tickSize(0);
 
-          
           function customAxis(g) {
             g.selectAll("text").attr("x", 4).attr("dy", -4).attr("font-size", "0.85em");
           }
 
           function barChart(data, start, end) {
-            var svg = d3
-            .select("#bar-chart-container")
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-           
+            var svg = container
+              .append("svg")
+              .attr("width", width)
+              .attr("height", height + margin.top + margin.bottom)
+              .append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
             x.domain([new Date(start, 0, 1), new Date(end, 0, 1)]);
             y.domain([
               0,
@@ -142,7 +146,6 @@ angular
               svg.select(".line50").attr("y1", y(50)).attr("y2", y(50));
               svg.select(".line100").attr("y1", y(100)).attr("y2", y(100));
             }
-
 
             // Brush
             brush = d3.svg

@@ -45,6 +45,7 @@
         <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup"></inline-select-year>
       </h4>
       <reporting-world
+        class="dataviz"
         ng-data="flowWorld"
         start-date="selectedMinDate"
         end-date="selectedMaxDate"
@@ -95,7 +96,12 @@
           <!-- <a href="/#/#worldTrade">World trade / Total trade</a> -->
           <a href="#/glossary#worldTrade">{{worldPartner.name.value}}</a>
         </p>
-        <dual-timeline ng-data="timelineData" start-date="selectedMinDate" end-date="selectedMaxDate"></dual-timeline>
+        <dual-timeline
+          class="dataviz"
+          ng-data="timelineData"
+          start-date="selectedMinDate"
+          end-date="selectedMaxDate"
+        ></dual-timeline>
         <div class="legend">
           <div class="legend-item">
             <div class="square import"></div>
@@ -112,6 +118,7 @@
     <div class="col-sm-12 well">
       <h4>{{ 'WORLD_NB_REPORTINGS' | translate }}</h4>
       <bar-chart
+        class="dataviz"
         ng-data="nbReportings"
         start-date="selectedMinDate"
         end-date="selectedMaxDate"
@@ -201,6 +208,7 @@
         <div class="col-md-12">
           <div id="select-lineChart">
             <linechart-world
+              class="dataviz"
               ng-data="linechartData"
               currency="linechartCurrency"
               start-date="selectedMinDate"

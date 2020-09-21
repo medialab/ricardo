@@ -8,7 +8,6 @@ angular
     function () {
       return {
         restrict: "E",
-        template: '<div id="linechart-world-container"></div>',
         scope: {
           ngData: "=",
           currency: "=",
@@ -18,6 +17,13 @@ angular
           view: "=",
         },
         link: function (scope, element, attrs) {
+          // Manage the lifecycle of the container
+          const rootElement = element[0];
+          const container = d3.select(rootElement).append("div").attr("id", "linechart-world-container");
+          element.on("$destroy", function () {
+            d3.select("#linechart-world-container").remove();
+          });
+
           function noData(entity, minDate, maxDate) {
             d3.select("#linechart-world-container")
               .append("div")
@@ -65,7 +71,7 @@ angular
           });
 
           var height = 400,
-            width = document.querySelector("#linechart-world-container").offsetWidth,
+            width = rootElement.offsetWidth,
             sort = [],
             yValue = "total",
             duration = 500;
@@ -151,9 +157,8 @@ angular
             x.domain([new Date(minDate - 1, 0, 1), new Date(maxDate + 1, 0, 1)]);
             y.domain([0, yMax]);
 
-            if (d3.select("#linechart-world-container").select("svg").empty()) {
-              var chart = d3
-                .select("#linechart-world-container")
+            if (container.select("svg").empty()) {
+              var chart = container
                 .append("svg")
                 .attr("width", width)
                 .attr("height", height)
@@ -168,7 +173,7 @@ angular
 
               chart.append("g").attr("class", "y axis").call(yAxis).call(customAxis);
             } else {
-              var chart = d3.select("#linechart-world-container").select(".chart");
+              var chart = container.select(".chart");
               chart.select("g.x.axis").transition().duration(duration).call(xAxis);
 
               chart.select("g.y.axis").transition().duration(duration).call(yAxis).call(customAxis);

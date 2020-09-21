@@ -15,7 +15,6 @@ import "./linechartTitle.directive.js";
 import "./linechartWorld.directive.js";
 import "./navbar.directive.js";
 import "./numberFlows.directive.js";
-import "./partnersHistogram.directive.js";
 import "./reportingEntities.directive.js";
 import "./reportingSynth.directive.js";
 import "./reportingWorld.directive.js";
@@ -36,7 +35,6 @@ angular.module("ricardo.directives", [
   "ricardo.directives.linechartTitle",
   "ricardo.directives.comparisonTimeline",
   "ricardo.directives.brushingTimeline",
-  "ricardo.directives.partnersHistogram",
   "ricardo.directives.barChart",
   "ricardo.directives.linechartWorld",
   "ricardo.directives.collapseLegend",
