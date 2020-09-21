@@ -33,16 +33,8 @@
 <div class="container container-page">
   <div class="row">
     <div class="col-sm-12">
-      <h1 class="title-border">{{ 'REPORTING_INTRO_TITLE' | translate }}</h1>
-      <p>{{ 'REPORTING_INTRO_PARA' | translate }}</p>
-    </div>
-  </div>
-</div>
-<div class="container">
-  <div class="row timeline-cont">
-    <div class="col-sm-12 well">
-      <h4 class="titleDualTL">
-        {{ 'REPORTING_TITLE_1' | translate }}
+      <h1 class="title-border">
+        {{ 'REPORTING_INTRO_TITLE' | translate }}
         <inline-select-country
           ng-model="entities.sourceEntity.selected"
           list="reportingEntities"
@@ -51,6 +43,68 @@
         <inline-select-year ng-model="selectedMinDate" list="rawYearsRange_forInf"></inline-select-year>
         {{ 'TO' | translate}}
         <inline-select-year ng-model="selectedMaxDate" list="rawYearsRange_forSup"></inline-select-year>
+      </h1>
+      <p>{{ 'REPORTING_INTRO_PARA' | translate }}</p>
+    </div>
+  </div>
+</div>
+<!-- GeoPolHist block -->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4>
+        {{'POLITICAL_STATUSES_TITLE' | translate}}<span class="hightlight-inline-variable"
+          >&nbsp;{{entities.sourceEntity.selected.RICname}}&nbsp;</span
+        >{{ 'POLITICAL_STATUSES_FROM' | translate }}&nbsp;<a
+          href="https://medialab.github.io/GeoPolHist/{{entities.sourceEntity.selected.GPH_code ? '#/country/' + entities.sourceEntity.selected.GPH_code :''}}"
+          >GeoPolHist</a
+        >
+      </h4>
+      <p ng-if="entities.sourceEntity.selected.GPH_code" class="paragraphViz">
+        {{'POLITICAL_STATUSES_INTRO' | translate}}
+      </p>
+      <p ng-if="!entities.sourceEntity.selected.GPH_code" class="paragraphViz">
+        {{'POLITICAL_STATUSES_MISSING' | translate}}
+      </p>
+      <div ng-if="entities.sourceEntity.selected.GPH_code">
+        <political-statuses
+          data="entityStatusesData"
+          boundaries="{minYear: selectedMinDate, maxYear: selectedMaxDate}"
+        />
+        <svg width="100%" height="20px">
+          <g class="legend">
+            <rect x="0" y="0" width="12" height="12" style="fill: url('#diagonalHatch');"></rect>
+            <text
+              x="17"
+              y="10"
+              class="legend-item"
+              fill="#333"
+              translate="POLITICAL_STATUSES_SOVEREIGNTY_CAPTION"
+            ></text>
+            <rect x="180" y="0" width="12" height="12" style="fill: rgba(180, 0, 0, 0.2);"></rect>
+            <rect x="198" y="0" width="12" height="12" style="fill: rgba(180, 0, 0, 0.5);"></rect>
+            <rect x="216" y="0" width="12" height="12" style="fill: rgba(180, 0, 0, 0.8);"></rect>
+            <text
+              x="239"
+              y="10"
+              class="legend-item"
+              fill="#333"
+              translate="POLITICAL_STATUSES_DEPENDENCIES_CAPTION"
+            ></text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END GeoPolHist block -->
+<!-- TOTAL TRADE CURVES block -->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4 class="titleDualTL">
+        {{ 'REPORTING_TITLE_1' | translate }}
+        <span class="hightlight-inline-variable">&nbsp;{{entities.sourceEntity.selected.RICname}}&nbsp;</span>
       </h4>
       <p class="paragraphViz">
         {{ 'REPORTING_VIEW_DUAL_LEGEND' | translate }}
@@ -63,7 +117,6 @@
         raw-start-date="rawMinDate"
         raw-end-date="rawMaxDate"
         source-country="entities.sourceEntity.selected.RICname"
-        target-country="entities.targetEntity.selected.RICname"
       ></brushing-timeline>
       <div class="legend">
         <div class="legend-item">
@@ -87,33 +140,14 @@
     </div>
   </div>
 </div>
-<div class="container">
-  <div class="row">
-    <div class="col-sm-12 well">
-      <h4>{{'POLITICAL_STATUSES_TITLE' | translate}}&nbsp;<a href="https://medialab.github.io/GeoPolHist/{{entities.sourceEntity.selected.GPH_code ? '#/country/' + entities.sourceEntity.selected.GPH_code :''}}">GeoPolHist</a>&nbsp;{{entities.sourceEntity.selected.RICname}}</h4>
-      <p ng-if="entities.sourceEntity.selected.GPH_code" class="paragraphViz">{{'POLITICAL_STATUSES_INTRO' | translate}}</p>
-      <p ng-if="!entities.sourceEntity.selected.GPH_code" class="paragraphViz">{{'POLITICAL_STATUSES_MISSING' | translate}}</p>
-      <div ng-if="entities.sourceEntity.selected.GPH_code">
-        <political-statuses
-          data="entityStatusesData"
-          boundaries="{minYear: selectedMinDate, maxYear: selectedMaxDate}"
-        />
-        <svg width="100%" height="20px"><g class="legend" >
-          <rect x="0" y="0" width="12" height="12" style="fill: url(&quot;#diagonalHatch&quot;);"></rect>
-          <text x="17" y="10" class="legend-item" fill="#333" translate="POLITICAL_STATUSES_SOVEREIGNTY_CAPTION"></text>
-          <rect x="180" y="0" width="12" height="12" style="fill: rgba(180, 0, 0, 0.2);"></rect>
-          <rect x="198" y="0" width="12" height="12" style="fill: rgba(180, 0, 0, 0.5);"></rect>
-          <rect x="216" y="0" width="12" height="12" style="fill: rgba(180, 0, 0, 0.8);"></rect>
-          <text x="239" y="10" class="legend-item" fill="#333" translate="POLITICAL_STATUSES_DEPENDENCIES_CAPTION"></text></g></svg>    
-      </div>
-    </div>
-  </div>
-</div>
 <!-- Start: Partner citation -->
 <div class="container">
   <div class="row">
     <div class="col-sm-12 well">
-      <h4>{{'REPORTING_PARTNER_CITATION_TITLE' | translate}} {{entities.sourceEntity.selected.RICname}}</h4>
+      <h4>
+        {{'REPORTING_PARTNER_CITATION_TITLE' | translate}}
+        <span class="hightlight-inline-variable">&nbsp;{{entities.sourceEntity.selected.RICname}}&nbsp;</span>
+      </h4>
       <div>
         <bar-chart
           ng-data="citationData"
@@ -133,7 +167,9 @@
     <div class="col-sm-12 well">
       <h4 class="titleMultiLine">
         <div>
-          {{'PARTNER_HEATMAP_TITLE_1' | translate}} {{entities.sourceEntity.selected.RICname}}, {{'PARTNER_HEATMAP_TITLE_ORDER_BY' | translate}} 
+          {{'PARTNER_HEATMAP_TITLE_1' | translate}}
+          <span class="hightlight-inline-variable">&nbsp;{{entities.sourceEntity.selected.RICname}}&nbsp;</span>,
+          {{'PARTNER_HEATMAP_TITLE_ORDER_BY' | translate}}
           <div class="inline-select">
             <ui-select ng-model="$parent.heatmapOrder" theme="bootstrap">
               <ui-select-match
@@ -148,29 +184,30 @@
             </ui-select>
           </div>
         </div>
-        <div> {{'PARTNER_HEATMAP_TITLE_2' | translate}}           
-              <div class="inline-select">
-                <ui-select ng-model="$parent.heatmapField" theme="bootstrap">
-                  <ui-select-match
-                    class="ui-select-match"
-                    placeholder="{{ 'PARTNER_HEATMAP_FIELD_PLACEHOLDER' | translate }}"
-                  >
-                    {{$select.selected.label}}
-                  </ui-select-match>
-                  <ui-select-choices class="ui-select-choices" repeat="item in heatmapFieldList | filter: $select.search">
-                    <div ng-bind-html="item.label | highlight: $select.search"></div>
-                  </ui-select-choices>
-                </ui-select>
-              </div>
+        <div>
+          {{'PARTNER_HEATMAP_TITLE_2' | translate}}
+          <div class="inline-select">
+            <ui-select ng-model="$parent.heatmapField" theme="bootstrap">
+              <ui-select-match
+                class="ui-select-match"
+                placeholder="{{ 'PARTNER_HEATMAP_FIELD_PLACEHOLDER' | translate }}"
+              >
+                {{$select.selected.label}}
+              </ui-select-match>
+              <ui-select-choices class="ui-select-choices" repeat="item in heatmapFieldList | filter: $select.search">
+                <div ng-bind-html="item.label | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
         </div>
       </h4>
       <div class="partnersHistoLegend">
         <div class="legend-item">
           <svg height="15" width="500">
-            <rect x="0" y="0" width="10" height="10" style="fill: #f90202;opacity: 0.2" />
-            <rect x="12" y="0" width="10" height="10" style="fill: #f90202;opacity: 0.5" />
-            <rect x="24" y="0" width="10" height="10" style="fill: #f90202;opacity: 0.8" />
-            <text x="40" y="9" fill="black" >
+            <rect x="0" y="0" width="10" height="10" style="fill: #f90202; opacity: 0.2;" />
+            <rect x="12" y="0" width="10" height="10" style="fill: #f90202; opacity: 0.5;" />
+            <rect x="24" y="0" width="10" height="10" style="fill: #f90202; opacity: 0.8;" />
+            <text x="40" y="9" fill="black">
               {{ 'PARTNER_HEATMAP_COLOR' | translate }}
             </text>
           </svg>
@@ -208,14 +245,15 @@
 </div>
 <!-- End: Reporter Heatmap-->
 
-
 <!-- Start: World Comparison -->
 <div class="container comparison">
   <div class="row">
     <div class="col-sm-12 well">
       <h4 class="titleMultiLine">
         <div>
-          {{ 'LINE_CHART_1' | translate }} {{entities.sourceEntity.selected.RICname}} {{ 'LINE_CHART_2' | translate }}
+          {{ 'LINE_CHART_1' | translate }}
+          <span class="hightlight-inline-variable">&nbsp;{{entities.sourceEntity.selected.RICname}}&nbsp;</span> {{
+          'LINE_CHART_2' | translate }}
           <div class="inline-select">
             <ui-select
               ng-model="entities.sourceCountryEntity.selected"
@@ -270,7 +308,8 @@
           </div>
         </div>
         <div>
-          {{selectedMinDate}} – {{selectedMaxDate}}, in
+          <span class="hightlight-inline-variable">&nbsp;{{selectedMinDate}}&nbsp;</span> –
+          <span class="hightlight-inline-variable">&nbsp;{{selectedMaxDate}}&nbsp;</span>, in
           <div class="inline-select">
             <ui-select
               ng-model="$parent.linechartCurrency"

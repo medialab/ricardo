@@ -572,12 +572,10 @@ body > .container {
   padding-bottom: 2em;
 }
 
-
 .container-links .col-md-3,
 .container-links .col-md-6,
 .container-links .col-sm-3,
-.container-links .col-sm-6
- {
+.container-links .col-sm-6 {
   position: relative;
   display: flex;
   align-items: center;
@@ -731,7 +729,6 @@ h2.title-border {
 
 /* Responsive */
 @media (min-width: 1270px) {
-  
   .box-bg-world:before,
   .box-bg-country:before,
   .box-bg-bilateral:before,
@@ -913,6 +910,12 @@ article.item {
 div.inline-select {
   display: inline-block;
   margin: auto 5px;
+  vertical-align: bottom;
+}
+
+h1 span.ui-select-match-text {
+  font-size: 2em;
+  margin-top: -13px;
 }
 
 div.inline-select.pull-right {
@@ -1763,7 +1766,8 @@ h4.titleMultiLine > div {
   max-height: inherit;
 }
 
-.heatmap-tooltip, .politicalstatus-tooltip {
+.heatmap-tooltip,
+.politicalstatus-tooltip {
   position: fixed;
   visibility: hidden;
   opacity: 0.8;
@@ -1804,4 +1808,9 @@ h4.titleMultiLine > div {
 
 .show-more a {
   font-weight: bold;
+}
+
+.hightlight-inline-variable {
+  color: #e2ac13;
+  font-weight: 600;
 }
