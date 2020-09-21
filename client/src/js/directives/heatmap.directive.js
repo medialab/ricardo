@@ -20,7 +20,7 @@ angular
           // {(data, minValue, maxValue):string} function that takes the data and generate the texte for the tooltip
           tooltipFunction: "=",
           // [min:number, max:number] values used to set the opacity scale. Default to min max of data
-          opacityRange: "="
+          opacityRange: "=",
         },
         link: function (scope, element, attrs) {
           /**
@@ -51,11 +51,11 @@ angular
            */
           // Axis X
           var xScaling = d3.scale.linear().range([0, width]);
-          
+
           // Axis Y
           var yScaling = d3.scale.linear().range([height, 0]).domain([0, 1]);
           // Opacity
-          var oScaling = d3.scale.linear().range([minOpacity, 1])
+          var oScaling = d3.scale.linear().range([minOpacity, 1]);
 
           // Init chart (for data)
           chartData = chart.append("g").attr("class", "data");
@@ -69,7 +69,7 @@ angular
             const color = _color || defaultColor;
             const legend = _legend || defaultLegend;
             const opacity = _opacity !== null && _opacity !== undefined ? _opacity : defaultOpacity;
-            const opacityRange = _opacityRange // default to min max data see below
+            const opacityRange = _opacityRange; // default to min max data see below
             const tooltipText = _tooltip || defaultTooltip;
             // Compute the barsize
             const barWidth = Math.floor(width / (endDate - startDate));
@@ -84,14 +84,14 @@ angular
               .axis()
               .scale(xScaling)
               .orient("bottom")
-              .tickValues(xScaling.ticks().filter(t => Number.isInteger(t)))
+              .tickValues(xScaling.ticks().filter((t) => Number.isInteger(t)))
               .outerTickSize(0)
-              .tickFormat(d3.format('d'));
+              .tickFormat(d3.format("d"));
 
             //remove everything
             svg.attr("height", barHeight).select(".x.axis").remove();
             yScaling.range([barHeight, 0]);
-            
+
             if (legend !== null) {
               xAxis.orient(legend);
               // update the height of the SVG + create the axis group
@@ -115,7 +115,7 @@ angular
               const minValue = d3.min(data.map((e) => e.value));
               const maxValue = d3.max(data.map((e) => e.value));
               //opacity scaling default to min/max
-              oScaling.domain(_opacityRange || [minValue, maxValue])
+              oScaling.domain(_opacityRange || [minValue, maxValue]);
               // Update data of the SVG
               chartData.selectAll(".bar").remove();
               chartData
@@ -136,7 +136,7 @@ angular
                 })
                 .style({ fill: color })
                 .style("opacity", function (row) {
-                  return oScaling(row.value)
+                  return oScaling(row.value);
                 })
                 .on("mouseover", function (e) {
                   tooltip
@@ -157,12 +157,21 @@ angular
           /**
            * Watchers
            */
-          scope.$watchCollection("[startDate, endDate, color, legend, opacity, opacityRange, tooltipFunction]", function (
-            newValue,
-            oldValue,
-          ) {
-            update(scope.data, newValue[0], newValue[1], newValue[2], newValue[3], newValue[4], newValue[5], newValue[6]);
-          });
+          scope.$watchCollection(
+            "[startDate, endDate, color, legend, opacity, opacityRange, tooltipFunction]",
+            function (newValue, oldValue) {
+              update(
+                scope.data,
+                newValue[0],
+                newValue[1],
+                newValue[2],
+                newValue[3],
+                newValue[4],
+                newValue[5],
+                newValue[6],
+              );
+            },
+          );
           scope.$watch(
             "data",
             function (newValue, oldValue) {
@@ -174,7 +183,7 @@ angular
                 scope.legend,
                 scope.opacity,
                 scope.opacityRange,
-                scope.tooltipFunction
+                scope.tooltipFunction,
               );
             },
             true,
