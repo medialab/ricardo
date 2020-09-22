@@ -28,15 +28,10 @@ angular
 
           scope.mirrorLines = !!scope.mirrorLines;
 
-          scope.$watch("ngData", function (newValue, oldValue) {
-            if (newValue) {
-              draw(scope.ngData);
-            }
-          });
-
-          scope.$watchCollection("[startDate,endDate]", function (newValue, oldValue) {
-            if (newValue[0] && newValue[1] && scope.ngData) {
-              updateBrush();
+          scope.$watchCollection("[ngData, startDate,endDate]", function (newValue, oldValue) {
+            if (newValue[0]) {
+              d3.select("#brushing-timeline-container > svg").remove();
+              draw(newValue[0], newValue[1], newValue[2]);
             }
           });
 
@@ -106,9 +101,8 @@ angular
             .y(function (d) {
               return baselineHeight_2on2 + interline / 2;
             });
-          var brush = d3.svg.brush().x(x);
 
-          function draw(data) {
+          function draw(data, startDate, endDate) {
             var svg = container
               .append("svg")
               .attr("width", width + margin.left + margin.right)
@@ -120,7 +114,7 @@ angular
               d.date = new Date(d.year, 0, 1);
             });
 
-            x.domain([new Date(scope.rawStartDate, 0, 1), new Date(scope.rawEndDate, 0, 1)]);
+            x.domain([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
             y.domain([
               0,
               d3.max(data, function (d) {
@@ -299,61 +293,6 @@ angular
             function customAxis(g) {
               g.selectAll("text").attr("x", 4).attr("dy", -4).attr("font-size", "0.85em");
             }
-
-            // Brush
-            brush
-              .on("brush", function () {
-                if (brush.empty()) {
-                  brush.clear();
-                }
-              })
-              .on("brushend", brushended);
-
-            // first update to apply potential date selections retrieved from URL
-            updateBrush();
-
-            function brushended() {
-              if (!d3.event.sourceEvent) return; // only transition after input
-
-              var extent0 = brush.extent(),
-                extent1 = extent0.map(function (d) {
-                  return d3.time.year(new Date(d));
-                });
-
-              d3.select(this).transition().call(brush.extent(extent1)).call(brush.event);
-
-              if (brush.empty()) {
-                brush.extent(x.domain());
-              }
-
-              applyBrush();
-            }
-            //selection.selectAll("g.brush").remove();
-            var gBrush = svg.select(".brush");
-
-            if (gBrush.empty()) {
-              gBrush = svg.append("g").attr("class", "brush").call(brush).call(brush.event);
-
-              gBrush.selectAll("rect").attr("height", svgHeight);
-            } else {
-              gBrush.call(brush).call(brush.event);
-            }
-
-            function applyBrush() {
-              scope.startDate = brush.extent()[0].getFullYear();
-              scope.endDate = brush.extent()[1].getFullYear();
-              if (!scope.$$phase) {
-                scope.$apply();
-              }
-            }
-          }
-
-          function updateBrush() {
-            brush.extent([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
-            if (scope.rawStartDate === scope.startDate && scope.rawEndDate === scope.endDate) {
-              brush.clear();
-            }
-            d3.select("#brushing-timeline-container svg").select(".brush").call(brush);
           }
         },
       };

@@ -190,7 +190,13 @@
       </div>
       <div>
         <div>
-          <heatmap class="dataviz" data="{}" start-date="minDate" end-date="maxDate" legend="'top'"></heatmap>
+          <heatmap
+            class="dataviz"
+            data="{}"
+            start-date="selectedMinDate"
+            end-date="selectedMaxDate"
+            legend="'top'"
+          ></heatmap>
         </div>
         <div class="heatmaps" ng-class="{'show':heatmapShowAll}">
           <div class="heatmap" ng-repeat="reporter in heatmapData">
@@ -198,8 +204,8 @@
             <heatmap
               class="dataviz"
               data="reporter.data"
-              start-date="minDate"
-              end-date="maxDate"
+              start-date="selectedMinDate"
+              end-date="selectedMaxDate"
               legend="heatmapLegend"
               color="reporter.color"
               opacity="heatmapOpacity"

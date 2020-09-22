@@ -22,22 +22,10 @@ angular
             d3.select("#bar-chart-container").remove();
           });
 
-          scope.$watch("ngData", function (newValue, oldValue) {
+          scope.$watchCollection("[ngData, startDate, endDate]", function (newValue, oldValue) {
             if (newValue && scope.ngData) {
               d3.select("#bar-chart-container svg").remove();
-              barChart(scope.ngData, scope.rawStartDate, scope.rawEndDate);
-            }
-          });
-
-          scope.$watch("endDate", function (newValue, oldValue) {
-            if (newValue && scope.ngData) {
-              updateBrush();
-            }
-          });
-
-          scope.$watch("startDate", function (newValue, oldValue) {
-            if (newValue && scope.ngData) {
-              updateBrush();
+              barChart(scope.ngData, scope.startDate, scope.endDate);
             }
           });
 
@@ -146,59 +134,6 @@ angular
               svg.select(".line50").attr("y1", y(50)).attr("y2", y(50));
               svg.select(".line100").attr("y1", y(100)).attr("y2", y(100));
             }
-
-            // Brush
-            brush = d3.svg
-              .brush()
-              .x(x)
-              .extent([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)])
-              .on("brush", function () {
-                if (brush.empty()) {
-                  brush.clear();
-                }
-              })
-              .on("brushend", brushended);
-
-            function brushended() {
-              if (!d3.event.sourceEvent) return; // only transition after input
-
-              var extent0 = brush.extent(),
-                extent1 = extent0.map(function (d) {
-                  return d3.time.year(new Date(d));
-                });
-
-              d3.select(this).transition().call(brush.extent(extent1)).call(brush.event);
-
-              if (brush.empty()) {
-                brush.extent(x.domain());
-              }
-              applyBrush();
-            }
-            var gBrush = svg.select(".brush");
-
-            if (gBrush.empty()) {
-              gBrush = svg.append("g").attr("class", "brush").call(brush).call(brush.event);
-
-              gBrush.selectAll("rect").attr("height", height);
-            } else {
-              gBrush.call(brush).call(brush.event);
-            }
-
-            function applyBrush() {
-              scope.startDate = brush.extent()[0].getFullYear();
-              scope.endDate = brush.extent()[1].getFullYear();
-              if (!scope.$$phase) {
-                scope.$apply();
-              }
-            }
-          }
-
-          function updateBrush() {
-            brush.extent([new Date(scope.startDate, 0, 1), new Date(scope.endDate, 0, 1)]);
-            if (scope.rawStartDate === scope.startDate && scope.rawEndDate === scope.endDate) {
-              brush.clear();
-            }
-            d3.select("#bar-chart-container svg").select(".brush").call(brush);
           }
         },
       };
