@@ -948,6 +948,13 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
           });
         }
       });
+      $scope.citationTooltipFunction = function (data) {
+        return `
+          <h3>${$scope.entities.sourceEntity.selected.RICname} - ${data.year}</h3>
+          <ul>
+            <li><strong>Number of reference :</strong> ${data.nbEntities}</li>
+          </ul>`;
+      };
     }
   },
 ]);

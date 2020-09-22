@@ -42,7 +42,7 @@ angular
           /**
            * Init D3
            */
-          tooltip = d3.select(rootElement).append("div").attr("class", "heatmap-tooltip");
+          tooltip = d3.select(rootElement).append("div").attr("class", "dataviz-tooltip");
           svg = d3.select(rootElement).append("svg").attr("width", width).attr("height", height);
           chart = svg.append("g").attr("transform", `translate(0, 0)`);
 

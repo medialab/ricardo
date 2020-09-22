@@ -1769,7 +1769,7 @@ h4.titleMultiLine > div {
   max-height: inherit;
 }
 
-.heatmap-tooltip,
+.dataviz-tooltip,
 .politicalstatus-tooltip {
   position: fixed;
   visibility: hidden;
@@ -1781,7 +1781,7 @@ h4.titleMultiLine > div {
   border-radius: 5px;
 }
 
-.heatmap-tooltip h3 {
+.dataviz-tooltip h3 {
   color: #ddd;
   font-weight: bold;
   margin: 3px 5px;
@@ -1789,13 +1789,13 @@ h4.titleMultiLine > div {
   text-align: center;
 }
 
-.heatmap-tooltip ul {
+.dataviz-tooltip ul {
   list-style-type: none;
   margin: 5px 0;
   padding: 0;
 }
 
-.heatmap-tooltip span {
+.dataviz-tooltip span {
   font-style: italic;
   font-size: 10px;
   text-align: center;

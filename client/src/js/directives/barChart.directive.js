@@ -13,24 +13,26 @@ angular
           endDate: "=",
           rawStartDate: "=",
           rawEndDate: "=",
+          // {(data):string} function that takes the data and generate the text for the tooltip
+          tooltipFunction: "=",
         },
         link: function (scope, element, attrs) {
-          // Manage the lifecycle of the container
           const rootElement = element[0];
+          const tooltip = d3.select(rootElement).append("div").attr("class", "dataviz-tooltip");
+
+          // Manage the lifecycle of the container
           const container = d3.select(rootElement).append("div").attr("id", "bar-chart-container");
           element.on("$destroy", function () {
             d3.select("#bar-chart-container").remove();
           });
 
-          scope.$watchCollection("[ngData, startDate, endDate]", function (newValue, oldValue) {
+          scope.$watchCollection("[ngData, startDate, endDate, tooltipFunction]", function (newValue, oldValue) {
             if (newValue && scope.ngData) {
               d3.select("#bar-chart-container svg").remove();
-              barChart(scope.ngData, scope.startDate, scope.endDate);
+              barChart(newValue[0], newValue[1], newValue[2], newValue[3]);
             }
           });
 
-          var tooltipBar = d3.select("body").append("div").attr("class", "circle-tooltip");
-          var brush;
           var margin = { top: 20, right: 0, bottom: 40, left: 0 },
             width = rootElement.offsetWidth,
             height = 60;
@@ -45,7 +47,7 @@ angular
             g.selectAll("text").attr("x", 4).attr("dy", -4).attr("font-size", "0.85em");
           }
 
-          function barChart(data, start, end) {
+          function barChart(data, start, end, tooltipFunction) {
             var svg = container
               .append("svg")
               .attr("width", width)
@@ -89,7 +91,16 @@ angular
                 .attr("height", function (d) {
                   return height - y(d.nbEntities || d.nb_reporting);
                 })
-                .style({ fill: "#cc6666" });
+                .style({ fill: "#cc6666" })
+                .on("mouseover", function (e) {
+                  tooltip.html(tooltipFunction(e)).transition().duration(200).style("visibility", "visible");
+                })
+                .on("mouseout", function (e) {
+                  tooltip.transition().duration(200).style("visibility", "hidden");
+                })
+                .on("mousemove", function (e) {
+                  tooltip.style("left", d3.event.x + 10 + "px").style("top", d3.event.y + 10 + "px");
+                });
 
               /* 50 line */
               svg

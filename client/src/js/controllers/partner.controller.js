@@ -320,6 +320,13 @@ function loadTableComponent($scope, TABLE_HEADERS) {
  * Load & manage the citation component.
  */
 function loadCitationComponent($scope) {
+  $scope.citationTooltipFunction = function (data) {
+    return `
+      <h3>${$scope.partner} - ${data.year}</h3>
+      <ul>
+        <li><strong>Number of reference :</strong> ${data.nbEntities}</li>
+      </ul>`;
+  };
   $scope.citationData = null;
   $scope.$watch("flows", function (newVal, oldVal) {
     if (newVal) {
