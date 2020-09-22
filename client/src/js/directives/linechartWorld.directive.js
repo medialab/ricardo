@@ -45,6 +45,14 @@ angular
                 d3.selectAll("div#missingDataLineChart").remove();
               });
           }
+          scope.$watch(
+            "ngData",
+            function (newValue, oldValue) {
+              if (newValue && newValue.length > 0)
+                linechart(newValue, newValue[0].flowType, scope.startDate, scope.endDate);
+            },
+            true,
+          );
           scope.$watchCollection("[ngData,startDate,endDate]", function (newValue, oldValue) {
             if (newValue[0] && newValue[0].length > 0) {
               yValue = newValue[0][0].flowType;
@@ -58,7 +66,7 @@ angular
               var newData = newValue[0][newValue[0].length - 1];
               var missingData = newData.values
                 .filter(function (d) {
-                  return d.year >= minDate && d.year <= maxDate;
+                  return d !== undefined && d !== null && d.year >= minDate && d.year <= maxDate;
                 })
                 .every(function (d) {
                   return d[yValue] === null;
@@ -88,11 +96,10 @@ angular
           /*
            * Lines
            */
-
-          var line = d3.svg
+          const line = d3.svg
             .line()
             .defined(function (d) {
-              return d[yValue] !== null;
+              return d !== undefined && d !== null && d[yValue] !== null;
             })
             .x(function (d) {
               return x(new Date(d.year, 0, 1));
@@ -148,7 +155,7 @@ angular
               });
             });
             var dataFiltered = dataFlatten.filter(function (d) {
-              return d.year >= minDate && d.year <= maxDate;
+              return d !== undefined && d !== null && d.year >= minDate && d.year <= maxDate;
             });
             var yMax = d3.max(dataFiltered, function (d) {
               return d[yValue];
@@ -180,7 +187,14 @@ angular
             }
 
             chart.selectAll(".country").remove();
-            var entities = chart.selectAll(".country").data(data).enter().append("g").attr("class", "country");
+            console.log("data", data);
+            console.log(transformationWithOneValuePerYear(data, minDate, maxDate));
+            var entities = chart
+              .selectAll(".country")
+              .data(transformationWithOneValuePerYear(data, minDate, maxDate))
+              .enter()
+              .append("g")
+              .attr("class", "country");
 
             entities
               .append("path")
@@ -198,8 +212,7 @@ angular
               .selectAll(".point")
               .data(function (d) {
                 return d.values.filter(function (e, i) {
-                  // return e[yValue];
-                  if (e[yValue] !== null) {
+                  if (e !== undefined && e !== null && e[yValue] !== null) {
                     if (i === 0) {
                       if (d.values[i + 1][yValue] === null) return e;
                     } else if (i === d.values.length - 1) {
@@ -407,6 +420,25 @@ angular
               chart.selectAll("text.lineDateText").remove();
               chart.selectAll("rect.lineDateText").remove();
               focus.attr("transform", "translate(-100,-100)");
+            }
+
+            function transformationWithOneValuePerYear(data, startYear, endYear) {
+              const copy = angular.copy(data);
+              return copy.map((dataPerCountry) => {
+                dataPerCountry.values = d3.range(startYear, endYear, 1).map((year) => {
+                  return (
+                    dataPerCountry.values.find((e) => {
+                      return e !== undefined && e.year === year;
+                    }) || {
+                      year: year,
+                      imp: null,
+                      exp: null,
+                      total: null,
+                    }
+                  );
+                });
+                return dataPerCountry;
+              });
             }
           } // end linechart
         },
