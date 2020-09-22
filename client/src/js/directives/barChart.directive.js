@@ -58,9 +58,14 @@ angular
             x.domain([new Date(start, 0, 1), new Date(end, 0, 1)]);
             y.domain([
               0,
-              d3.max(data, function (d) {
-                return d.nbEntities || d.nb_reporting;
-              }),
+              d3.max(
+                data.filter((d) => {
+                  return start <= d.year && d.year <= end;
+                }),
+                function (d) {
+                  return d.nbEntities || d.nb_reporting;
+                },
+              ),
             ]);
 
             var endStart = end - start;
