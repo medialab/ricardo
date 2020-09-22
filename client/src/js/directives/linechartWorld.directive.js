@@ -187,8 +187,6 @@ angular
             }
 
             chart.selectAll(".country").remove();
-            console.log("data", data);
-            console.log(transformationWithOneValuePerYear(data, minDate, maxDate));
             var entities = chart
               .selectAll(".country")
               .data(transformationWithOneValuePerYear(data, minDate, maxDate))
