@@ -100,10 +100,10 @@ angular
             .y(function (d) {
               return y(d[yValue]);
             });
+
           /*
            * Axis config
            */
-
           var xAxis = d3.svg.axis().scale(x).orient("bottom");
 
           var yAxis = d3.svg
@@ -154,7 +154,7 @@ angular
               return d[yValue];
             });
 
-            x.domain([new Date(minDate - 1, 0, 1), new Date(maxDate + 1, 0, 1)]);
+            x.domain([new Date(minDate, 0, 1), new Date(maxDate, 0, 1)]);
             y.domain([0, yMax]);
 
             if (container.select("svg").empty()) {
