@@ -1822,3 +1822,28 @@ h4.titleMultiLine > div {
   display: flex;
   align-items: center;
 }
+
+.square {
+  width: 10px;
+  height: 10px;
+}
+
+div.legend ul {
+  padding-left: 0;
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+}
+div.legend ul li {
+  margin-right: 10px;
+}
+
+div.legend > ul {
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+div.legend > ul > li {
+  margin-bottom: 5px;
+}

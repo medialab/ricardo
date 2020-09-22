@@ -152,8 +152,8 @@
                 class="ui-select-match"
                 placeholder="{{ 'PARTNER_HEATMAP_FIELD_PLACEHOLDER' | translate }}"
               >
-                {{$select.selected.label}}
-              </ui-select-match>
+                {{$select.selected.label}} </ui-select-match
+              >PARTNER_HEATMAP_LEGEND_PERCENTIL_3
               <ui-select-choices class="ui-select-choices" repeat="item in heatmapFieldList | filter: $select.search">
                 <div ng-bind-html="item.label | highlight: $select.search"></div>
               </ui-select-choices>
@@ -161,6 +161,33 @@
           </div>
         </div>
       </h4>
+      <div class="legend">
+        <ul>
+          <li>
+            <span class="square" style="background-color: #494949; opacity: 0.2;" />
+            <span class="square" style="background-color: #494949; opacity: 0.5;" />
+            <span class="square" style="background-color: #494949; opacity: 0.8;" />
+            {{'PARTNER_HEATMAP_LEGEND_FADEIN' | translate}}
+          </li>
+          <li>
+            {{'PARTNER_HEATMAP_LEGEND_PERCENTIL' | translate}}
+            <ul>
+              <li>
+                <span class="square" style="background-color: #f90202;" />
+                {{'PARTNER_HEATMAP_LEGEND_PERCENTIL_1' | translate}}
+              </li>
+              <li>
+                <span class="square" style="background-color: #f46a00;" />
+                {{'PARTNER_HEATMAP_LEGEND_PERCENTIL_2' | translate}}
+              </li>
+              <li>
+                <span class="square" style="background-color: #f9b702;" />
+                {{'PARTNER_HEATMAP_LEGEND_PERCENTIL_3' | translate}}
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
       <div>
         <div>
           <heatmap class="dataviz" data="{}" start-date="minDate" end-date="maxDate" legend="'top'"></heatmap>
