@@ -1,4 +1,4 @@
-.open /home/pgi/dev/ricardo_data/sqlite_data/RICardo_viz.sqlite
+.open ../../../ricardo_data/sqlite_data/RICardo_viz.sqlite
 .mode csv
 .headers on
 .once './data/reporting_types_through_time_flow_joined.csv'
@@ -110,3 +110,11 @@ FROM flow_aggregated LEFT JOIN (SELECT count(distinct reporting) as nb_reporting
 	WHERE partner not like '%world%' and partner_type = 'country' aND g.reports is null  group by year) USING (year)
 WHERE partner = 'World Federico Tena'
 GROUP by year;
+
+
+-- list of entities used by FT by year
+.once './data/FT_entities_by_year.csv'
+SELECT year, group_concat(reporting, ';') as reportings
+FROM (SELECT year, reporting from flow_aggregated WHERE partner = "World Federico Tena" group by year, reporting)
+GROUP BY year; 
+
