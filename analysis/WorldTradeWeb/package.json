@@ -9,6 +9,9 @@
     "graphology-hits": "^0.1.0",
     "graphology-metrics": "^1.6.0",
     "graphology-pagerank": "^1.1.0",
+    "lodash": "^4.17.20",
+    "net-to-img": "^0.4.0",
+    "papaparse": "^5.3.0",
     "sqlite3": "^4.1.0"
   }
 }

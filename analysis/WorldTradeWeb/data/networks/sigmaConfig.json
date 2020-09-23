@@ -1,0 +1,25 @@
+{
+  "graphPath": "./1890.gexf",
+
+  "metadata": {
+    "title": "RICardo",
+    "subtitle": "World trade web",
+    "description": null
+  },
+
+  "nodeColors": "continent",
+
+  "rendering": {
+    "minNodeSize": 3,
+    "maxNodeSize": 15,
+    "minEdgeSize": 2,
+    "maxEdgeSize": 6,
+
+    "sigmaSettings": {
+      "labelGrid": {
+        "cell": { "width": 100, "height": 100 },
+        "renderedSizeThreshold": 0
+      }
+    }
+  }
+}
