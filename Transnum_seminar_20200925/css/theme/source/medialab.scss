@@ -1,0 +1,120 @@
+/**
+ * médialab theme for reveal.js.
+ */
+
+// Default mixins and settings -----------------
+@import "../template/mixins";
+@import "../template/settings";
+// ---------------------------------------------
+
+// Include theme-specific fonts
+@import url('https://fonts.googleapis.com/css?family=Anonymous+Pro|Assistant:300,400|Open+Sans+Condensed:300');
+
+// Override theme settings (see ../template/settings.scss)
+$backgroundColor: #000;
+
+$mainColor: #fbf9f0;
+$headingColor: #fbf9f0;
+$red: #fc5c52;
+
+$mainFontSize: 36px;
+
+// NOTE: mainFont can also be Bree-Serif
+$mainFont: 'Assistant', Helvetica, sans-serif;
+$headingFont: $mainFont;
+$codeFont: 'Anonymous Pro', monospace;
+// $linkFont: 'Open Sans Condensed', sans-serif;
+$linkFont: $mainFont;
+$headingTextShadow: none;
+$headingLetterSpacing: normal;
+$headingTextTransform: none;
+$headingFontWeight: 400;
+$linkColor: $red;
+$linkColorHover: lighten( $linkColor, 15% );
+$selectionBackgroundColor: lighten( $linkColor, 25% );
+
+$heading1Size: 2.5em;
+$heading2Size: 1.6em;
+$heading3Size: 1.3em;
+$heading4Size: 1.0em;
+
+section.has-light-background {
+  &, h1, h2, h3, h4, h5, h6 {
+      color: #222;
+  }
+
+  text-align: left;
+}
+
+code {
+  font-family: $codeFont !important;
+}
+
+code.lang-large {
+  font-size: 1.2em;
+}
+
+code.lang-very-large {
+  font-size: 1.5em;
+}
+
+h2, h3 {
+  text-align: left;
+  margin-bottom: 40px !important;
+}
+
+p, li {
+  font-weight: 300 !important;
+  text-align: left;
+  font-size: 0.8em !important;
+}
+
+ul, ol {
+  width: 100%;
+}
+
+ul, ol, li {
+  text-align: left !important;
+}
+
+li {
+  margin-bottom: 5px !important;
+}
+
+small {
+  font-weight: 300 !important;
+}
+
+a {
+  font-family: $linkFont !important;
+  font-weight: 300 !important;
+  // letter-spacing: 3px;
+}
+
+img {
+  border: none !important;
+  background: none !important;
+}
+
+img[src$=".svg"] {
+  background: none !important;
+}
+
+.red {
+  color: $red;
+}
+
+.red-title {
+  font-family: $headingFont !important;
+  color: $red;
+}
+
+.red-number {
+  color: $red;
+  font-weight: 600 !important;
+  font-size: 1.2em !important;
+}
+
+// Theme template ------------------------------
+@import "../template/theme";
+// ---------------------------------------------
