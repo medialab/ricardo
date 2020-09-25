@@ -87,7 +87,7 @@ Modèle de gravité puis exploration visuelle des données
 
 ## 1. Construire le réseaux des flux
 
-*Noeud : Converger vers le niveau entité*:
+*Noeud : Converger vers le niveau entité*
 - agréger les flux part of 
 - désagrégation les flux groupes
 
@@ -96,7 +96,8 @@ Modèle de gravité puis exploration visuelle des données
 
 <small>*Girard, Paul, et Beatrice Dedinger. RICardo World Trade Web, 1834-1938. http://spire.sciencespo.fr/hdl:/2441/6h7io1v56e8k4qtht2cuvjcfa5. Department of economic history research seminar, Lunds universitet, Lund, SE.
 *</small>
-
+<small>*Gehlhar, Mark. Reconciling Bilateral Trade Data for Use in GTAP. 1996. core.ac.uk, https://core.ac.uk/display/4947985.
+*</small>
 ---
 
 **1834 : en bleu, les "city/part of" dont des villes espagnoles.**
@@ -129,13 +130,11 @@ Garder la richesse des sources en contextualisant les entités commerçantes :
 ![1865, red reporting, green only partner](./img/1865_after_algo_GPH_status.png)
 
 ---
-
-réseau avec positionnement géographique ?
-
-Notes : Je n'aurai probablement pas le temps de faire ça.
-
+[![GeoPolHist Germany](./img/GPH_germany.png)](https://medialab.github.io/GeoPolHist/#/GeoPolHist/country/255)
 ---
-
+**1834-1860**
+![1834-1860 Trade flows geolocalized](./img/1834_1860_world_trade_flows.png)
+---
 ## Effet du numérique ? 
 
 **L'exploration visuelle comme méthode de recherche**
@@ -155,12 +154,16 @@ Un terrain d'enquête plus qu'un seul moyen de calcul.
 Mise en réseau : facilite publications et usages secondaires.  
 Intérêt plus fort à créer et partager des jeux de données.
 
----
+[RICardo, l'outil en ligne](http://ricardo.medialab.sciences-po.fr)  
+[RICardo, les données](http://github.com/medialab/ricardo_data)  
+[RICardo, le code source](http://github.com/medialab/ricardo)  
 
-<section data-background-image="./img/network_1878.png">
-</section>
 
-Note:
+[GeoPolHist, l'outil en ligne](http://medialab.github.com/GeoPolHist)  
+[GeoPolHist, les données et le code source](http://github.com/medialab/GeoPolHist)  
 
-- asymetric link weight
-- inclusion links
+
+
+<!-- <section data-background-image="./img/network_1878.png">
+</section> -->
+
