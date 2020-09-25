@@ -56,6 +56,10 @@ Modèle de gravité puis exploration visuelle des données
 ## Le type 'Geopolitical entity'
 
 ---
+## Entités 'part of' Spain 1834-35
+![Entities part of Spain 1834-35](./img/Spain_partof_1834-35.PNG)
+
+---
 ## GeoPolHist: political status
 ![GPH status](./img/GPH_status_data_table.png)
 ---
