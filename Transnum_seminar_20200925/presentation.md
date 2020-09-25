@@ -58,7 +58,8 @@ Modèle de gravité puis exploration visuelle des données
 ---
 ## Entités 'part of' Spain 1834-35
 ![Entities part of Spain 1834-35](./img/Spain_partof_1834-35.PNG)
-
+---
+[![GeoPolHist home page](./img/GeoPolHist_home.png)](https://medialab.github.io/GeoPolHist)
 ---
 ## GeoPolHist: political status
 ![GPH status](./img/GPH_status_data_table.png)
@@ -72,15 +73,13 @@ Modèle de gravité puis exploration visuelle des données
 ---
 ## Exploration visuelle du commerce mondial des XX-XIXe siècles
 ---
-## Différentes estimations du commerce mondial
 
-World view total FT / sum partenaires, totaux reported
-
-notes: je vais probablement ne pas montrer ça 
+## L'importance de Reporting / Partner 
 ---
-## Reporting / Partner 
-Italy  
-Partner only Afghanistan
+[![RICardo page reporting France](./img/RICardo_reporting_france.png)](http://ricardo.medialab.sciencespo.fr/#!/reporting/France)
+---
+[![RICardo page partner Afghanistan](./img/RICardo_partner_afghanistan.png)](http://ricardo.medialab.sciencespo.fr/#!/partner/afghanistan)
+
 ---
 ## Exploration des structures commerciales
 
@@ -95,15 +94,17 @@ Partner only Afghanistan
 *Lien : accorder les vues bilatérales*
 - choisir une méthode pour réduire les doublons bilatéraux (GTAP)
 
-*citer papier Lund*
+<small>*Girard, Paul, et Beatrice Dedinger. RICardo World Trade Web, 1834-1938. http://spire.sciencespo.fr/hdl:/2441/6h7io1v56e8k4qtht2cuvjcfa5. Department of economic history research seminar, Lunds universitet, Lund, SE.
+*</small>
 
 ---
 
-illustration : réseau avant algorithmes
+**1834 : en bleu, les "city/part of" dont des villes espagnoles.**
+![UK trade partners in 1834 before aggregation algorithm](./img/1834_UK_partners_before_agg_algo.png)
 
 ---
-
-illustration : réseau après algorithmes
+**1834 : Les villes espagnoles ont été agrégées à l'entité "Spain".**
+![UK trade partners in 1834 after aggregation algorithm](./img/1834_UK_partners_after_agg_algo.png)
 
 ---
 ## 2. Contextualiser
@@ -121,10 +122,11 @@ Garder la richesse des sources en contextualisant les entités commerçantes :
 - prendre en compte la dimension géographique
 
 ---
-Illustration réseaux successifs avec nœuds colorés par :
-
-- reporting / partner
-- GPH status (réduire détail des statut ? expliquer liens politiques )
+**1865 : Vert = Reporting, Rouge = seulement Partner**
+![1865, red reporting, green only partner](./img/1865_after_algo_Reporting_Partner.png)
+---
+**1865 : couleur = GPH status (voir légende)**
+![1865, red reporting, green only partner](./img/1865_after_algo_GPH_status.png)
 
 ---
 
@@ -141,7 +143,8 @@ Notes : Je n'aurai probablement pas le temps de faire ça.
 Un autre rapport aux données.  
 Un terrain d'enquête plus qu'un seul moyen de calcul.  
 
-*citer blog recherche par le visuel site médialab*
+<small>*Arènes, Alexandra, et Paul Girard. « Dialogue sur la visualisation ». Sciences Po médialab, 19 mars 2020, https://medialab.sciencespo.fr/actu/dialogue-sur-la-visualisation/.
+*</small>
 
 ---
 
