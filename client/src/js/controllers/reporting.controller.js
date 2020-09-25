@@ -173,7 +173,7 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         list: $scope.filters,
         getItemId: getListItemId,
       },
-      { name: "heatmapOrder", list: $scope.heatmapOrderList, getItemId: (a) => a.id  },
+      { name: "heatmapOrder", list: $scope.heatmapOrderList, getItemId: (a) => a.id },
       { name: "heatmapField", list: $scope.heatmapFieldList, getItemId: (a) => a.id },
       {
         name: "linechartCurrency",
@@ -228,17 +228,19 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         }),
         apiService.getGeoPolHistData(),
       ]).then(function ([data, gphData]) {
-        var dates = data.flows.filter(d => !/^World/.test(d.partner_id)).map(function (d) {
-          return d.year;
-        });
-        loadCitationComponent($scope)
+        var dates = data.flows
+          .filter((d) => !/^World/.test(d.partner_id))
+          .map(function (d) {
+            return d.year;
+          });
+        loadCitationComponent($scope);
         data.flows = data.flows.filter(function (d) {
           if (d.imp || d.exp !== 0) return d;
         });
         $scope.tableData = data.flows;
 
         $scope.statusesData = gphData;
-        $scope.entityStatusesData = gphData[$scope.entities.sourceEntity.selected.GPH_code]
+        $scope.entityStatusesData = gphData[$scope.entities.sourceEntity.selected.GPH_code];
         if (cfSource.size() > 0) {
           cfSource.year().filterAll();
           cfSource.clear();
@@ -327,14 +329,20 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
 
         // there is something fishy with World flows in the reporting context.
         // Keep them to be used in the detailed curves but discard them from min / max years calculations.
-        $scope.rawMinDate = d3.min(data.flows.filter(d => !/^World/.test(d.partner_id)), function (d) {
+        $scope.rawMinDate = d3.min(
+          data.flows.filter((d) => !/^World/.test(d.partner_id)),
+          function (d) {
             return d.year;
-        });
-        $scope.rawMaxDate = d3.max(data.flows.filter(d => !/^World/.test(d.partner_id)), function (d) {
-          return d.year;
-        });
-        $scope.selectedMinDate=$scope.rawMinDate;
-        $scope.selectedMaxDate=$scope.rawMaxDate;
+          },
+        );
+        $scope.rawMaxDate = d3.max(
+          data.flows.filter((d) => !/^World/.test(d.partner_id)),
+          function (d) {
+            return d.year;
+          },
+        );
+        $scope.selectedMinDate = $scope.rawMinDate;
+        $scope.selectedMaxDate = $scope.rawMaxDate;
         $scope.rawYearsRange = d3.range($scope.rawMinDate, $scope.rawMaxDate + 1);
         $scope.rawYearsRange_forInf = d3.range($scope.rawMinDate, $scope.selectedMaxDate);
         $scope.rawYearsRange_forSup = d3.range($scope.selectedMinDate + 1, $scope.rawMaxDate + 1);
@@ -403,15 +411,18 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         // update local storage
         localStorage.setItem("sourceEntitySelected", newValue);
         // filter GPH data
-        $scope.entityStatusesData = $scope.statusesData[newValue.GPH_code]
+        $scope.entityStatusesData = $scope.statusesData[newValue.GPH_code];
         return $location.url(`/reporting/${newValue.RICid}`);
       }
     });
 
     // heatmap triggers
     $scope.$watchCollection("[heatmapOrder, heatmapField]", function (newValue, oldValue) {
-      [$scope.heatmapData, $scope.opacityRange] = $scope.heatmapDataTransform($scope.heatmapDataSource, newValue[0], newValue[1]);
-    
+      [$scope.heatmapData, $scope.opacityRange] = $scope.heatmapDataTransform(
+        $scope.heatmapDataSource,
+        newValue[0],
+        newValue[1],
+      );
     });
 
     /*
@@ -553,12 +564,11 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
      * Partners histo triggers functions and init function partner Histo
      */
     function initPartnerHisto(data) {
-
       $scope.heatmapOrderList = [
         { id: "average", label: "AVERAGE_SHARE" },
         { id: "nb_years", label: "NUMBER_YEARS" },
         { id: "name", label: "NAME" },
-        { id: "first_year", label: "FIRST_YEAR" }
+        { id: "first_year", label: "FIRST_YEAR" },
       ];
       $scope.heatmapOrder = $scope.heatmapOrderList[0];
       $scope.heatmapFieldList = [
@@ -566,15 +576,15 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         { id: "imp", label: "Import" },
         { id: "exp", label: "Export" },
       ];
-      $scope.heatmapField = $scope.heatmapFieldList[0]
+      $scope.heatmapField = $scope.heatmapFieldList[0];
 
       if (!$scope.tableData) return;
       // filter and copy
       // filter data without world reference
       var data = $scope.tableData.filter(function (p) {
         return !/^World/.test(p.partner_id);
-      });;
-     
+      });
+
       var indexYears = buildIndexYears(data);
       $scope.indexYears = indexYears;
 
@@ -585,7 +595,7 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         .nest()
         // group flows by partner
         .key(function (d) {
-          return d.partner_name
+          return d.partner_name;
         })
         // group flows by year
         .key(function (d) {
@@ -596,7 +606,11 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         .entries(data);
       partners = reportingService.valuesToPartners(partners, indexYears);
       $scope.heatmapDataSource = partners;
-      [$scope.heatmapData, $scope.opacityRange] = $scope.heatmapDataTransform($scope.heatmapDataSource, $scope.heatmapOrder, $scope.heatmapFieldList);
+      [$scope.heatmapData, $scope.opacityRange] = $scope.heatmapDataTransform(
+        $scope.heatmapDataSource,
+        $scope.heatmapOrder,
+        $scope.heatmapFieldList,
+      );
       $scope.heatmapShowAll = false;
       $scope.heatmapShowAllToggle = function () {
         $scope.heatmapShowAll = !$scope.heatmapShowAll;
@@ -604,18 +618,17 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
     }
 
     /**
-   * Given the data computed and the order + field ,
-   * this function transform it to valid format for the heatmap directive.
-   */
+     * Given the data computed and the order + field ,
+     * this function transform it to valid format for the heatmap directive.
+     */
     $scope.heatmapDataTransform = function (data, order, field) {
-      let maxValue = 0; 
+      let maxValue = 0;
       if (data && order && field) {
         // Make the transfo for the field
         const result = data.map((partner) => {
           const partnerData = Object.keys(partner.data).reduce((acc, year) => {
-            if (maxValue < partner.data[year][field.id])
-              maxValue = partner.data[year][field.id]
-            return Object.assign(acc, {[year]: partner.data[year][field.id] || 0})
+            if (maxValue < partner.data[year][field.id]) maxValue = partner.data[year][field.id];
+            return Object.assign(acc, { [year]: partner.data[year][field.id] || 0 });
           }, {});
           return {
             id: partner.key,
@@ -635,7 +648,6 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
           };
         });
 
-        
         // Make the order
         let getValueForOrdering = (a) => a.label.toUpperCase();
         switch (order.id) {
@@ -652,9 +664,8 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         result.sort((a, b) => (getValueForOrdering(a) < getValueForOrdering(b) ? -1 : 1));
         return [result, [0, maxValue]];
       }
-      else 
-        // return empty dataset
-        return [[], [0, 100]];
+      // return empty dataset
+      else return [[], [0, 100]];
     };
 
     /*
@@ -923,7 +934,8 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
       $scope.citationData = null;
       $scope.$watch("tableData", function (newVal, oldVal) {
         if (newVal) {
-          let dataAsMap = newVal.filter(f => f.continent !== 'World' && f.total)
+          let dataAsMap = newVal
+            .filter((f) => f.continent !== "World" && f.total)
             .map((flow) => {
               return { year: flow.year, nbPartner: 1 };
             })
@@ -936,7 +948,13 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
           });
         }
       });
+      $scope.citationTooltipFunction = function (data) {
+        return `
+          <h3>${$scope.entities.sourceEntity.selected.RICname} - ${data.year}</h3>
+          <ul>
+            <li><strong>Number of reference :</strong> ${data.nbEntities}</li>
+          </ul>`;
+      };
     }
   },
 ]);
-

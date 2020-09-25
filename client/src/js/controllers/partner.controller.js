@@ -38,8 +38,9 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
       id: ricEntry.RICid,
       label: ricEntry.RICname,
       type: ricEntry.type,
-      GPH_code: ricEntry.GPH_code
+      GPH_code: ricEntry.GPH_code,
     }));
+
     // A dictionary of partner labels, indexed by IDs:
     $scope.partnersDict = $scope.partnersList.reduce((iter, partner) => ({ ...iter, [partner.id]: partner }), {});
 
@@ -66,7 +67,7 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
     $scope.selectPartner = (partner) => {
       $scope.partner = partner;
       $scope.updateQueryParams();
-      $scope.partnerGPHStatus = $scope.gphData[$scope.partnersDict[partner].GPH_code]
+      $scope.partnerGPHStatus = $scope.gphData[$scope.partnersDict[partner].GPH_code];
       apiService
         .getFlows({
           partner_ids: $scope.partner,
@@ -319,10 +320,18 @@ function loadTableComponent($scope, TABLE_HEADERS) {
  * Load & manage the citation component.
  */
 function loadCitationComponent($scope) {
+  $scope.citationTooltipFunction = function (data) {
+    return `
+      <h3>${$scope.partner} - ${data.year}</h3>
+      <ul>
+        <li><strong>Number of reference :</strong> ${data.nbEntities}</li>
+      </ul>`;
+  };
   $scope.citationData = null;
   $scope.$watch("flows", function (newVal, oldVal) {
     if (newVal) {
-      let dataAsMap = newVal.filter(flow => flow.total)
+      let dataAsMap = newVal
+        .filter((flow) => flow.total)
         .map((flow) => {
           return { year: flow.year, nbEntities: 1 };
         })

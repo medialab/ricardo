@@ -138,6 +138,14 @@ angular.module("ricardo.controllers.world", []).controller("world", [
     ];
     $scope.linechartFlow = $scope.linechartFlowChoices[0];
 
+    $scope.nbReportingTooltip = function (data) {
+      return `
+        <h3>${data.year}</h3>
+        <ul>
+          <li><strong>Number of entities :</strong> ${data.nb_reporting}</li>
+        </ul>`;
+    };
+
     initParams($route, $scope, [
       {
         name: "multichartLayout",

@@ -12,7 +12,7 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-12 well">
-      <h4>
+      <h4 class="flex-title">
         {{'METADATA_TITLE' | translate}}
         <div class="inline-select">
           <ui-select ng-model="partner" theme="bootstrap" ng-change="changePartner(partner)">
@@ -69,7 +69,7 @@
       <p class="paragraphPage">
         {{ 'METADATA_MATRIX_INTRO' | translate }}
       </p>
-      <h4>
+      <h4 class="flex-title">
         {{ 'METADATA_MATRIX_CTL1' | translate }}
         <inline-select-ctrl ng-model="matrixLayout" list="matrixLayoutChoices"></inline-select-ctrl>
         {{ 'METADATA_MATRIX_CTL2' | translate }}

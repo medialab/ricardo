@@ -716,7 +716,7 @@ h2.title-border {
   left: 0;
   content: "";
   width: 4em;
-  height: 2px;
+  height: 4px;
   background-color: #e2ac13;
 }
 
@@ -913,11 +913,6 @@ div.inline-select {
   vertical-align: bottom;
 }
 
-h1 span.ui-select-match-text {
-  font-size: 2em;
-  margin-top: -13px;
-}
-
 div.inline-select.pull-right {
   margin-left: auto;
 }
@@ -933,7 +928,6 @@ div.inline-select .form-control {
   color: #e2ac13;
   background-color: #fafafa;
   border-bottom: 1px solid #e2ac13;
-  font-size: 16px;
   font-weight: 400;
   width: 100% !important;
 }
@@ -963,6 +957,17 @@ div.inline-select div.ui-select-match .text-muted {
 
 div.inline-select div.ui-select-match .ui-select-match-text {
   font-weight: 600;
+}
+
+div.inline-select div.ui-select-match .btn {
+  font-size: inherit;
+  height: auto;
+}
+
+div.inline-select div.ui-select-match.btn-default-focus {
+  text-decoration: inherit;
+  outline-offset: 0;
+  border-bottom: inherit;
 }
 /* END INLINE SELECT */
 
@@ -996,8 +1001,6 @@ div.inline-select div.ui-select-match .ui-select-match-text {
 h4 {
   margin-bottom: 0;
   padding-bottom: 5px;
-  display: flex;
-  align-items: center;
 }
 
 .axis path,
@@ -1766,7 +1769,7 @@ h4.titleMultiLine > div {
   max-height: inherit;
 }
 
-.heatmap-tooltip,
+.dataviz-tooltip,
 .politicalstatus-tooltip {
   position: fixed;
   visibility: hidden;
@@ -1778,7 +1781,7 @@ h4.titleMultiLine > div {
   border-radius: 5px;
 }
 
-.heatmap-tooltip h3 {
+.dataviz-tooltip h3 {
   color: #ddd;
   font-weight: bold;
   margin: 3px 5px;
@@ -1786,13 +1789,13 @@ h4.titleMultiLine > div {
   text-align: center;
 }
 
-.heatmap-tooltip ul {
+.dataviz-tooltip ul {
   list-style-type: none;
   margin: 5px 0;
   padding: 0;
 }
 
-.heatmap-tooltip span {
+.dataviz-tooltip span {
   font-style: italic;
   font-size: 10px;
   text-align: center;
@@ -1813,4 +1816,34 @@ h4.titleMultiLine > div {
 .hightlight-inline-variable {
   color: #e2ac13;
   font-weight: 600;
+}
+
+.flex-title {
+  display: flex;
+  align-items: center;
+}
+
+.square {
+  width: 10px;
+  height: 10px;
+}
+
+div.legend ul {
+  padding-left: 0;
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+}
+div.legend ul li {
+  margin-right: 10px;
+}
+
+div.legend > ul {
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+div.legend > ul > li {
+  margin-bottom: 5px;
 }

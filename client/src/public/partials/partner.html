@@ -1,16 +1,8 @@
 <div class="container container-page">
   <div class="row">
     <div class="col-sm-12">
-      <h1 class="title-border">{{ 'PARTNER_INTRO_TITLE' | translate }}</h1>
-      <p>{{ 'PARTNER_INTRO_PARA' | translate }}</p>
-    </div>
-  </div>
-</div>
-<div class="container">
-  <div class="row timeline-cont">
-    <div class="col-sm-12 well">
-      <h4 class="titleDualTL">
-        {{ 'PARTNER_TITLE_1' | translate }}
+      <h1 class="title-border flex-title">
+        {{ 'PARTNER_INTRO_TITLE' | translate }}
         <div class="inline-select">
           <ui-select ng-model="partner" theme="bootstrap" ng-change="selectPartner(partner)">
             <ui-select-match class="ui-select-match" placeholder="{{ 'SELECT_PARTNER' | translate }}">
@@ -58,7 +50,8 @@
             </ui-select-choices>
           </ui-select>
         </div>
-      </h4>
+      </h1>
+      <p>{{ 'PARTNER_INTRO_PARA' | translate }}</p>
     </div>
   </div>
 </div>
@@ -66,10 +59,13 @@
   <div class="row">
     <div class="col-sm-12 well">
       <h4>
-        {{'POLITICAL_STATUSES_TITLE' | translate}}&nbsp;<a
+        {{'POLITICAL_STATUSES_TITLE' | translate}}
+        <a
           href="https://medialab.github.io/GeoPolHist/{{partnersDict[partner].GPH_code ? '#/country/' + partnersDict[partner].GPH_code :''}}"
-          >GeoPolHist</a
-        >&nbsp;{{partnersDict[partner].label}}
+        >
+          GeoPolHist
+        </a>
+        {{partnersDict[partner].label}}
       </h4>
       <p ng-if="partnersDict[partner].GPH_code" class="paragraphViz">{{'POLITICAL_STATUSES_INTRO' | translate}}</p>
       <p ng-if="!partnersDict[partner].GPH_code" class="paragraphViz">{{'POLITICAL_STATUSES_MISSING' | translate}}</p>
@@ -119,6 +115,7 @@
           end-date="selectedMaxDate"
           raw-start-date="minDate"
           raw-end-date="maxDate"
+          tooltip-function="citationTooltipFunction"
         ></bar-chart>
       </div>
     </div>
@@ -130,7 +127,7 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-12 well">
-      <h4 class="titleMultiLine">
+      <h4 class="titleMultiLine flex-title">
         <div>
           {{'PARTNER_REPORTER_HEATMAP_TITLE_1' | translate}} {{partnersDict[partner].label}}
           {{'PARTNER_REPORTER_HEATMAP_TITLE_2' | translate}} {{'PARTNER_REPORTER_HEATMAP_TITLE_ORDER' | translate}}
@@ -156,8 +153,8 @@
                 class="ui-select-match"
                 placeholder="{{ 'PARTNER_HEATMAP_FIELD_PLACEHOLDER' | translate }}"
               >
-                {{$select.selected.label}}
-              </ui-select-match>
+                {{$select.selected.label}} </ui-select-match
+              >PARTNER_HEATMAP_LEGEND_PERCENTIL_3
               <ui-select-choices class="ui-select-choices" repeat="item in heatmapFieldList | filter: $select.search">
                 <div ng-bind-html="item.label | highlight: $select.search"></div>
               </ui-select-choices>
@@ -165,9 +162,42 @@
           </div>
         </div>
       </h4>
+      <div class="legend">
+        <ul>
+          <li>
+            <span class="square" style="background-color: #494949; opacity: 0.2;" />
+            <span class="square" style="background-color: #494949; opacity: 0.5;" />
+            <span class="square" style="background-color: #494949; opacity: 0.8;" />
+            {{'PARTNER_HEATMAP_LEGEND_FADEIN' | translate}}
+          </li>
+          <li>
+            {{'PARTNER_HEATMAP_LEGEND_PERCENTIL' | translate}}
+            <ul>
+              <li>
+                <span class="square" style="background-color: #f90202;" />
+                {{'PARTNER_HEATMAP_LEGEND_PERCENTIL_1' | translate}}
+              </li>
+              <li>
+                <span class="square" style="background-color: #f46a00;" />
+                {{'PARTNER_HEATMAP_LEGEND_PERCENTIL_2' | translate}}
+              </li>
+              <li>
+                <span class="square" style="background-color: #f9b702;" />
+                {{'PARTNER_HEATMAP_LEGEND_PERCENTIL_3' | translate}}
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
       <div>
         <div>
-          <heatmap class="dataviz" data="{}" start-date="minDate" end-date="maxDate" legend="'top'"></heatmap>
+          <heatmap
+            class="dataviz"
+            data="{}"
+            start-date="selectedMinDate"
+            end-date="selectedMaxDate"
+            legend="'top'"
+          ></heatmap>
         </div>
         <div class="heatmaps" ng-class="{'show':heatmapShowAll}">
           <div class="heatmap" ng-repeat="reporter in heatmapData">
@@ -175,8 +205,8 @@
             <heatmap
               class="dataviz"
               data="reporter.data"
-              start-date="minDate"
-              end-date="maxDate"
+              start-date="selectedMinDate"
+              end-date="selectedMaxDate"
               legend="heatmapLegend"
               color="reporter.color"
               opacity="heatmapOpacity"
@@ -201,7 +231,7 @@
   <div class="row">
     <div class="col-sm-12 well">
       <!-- Title with form -->
-      <h4 class="titleMultiLine">
+      <h4 class="titleMultiLine flex-title">
         <div>
           {{ 'LINE_CHART_1' | translate }} {{partnersDict[partner].label}} {{ 'LINE_CHART_2' | translate }}
           <div class="inline-select">

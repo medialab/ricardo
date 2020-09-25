@@ -64,7 +64,7 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
           flushDOM(domRoot);
 
           // Initialize commons (d3 scales, ...):
-          const YAxisWidth = 35
+          const YAxisWidth = 35;
           const padding = Math.max(Math.ceil(STROKE_WIDTH / 2), POINT_RADIUS);
           const xScale = d3.scale
             .linear()
@@ -76,11 +76,9 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
             .scale(xScale)
             .orient("bottom")
             .tickFormat((d) => d.toString());
-          
-          
+
           // Draw actual curves
           for (const currency in data.rates) {
-            
             const curve = getCurve(currency, refCurrency, data.rates[currency], dict, {
               xAxis,
               xScale,
@@ -154,39 +152,35 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
           let minValue = Infinity;
           let maxValue = -Infinity;
           let lastYear = false;
-         
+
           connectedPoints.push([]);
           const years = Object.keys(rates).sort();
           years.forEach((year) => {
             minValue = Math.min(minValue, rates[year]);
             maxValue = Math.max(maxValue, rates[year]);
             const point = [+year, rates[year]];
-           
-            if (!lastYear || lastYear === +year-1){
+
+            if (!lastYear || lastYear === +year - 1) {
               connectedPoints.slice(-1)[0].push(point);
-            }
-            else {
+            } else {
               // break the curve
-              connectedPoints.push([point])
+              connectedPoints.push([point]);
             }
-            lastYear = +year
+            lastYear = +year;
           });
           yScale.domain([maxValue, minValue]);
           // use min max values to use as ticks since we don't use the 0 as reference
           const yAxis = d3.svg
-          .axis()
-          .scale(yScale)
-          .orient("left")
-          .tickValues(minValue !== maxValue ? [minValue, maxValue] : [maxValue])
-          .tickFormat( (n) => { 
-            if (n > 99)
-              return d3.format(".3s")(n)
-            if (n % 1 === 0)
-              return d3.format()(n)
-            else
-              return d3.format(".2f")(n)
+            .axis()
+            .scale(yScale)
+            .orient("left")
+            .tickValues(minValue !== maxValue ? [minValue, maxValue] : [maxValue])
+            .tickFormat((n) => {
+              if (n > 99) return d3.format(".3s")(n);
+              if (n % 1 === 0) return d3.format()(n);
+              else return d3.format(".2f")(n);
             })
-          .tickSize(width - YAxisWidth);
+            .tickSize(width - YAxisWidth);
 
           // Initialize SVG:
           const svg = d3
@@ -195,11 +189,11 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
             .attr("width", width)
             .attr("height", height + XAXIS_HEIGHT)
             .attr("viewBox", `0 0 ${width} ${height + XAXIS_HEIGHT}`);
-         
+
           const pointsGroup = d3.select(curveWrapper).append("div").attr("class", "points-group");
 
           // Draw curve:
-          connectedPoints.forEach(points => {
+          connectedPoints.forEach((points) => {
             const path = svg
               .append("path")
               .attr("class", "curve-path")
@@ -211,7 +205,7 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
                 .line()
                 .x((d) => xScale(d[0]))
                 .y((d) => yScale(d[1]))(points),
-            )
+            );
           });
 
           // Draw legend:
@@ -221,9 +215,7 @@ angular.module("ricardo.directives.exchangeRateCurves", []).directive("exchangeR
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis);
           svg.append("g").attr("class", "y axis").attr("transform", `translate(${width},0)`).call(yAxis);
-          svg.selectAll(".tick line")
-          .attr("stroke-opacity", 0.5)
-          .attr("stroke-dasharray", "2,2")
+          svg.selectAll(".tick line").attr("stroke-opacity", 0.5).attr("stroke-dasharray", "2,2");
           // Draw points:
           pointsGroup
             .selectAll("div")

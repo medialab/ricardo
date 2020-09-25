@@ -347,14 +347,14 @@ angular
               /*
                * Add date
                */
-              var date_anchor =  function(d) { 
+              var date_anchor = function (d) {
                 var xPos = d3.select(this).node().getBBox().x;
                 var tWidth = d3.select(this).node().getBBox().width;
                 console.log(xPos, tWidth);
                 if (xPos - tWidth / 2 < 0) return "start";
                 else if (xPos + tWidth / 2 > width) return "end";
                 else return "middle";
-              }
+              };
               // this date will be hidden by a rect later...
               var text = svg
                 .append("text")
