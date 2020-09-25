@@ -132,8 +132,7 @@ Garder la richesse des sources en contextualisant les entités commerçantes :
 ---
 [![GeoPolHist Germany](./img/GPH_germany.png)](https://medialab.github.io/GeoPolHist/#/GeoPolHist/country/255)
 ---
-**1834-1860**
-![1834-1860 Trade flows geolocalized](./img/1834_1860_world_trade_flows.png)
+![1865 Trade flows geolocalized](./img/RICardo_1865_arabesque.png)<!-- .element: style="margin-top:-50px" -->
 ---
 ## Effet du numérique ? 
 
