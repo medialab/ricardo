@@ -387,6 +387,8 @@ function loadReportingHeatMapComponent($scope) {
    * this function transform it to valid format for the heatmap directive.
    */
   $scope.heatmapDataTransform = function (data, order, field) {
+    var format = d3.format("0,000");
+
     let result = angular.copy(data);
     if (data && order && field) {
       // Make the transfo for the field
@@ -406,9 +408,9 @@ function loadReportingHeatMapComponent($scope) {
             return `
               <h3>${reporter.label} - ${data.year}</h3>
               <ul>
-                <li><strong>Total :</strong> ${Math.round(reporter.data[data.year].total)}</li>
-                <li><strong>Import :</strong> ${Math.round(reporter.data[data.year].imp)} </li>
-                <li><strong>Export :</strong> ${Math.round(reporter.data[data.year].exp)}</li>
+                <li><strong>Total :</strong> ${format(Math.round(reporter.data[data.year].total)) + "£"}</li>
+                <li><strong>Import :</strong> ${format(Math.round(reporter.data[data.year].imp)) + "£"} </li>
+                <li><strong>Export :</strong> ${format(Math.round(reporter.data[data.year].exp)) + "£"}</li>
               </ul>
               <span>Values are in <strong>${reporter.data[data.year].currency}</strong></span>`;
           },

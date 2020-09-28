@@ -844,6 +844,9 @@ article.item {
 /*
  * Text presentation and definition
  */
+.pageIntroduction {
+  font-size: 18px;
+}
 
 .paragraphPage {
   width: 66%;
