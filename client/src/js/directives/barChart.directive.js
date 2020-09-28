@@ -41,7 +41,7 @@ angular
           var y = d3.scale.linear().range([height, 0]);
 
           var xAxis = d3.svg.axis().scale(x).orient("bottom");
-          var yAxis = d3.svg.axis().scale(y).orient("right").ticks(4).tickSize(0);
+          var yAxis = d3.svg.axis().scale(y).orient("right").ticks(2).tickSize(width);
 
           function customAxis(g) {
             g.selectAll("text").attr("x", 4).attr("dy", -4).attr("font-size", "0.85em");
@@ -78,8 +78,6 @@ angular
                 .attr("transform", "translate(0," + height + ")")
                 .call(xAxis);
 
-              svg.append("g").attr("class", "y axis").call(yAxis).call(customAxis);
-
               svg
                 .selectAll(".bar")
                 .data(data)
@@ -107,27 +105,7 @@ angular
                   tooltip.style("left", d3.event.x + 10 + "px").style("top", d3.event.y + 10 + "px");
                 });
 
-              /* 50 line */
-              svg
-                .append("line")
-                .attr("class", "line50")
-                .attr("x1", 0)
-                .attr("y1", y(50))
-                .attr("x2", width)
-                .attr("y2", y(50))
-                .attr("stroke-width", 1)
-                .attr("stroke", "grey");
-
-              /* 100 line */
-              svg
-                .append("line")
-                .attr("class", "line100")
-                .attr("x1", 0)
-                .attr("y1", y(100))
-                .attr("x2", width)
-                .attr("y2", y(100))
-                .attr("stroke-width", 1)
-                .attr("stroke", "grey");
+              svg.append("g").attr("class", "y axis").call(yAxis).call(customAxis);
             } else {
               svg
                 .selectAll(".bar")
