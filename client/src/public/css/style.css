@@ -857,16 +857,7 @@ article.item {
 }
 
 .paragraphViz {
-  width: 66%;
-  font-size: 11px;
   margin-top: 15px;
-}
-
-.paragraphViz ul li,
-.paragraphViz ul,
-.paragraphViz li {
-  width: 66%;
-  font-size: 11px;
 }
 
 /*

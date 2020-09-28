@@ -62,13 +62,13 @@
           GeoPolHist
         </a>
       </h4>
-      <p ng-if="entities.sourceEntity.selected.GPH_code" class="paragraphViz">
-        {{'POLITICAL_STATUSES_INTRO' | translate}}
+      <p ng-if="entities.sourceEntity.selected.GPH_code && entityStatusesData" class="paragraphViz">
+        {{'POLITICAL_STATUSES_INTRO' | translate}}<br />{{'POLITICAL_STATUSES_INTRO_2' | translate}}
       </p>
-      <p ng-if="!entities.sourceEntity.selected.GPH_code" class="paragraphViz">
+      <p ng-if="!entities.sourceEntity.selected.GPH_code || !entityStatusesData" class="paragraphViz">
         {{'POLITICAL_STATUSES_MISSING' | translate}}
       </p>
-      <div ng-if="entities.sourceEntity.selected.GPH_code">
+      <div ng-if="entities.sourceEntity.selected.GPH_code && entityStatusesData">
         <political-statuses
           class="dataviz"
           data="entityStatusesData"
@@ -157,6 +157,10 @@
         {{'REPORTING_PARTNER_CITATION_TITLE' | translate}}
         <span class="hightlight-inline-variable">{{entities.sourceEntity.selected.RICname}}</span>
       </h4>
+      <p class="paragraphViz">
+        {{ 'REPORTING_PARTNER_CITATION' | translate }} <i><a href="#/glossary#worldTrade">World Sum Of Partners</a></i
+        >.
+      </p>
       <div>
         <bar-chart
           class="dataviz"
@@ -212,6 +216,10 @@
           </div>
         </div>
       </h4>
+      <p class="paragraphViz">
+        {{ 'REPORTING_PARTNER_HEATMAP_1' | translate }} <br />
+        {{ 'REPORTING_PARTNER_HEATMAP_2' | translate }}
+      </p>
       <div class="partnersHistoLegend">
         <div class="legend-item">
           <svg height="15" width="500">
@@ -219,7 +227,7 @@
             <rect x="12" y="0" width="10" height="10" style="fill: #f90202; opacity: 0.5;" />
             <rect x="24" y="0" width="10" height="10" style="fill: #f90202; opacity: 0.8;" />
             <text x="40" y="9" fill="black">
-              {{ 'PARTNER_HEATMAP_COLOR' | translate }}
+              {{ 'PARTNER_HEATMAP_LEGEND_FADEIN' | translate }}
             </text>
           </svg>
         </div>
@@ -250,7 +258,7 @@
             ></heatmap>
           </div>
         </div>
-        <div class="show-more">
+        <div ng-if="heatmapData.length > 11" class="show-more">
           <a ng-click="heatmapShowAllToggle()">
             <span ng-if="!heatmapShowAll">{{'SHOW' | translate}}</span>
             <span ng-if="heatmapShowAll">{{'HIDE' | translate}}</span>
