@@ -417,11 +417,16 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
     });
 
     // heatmap triggers
-    $scope.$watchCollection("[heatmapOrder, heatmapField]", function (newValue, oldValue) {
+    $scope.$watchCollection("[heatmapOrder, heatmapField, selectedMinDate, selectedMaxDate]", function (
+      newValue,
+      oldValue,
+    ) {
       [$scope.heatmapData, $scope.opacityRange] = $scope.heatmapDataTransform(
         $scope.heatmapDataSource,
         newValue[0],
         newValue[1],
+        $scope.selectedMinDate,
+        $scope.selectedMaxDate,
       );
     });
 
@@ -610,6 +615,8 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         $scope.heatmapDataSource,
         $scope.heatmapOrder,
         $scope.heatmapFieldList,
+        $scope.selectedMinDate,
+        $scope.selectedMaxDate,
       );
       $scope.heatmapShowAll = false;
       $scope.heatmapShowAllToggle = function () {
@@ -621,22 +628,26 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
      * Given the data computed and the order + field ,
      * this function transform it to valid format for the heatmap directive.
      */
-    $scope.heatmapDataTransform = function (data, order, field) {
+    $scope.heatmapDataTransform = function (data, order, field, minYear, maxYear) {
       let maxValue = 0;
       if (data && order && field) {
         // Make the transfo for the field
-        const result = data.map((partner) => {
-          const partnerData = Object.keys(partner.data).reduce((acc, year) => {
-            if (maxValue < partner.data[year][field.id]) maxValue = partner.data[year][field.id];
-            return Object.assign(acc, { [year]: partner.data[year][field.id] || 0 });
-          }, {});
-          return {
-            id: partner.key,
-            label: partner.label,
-            average: partner.average[field.id], // used for the order
-            data: partnerData,
-            tooltip: (data, min, max) => {
-              return `
+        console.log(minYear, maxYear, data);
+        const result = data
+          .map((partner) => {
+            const partnerData = Object.keys(partner.data)
+              .filter((y) => minYear <= +y && +y <= maxYear - 1) // -1 is here because the last year is not visible
+              .reduce((acc, year) => {
+                if (maxValue < partner.data[year][field.id]) maxValue = partner.data[year][field.id];
+                return Object.assign(acc, { [year]: partner.data[year][field.id] || 0 });
+              }, {});
+            return {
+              id: partner.key,
+              label: partner.label,
+              average: partner.average[field.id], // used for the order
+              data: partnerData,
+              tooltip: (data, min, max) => {
+                return `
                 <h3>${partner.label} - ${data.year}</h3>
                 <ul>
                   <li><strong>Total :</strong> ${Math.round(partner.data[data.year].total)}%</li>
@@ -644,10 +655,11 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
                   <li><strong>Export :</strong> ${Math.round(partner.data[data.year].exp)}%</li>
                 </ul>
                 <span>Values are in <strong>${partner.data[data.year].currency}</strong></span>`;
-            },
-          };
-        });
-
+              },
+            };
+          })
+          .filter((d) => Object.keys(d.data).length > 0);
+        console.log(result);
         // Make the order
         let getValueForOrdering = (a) => a.label.toUpperCase();
         switch (order.id) {
@@ -952,7 +964,7 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         return `
           <h3>${$scope.entities.sourceEntity.selected.RICname} - ${data.year}</h3>
           <ul>
-            <li><strong>Number of reference :</strong> ${data.nbEntities}</li>
+            <li><strong>Number of partners:</strong> ${data.nbEntities}</li>
           </ul>`;
       };
     }
