@@ -37,7 +37,7 @@ const database = new sqlite3.Database(`./data/${conf.RICardo_data}`);
 // get FedericoTena index
 database.all(
   `SELECT year, group_concat(reporting, ';|;') as reportings
-  FROM (SELECT year, reporting from flow_aggregated WHERE partner = "World Federico Tena" group by year, reporting)
+  FROM (SELECT year, reporting from ${conf.flow_table} WHERE partner = "World Federico Tena" group by year, reporting)
   GROUP BY year;`,
   (err, rows) => {
     const entitiesInFedericoTenaByYear = keyBy(
@@ -67,7 +67,6 @@ database.all(
               }
             });
           });
-          console.log(NETWORK_DIR);
           // list all files in the directory
           const files = fs.readdirSync(NETWORK_DIR);
           const networkProps = files

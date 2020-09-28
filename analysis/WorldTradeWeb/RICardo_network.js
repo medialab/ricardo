@@ -40,7 +40,7 @@ const computeGraph = (args, done) => {
   // }exports
 
   DB.get().all(
-    `SELECT * FROM flow_aggregated
+    `SELECT * FROM ${conf.flow_table}
     WHERE
       flow is not null and rate is not null AND
       year = ${year} AND
@@ -75,14 +75,25 @@ const computeGraph = (args, done) => {
               label: r.reporting,
               continent: r.reporting_continent,
               reporting: 1,
-              GPH_code: r.reporting_GPH_code,
             });
+            if (r.reporting_GPH_code)
+              graph.setNodeAttribute(
+                r.reporting_slug,
+                "GPH_code",
+                r.reporting_GPH_code
+              );
             graph.mergeNode(r.partner_slug, {
               type: r.partner_type,
               label: r.partner,
               continent: r.partner_continent,
-              GPH_code: r.partner_GPH_code,
             });
+
+            if (r.partner_GPH_code)
+              graph.setNodeAttribute(
+                r.partner_slug,
+                "GPH_code",
+                r.partner_GPH_code
+              );
             let source = r.reporting_slug;
             let target = r.partner_slug;
             // swap
@@ -320,7 +331,7 @@ const computeGraph = (args, done) => {
               geoloc_RICentities.hasOwnProperty(source) &&
               geoloc_RICentities.hasOwnProperty(target)
             )
-              sageocsv += `${source},${target},${graph.getEdgeAttribute(
+              sageocsv += `"${source}","${target}",${graph.getEdgeAttribute(
                 edge,
                 "weight"
               )},${year},${periode(year)}\n`;
@@ -339,6 +350,7 @@ const computeGraph = (args, done) => {
           gexf.write(spacializedGraph),
           "utf8"
         );
+        console.log(`wrote ./data/networks/${year}.gexf`);
       }
       done(null, metrics);
     }

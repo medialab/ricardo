@@ -1,5 +1,6 @@
 {
   "RICardo_data": "RICardo_viz.sqlite",
+  "flow_table": "flow_aggregated",
   "startDate": 1833,
   "endDate": 1938,
   "writeGexf": true,
