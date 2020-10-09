@@ -632,7 +632,6 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
       let maxValue = 0;
       if (data && order && field) {
         // Make the transfo for the field
-        console.log(minYear, maxYear, data);
         const result = data
           .map((partner) => {
             const partnerData = Object.keys(partner.data)
@@ -659,7 +658,7 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
             };
           })
           .filter((d) => Object.keys(d.data).length > 0);
-        console.log(result);
+
         // Make the order
         let getValueForOrdering = (a) => a.label.toUpperCase();
         switch (order.id) {
