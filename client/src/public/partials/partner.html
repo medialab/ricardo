@@ -227,7 +227,7 @@
             ></heatmap>
           </div>
         </div>
-        <div class="show-more">
+        <div ng-if="heatmapData.length > 11" class="show-more">
           <a ng-click="heatmapShowAllToggle()">
             <span ng-if="!heatmapShowAll">{{'SHOW' | translate}}</span>
             <span ng-if="heatmapShowAll">{{'HIDE' | translate}}</span>

@@ -358,7 +358,7 @@ function loadReportingHeatMapComponent($scope) {
   $scope.heatmapLegend = false;
   $scope.heatmapOpacity = true;
   $scope.heatmapOrderList = ["Name", "First year", "Number of years", "Average trade volume"];
-  $scope.heatmapOrder = $scope.heatmapOrderList[0];
+  $scope.heatmapOrder = $scope.heatmapOrderList[3];
   $scope.heatmapFieldList = [
     { id: "total", label: "Total" },
     { id: "imp", label: "Import" },
@@ -386,26 +386,25 @@ function loadReportingHeatMapComponent($scope) {
    * Given the data computed and the order + field ,
    * this function transform it to valid format for the heatmap directive.
    */
-  $scope.heatmapDataTransform = function (data, order, field) {
+  $scope.heatmapDataTransform = function (data, order, field, minYear, maxYear) {
     var format = d3.format("0,000");
 
-    let result = angular.copy(data);
+    //let result = angular.copy(data);
     if (data && order && field) {
       // Make the transfo for the field
-      result = result.map((reporter) => {
-        const reporterData = angular.copy(reporter.data);
-        Object.keys(reporterData).forEach((year) => {
-          if (reporterData[year][field.id]) reporterData[year] = reporterData[year][field.id];
-          else reporterData[year] = 0;
-        });
-        return {
-          id: reporter.key,
-          label: reporter.label,
-          color: $scope.heatmapGetColorsViaQuantile(reporter.average, field.id),
-          average: reporter.average[field.id], // used for the order
-          data: reporterData,
-          tooltip: (data, min, max) => {
-            return `
+      const result = data
+        .map((reporter) => {
+          const reporterData = Object.keys(reporter.data)
+            .filter((y) => minYear <= +y && +y <= maxYear - 1)
+            .reduce((o, year) => ({ ...o, [year]: reporter.data[year][field.id] || 0 }), {});
+          return {
+            id: reporter.key,
+            label: reporter.label,
+            color: $scope.heatmapGetColorsViaQuantile(reporter.average, field.id),
+            average: reporter.average[field.id], // used for the order
+            data: reporterData,
+            tooltip: (data, min, max) => {
+              return `
               <h3>${reporter.label} - ${data.year}</h3>
               <ul>
                 <li><strong>Total :</strong> ${format(Math.round(reporter.data[data.year].total)) + "£"}</li>
@@ -413,9 +412,10 @@ function loadReportingHeatMapComponent($scope) {
                 <li><strong>Export :</strong> ${format(Math.round(reporter.data[data.year].exp)) + "£"}</li>
               </ul>
               <span>Values are in <strong>${reporter.data[data.year].currency}</strong></span>`;
-          },
-        };
-      });
+            },
+          };
+        })
+        .filter((d) => Object.keys(d.data).length > 0);
 
       // Make the order
       let getValueForOrdering = (a) => a.label.toUpperCase();
@@ -431,8 +431,9 @@ function loadReportingHeatMapComponent($scope) {
           break;
       }
       result.sort((a, b) => (getValueForOrdering(a) < getValueForOrdering(b) ? -1 : 1));
+      return result;
     }
-    return result;
+    return [];
   };
 
   $scope.$watch("flows", function (newVal, oldVal) {
@@ -508,11 +509,22 @@ function loadReportingHeatMapComponent($scope) {
         $scope.heatmapDataSource,
         $scope.heatmapOrder,
         $scope.heatmapField,
+        $scope.selectedMinDate,
+        $scope.selectedMaxDate,
       );
     }
   });
 
-  $scope.$watchCollection("[heatmapOrder, heatmapField]", function (newValue, oldValue) {
-    $scope.heatmapData = $scope.heatmapDataTransform($scope.heatmapDataSource, newValue[0], newValue[1]);
+  $scope.$watchCollection("[heatmapOrder, heatmapField, selectedMinDate, selectedMaxDate]", function (
+    newValue,
+    oldValue,
+  ) {
+    $scope.heatmapData = $scope.heatmapDataTransform(
+      $scope.heatmapDataSource,
+      newValue[0],
+      newValue[1],
+      newValue[2],
+      newValue[3],
+    );
   });
 }
