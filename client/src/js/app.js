@@ -203,19 +203,28 @@ angular
           return `/metadata/${DEFAULT_FLOW_TYPE}`;
         },
       });
-      $routeProvider.when("/rates/:currency", {
+      $routeProvider.when("/exchange_rates/:currency", {
         templateUrl: "partials/rates.html",
         controller: "rates",
         reloadOnUrl: false,
         reloadOnSearch: false,
       });
-      $routeProvider.when("/rates", {
+      $routeProvider.when("/exchange_rates", {
         redirectTo: function () {
-          return `/rates/${DEFAULT_CURRENCY}`;
+          return `/exchange_rates/${DEFAULT_CURRENCY}`;
         },
       });
-      $routeProvider.when("/glossary", {
-        templateUrl: "partials/glossary.html",
+      $routeProvider.when("/entities_glossary", {
+        templateUrl: "partials/entities_glossary.html",
+      });
+      $routeProvider.when("/sources_glossary", {
+        templateUrl: "partials/sources_glossary.html",
+      });
+      $routeProvider.when("/trade_glossary", {
+        templateUrl: "partials/trade_glossary.html",
+      });
+      $routeProvider.when("/exchange_rates_glossary", {
+        templateUrl: "partials/exchange_rates_glossary.html",
       });
       $routeProvider.when("/corpus", {
         templateUrl: "partials/corpus.html",

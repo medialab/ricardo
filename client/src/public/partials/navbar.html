@@ -25,7 +25,7 @@
               aria-haspopup="true"
               aria-expanded="false"
             >
-              Views
+              Trade
               <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="48" height="32" viewBox="0 0 48 32">
                 <title>Open dropdown</title>
                 <path
@@ -62,6 +62,32 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dLabel2">
               <li ng-repeat="view in dataViews" ng-class="{ active: isActive('/' + view.slug)}">
+                <a href="#!/{{view.slug}}">{{view.label}}</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <div class="dropdown">
+            <button
+              class="btn btn-link"
+              id="dLabel3"
+              type="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Glossary
+              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="48" height="32" viewBox="0 0 48 32">
+                <title>Open dropdown</title>
+                <path
+                  fill="#e2ac13"
+                  d="M24.116 32c-0.773 0-1.546-0.309-2.164-0.928l-21.333-26.744c-0.928-1.082-0.773-2.783 0.309-3.71s2.783-0.773 3.71 0.464l19.324 24.116 19.324-24.271c0.928-1.082 2.628-1.391 3.71-0.464s1.391 2.628 0.464 3.71l-21.333 26.899c-0.464 0.618-1.237 0.928-2.010 0.928z"
+                ></path>
+              </svg>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dLabel2">
+              <li ng-repeat="view in glossary" ng-class="{ active: isActive('/' + view.slug)}">
                 <a href="#!/{{view.slug}}">{{view.label}}</a>
               </li>
             </ul>

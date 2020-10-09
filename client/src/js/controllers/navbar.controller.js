@@ -12,10 +12,15 @@ angular.module("ricardo.controllers.navbar", []).controller("navbar", [
       { slug: "bilateral", label: "Bilateral" },
     ];
     $scope.dataViews = [
-      { slug: "glossary", label: "Glossary" },
       { slug: "metadata", label: "MetaData" },
-      { slug: "rates", label: "Exchange rates" },
+      { slug: "exchange_rates", label: "Exchange rates" },
       { slug: "corpus", label: "Corpus" },
+    ];
+    $scope.glossary = [
+      { slug: "entities_glossary", label: "Entities" },
+      { slug: "trade_glossary", label: "Trade" },
+      { slug: "sources_glossary", label: "Sources" },
+      { slug: "exchange_rates_glossary", label: "Exchange rates" },
     ];
   },
 ]);
