@@ -1778,6 +1778,7 @@ h4.titleMultiLine > div {
   color: #ddd;
   border: 0;
   border-radius: 5px;
+  z-index: 10;
 }
 
 .dataviz-tooltip h3 {
