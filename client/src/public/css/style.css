@@ -491,8 +491,13 @@ body > .container {
 }
 
 /*
- * Logotype Page About
+ * Page About
  */
+.team b {
+  color: #1c747f;
+  font-weight: 600;
+}
+
 .team-logotype,
 .logotype-anr {
   display: flex;

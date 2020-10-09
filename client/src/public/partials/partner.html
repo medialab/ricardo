@@ -67,7 +67,9 @@
         </a>
         <span class="hightlight-inline-variable">{{partnersDict[partner].label}}</span>
       </h4>
-      <p ng-if="partnersDict[partner].GPH_code" class="paragraphViz">{{'POLITICAL_STATUSES_INTRO' | translate}}</p>
+      <p ng-if="partnersDict[partner].GPH_code" class="paragraphViz">
+        {{'POLITICAL_STATUSES_INTRO_PARTNER' | translate}}
+      </p>
       <p ng-if="!partnersDict[partner].GPH_code" class="paragraphViz">{{'POLITICAL_STATUSES_MISSING' | translate}}</p>
       <div ng-if="partnersDict[partner].GPH_code">
         <political-statuses

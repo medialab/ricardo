@@ -25,7 +25,9 @@
   <div class="row">
     <div class="col-md-8 col-md-offset-2">
       <h2 class="title-border">{{ 'TEAM_INTRO_TITLE' | translate }}</h2>
-      <p>{{ 'TEAM_PARA1' | translate }}<br /><br />{{ 'TEAM_PARA11' | translate }}</p>
+      <p translate="TEAM_PARA1" class="team"></p>
+      <p translate="TEAM_PARA11" class="team"></p>
+      <p translate="TEAM_PARA2" class="team"></p>
     </div>
     <div class="col-md-8 col-md-offset-2">
       <div class="team-logotype">
@@ -72,8 +74,17 @@
     </div>
     <div class="col-md-8 col-md-offset-2">
       <div class="logotype-anr">
-        <img ng-src="img/logotype-anr.png" alt="Logotype SciencePo MEDIALAB" class="pull-left" />
+        <img ng-src="img/logotype-anr.png" alt="Agence Nationale de la Recherche" class="pull-left" />
         <span>{{ 'LOGOTYPE_ANR' | translate }}</span>
+      </div>
+      <div class="logotype-anr">
+        <img
+          ng-src="img/IDF_DEL_DUCA_RVB.jpg"
+          alt="Fondation Del Duca"
+          class="pull-left"
+          style="width: 12em; padding: 0px;"
+        />
+        <span translate="LOGOTYPE_DEL_DUCA"></span>
       </div>
     </div>
   </div>
