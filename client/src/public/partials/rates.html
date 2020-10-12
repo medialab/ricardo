@@ -1,0 +1,71 @@
+<div class="container container-page">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1 class="title-border flex-title">
+        {{ 'RATES_INTRO' | translate }}
+        <div class="inline-select">
+          <ui-select ng-model="currency" theme="bootstrap" ng-change="selectCurrency(currency)">
+            <ui-select-match class="ui-select-match" placeholder="{{ 'SELECT_CURRENCY' | translate }}">
+              {{$select.selected.label}}
+            </ui-select-match>
+            <ui-select-choices
+              class="ui-select-choices"
+              repeat="item.id as item in currenciesList | filter: $select.search"
+            >
+              <div ng-bind-html="item.label | highlight: $select.search"></div>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+      </h1>
+      <p class="pageIntroduction">{{ 'RATES_INTRO_PARA' | translate }}</p>
+    </div>
+  </div>
+</div>
+<!---->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4 class="flex-title">
+        {{ 'RATES_TITLE' | translate }}
+        <span class="hightlight-inline-variable">&nbsp;{{currency}}&nbsp;</span>
+        {{ 'RATES_TITLE_SORTED_BY' | translate }}
+        <div class="inline-select">
+          <ui-select
+            ng-model="sortChoice"
+            theme="bootstrap"
+            ng-change="selectSortChoice(sortChoice)"
+            search-enabled="false"
+          >
+            <ui-select-match class="ui-select-match" placeholder="{{ 'SELECT_RATES_SORT' | translate }}">
+              {{$select.selected.label | translate}}
+            </ui-select-match>
+            <ui-select-choices class="ui-select-choices" repeat="item.id as item in sortChoices">
+              <div ng-bind-html="item.label | translate"></div>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+        <div class="inline-select pull-right">
+          <input
+            class="form-control"
+            ng-style="{ maxWidth: 180 }"
+            type="text"
+            ng-model="currencyFilter"
+            ng-change="setCurrencyFilter(currencyFilter)"
+            placeholder="Filter currencies..."
+          />
+        </div>
+      </h4>
+
+      <div>
+        <exchange-rate-curves
+          ng-if="loaded"
+          ref-currency="currency"
+          currencies-list="filteredCurrenciesList"
+          data="currencyRates"
+          dict="currenciesDict"
+          boundaries="boundaries"
+        />
+      </div>
+    </div>
+  </div>
+</div>

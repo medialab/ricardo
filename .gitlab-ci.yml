@@ -11,12 +11,12 @@ variables:
   DOCKER_TLS_CERTDIR: ""
 
 services:
-    - docker:stable-dind
+  - docker:stable-dind
 
 build_client:
   stage: build
   script:
-    - docker build -t $CLIENT_IMAGE_NAME --build-arg "STATIC_URL=$BASEURL" --build-arg "DATA_VERSION_REF=2017.12.with.FT"  -f ./client/Dockerfile .
+    - docker build -t $CLIENT_IMAGE_NAME --build-arg "STATIC_URL=$BASEURL" --build-arg "DATA_VERSION_REF=2017.12.2"  -f ./client/Dockerfile .
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     - docker push $CLIENT_IMAGE_NAME
   environment:
@@ -30,7 +30,7 @@ build_client:
 build_api:
   stage: build
   script:
-    - docker build -t $API_IMAGE_NAME --build-arg "DATA_VERSION_REF=2017.12.with.FT" api
+    - docker build -t $API_IMAGE_NAME --build-arg "DATA_VERSION_REF=2017.12.2" api
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     - docker push $API_IMAGE_NAME
   environment:
@@ -63,5 +63,5 @@ deploy:
   environment:
     name: $CI_COMMIT_REF_SLUG
   only:
-   - staging
-   - prod
+    - staging
+    - prod

@@ -1,0 +1,357 @@
+<div class="container container-page">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1 class="title-border flex-title">
+        {{ 'PARTNER_INTRO_TITLE' | translate }}
+        <div class="inline-select">
+          <ui-select ng-model="partner" theme="bootstrap" ng-change="selectPartner(partner)">
+            <ui-select-match class="ui-select-match" placeholder="{{ 'SELECT_PARTNER' | translate }}">
+              {{$select.selected.label}}
+            </ui-select-match>
+            <ui-select-choices
+              class="ui-select-choices"
+              repeat="item.id as item in partnersList | filter: $select.search"
+            >
+              <div ng-bind-html="item.label | highlight: $select.search"></div>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+
+        {{ 'FROM' | translate }}
+        <div class="inline-select">
+          <ui-select
+            ng-model="selectedMinDate"
+            theme="bootstrap"
+            ng-change="selectMinDate(selectedMinDate)"
+            ng-disabled="minDateRange.length < 2"
+          >
+            <ui-select-match class="ui-select-match" placeholder="{{ 'SELECT_MIN_YEAR' | translate }}">
+              {{$select.selected}}
+            </ui-select-match>
+            <ui-select-choices class="ui-select-choices" repeat="item in minDateRange | filter: $select.search">
+              <div ng-bind-html="item | highlight: $select.search"></div>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+
+        {{ 'TO' | translate}}
+        <div class="inline-select">
+          <ui-select
+            ng-model="selectedMaxDate"
+            theme="bootstrap"
+            ng-change="selectMaxDate(selectedMaxDate)"
+            ng-disabled="maxDateRange.length < 2"
+          >
+            <ui-select-match class="ui-select-match" placeholder="{{ 'SELECT_MAX_YEAR' | translate }}">
+              {{$select.selected}}
+            </ui-select-match>
+            <ui-select-choices class="ui-select-choices" repeat="item in maxDateRange | filter: $select.search">
+              <div ng-bind-html="item | highlight: $select.search"></div>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+      </h1>
+      <p class="pageIntroduction">{{ 'PARTNER_INTRO_PARA' | translate }}</p>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4>
+        {{'POLITICAL_STATUSES_TITLE' | translate}}
+        <a
+          href="https://medialab.github.io/GeoPolHist/{{partnersDict[partner].GPH_code ? '#/country/' + partnersDict[partner].GPH_code :''}}"
+        >
+          GeoPolHist
+        </a>
+        <span class="hightlight-inline-variable">{{partnersDict[partner].label}}</span>
+      </h4>
+      <p ng-if="partnersDict[partner].GPH_code" class="paragraphViz">
+        {{'POLITICAL_STATUSES_INTRO_PARTNER' | translate}}
+      </p>
+      <p ng-if="!partnersDict[partner].GPH_code" class="paragraphViz">{{'POLITICAL_STATUSES_MISSING' | translate}}</p>
+      <div ng-if="partnersDict[partner].GPH_code">
+        <political-statuses
+          class="dataviz"
+          data="partnerGPHStatus"
+          boundaries="{minYear: selectedMinDate, maxYear: selectedMaxDate}"
+        />
+        <svg width="100%" height="20px">
+          <g class="legend">
+            <rect x="0" y="0" width="12" height="12" style="fill: url('#diagonalHatch');"></rect>
+            <text
+              x="17"
+              y="10"
+              class="legend-item"
+              fill="#333"
+              translate="POLITICAL_STATUSES_SOVEREIGNTY_CAPTION"
+            ></text>
+            <rect x="180" y="0" width="12" height="12" style="fill: rgba(180, 0, 0, 0.2);"></rect>
+            <rect x="198" y="0" width="12" height="12" style="fill: rgba(180, 0, 0, 0.5);"></rect>
+            <rect x="216" y="0" width="12" height="12" style="fill: rgba(180, 0, 0, 0.8);"></rect>
+            <text
+              x="239"
+              y="10"
+              class="legend-item"
+              fill="#333"
+              translate="POLITICAL_STATUSES_DEPENDENCIES_CAPTION"
+            ></text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Start: Reporter citation -->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4>
+        {{'PARTNER_REPORTING_CITATION_TITLE' | translate}}
+        <span class="hightlight-inline-variable"> {{partnersDict[partner].label}}</span>
+      </h4>
+      <p class="paragraphViz">
+        {{ 'PARTNER_REPORTING_CITATION' | translate }}
+      </p>
+      <div>
+        <bar-chart
+          class="dataviz"
+          ng-data="citationData"
+          start-date="selectedMinDate"
+          end-date="selectedMaxDate"
+          raw-start-date="minDate"
+          raw-end-date="maxDate"
+          tooltip-function="citationTooltipFunction"
+        ></bar-chart>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End: Reporter citation -->
+
+<!-- Start: Reporter Heatmap -->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4 class="titleMultiLine flex-title">
+        <div>
+          {{'PARTNER_REPORTER_HEATMAP_TITLE_1' | translate}}
+          <span class="hightlight-inline-variable">&nbsp;{{partnersDict[partner].label}}&nbsp;</span>
+          {{'PARTNER_REPORTER_HEATMAP_TITLE_2' | translate}} {{'PARTNER_REPORTER_HEATMAP_TITLE_ORDER' | translate}}
+          <div class="inline-select">
+            <ui-select ng-model="$parent.heatmapOrder" theme="bootstrap">
+              <ui-select-match
+                class="ui-select-match"
+                placeholder="{{ 'PARTNER_HEATMAP_ORDER_PLACEHOLDER' | translate }}"
+              >
+                {{$select.selected}}
+              </ui-select-match>
+              <ui-select-choices class="ui-select-choices" repeat="item in heatmapOrderList | filter: $select.search">
+                <div ng-bind-html="item | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+        </div>
+        <div>
+          {{'PARTNER_REPORTER_HEATMAP_TITLE_FIELD' | translate}}
+          <div class="inline-select">
+            <ui-select ng-model="$parent.heatmapField" theme="bootstrap">
+              <ui-select-match
+                class="ui-select-match"
+                placeholder="{{ 'PARTNER_HEATMAP_FIELD_PLACEHOLDER' | translate }}"
+              >
+                {{$select.selected.label}} </ui-select-match
+              >PARTNER_HEATMAP_LEGEND_PERCENTIL_3
+              <ui-select-choices class="ui-select-choices" repeat="item in heatmapFieldList | filter: $select.search">
+                <div ng-bind-html="item.label | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+        </div>
+      </h4>
+      <p class="paragraphViz">
+        {{ 'PARTNER_REPORTER_HEATMAP_INTRODUCTION' | translate }}
+      </p>
+      <div class="legend">
+        <ul>
+          <li>
+            <span class="square" style="background-color: #494949; opacity: 0.2;" />
+            <span class="square" style="background-color: #494949; opacity: 0.5;" />
+            <span class="square" style="background-color: #494949; opacity: 0.8;" />
+            {{'PARTNER_HEATMAP_LEGEND_REPORTING_VOLUME' | translate}}
+          </li>
+          <li>
+            <ul>
+              <li>
+                <span class="square" style="background-color: #f9b702;" />
+              </li>
+              <li>< {{heatmapQuantile[heatmapField.id][0] | number:0}}£ ≤</li>
+              <li>
+                <span class="square" style="background-color: #f46a00;" />
+              </li>
+              <li>
+                ≤ {{heatmapQuantile[heatmapField.id][1] | number:0}}£ <
+              </li>
+              <li>
+                <span class="square" style="background-color: #f90202;" />
+              </li>
+              <li>{{'PARTNER_HEATMAP_LEGEND_PERCENTIL' | translate}}</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <div>
+          <heatmap
+            class="dataviz"
+            data="{}"
+            start-date="selectedMinDate"
+            end-date="selectedMaxDate"
+            legend="'top'"
+          ></heatmap>
+        </div>
+        <div class="heatmaps" ng-class="{'show':heatmapShowAll}">
+          <div class="heatmap" ng-repeat="reporter in heatmapData">
+            {{reporter.label}}
+            <heatmap
+              class="dataviz"
+              data="reporter.data"
+              start-date="selectedMinDate"
+              end-date="selectedMaxDate"
+              legend="heatmapLegend"
+              color="reporter.color"
+              opacity="heatmapOpacity"
+              tooltip-function="reporter.tooltip"
+            ></heatmap>
+          </div>
+        </div>
+        <div ng-if="heatmapData.length > 11" class="show-more">
+          <a ng-click="heatmapShowAllToggle()">
+            <span ng-if="!heatmapShowAll">{{'SHOW' | translate}}</span>
+            <span ng-if="heatmapShowAll">{{'HIDE' | translate}}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End: Reporter Heatmap-->
+
+<!-- Start: World Comparison -->
+<div class="container comparison">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <!-- Title with form -->
+      <h4 class="titleMultiLine flex-title">
+        <div>
+          {{ 'LINE_CHART_1' | translate }}
+          <span class="hightlight-inline-variable">&nbsp;{{partnersDict[partner].label}}&nbsp;</span> {{ 'LINE_CHART_2'
+          | translate }}
+          <div class="inline-select">
+            <ui-select
+              ng-model="comparisonReporterEntity.selected"
+              theme="bootstrap"
+              ng-change="comparisonPush(comparisonReporterEntity.selected)"
+            >
+              <ui-select-match
+                class="ui-select-match"
+                placeholder="Reporting"
+                ng-style="{color:elm.color}"
+              ></ui-select-match>
+              <ui-select-choices
+                class="ui-select-choices"
+                repeat="item in comparisonReporterList | filter: $select.search"
+              >
+                <div ng-bind-html="item.label | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+        </div>
+        <div>
+          {{selectedMinDate}} – {{selectedMaxDate}}, in {{comparisonCurrency.name.value}} for
+          <div class="inline-select">
+            <ui-select ng-model="$parent.comparisonFlowType" theme="bootstrap">
+              <ui-select-match class="ui-select-match" placeholder="Select type flow"
+                >{{$select.selected.name.value}}</ui-select-match
+              >
+              <ui-select-choices
+                class="ui-select-choices"
+                repeat="item in comparisonFlowTypeList | filter: $select.search"
+              >
+                <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+        </div>
+        <div class="subtitle">{{'LINE_CHART_SELECT' | translate }}</div>
+        <div>
+          <span
+            class="entity"
+            ng-repeat="elm in comparison"
+            ng-click="comparisonRemove(elm)"
+            ng-style="{color:elm.color}"
+            >{{elm.label}}
+            <span class="close-btn">
+              <i class="fa fa-times-circle"></i>
+            </span>
+            <span ng-if="!$last">, </span>
+          </span>
+        </div>
+      </h4>
+      <p class="paragraphBiz">
+        Exports : partner &#x2192; reporting <i>(reported as imports in reporting source)</i><br />
+        Imports : partner &#x2190; reporting <i>(reported as exports in reporting source)</i>
+      </p>
+      <div ng-show="messagePercent">
+        <p class="paragraphViz">
+          The percentages are based on
+          <a href="/#worldTrade">world sum partners</a> of
+          <span class="hightlight-inline-variable">{{partnersDict[partner].label}}</span>
+        </p>
+      </div>
+      <div id="select-lineChart">
+        <div class="row">
+          <div class="col-sm-12">
+            <linechart-world
+              class="dataviz"
+              ng-data="comparisonData"
+              currency="comparisonCurrency"
+              start-date="selectedMinDate"
+              end-date="selectedMaxDate"
+              view="'country'"
+            >
+            </linechart-world>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End: World Comparison -->
+
+<!-- Start: Data table -->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 text-center shdt">
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-default" ng-model="tableDisplay" btn-checkbox>
+          {{ 'DOWNLOAD_1' | translate }}
+        </button>
+        <button type="button" ng-click="tableDownloadCSV()" class="btn btn-default">
+          {{ 'DOWNLOAD_2' | translate }}
+        </button>
+        <button type="button" ng-click="tableDownloadCSVOrginalCurrency()" class="btn btn-default">
+          {{ 'DOWNLOAD_3' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div ng-if="tableDisplay" class="row table-cont">
+    <div class="col-sm-12 grid-cont">
+      <div class="grid gridStyle" ui-grid="gridOptions" ui-grid-pagination></div>
+    </div>
+  </div>
+</div>
+<!-- End: Data table -->

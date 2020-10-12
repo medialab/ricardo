@@ -1,0 +1,26 @@
+version: "2"
+services:
+  api:
+    restart: ${RESTART_POLICY}
+    volumes:
+      - ${PROJECT_PATH}/api:/ricardo/api
+    build:
+      context: ${PROJECT_PATH}/docker/api
+      dockerfile: ./Dockerfile
+    environment:
+      - MODE=${MODE}
+
+  # Client
+  client:
+    restart: ${RESTART_POLICY}
+    depends_on:
+      - api
+    ports:
+      - ${HOST_HTTP_PORT}:80
+    volumes:
+      - ${PROJECT_PATH}/client:/ricardo/client
+    build:
+      context: ${PROJECT_PATH}/docker/client
+      dockerfile: ./Dockerfile
+    environment:
+      - MODE=${MODE}

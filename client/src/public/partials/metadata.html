@@ -1,0 +1,164 @@
+<!--<div ng-hide="loaded" id="loading-bar-spinner">
+  <div class="spinner-icon">{{loaded}}</div>
+</div>-->
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1 class="title-border">{{ 'METADATA_INTRO' | translate }}</h1>
+      <p class="pageIntroduction">{{ 'METADATA_INTRO_PARA' | translate }}</p>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4 class="flex-title">
+        {{'METADATA_TITLE' | translate}}
+        <div class="inline-select">
+          <ui-select ng-model="partner" theme="bootstrap" ng-change="changePartner(partner)">
+            <ui-select-match placeholder="Select partner type" class="ui-select-match"
+              >{{$select.selected.name.value}}</ui-select-match
+            >
+            <ui-select-choices class="ui-select-choices" repeat="item in partnerChoices | filter: $select.search">
+              <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+
+        {{ 'METADATA_NBFLOW_TITLE' | translate }} in
+        <div class="inline-select">
+          <ui-select ng-model="chartFlow" theme="bootstrap" ng-change="changeFlow(chartFlow)" tagging="test">
+            <ui-select-match placeholder="Select flow type" class="ui-select-match"
+              >{{$select.selected.name.value}}</ui-select-match
+            >
+            <ui-select-choices class="ui-select-choices" repeat="item in flowChoices | filter: $select.search">
+              <div ng-bind-html="item.name.value | highlight: $select.search"></div>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+      </h4>
+      <p ng-show="bilateral" class="paragraphPage">
+        {{ 'METADATA_NBFLOW_INTRO_BILATERAL' | translate }}
+      </p>
+      <p ng-hide="bilateral" class="paragraphPage">
+        {{ 'METADATA_NBFLOW_INTRO_WORLD' | translate }}
+      </p>
+      <div class="legend">
+        <!-- 			 	<div ng-show="bilateral" class="legend-item">
+          <div class="square bilateral"></div> Bilateral trade flows
+          </div> -->
+        <div ng-hide="bilateral" class="legend-item">
+          <div class="square world"></div>
+          RICardo database (World Best Guess)
+        </div>
+        <div ng-hide="bilateral" class="legend-item">
+          <div class="square federico"></div>
+          Federico Tena database
+        </div>
+      </div>
+      <number-flows ng-data="nbFlows" flow-type="chartFlow"> </number-flows>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 well">
+      <h4>
+        {{ 'METADATA_MATRIX_TITLE' | translate }}
+      </h4>
+      <p class="paragraphPage">
+        {{ 'METADATA_MATRIX_INTRO' | translate }}
+      </p>
+      <h4 class="flex-title">
+        {{ 'METADATA_MATRIX_CTL1' | translate }}
+        <inline-select-ctrl ng-model="matrixLayout" list="matrixLayoutChoices"></inline-select-ctrl>
+        {{ 'METADATA_MATRIX_CTL2' | translate }}
+        <inline-select-ctrl ng-model="matrixColorBy" list="matrixColorChoices"></inline-select-ctrl>
+        <div class="inline-select pull-right">
+          <ui-select ng-model="reporting" theme="bootstrap" tagging="test">
+            <ui-select-match placeholder="Find Reporting" class="ui-select-match">{{$select.selected}}</ui-select-match>
+            <ui-select-choices class="ui-select-choices" repeat="item in entities | filter: $select.search">
+              <div ng-click="find(item)" ng-bind-html="item | highlight: $select.search"></div>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+      </h4>
+      <div class="matrixIntro">
+        <div>
+          <p>
+            <strong>Number of Reportings Color by</strong>
+            <br />
+            <strong><u>{{ matrixColorBy.name.value}}</u>: </strong>
+            <!-- <span ng-show="(matrixColorBy.type.value=='sourcetype')? true:false">
+              {{"METADATA_MATRIX_INTRO_"+matrixColorBy.type.value+"_"+partner.type.value+"_1" | translate}}
+              </span>
+              <span ng-hide="(matrixColorBy.type.value=='sourcetype')? true:false">
+              {{"METADATA_MATRIX_INTRO_"+matrixColorBy.type.value | translate}}
+              </span> -->
+            <span ng-show="(matrixColorBy.type.value=='sourcetype')? true:false">
+              <span ng-show="bilateral"> {{"METADATA_MATRIX_INTRO_sourcetype_bilateral" | translate}}</span>
+              <span ng-hide="bilateral">
+                {{"METADATA_MATRIX_INTRO_sourcetype_world_0" | translate}}
+                <a href="http://www.ehes.org/EHES_93.pdf" target="_blank"> Federico-Tena(2016)</a>
+                {{"METADATA_MATRIX_INTRO_sourcetype_world_1" | translate}}
+              </span>
+            </span>
+            <span ng-show="(matrixColorBy.type.value=='type')? true:false">
+              {{"METADATA_MATRIX_INTRO_type" | translate}}
+            </span>
+            <span ng-show="(matrixColorBy.type.value=='continent')? true:false">
+              {{"METADATA_MATRIX_INTRO_continent" | translate}}
+            </span>
+            <span ng-show="(matrixColorBy.type.value=='partner')? true:false">
+              {{"METADATA_MATRIX_INTRO_partner" | translate}}
+            </span>
+            <span ng-show="(matrixColorBy.type.value=='partner_intersect')? true:false">
+              {{"METADATA_MATRIX_INTRO_partner_intersect" | translate}}
+            </span>
+            <span ng-show="(matrixColorBy.type.value=='reference')? true:false">
+              {{"METADATA_MATRIX_INTRO_reference" | translate}}
+            </span>
+          </p>
+        </div>
+      </div>
+      <reporting-synth ng-data="flow" flow-type="chartFlow" category="matrixColorBy" loaded="loaded" partner="partner">
+      </reporting-synth>
+      <reporting-entities
+        flat-data="flow"
+        ng-data="flowEntities"
+        flow-type="chartFlow"
+        color="matrixColorBy"
+        layout="matrixLayout"
+        reporting="reporting"
+        search="search"
+      >
+      </reporting-entities>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 text-center shdt">
+      <div class="btn-group" role="group">
+        <button
+          type="button"
+          class="btn btn-default"
+          ng-model="viewTable"
+          btn-checkbox
+          btn-checkbox-true="1"
+          btn-checkbox-false="0"
+        >
+          {{ 'DOWNLOAD_1' | translate }}
+        </button>
+        <button type="button" ng-click="download()" class="btn btn-default">
+          {{ 'DOWNLOAD_2' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div ng-if="viewTable" class="row table-cont">
+    <div class="col-sm-12 grid-cont">
+      <div class="grid gridStyle" ui-grid="gridOptions" ui-grid-pagination></div>
+    </div>
+  </div>
+</div>

@@ -27,11 +27,19 @@ def flows():
     from_year = request.args.get('from', '')
     to_year = request.args.get('to', '')
 
-    if reporting_ids=="":
-        abort(400)
+    # if there is no reporting and partner ids, then we return a 400
+    if not reporting_ids and not partner_ids:
+         abort(400)
 
     try:
-        json_data=models.get_flows(reporting_ids.split(","),partner_ids.split(",")if partner_ids!='' else [],original_currency,from_year,to_year,with_sources)
+        json_data=models.get_flows(
+            reporting_ids.split(",")if reporting_ids!='' else [],
+            partner_ids.split(",")if partner_ids!='' else [],
+            original_currency,
+            from_year,
+            to_year,
+            with_sources
+        )
     except Exception as e:
         app.logger.exception("exception occurs in flows")
         abort(500)
@@ -103,16 +111,29 @@ def reporting_years():
 
 @app.route('/reporting_entities')
 def reporting_entities():
-    type_filter = request.args.get('type_filter',None) #["countries","city","colonial_area","geographic_area"])
-    to_partner_ids = request.args.get('partners_ids',None)
-    types=type_filter.split(",") if type_filter else []
+    type_filter = request.args.get('type_filter', None) #["countries","city","colonial_area","geographic_area"])
+    to_partner_ids = request.args.get('partners_ids', None)
+    types = type_filter.split(",") if type_filter else []
     try:
-        json_data=models.get_reporting_entities(types,to_partner_ids.split(",") if to_partner_ids else [])
+        json_data = models.get_reporting_or_partner_entities(types, to_partner_ids.split(",") if to_partner_ids else [], "reporting")
     except Exception:
         raise
         abort(500)
 
-    return Response(json_data, status=200, mimetype='application/json')
+    return Response(json_data, status = 200, mimetype = 'application/json')
+
+@app.route('/partner_entities')
+def partner_entities():
+    type_filter = request.args.get('type_filter', None) #["countries","city","colonial_area","geographic_area"])
+    from_reporting_ids = request.args.get('reporting_ids', None)
+    types = type_filter.split(",") if type_filter else []
+    try:
+        json_data = models.get_reporting_or_partner_entities(types, from_reporting_ids.split(",") if from_reporting_ids else [], "partner")
+    except Exception:
+        raise
+        abort(500)
+
+    return Response(json_data, status = 200, mimetype = 'application/json')
 
 @app.route('/bilateral_entities')
 def bilateral_entities():
@@ -197,6 +218,14 @@ def world_available():
         abort(500)
     return Response(json_data, status=200, mimetype='application/json')
 
+@app.route('/exchange_rates')
+def exchange_rates():
+    try:
+        json_data=models.get_echange_rates()
+    except:
+        abort(500)
+    return Response(json_data, status=200, mimetype='application/json')
+
 
 @app.route('/blog_RSS.xml')
 def blog_RSS():
@@ -219,4 +248,3 @@ def blog_RSS():
 
 
 
-    

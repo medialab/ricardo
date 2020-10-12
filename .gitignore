@@ -56,13 +56,15 @@ docs/_build/
 
 # Client bower components
 client/lib/bower_components/
-node_modules
+client/node_modules
 # Client data
-client/js/config.js
+client/src/js/config.js
+client/dist
 
 # data
 *.sqlite
-client/data/*.csv
+client/src/public/data/*.csv
+client/src/public/csv/*.csv
 database_creation/out_data/*.sqlite
 database_creation/out_data/*.csv
 database_creation/in_data/*.csv
@@ -76,4 +78,4 @@ ricardoapi.log*
 .~lock.*
 
 # Docker
-docker-compose.yml
+./docker-compose.yml
