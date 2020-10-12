@@ -40,7 +40,7 @@ COPY --chown=node:node analysis/WorldTradeWeb /WorldTradeWeb
 
 WORKDIR /client
 
-RUN npm install --production true --no-audit \
+RUN npm install --no-audit \
     && /bin/cp ./src/js/config.sample.js ./src/js/config.js \
     && npm run build 
 
