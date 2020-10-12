@@ -1,5 +1,5 @@
 ############ building database
-FROM python:2.7-alpine3.8 AS ricardo_data
+FROM python:3.8.6-alpine3.12 AS ricardo_data
 
 ARG DATA_VERSION_REF=2017.12.with.FT
 ENV DATA_VERSION_REF=${DATA_VERSION_REF}
@@ -10,17 +10,17 @@ RUN mkdir /ricardo_data
 WORKDIR /ricardo_data
 
 RUN git --version
-RUN git clone https://github.com/medialab/ricardo_data .
-RUN git checkout ${DATA_VERSION_REF}
+RUN git clone -b ${DATA_VERSION_REF} --single-branch --depth 1 https://github.com/medialab/ricardo_data .
 
 WORKDIR /ricardo_data/database_scripts
 
 RUN pip install -r requirements.txt
-RUN python RICardo_website_sqlite_creation.py
+RUN python flows.py aggregate
+RUN python flows.py deduplicate
 
 ############## BUILDING ANGULAR WEB CLIENT
 
-FROM node:6.17.1-alpine  AS static_client
+FROM node:14.13.1-alpine3.12  AS static_client
 
 ARG STATIC_URL=http://localhost:80
 ARG API_URL=$STATIC_URL/api
@@ -41,7 +41,7 @@ COPY --chown=node:node analysis/WorldTradeWeb /WorldTradeWeb
 WORKDIR /client
 
 RUN npm install --production true --no-audit \
-    && /bin/cp ./js/config.sample.js ./js/config.js \
+    && /bin/cp ./src/js/config.sample.js ./src/js/config.js \
     && npm run build 
 
 ################ Build nginx image

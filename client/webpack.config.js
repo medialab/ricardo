@@ -44,7 +44,7 @@ module.exports = (function makeWebpackConfig() {
     ? {}
     : {
         // Absolute output directory
-        path: __dirname + "/dist",
+        path: __dirname + "/build",
 
         // Output path from the view of the page
         // Uses webpack-dev-server in development
@@ -137,6 +137,9 @@ module.exports = (function makeWebpackConfig() {
       jQuery: "jquery",
       "window.jQuery": "jquery",
       sigma: "sigma",
+    }),
+    new webpack.DefinePlugin({
+      BASE_API_URL: JSON.stringify(process.env.API_URL || "http://localhost:5000"),
     }),
   ];
 

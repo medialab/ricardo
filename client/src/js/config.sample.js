@@ -1,6 +1,6 @@
 angular
   .module("ricardo.config", [])
-  .constant("BASE_API_URL", "http://localhost:5000")
+  .constant("BASE_API_URL", BASE_API_URL)
   .constant("DEFAULT_REPORTING", "France")
   .constant("DEFAULT_PARTNER", "Italy")
   .constant("DEFAULT_CONTINENT", "Europe")
