@@ -28,7 +28,6 @@ ARG API_URL=$STATIC_URL/api
 ENV API_URL=${API_URL}
 ENV STATIC_URL=${STATIC_URL}
 ENV PATH /client/node_modules/.bin:$PATH
-ENV NODE_ENV production
 
 RUN apk --update add --no-cache git
 
@@ -40,8 +39,9 @@ COPY --chown=node:node analysis/WorldTradeWeb /WorldTradeWeb
 
 WORKDIR /client
 
-RUN npm install --no-audit \
-    && /bin/cp ./src/js/config.sample.js ./src/js/config.js \
+RUN npm install --no-audit
+ENV NODE_ENV production
+RUN /bin/cp ./src/js/config.sample.js ./src/js/config.js \
     && npm run build 
 
 ################ Build nginx image
