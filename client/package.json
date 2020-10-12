@@ -7,7 +7,7 @@
   "scripts": {
     "rimraf": "./node_modules/rimraf/bin.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rimraf build && rimraf ./src/public/csv/* && npm run sync:csv && webpack --bail --progress --profile",
+    "build": "npm run rimraf build && npm run rimraf ./src/public/csv/* && npm run sync:csv && webpack --bail --progress --profile",
     "server": "npm run sync:csv && webpack-dev-server --history-api-fallback --inline --progress --open --watch",
     "start": "npm run server",
     "sync:csv": "node ./download-csv.js"
