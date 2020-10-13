@@ -177,7 +177,7 @@
   "LINE_CHART_PERCENT_2": " of ",
   "LINE_CHART_SELECT": "SELECT UP TO 5 PARTNERS:",
   "PARTNER_INTRO_TITLE": "Partner",
-  "PARTNER_INTRO_PARA": "For the selected partner, the Partner view specifies the political status and provides visualizations of its trade growth that are built by using trade statistics of the reportings which cites it.",
+  "PARTNER_INTRO_PARA": "For the selected partner, the Partner view specifies the political status and provides visualizations of its trade growth that are built by using trade statistics of the reportings which cite it.",
   "PARTNER_TITLE_1": "The trade partner ",
   "PARTNER_STATUSES_TITLE": "Political statuses",
   "PARTNER_STATUSES_INTRO": "This chart represents the evolution of the selected trade partner's dependencies count. It also shows the periods of sovereignty.",
