@@ -4,7 +4,7 @@ FROM python:3.8.6-alpine3.12 AS ricardo_data
 ARG DATA_VERSION_REF=2017.12.with.FT
 ENV DATA_VERSION_REF=${DATA_VERSION_REF}
 
-RUN  apk add --no-cache git icu-dev gcc musl-dev
+RUN  apk add --no-cache git icu-dev build-base gcc musl-dev
 RUN mkdir /ricardo_data
 
 WORKDIR /ricardo_data
