@@ -4,7 +4,7 @@ FROM python:3.8.6-alpine3.12 AS ricardo_data
 ARG DATA_VERSION_REF=2017.12.2
 ENV DATA_VERSION_REF=${DATA_VERSION_REF}
 
-RUN  apk add --no-cache git icu-dev build-base gcc musl-dev
+RUN apk add --no-cache git icu-dev build-base gcc musl-dev
 RUN mkdir /ricardo_data
 
 WORKDIR /ricardo_data
@@ -22,6 +22,8 @@ RUN python flows.py deduplicate
 FROM python:2.7.16-alpine3.10
 
 RUN adduser -D ricardo
+
+RUN apk add --no-cache icu-dev build-base gcc musl-dev
 
 ENV SECRET_KEY=azeoijz3245324aepoizajeoizé&
 ENV DEBUG=False
