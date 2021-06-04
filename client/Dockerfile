@@ -4,7 +4,7 @@ FROM python:3.8.6-alpine3.12 AS ricardo_data
 ARG DATA_VERSION_REF=2017.12.with.FT
 ENV DATA_VERSION_REF=${DATA_VERSION_REF}
 
-RUN  apk add --no-cache git 
+RUN  apk add --no-cache git icu-dev
 RUN mkdir /ricardo_data
 
 WORKDIR /ricardo_data
@@ -42,7 +42,7 @@ WORKDIR /client
 RUN npm install --no-audit
 ENV NODE_ENV production
 RUN /bin/cp ./src/js/config.sample.js ./src/js/config.js \
-    && npm run build 
+    && npm run build
 
 ################ Build nginx image
 FROM nginx:alpine
