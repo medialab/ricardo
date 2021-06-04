@@ -25,7 +25,7 @@ angular
     "angular-loading-bar",
     "pascalprecht.translate",
     "angulartics",
-    "angulartics.google.analytics",
+    "angulartics.piwik",
     "ricardo.config",
     "ricardo.filters",
     "ricardo.controllers",
