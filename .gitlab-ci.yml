@@ -7,11 +7,6 @@ stages:
 variables:
   CLIENT_IMAGE_NAME: $CI_REGISTRY_IMAGE/ricardo-client:$CI_COMMIT_REF_SLUG
   API_IMAGE_NAME: $CI_REGISTRY_IMAGE/ricardo-api:$CI_COMMIT_REF_SLUG
-  DOCKER_HOST: tcp://127.0.0.1:2375
-  DOCKER_TLS_CERTDIR: ""
-
-services:
-  - docker:stable-dind
 
 build_client:
   stage: build
