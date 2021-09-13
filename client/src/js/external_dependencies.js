@@ -7,7 +7,7 @@ import "angular-loading-bar";
 import "angular-translate";
 import "angular-translate-loader-static-files";
 import "angulartics";
-import "angulartics-google-analytics";
+import "angulartics-piwik";
 import "angular-ui-grid";
 
 // Importing js deps
@@ -27,18 +27,18 @@ jQuery(document).ready(function () {
   $("<div class='affix-placeholder'></div>").insertAfter(".submenu:last");
 });
 
-(function (i, s, o, g, r, a, m) {
-  i["GoogleAnalyticsObject"] = r;
-  (i[r] =
-    i[r] ||
-    function () {
-      (i[r].q = i[r].q || []).push(arguments);
-    }),
-    (i[r].l = 1 * new Date());
-  (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
-  a.async = 1;
-  a.src = g;
-  m.parentNode.insertBefore(a, m);
-})(window, document, "script", "//www.google-analytics.com/analytics.js", "ga");
-ga("create", "UA-37695848-8", "auto");
-ga("send", "pageview");
+// MATOMO START
+var _paq = window._paq = window._paq || [];
+/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+_paq.push(['setDoNotTrack', true]);
+_paq.push(['disableCookies']);
+_paq.push(['trackPageView']);
+_paq.push(['enableLinkTracking']);
+(function() {
+  var u='https://ws.sciences-po.fr/';
+  _paq.push(['setTrackerUrl', u+'matomo.php']);
+  _paq.push(['setSiteId', '15']);
+  var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+  g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+})();
+// MATOMO END

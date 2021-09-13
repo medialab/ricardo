@@ -70,6 +70,8 @@ database_creation/out_data/*.csv
 database_creation/in_data/*.csv
 database_creation/in_data/*.mdb
 
+# VSCode
+.vscode
 
 # API log
 ricardoapi.log*
