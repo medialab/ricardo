@@ -118,7 +118,7 @@ angular
             "apiService",
             function (apiService) {
               return apiService.getReportingEntities({
-                type_filter: "country,group,city",
+                type_filter: "GPH_entity,group,city",
               });
             },
           ],
@@ -148,7 +148,7 @@ angular
             "apiService",
             function (apiService) {
               return apiService.getPartnerEntities({
-                type_filter: "country,group,city",
+                type_filter: "GPH_entity,group,city",
               });
             },
           ],
