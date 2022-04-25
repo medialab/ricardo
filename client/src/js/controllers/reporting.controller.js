@@ -66,8 +66,8 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         name: { value: "Colonial", writable: true },
       },
       {
-        type: { value: "country", writable: true },
-        name: { value: "Country", writable: true },
+        type: { value: "GPH_entity", writable: true },
+        name: { value: "GPH entity", writable: true },
       },
       {
         type: { value: "geographical_area", writable: true },
@@ -241,6 +241,7 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
 
         $scope.statusesData = gphData;
         $scope.entityStatusesData = gphData[$scope.entities.sourceEntity.selected.GPH_code];
+        console.log($scope.entityStatusesData, $scope.entities.sourceEntity.selected.GPH_code);
         if (cfSource.size() > 0) {
           cfSource.year().filterAll();
           cfSource.clear();
@@ -268,7 +269,7 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
          *  Init all entities by types filters for linechart viz
          */
         $scope.reportingCountryEntities = $scope.RICentitiesDD.filter(function (d) {
-          return d.type === "country";
+          return d.type === "GPH_entity";
         });
         $scope.reportingColonialEntities = $scope.RICentitiesDD.filter(function (d) {
           return d.type === "colonial_area";

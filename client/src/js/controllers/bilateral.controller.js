@@ -109,7 +109,7 @@ angular.module("ricardo.controllers.bilateral", []).controller("bilateral", [
         $scope.partnerEntities = result.RICentities.partners.filter(function (d) {
           return (
             RICids.indexOf(d.RICid) !== -1 &&
-            d.type === "country" &&
+            d.type === "GPH_entity" &&
             d.RICid !== $scope.entities.sourceEntity.selected.RICid
           );
         });

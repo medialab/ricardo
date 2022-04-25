@@ -228,7 +228,7 @@ angular.module("ricardo.controllers.world", []).controller("world", [
       apiService
         .getReportingEntities({
           partners_ids: worldPartner.type.value,
-          type_filter: "country,group,city",
+          type_filter: "GPH_entity,group,city",
         })
         .then(function (result) {
           $scope.reportingCountryEntities = result;
@@ -609,7 +609,7 @@ angular.module("ricardo.controllers.world", []).controller("world", [
      * Reset filter and put it to undefined
      */
     $scope.resetDD = function (t) {
-      if (t === "country") {
+      if (t === "GPH_entity") {
         $scope.entities.sourceCountryEntity.selected = undefined;
       }
     };
