@@ -428,32 +428,29 @@ angular
           return Promise.all([
             getCsvPromise("/csv/GeoPolHist_entities.csv"),
             getCsvPromise("/csv/GeoPolHist_status.csv"),
-            getCsvPromise("/csv/GeoPolHist_entities_status_in_time.csv"),
+            getCsvPromise("/csv/GeoPolHist_entities_status_over_time.csv"),
           ]).then(([entities, status, statusInTime]) => {
             // prepare GeopolHist Data
-            
-  
+
             if (!entities || !statusInTime || !status) return result;
-  
+
             const SOVEREIGNTY_STATUSES = status
-                                          .filter(s => s.group === "Sovereign (all)")
-                                          .reduce( (acc,s) => {
-                                            acc[s.GPH_status] = true
-                                            return acc}, {});
+              .filter((s) => s.group === "Sovereign (all)")
+              .reduce((acc, s) => {
+                acc[s.GPH_status] = true;
+                return acc;
+              }, {});
             const DEPENDENCIES_STATUSES = status
-                                          .filter(s => ["Non sovereign", "Part of"].includes(s.group) || s.GPH_status == "Informal")
-                                          .reduce( (acc,s) => {
-                                            acc[s.GPH_status] = true
-                                            return acc}, {});
-  
-  
+              .filter((s) => ["Non sovereign", "Part of"].includes(s.group) || s.GPH_status == "Informal")
+              .reduce((acc, s) => {
+                acc[s.GPH_status] = true;
+                return acc;
+              }, {});
+
             const entitiesIndex = entities.reduce(
               (iter, entity) => ({
                 ...iter,
-                [entity.GPH_code]: {...entity,  
-                  sovereigntyData: [],
-                  dependenciesData: [],
-                }
+                [entity.GPH_code]: { ...entity, sovereigntyData: [], dependenciesData: [] },
               }),
               {},
             );
@@ -473,7 +470,7 @@ angular
                   label: entitiesIndex[GPH_code].GPH_name,
                   startYear: +start_year,
                   endYear: +end_year,
-                  isSovereign: false
+                  isSovereign: false,
                 });
               }
               if (DEPENDENCIES_STATUSES[GPH_status]) {
@@ -488,53 +485,48 @@ angular
               }
             });
 
-            
             // calculate depsPeriod
-            Object.values(entitiesIndex).forEach( e => {
-              const stepYears = e.dependenciesData.reduce( (years, d) => years.concat([d.startYear, d.endYear]), [])
-              stepYears.sort()
+            Object.values(entitiesIndex).forEach((e) => {
+              const stepYears = e.dependenciesData.reduce((years, d) => years.concat([d.startYear, d.endYear]), []);
+              stepYears.sort();
 
-              let  maxDepsPerYear = 0;
-              const nbDepsPeriods = stepYears.reduce(
-                (periods, year, i) => {
-                  // get deps for this year, use i to detect and preserve last stepyear would be ignored otherwise
-                  const deps = e.dependenciesData.filter(dep => (dep.startYear <= year && year < dep.endYear) || (i == stepYears.length-1 && year == dep.endYear) )
-                  if (deps.length == 0)
-                    // no deps, nothing to do
-                    return periods;
-                  
-                  // get last
-                  const lastPeriod = periods.slice(-1)[0];
-                  if (lastPeriod && year === lastPeriod.endYear)
-                  // duplicated stepYear, don't do nothing
-                    return periods;
-                  
-                  // update max
-                  if (maxDepsPerYear < deps.length)
-                    maxDepsPerYear = deps.length
-                  
-                  if (periods.length == 0  || lastPeriod.depsCount !== deps.length){
-                    // close last period
-                    if (lastPeriod)
-                      lastPeriod.endYear = year - 1
-                    // add a new period
-                    periods.push({ startYear: year, endYear:year-1, depsCount:deps.length})
-                  }
-                  else
-                    if (periods.length > 0 && lastPeriod.depsCount === deps.length){
-                      // extend last period
-                      lastPeriod.endYear = year -1;
-                    }
-                  
+              let maxDepsPerYear = 0;
+              const nbDepsPeriods = stepYears.reduce((periods, year, i) => {
+                // get deps for this year, use i to detect and preserve last stepyear would be ignored otherwise
+                const deps = e.dependenciesData.filter(
+                  (dep) =>
+                    (dep.startYear <= year && year < dep.endYear) || (i == stepYears.length - 1 && year == dep.endYear),
+                );
+                if (deps.length == 0)
+                  // no deps, nothing to do
                   return periods;
-                },
-                [],
-              );
-              e.nbDepsPeriods = nbDepsPeriods
-              e.maxDepsPerYear = maxDepsPerYear
-            })
+
+                // get last
+                const lastPeriod = periods.slice(-1)[0];
+                if (lastPeriod && year === lastPeriod.endYear)
+                  // duplicated stepYear, don't do nothing
+                  return periods;
+
+                // update max
+                if (maxDepsPerYear < deps.length) maxDepsPerYear = deps.length;
+
+                if (periods.length == 0 || lastPeriod.depsCount !== deps.length) {
+                  // close last period
+                  if (lastPeriod) lastPeriod.endYear = year - 1;
+                  // add a new period
+                  periods.push({ startYear: year, endYear: year - 1, depsCount: deps.length });
+                } else if (periods.length > 0 && lastPeriod.depsCount === deps.length) {
+                  // extend last period
+                  lastPeriod.endYear = year - 1;
+                }
+
+                return periods;
+              }, []);
+              e.nbDepsPeriods = nbDepsPeriods;
+              e.maxDepsPerYear = maxDepsPerYear;
+            });
             return entitiesIndex;
-          })
+          });
         },
         getBlogRSS: function (params) {
           var deferred = $q.defer();
