@@ -63,12 +63,14 @@ client/dist
 
 # data
 *.sqlite
+client/data/
 client/src/public/data/*.csv
 client/src/public/csv/*.csv
 database_creation/out_data/*.sqlite
 database_creation/out_data/*.csv
 database_creation/in_data/*.csv
 database_creation/in_data/*.mdb
+analysis/WorldTradeWeb/data/
 
 # VSCode
 .vscode
