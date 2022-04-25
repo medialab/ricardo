@@ -3,12 +3,10 @@
   "version": "0.0.0",
   "dependencies": {
     "async": "^2.6.0",
-    "graphology": "^0.14.1",
-    "graphology-communities-louvain": "^0.1.1",
-    "graphology-gexf": "^0.5.0",
-    "graphology-hits": "^0.1.0",
-    "graphology-metrics": "^1.6.0",
-    "graphology-pagerank": "^1.1.0",
+    "graphology": "^0.24.1",
+    "graphology-communities-louvain": "^2.0.1",
+    "graphology-gexf": "^0.10.1",
+    "graphology-metrics": "^2.1.0",
     "sqlite3": "^4.1.0"
   }
 }
