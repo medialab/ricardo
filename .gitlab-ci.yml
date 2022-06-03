@@ -7,11 +7,12 @@ stages:
 variables:
   CLIENT_IMAGE_NAME: $CI_REGISTRY_IMAGE/ricardo-client:$CI_COMMIT_REF_SLUG
   API_IMAGE_NAME: $CI_REGISTRY_IMAGE/ricardo-api:$CI_COMMIT_REF_SLUG
+  DATA_VERSION_REF: 2022.06
 
 build_client:
   stage: build
   script:
-    - docker build -t $CLIENT_IMAGE_NAME --build-arg "STATIC_URL=$BASEURL" --build-arg "DATA_VERSION_REF=2017.12.2"  -f ./client/Dockerfile .
+    - docker build -t $CLIENT_IMAGE_NAME --build-arg "STATIC_URL=$BASEURL" --build-arg "DATA_VERSION_REF=$DATA_VERSION_REF"  -f ./client/Dockerfile .
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     - docker push $CLIENT_IMAGE_NAME
   environment:
@@ -25,7 +26,7 @@ build_client:
 build_api:
   stage: build
   script:
-    - docker build -t $API_IMAGE_NAME --build-arg "DATA_VERSION_REF=2017.12.2" api
+    - docker build -t $API_IMAGE_NAME --build-arg "DATA_VERSION_REF=$DATA_VERSION_REF" api
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     - docker push $API_IMAGE_NAME
   environment:

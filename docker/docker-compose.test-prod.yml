@@ -1,0 +1,26 @@
+version: "2"
+services:
+  api:
+    restart: ${RESTART_POLICY}
+    build:
+      context: ${PROJECT_PATH}/api
+      dockerfile: ./Dockerfile
+      args:
+        - DATA_VERSION_REF=${DATA_VERSION_REF}
+    environment:
+      - MODE=${MODE}
+
+  # Client
+  client:
+    restart: ${RESTART_POLICY}
+    depends_on:
+      - api
+    ports:
+      - ${HOST_HTTP_PORT}:80
+    build:
+      context: ${PROJECT_PATH}
+      dockerfile: ./client/Dockerfile
+      args:
+        - DATA_VERSION_REF=${DATA_VERSION_REF}
+    environment:
+      - MODE=${MODE}
