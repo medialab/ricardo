@@ -186,3 +186,10 @@ In `DEV` mode (check the file `.env`), the auto-reload of the code is enabled.
 
 The docker images of the project (ie. API & client) are build automatically by a gitlab process (see `.gitlab-ci.yml`).
 Those images are build with the Dockerfiles `client/Dockerfile` & `api/Dockerfile`.
+
+To test those images on local before pushing to prod you can use the dedicated docker-compose which set the data version to use.
+
+```
+cd docker
+docker-compose -f docker-compose.test-prod.yml -p ricardo-test-prod up --build
+```
