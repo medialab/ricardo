@@ -120,7 +120,7 @@ def flows_data(reporting_ids, partner_ids, original_currency, from_year, to_year
                     AND ( flow IS NOT NULL)
                     AND partner_slug IS NOT NULL
                 GROUP BY
-                    reporting_continentt,
+                    reporting_continent,
                     partner,
                     year
                 ORDER BY
