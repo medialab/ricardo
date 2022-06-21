@@ -7,6 +7,8 @@ This project contains 2 applications:
 - [`ricardo_api`](API.md)': a [Flask](http://flask.pocoo.org/) application exposing a REST API serving data from the sqlite database in JSON format.
 - `client`: an HTML5 angular.js application displaying data vizualisations from the ricardo API.
 
+The corresponding data-set is hosted at https://github.com/medialab/ricardo_data
+
 ## Ricardo - Web Application (client)
 
 ### Installation
