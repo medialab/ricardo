@@ -66,7 +66,6 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
      */
     $scope.selectPartner = (partner) => {
       $scope.partner = partner;
-      $scope.updateQueryParams();
       $scope.partnerGPHStatus = $scope.gphData[$scope.partnersDict[partner].GPH_code];
       apiService
         .getFlows({
@@ -102,19 +101,9 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
       // Reset available date ranges:
       $scope.minDateRange = d3.range($scope.minDate, $scope.selectedMaxDate);
       $scope.maxDateRange = d3.range($scope.selectedMinDate + 1, $scope.maxDate);
-
-      $scope.updateQueryParams();
     };
     $scope.selectMinDate = (selectedMinDate) => $scope.selectDates({ selectedMinDate });
     $scope.selectMaxDate = (selectedMaxDate) => $scope.selectDates({ selectedMaxDate });
-
-    $scope.updateQueryParams = () => {
-      $route.updateParams({
-        partner: $scope.partner,
-        selectedMinDate: $scope.selectedMinDate,
-        selectedMaxDate: $scope.selectedMaxDate,
-      });
-    };
 
     /**
      * INITIALISATION:
@@ -139,6 +128,7 @@ angular.module("ricardo.controllers.partner", []).controller("partner", [
 
     // sync url params
     initParams($route, $scope, [
+      { name: "partner" },
       { name: "selectedMinDate" },
       { name: "selectedMaxDate" },
       { name: "comparisonFlowType", list: LINE_CHART_FLOW_TYPES, getItemId: getListItemId },
