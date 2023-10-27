@@ -21,7 +21,7 @@ RUN python flows.py deduplicate
 
 ############## BUILDING ANGULAR WEB CLIENT
 
-FROM node:14.13.1-alpine3.12  AS static_client
+FROM node:gallium-alpine3.12  AS static_client
 
 ARG STATIC_URL=http://localhost:80
 ARG API_URL=$STATIC_URL/api
