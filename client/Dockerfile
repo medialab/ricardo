@@ -5,6 +5,7 @@ ARG DATA_VERSION_REF
 ENV DATA_VERSION_REF=${DATA_VERSION_REF}
 
 RUN apk add --no-cache git icu-dev build-base gcc musl-dev
+RUN pip install --upgrade pip
 RUN mkdir /ricardo_data
 
 WORKDIR /ricardo_data
@@ -14,7 +15,7 @@ RUN git clone -b ${DATA_VERSION_REF} --single-branch --depth 1 https://github.co
 
 WORKDIR /ricardo_data/database_scripts
 
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.prod.txt
 RUN python flows.py aggregate
 RUN python flows.py deduplicate
 
