@@ -10,7 +10,7 @@ worker_tmp_dir='/dev/shm'
 accesslog='-'
 errorlog='-'
 
-for k,v in os.environ.items():
+for k,v in list(os.environ.items()):
     if k.startswith("GUNICORN_"):
         key = k.split('_', 1)[1].lower()
         locals()[key] = v
