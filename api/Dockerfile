@@ -20,7 +20,7 @@ RUN python flows.py aggregate
 RUN python flows.py deduplicate
 
 ################ Build API image
-FROM python:2.7.16-alpine3.10
+FROM python:3.10.13-alpine
 
 RUN adduser -D ricardo
 
