@@ -1,4 +1,4 @@
-.open /home/pgi/dev/ricardo_data/sqlite_data/RICardo_viz.sqlite
+.open /home/paul/dev/ricardo_data/sqlite_data/RICardo_viz.sqlite
 .mode csv
 .headers on
 .once './data/reporting_types_through_time_flow_joined.csv'

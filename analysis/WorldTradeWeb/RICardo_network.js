@@ -60,7 +60,7 @@ const computeGraph = (args, done) => {
   // }exports
 
   DB.get().all(
-    `SELECT * FROM flow_joined
+    `SELECT * FROM flow_aggregated
     WHERE
       flow is not null and rate is not null AND
       year = ${year} AND
@@ -127,6 +127,7 @@ const computeGraph = (args, done) => {
             try {
               const edgeData = {
                 sourceWeight: w,
+                weight:w,
                 direction: r.expimp,
                 source_type: r.type,
               };
@@ -182,15 +183,15 @@ const computeGraph = (args, done) => {
               if (
                 // dup edege is from aggregation but the new is not, let's merge to give priority to source
                 (dup_source_type === "aggregation" &&
-                  r.source_type !== "aggregation") ||
+                  r.type !== "aggregation") ||
                 // mirror flows from sources, we prefer Exp on Imp in such cases
                 (r.expimp === "Exp" &&
                   dup_source_type !== "aggregation" &&
-                  r.source_type !== "aggregation") ||
+                  r.type !== "aggregation") ||
                 // same rule of mirror flows if both edges are from aggregations
                 (r.expimp === "Exp" &&
                   dup_source_type === "aggregation" &&
-                  r.source_type === "aggregation")
+                  r.type === "aggregation")
               ) {
                 graph.mergeEdge(source, target, {
                   weight: w,
@@ -211,8 +212,9 @@ const computeGraph = (args, done) => {
       metrics.year = year;
       // network level
       metrics.networks.density = density(graph);
-      metrics.networks.nb_reportings = graph.order;
+      metrics.networks.nb_reportings = 0;
       metrics.networks.nb_flows = graph.size;
+      metrics.networks.totalTrade = totalTrade;
       // Modularity score of Louvain partition
       louvain.assign(graph);
       metrics.networks.modularity = modularity(graph);
@@ -223,9 +225,11 @@ const computeGraph = (args, done) => {
         const reportingType = graph.getNodeAttribute(n, "type");
         metrics.networks[`nb_entities_${reportingType}`] =
           (metrics.networks[`nb_entities_${reportingType}`] || 0) + 1;
-        if (graph.getNodeAttribute(n, "reporting"))
+        if (graph.getNodeAttribute(n, "reporting")){
+          metrics.networks.nb_reportings += 1
           metrics.networks[`nb_reportings_${reportingType}`] =
             (metrics.networks[`nb_reportings_${reportingType}`] || 0) + 1;
+        }
         else
           metrics.networks[`nb_partners_${reportingType}`] =
             (metrics.networks[`nb_partners_${reportingType}`] || 0) + 1;
@@ -237,6 +241,7 @@ const computeGraph = (args, done) => {
         const outDegree = graph
           .outEdges(n)
           .reduce((acc, e) => acc + graph.getEdgeAttribute(e, "weight"), 0);
+
         graph.setNodeAttribute(
           n,
           "inHerfindahl",
@@ -261,16 +266,18 @@ const computeGraph = (args, done) => {
               0
             )
         );
+        const herfindhal =  graph.neighbors(n).reduce((acc, neighbor) => {
+          // total trade of this neighbor
+          let neighborTotal = graph
+            .edges(n, neighbor)
+            .reduce((s, e) => s + graph.getEdgeAttribute(e, "weight"), 0);
+          return acc + Math.pow(neighborTotal / (inDegree + outDegree), 2);
+        }, 0)
+        //console.log(n, year, herfindhal, inDegree, outDegree)
         graph.setNodeAttribute(
           n,
           "herfindahl",
-          graph.neighbors(n).reduce((acc, neighbor) => {
-            // total trade of this neighbor
-            let neighborTotal = graph
-              .edges(n, neighbor)
-              .reduce((s, e) => s + graph.getEdgeAttribute(e, "weight"), 0);
-            return acc + Math.pow(neighborTotal / (inDegree + outDegree), 2);
-          }, 0)
+         herfindhal
         );
         graph.setNodeAttribute(n, "weightedInDegree", inDegree);
         graph.setNodeAttribute(n, "weightedOutDegree", outDegree);
@@ -333,6 +340,26 @@ const computeGraph = (args, done) => {
         }
       }, 0);
       metrics.nbMirrorFlows = nbMirrorFlows;
+
+      // calculate network completion
+      metrics.networks.nbIntraReportingExports = 0
+      metrics.networks.nbIntraReportingImports = 0
+      metrics.networks.intraReportingTotalExports = 0
+      metrics.networks.intraReportingTotalImports = 0
+      graph.forEachEdge((e, atts, src, tgt, srcAtts, tgtAtts) => {
+        if (srcAtts.reporting && tgtAtts.reporting) {
+          if (atts.direction === "Imp") {
+            metrics.networks.nbIntraReportingImports +=1
+            metrics.networks.intraReportingTotalImports += atts.weight
+          }
+          else if(atts.direction === "Exp"){
+            metrics.networks.nbIntraReportingExports +=1
+            metrics.networks.intraReportingTotalExports += atts.weight
+          }
+        }
+      })
+      
+
       if ((year >= 1834 && year <= 1913) || (year >= 1924 && year <= 1939)) {
         const periode = (y) => {
           if (y <= 1860) return "1834-1860-pré-première-période";
@@ -380,6 +407,8 @@ async.waterfall([
   (cb) => {
     // load RICentities geoloc
     DB.get().all("SELECT * FROM RICentities", function (err, rows) {
+      if(err)
+        throw err
       // create a filter on geoloc-ed RICentities
       geoloc_RICentities = {};
       rows.forEach((r) => {
@@ -407,6 +436,8 @@ async.waterfall([
           nb_reportings: {},
           nb_flows: {},
           modularity: {},
+         totalTrade: {},
+         bilateralCompletion: {}
         },
         entities: {},
       };
@@ -433,6 +464,15 @@ async.waterfall([
         metricsByYear.networks.modularity[m.year] = m.networks.modularity;
         metricsByYear.networks.nb_reportings[m.year] = m.networks.nb_reportings;
         metricsByYear.networks.nb_flows[m.year] = m.networks.nb_flows;
+        metricsByYear.networks.totalTrade[m.year] = m.networks.totalTrade,
+        metricsByYear.networks.bilateralCompletion[m.year] = { 
+          imports : {
+            flows : m.networks.nbIntraReportingImports/(Math.pow(m.networks.nb_reportings,2)/2-m.networks.nb_reportings), 
+            value: m.networks.intraReportingTotalImports/m.networks.totalTrade.Imp}, 
+          exports : {
+            flows : m.networks.nbIntraReportingExports/(Math.pow(m.networks.nb_reportings,2)/2-m.networks.nb_reportings),
+            value: m.networks.intraReportingTotalExports/m.networks.totalTrade.Exp}}
+
         // networks metrics only
         networksMetric = { year: m.year };
         for (a in m.networks) networksMetric[a] = m.networks[a];
