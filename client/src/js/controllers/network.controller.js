@@ -58,7 +58,7 @@ angular.module("ricardo.controllers.network", []).controller("network", [
       "Antarctic",
       "Atlantic Ocean",
     ];
-    var types = ["GPH_entity", "city/part_of", "group", "geographical_area", "colonial_area"];
+    var types = ["GPH_entity", "locality", "group", "geographical_area", "colonial_area"];
     var continentColors = d3.scale.category20().domain(continents);
     var typeColors = d3.scale.category10().domain(types);
 

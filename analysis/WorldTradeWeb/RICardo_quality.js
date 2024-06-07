@@ -83,7 +83,7 @@ const computeGraph = (year, done) => {
               label: r.reporting,
               GPH_status: reporting_GPH_status?.status || r.reporting_type,
               part_of:
-                r.reporting_part_of_GPH_entity ||
+                r.reporting_parent_entity ||
                 reporting_GPH_status?.sovereign,
               continent: r.reporting_continent,
               reporting: 1,
@@ -97,7 +97,7 @@ const computeGraph = (year, done) => {
               label: r.partner,
               GPH_status: partner_GPH_status?.status || r.partner_type,
               part_of:
-                r.partner_part_of_GPH_entity || partner_GPH_status?.sovereign,
+                r.partner_parent_entity || partner_GPH_status?.sovereign,
               GPH_status: partner_GPH_status?.status || r.partner_type,
               continent: r.partner_continent,
             });

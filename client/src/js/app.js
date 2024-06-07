@@ -1,11 +1,11 @@
 // Importing Angular
 import angular from "angular";
-import "./services.js";
 import "./config.js";
-import "./reporting.services.js";
-import "./filters.js";
 import "./controllers/index.js";
 import "./directives/index.js";
+import "./filters.js";
+import "./reporting.services.js";
+import "./services.js";
 // Style and JS deps
 import "./external_dependencies";
 import "./style";
@@ -118,7 +118,7 @@ angular
             "apiService",
             function (apiService) {
               return apiService.getReportingEntities({
-                type_filter: "GPH_entity,group,city",
+                type_filter: "GPH_entity,group,locality",
               });
             },
           ],
@@ -148,7 +148,7 @@ angular
             "apiService",
             function (apiService) {
               return apiService.getPartnerEntities({
-                type_filter: "GPH_entity,group,city",
+                type_filter: "GPH_entity,group,locality",
               });
             },
           ],

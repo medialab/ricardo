@@ -1,43 +1,42 @@
-
 # Protocol
+
 GET HTTP request
 
 ## Arguments norm
+
 All routes take only GET request parameters as URL query, no parameters
 
-
 ## API calls
+
 ### all routes
 
-* /flows
-* /RICentities
-* /reporting_entities
-* /world_flows
-* /continent_flows
-* /continent_with_partners
-* /nations_network
-* /reportings_available_by_years
-* /flows_sources
-* /mirror_entities
-
-
+- /flows
+- /RICentities
+- /reporting_entities
+- /world_flows
+- /continent_flows
+- /continent_with_partners
+- /nations_network
+- /reportings_available_by_years
+- /flows_sources
+- /mirror_entities
 
 #/flows
 
 The main raw data API. flows will provide the exp/imp flows between countries.
 
 ## views
+
 API root used in
 
 - bilateral : in this case, API call specifies only one reporting and a partner. The outputs adds mirror_flows.
 - country view : in this case no partner should be specified.
 - world view : specifies many reporting and "WorldBestGuess" as partner.
 
-
 ## parameters
 
 ```
-reporting_ids = string 
+reporting_ids = string
 partner_ids = string - Optional
 original_currency = boolean - Optionnal
 with_sources = boolean - Optionnal
@@ -45,13 +44,14 @@ from = integer(YYYY)- Optionnal
 to = integer(YYYY) - Optionnal
 ```
 
-
 ## example
 
 ```
 ricardo_server.tld/flows?partner_ids=Italy&reporting_ids=France&with_sources=1
 ```
+
 ## outputs
+
 ```
 json
 {
@@ -97,6 +97,7 @@ json
 Get the entities information
 
 ## views
+
 API root used in
 
 - country view
@@ -105,7 +106,8 @@ API root used in
 
 ```
 reporting_ids=list of strings
-```	
+```
+
 ## outputs
 
 ```
@@ -120,29 +122,31 @@ json
 ]
 ```
 
-
 #/reporting_entities
 
 List entities which has reported Imp/Exp flows.
 
 ## views
+
 API root used in
 
-- bilateral view 
-- country view 
-- world view 
+- bilateral view
+- country view
+- world view
 
 ## parameters
 
 ```
-type_filter = string("city/part_of","country","continent"...) - Optional 
+type_filter = string("locality","country","continent"...) - Optional
 to_partner_id =string - Optional
 ```
+
 ## example
 
 ```
 ricardo_server.tld/reporting_entities?type_filter=country&to_partner_id=WorldBestGuess
 ```
+
 ## outputs
 
 ```
@@ -162,9 +166,10 @@ json
 Aggregate the exp/imp flows by partner_id="WorldBestGuess"
 
 ## views
+
 API root used in
 
-- world view 
+- world view
 
 ## parameters
 
@@ -178,7 +183,9 @@ to = integer(YYYY) - Optionnal
 ```
 ricardo_server.tld/world_flows
 ```
+
 ## outputs
+
 ```
 json
 [
@@ -206,12 +213,13 @@ Flows aggregated by continent
 ## views
 
 API root used in
+
 - country view : get continent flow by selected reporting country
 - world view : specifies continents and "WorldBestGuess" as partner.
 - continent view : in this case no reporting/partner should be specified.
 
-
 ### parameters
+
 ```
 continents = string
 reporting_ids= string - Optional
@@ -226,7 +234,9 @@ to = integer(YYYY) - Optionnal
 ```
 ricardo_server.tld/continent_flows?continents=Asia&reporting_ids=France
 ```
+
 ## outputs
+
 ```
 json
 {
@@ -267,10 +277,11 @@ json
 Aggregate number of partners between continents by year
 
 ## views
+
 NOT BE USED
 
-
 ## parameters
+
 ```
 from = integer(YYYY)- Optionnal
 to = integer(YYYY) - Optionnal
@@ -281,7 +292,9 @@ to = integer(YYYY) - Optionnal
 ```
 ricardo_server.tld/continent_with_partners?from=1878&to=1912
 ```
+
 ##outputs
+
 ```
 json
 [
@@ -299,6 +312,7 @@ json
 Create network graph of flows between entities by year, with an average clustering coefficient for the graph.
 
 ## views
+
 API root used in
 
 - network view
@@ -314,6 +328,7 @@ year = integer(YYYY)
 ```
 ricardo_server.tld/nations_network?year=1857
 ```
+
 ## outputs
 
 ```
@@ -368,6 +383,7 @@ ricardo_server.tld/nations_network?year=1857
 Get aggregated flow/partners and by entity with whole time span(1787 to 1938)
 
 ## views
+
 API root used in
 
 - metadata view: specify partner groups for query
@@ -377,11 +393,13 @@ API root used in
 ```
 partner_ids= string(either World estimation or actual reporting entities)
 ```
+
 ## example
 
 ```
 ricardo_server.tld/reportings_available_by_years?partner_ids=Worldbestguess
 ```
+
 ## outputs
 
 ```
@@ -408,36 +426,39 @@ Provide a list of all sources used in a flow API call.
 Used to get them all at once without repeating them in flow.
 
 ## views
+
 NOT BE USED
 
 ## parameters
 
 ```
-reporting_ids = string 
+reporting_ids = string
 partner_ids = string - Optional
 from = integer(YYYY)- Optionnal
 to = integer(YYYY) - Optionnal
 ```
 
 ## outputs
+
 ```
 json
 {
   "sources":["source1","source2",...]
 }
 ```
+
 #/mirror_entities
 
 Get all reporting entities by year which is a partner of the given reporting entitiy
 
 ## views
+
 NOT BE USED
 
 ## parameters
 
-
 ```
-reporting_ids = string 
+reporting_ids = string
 ```
 
 ## outputs

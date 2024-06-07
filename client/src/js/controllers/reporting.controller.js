@@ -1,4 +1,4 @@
-import { initParams, getListItemId } from "../utils";
+import { getListItemId, initParams } from "../utils";
 
 /*
  * Reporting view Controller : api call and data manipulation to serve four
@@ -58,8 +58,8 @@ angular.module("ricardo.controllers.reporting", []).controller("reporting", [
         name: { value: "All", writable: true },
       },
       {
-        type: { value: "city/part_of", writable: true },
-        name: { value: "City", writable: true },
+        type: { value: "locality", writable: true },
+        name: { value: "Locality", writable: true },
       },
       {
         type: { value: "colonial_area", writable: true },

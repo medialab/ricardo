@@ -122,7 +122,7 @@ def reporting_years():
 def reporting_entities():
     type_filter = request.args.get(
         "type_filter", None
-    )  # ["countries","city","colonial_area","geographic_area"])
+    )  # ["countries","locality","colonial_area","geographic_area"])
     to_partner_ids = request.args.get("partners_ids", None)
     types = type_filter.split(",") if type_filter else []
     try:
@@ -140,7 +140,7 @@ def reporting_entities():
 def partner_entities():
     type_filter = request.args.get(
         "type_filter", None
-    )  # ["countries","city","colonial_area","geographic_area"])
+    )  # ["countries","locality","colonial_area","geographic_area"])
     from_reporting_ids = request.args.get("reporting_ids", None)
     types = type_filter.split(",") if type_filter else []
     try:
@@ -180,7 +180,7 @@ def mirror_entities():
 
 @app.route("/RICentities")
 def RICentities():
-    # type_filter = request.args.get('type_filter',None) #["countries","city","colonial_area","geographic_area"])
+    # type_filter = request.args.get('type_filter',None) #["countries","locality","colonial_area","geographic_area"])
     try:
         json_data = (
             models.get_RICentities()

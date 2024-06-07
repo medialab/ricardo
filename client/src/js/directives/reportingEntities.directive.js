@@ -179,8 +179,8 @@ angular
             "Federico Tena": 3,
           };
           var type_map = {
-            country: 0,
-            "city/part_of": 1,
+            GPH_entity: 0,
+            "locality": 1,
             group: 2,
             colonial_area: 3,
           };
@@ -333,7 +333,9 @@ angular
               if (colorBy === "reference") {
                 categoryColor.domain([0, 1, 2, 3, 4]).range(["#393b79", "#ad494a", "#bd9e39", "#637939", "#7b4173"]);
               } else {
+                console.log(color_domain, d3.set(color_domain).values())
                 color_domain = sort_color(colorBy, d3.set(color_domain).values());
+                console.log(color_domain)
                 categoryColor
                   .domain(color_domain)
                   .range([
@@ -391,7 +393,7 @@ angular
                 });
                 break;
             }
-            return color_domain;
+            return [...color_domain];
           }
           function order(layout, data) {
             switch (layout) {

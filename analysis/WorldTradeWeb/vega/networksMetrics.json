@@ -1,335 +1,619 @@
   {
-  "$schema": "https://vega.github.io/schema/vega/v3.0.json",
-  "width": 1500,
-  "height":1700,
-  "padding": 5,
-  "config":{
-    "axis":{
-      "labelFontSize":20,
-      "titleFontSize":25
-    },
-    "legend":{
-      "labelFontSize":20,
-      "titleFontSize":25
-    }
-  },
-
-  "signals": [
-     {"name":"blockNumber", "update":"5"},
-    {
-      "name": "indexDate",
-      "update": "1833",
-      "on": [
-        {
-          "events": "mousemove",
-          "update": "clamp(round(invert('xyears', x('metric'))),1833,1938)"
-        }
-      ]
-    }
-  ],
-  "data": [
-    {
-      "name": "networkMetrics",
-      "url": "./data/networkMetrics.json"
-    },
-    {
-      "name": "flows",
-      "source": "networkMetrics",
-      "transform":[
-        {"type": "formula", "as": "partnerFlows", "expr": "datum.nb_flows - datum.mirrorFlows"},
-        {"type":"fold", "fields":["partnerFlows", "mirrorFlows"]},
-        {"type":"stack", "groupby" :["year"] , "field":"value", "sort":{"field":"key","order":"descending"}}
-      ]
-    },
-    {
-      "name":"entities",
-      "source": "networkMetrics",
-      "transform":[
-        {"type": "formula", "as": "nb_entities_group", "expr": "datum.nb_entities_group ? datum.nb_entities_group : 0"},
-        {"type": "formula", "as": "nb_entities_city/part_of", "expr": "datum['nb_entities_city/part_of'] ? datum['nb_entities_city/part_of'] : 0"},
-        {"type":"fold", "fields":["nb_entities_country", "nb_entities_city/part_of", "nb_entities_group", "nb_entities_colonial_area", "nb_entities_geographical_area"]},
-        {"type":"stack", "groupby" :["year"] , "field":"value", "sort":{"field":"key","order":"descending"}}
-      ]
-    },
-    {
-      "name":"reportings",
-      "source": "networkMetrics",
-      "transform":[
-        {"type": "formula", "as": "group", "expr": "datum.nb_reportings_group ? datum.nb_reportings_group : 0"},
-        {"type": "formula", "as": "city/part_of", "expr": "datum['nb_reportings_city/part_of'] ? datum['nb_reportings_city/part_of'] : 0"},
-        {"type": "formula", "as": "colonial_area", "expr": "datum['nb_reportings_colonial_area'] ? datum['nb_reportings_colonial_area'] : 0"},
-        {"type": "formula", "as": "geographical_area", "expr": "datum['nb_reportings_geographical_area'] ? datum['nb_reportings_geographical_area'] : 0"},
-        {"type": "formula", "as": "country", "expr": "datum['nb_reportings_country'] ? datum['nb_reportings_country'] : 0"},
-        {"type":"fold", "fields":["country", "city/part_of", "group", "colonial_area", "geographical_area"]},
-        {"type":"stack", "groupby" :["year"] , "field":"value", "sort":{"field":"key","order":"descending"}}
-      ]
-    },
-     {
-      "name":"partners",
-      "source": "networkMetrics",
-      "transform":[
-        {"type": "formula", "as": "group", "expr": "datum.nb_partners_group ? datum.nb_partners_group : 0"},
-        {"type": "formula", "as": "city/part_of", "expr": "datum['nb_partners_city/part_of'] ? datum['nb_partners_city/part_of'] : 0"},
-        {"type": "formula", "as": "colonial_area", "expr": "datum['nb_partners_colonial_area'] ? datum['nb_partners_colonial_area'] : 0"},
-        {"type": "formula", "as": "geographical_area", "expr": "datum['nb_partners_geographical_area'] ? datum['nb_partners_geographical_area'] : 0"},
-        {"type": "formula", "as": "country", "expr": "datum['nb_partners_country'] ? datum['nb_partners_country'] : 0"},
-        {"type":"fold", "fields":["country", "city/part_of", "group", "colonial_area", "geographical_area"]},
-        {"type":"stack", "groupby" :["year"] , "field":"value", "sort":{"field":"key","order":"descending"}}
-      ]
-    }
-
-
-  ],
-  "scales":[
-    {
-      "name":"xyears",
-      "type":"linear",
-      "range":"width",
-      "nice":true,
-      "domain":{"data": "networkMetrics", "field":"year"},
-      "zero":false
-    },
-    {
-      "name": "flow_color",
-      "type": "ordinal",
-      "domain":{"data":"flows","field":"key"},
-      "range": {"scheme" : "paired"}
-    },
-    {
-      "name": "partners_color",
-      "type": "ordinal",
-      "domain":{"data":"partners","field":"key"},
-      "range": { "scheme" : "accent"}
-    },
-    {
-      "name": "reportings_color",
-      "type": "ordinal",
-      "domain":{"data":"reportings","field":"key"},
-      "range": { "scheme" : "accent"}
-    },
-    {
-      "name": "flowScale",
-      "type": "linear",
-      "range": [{"signal":"height/blockNumber-15"},0],
-      "domain":{"data":"flows", "field": "nb_flows"}
-    },
-    {
-      "name": "reportingsScale",
-      "type": "linear",
-      "range": [{"signal":"height/blockNumber*2-15"},{"signal":"height/blockNumber"}],
-      "domain":{"data":"entities", "field":"y1"}
-    },
-     {
-      "name": "partnersScale",
-      "type": "linear",
-      "range": [{"signal":"height/blockNumber*3-15"},{"signal":"height/blockNumber*2"}],
-      "domain":{"data":"entities", "field":"y1"}
-    },
-    {
-      "name": "densityScale",
-      "type": "linear",
-      "range": [{"signal":"height/blockNumber*4-15"},{"signal":"height/blockNumber*3"}],
-      "domain":{
-        "data": "networkMetrics",
-        "field": "density"
+    "$schema": "https://vega.github.io/schema/vega/v3.0.json",
+    "width": 1500,
+    "height": 1700,
+    "padding": 5,
+    "config": {
+      "axis": {
+        "labelFontSize": 20,
+        "titleFontSize": 25
+      },
+      "legend": {
+        "labelFontSize": 20,
+        "titleFontSize": 25
       }
     },
-    {
-      "name": "modularityScale",
-      "type": "linear",
-      "range": [{"signal":"height"},{"signal":"height/blockNumber*4"}],
-      "domain":{
-        "data": "networkMetrics",
-        "field": "modularity"
+    "signals": [
+      {
+        "name": "blockNumber",
+        "update": "5"
+      },
+      {
+        "name": "indexDate",
+        "update": "1833",
+        "on": [
+          {
+            "events": "mousemove",
+            "update": "clamp(round(invert('xyears', x('metric'))),1833,1938)"
+          }
+        ]
       }
-    }
-  ],
-  "axes": [
-    {"orient": "bottom", "scale": "xyears", "zindex": 1, "grid": true },
-      {"orient": "top", "scale": "xyears", "zindex": 1, "grid": true },
-  
-         {
-          "title":"flows",
-          "orient": "left",
-          "scale": "flowScale",
-          "grid": true
-         },
-         {
-          "title":"reportings",
-          "orient": "left",
-          "scale": "reportingsScale",
-          "grid": true
-         },
-        {
-          "title":"partners",
-          "orient": "left",
-          "scale": "partnersScale",
-          "grid": true
-         },
-
-         {
-           "title":"density",
-          "orient": "left",
-          "scale": "densityScale",
-          "grid": true,
-          "zero": false
-         },
-        {
-           "title":"modularity",
-          "orient": "left",
-          "scale": "modularityScale",
-          "grid": true,
-          "zero": false
-         }
-  ],
-  "legends":[
-        {
-          "title":"flows",
-          "type":"symbol",
-          "fill":"flow_color"
+    ],
+    "data": [
+      {
+        "name": "networkMetrics",
+        "url": "./data/networkMetrics.json"
+      },
+      {
+        "name": "flows",
+        "source": "networkMetrics",
+        "transform": [
+          {
+            "type": "formula",
+            "as": "partnerFlows",
+            "expr": "datum.nb_flows - datum.mirrorFlows"
+          },
+          {
+            "type": "fold",
+            "fields": [
+              "partnerFlows",
+              "mirrorFlows"
+            ]
+          },
+          {
+            "type": "stack",
+            "groupby": [
+              "year"
+            ],
+            "field": "value",
+            "sort": {
+              "field": "key",
+              "order": "descending"
+            }
+          }
+        ]
+      },
+      {
+        "name": "entities",
+        "source": "networkMetrics",
+        "transform": [
+          {
+            "type": "formula",
+            "as": "nb_entities_group",
+            "expr": "datum.nb_entities_group ? datum.nb_entities_group : 0"
+          },
+          {
+            "type": "formula",
+            "as": "nb_entities_locality",
+            "expr": "datum['nb_entities_locality'] ? datum['nb_entities_locality'] : 0"
+          },
+          {
+            "type": "fold",
+            "fields": [
+              "nb_entities_country",
+              "nb_entities_locality",
+              "nb_entities_group",
+              "nb_entities_colonial_area",
+              "nb_entities_geographical_area"
+            ]
+          },
+          {
+            "type": "stack",
+            "groupby": [
+              "year"
+            ],
+            "field": "value",
+            "sort": {
+              "field": "key",
+              "order": "descending"
+            }
+          }
+        ]
+      },
+      {
+        "name": "reportings",
+        "source": "networkMetrics",
+        "transform": [
+          {
+            "type": "formula",
+            "as": "group",
+            "expr": "datum.nb_reportings_group ? datum.nb_reportings_group : 0"
+          },
+          {
+            "type": "formula",
+            "as": "locality",
+            "expr": "datum['nb_reportings_locality'] ? datum['nb_reportings_locality'] : 0"
+          },
+          {
+            "type": "formula",
+            "as": "colonial_area",
+            "expr": "datum['nb_reportings_colonial_area'] ? datum['nb_reportings_colonial_area'] : 0"
+          },
+          {
+            "type": "formula",
+            "as": "geographical_area",
+            "expr": "datum['nb_reportings_geographical_area'] ? datum['nb_reportings_geographical_area'] : 0"
+          },
+          {
+            "type": "formula",
+            "as": "country",
+            "expr": "datum['nb_reportings_country'] ? datum['nb_reportings_country'] : 0"
+          },
+          {
+            "type": "fold",
+            "fields": [
+              "country",
+              "locality",
+              "group",
+              "colonial_area",
+              "geographical_area"
+            ]
+          },
+          {
+            "type": "stack",
+            "groupby": [
+              "year"
+            ],
+            "field": "value",
+            "sort": {
+              "field": "key",
+              "order": "descending"
+            }
+          }
+        ]
+      },
+      {
+        "name": "partners",
+        "source": "networkMetrics",
+        "transform": [
+          {
+            "type": "formula",
+            "as": "group",
+            "expr": "datum.nb_partners_group ? datum.nb_partners_group : 0"
+          },
+          {
+            "type": "formula",
+            "as": "locality",
+            "expr": "datum['nb_partners_locality'] ? datum['nb_partners_locality'] : 0"
+          },
+          {
+            "type": "formula",
+            "as": "colonial_area",
+            "expr": "datum['nb_partners_colonial_area'] ? datum['nb_partners_colonial_area'] : 0"
+          },
+          {
+            "type": "formula",
+            "as": "geographical_area",
+            "expr": "datum['nb_partners_geographical_area'] ? datum['nb_partners_geographical_area'] : 0"
+          },
+          {
+            "type": "formula",
+            "as": "country",
+            "expr": "datum['nb_partners_country'] ? datum['nb_partners_country'] : 0"
+          },
+          {
+            "type": "fold",
+            "fields": [
+              "country",
+              "locality",
+              "group",
+              "colonial_area",
+              "geographical_area"
+            ]
+          },
+          {
+            "type": "stack",
+            "groupby": [
+              "year"
+            ],
+            "field": "value",
+            "sort": {
+              "field": "key",
+              "order": "descending"
+            }
+          }
+        ]
+      }
+    ],
+    "scales": [
+      {
+        "name": "xyears",
+        "type": "linear",
+        "range": "width",
+        "nice": true,
+        "domain": {
+          "data": "networkMetrics",
+          "field": "year"
         },
-        {
-          "title":"entities",
-          "type":"symbol",
-          "fill":"reportings_color"
+        "zero": false
+      },
+      {
+        "name": "flow_color",
+        "type": "ordinal",
+        "domain": {
+          "data": "flows",
+          "field": "key"
+        },
+        "range": {
+          "scheme": "paired"
         }
-      ],
-   "marks": [
-    {
-      "name": "metric",
-      "type": "group",
-       "marks": [
-
-       { 
-          "type":"group",
-          "from": {
-            "facet": {
-              "name": "flowAreas",
-              "data": "flows",
-              "groupby": "key"
-            }
-          },      
-          "marks":[
-            {
-              "type": "area",
-              "from": {"data": "flowAreas"},
-              "encode": {
-                "enter": {
-                  "x": {"scale": "xyears", "field": "year"},
-                  "y": {"scale": "flowScale", "field": "y0"},
-                  "y2": {"scale": "flowScale", "field": "y1"},
-                  "fill": {"scale": "flow_color", "field": "key"}
-                }
-              }
-            }
-          ]
+      },
+      {
+        "name": "partners_color",
+        "type": "ordinal",
+        "domain": {
+          "data": "partners",
+          "field": "key"
         },
-        
-        { 
-          "type":"group",
-          "from": {
-            "facet": {
-              "name": "areas",
-              "data": "reportings",
-              "groupby": "key"
-            }
-          },      
-          "marks":[
-            {
-              "type": "area",
-              "from": {"data": "areas"},
-              "encode": {
-                "enter": {
-                  "x": {"scale": "xyears", "field": "year"},
-                  "y": {"scale": "reportingsScale", "field": "y0"},
-                  "y2": {"scale": "reportingsScale", "field": "y1"},
-                  "fill": {"scale": "reportings_color", "field": "key"}
-                }
-              }
-            }
-          ]
-        },
-         { 
-          "type":"group",
-          "from": {
-            "facet": {
-              "name": "areas",
-              "data": "partners",
-              "groupby": "key"
-            }
-          },      
-          "marks":[
-            {
-              "type": "area",
-              "from": {"data": "areas"},
-              "encode": {
-                "enter": {
-                  "x": {"scale": "xyears", "field": "year"},
-                  "y": {"scale": "partnersScale", "field": "y0"},
-                  "y2": {"scale": "partnersScale", "field": "y1"},
-                  "fill": {"scale": "partners_color", "field": "key"}
-                }
-              }
-            }
-          ]
-        },
-       
-        {
-          "type": "line",
-          "from": {"data": "networkMetrics"},
-          "encode": {
-            "enter": {
-              "x": {"scale": "xyears", "field": "year"},
-              "y": {"scale": "densityScale", "field": "density"},
-              "stroke": {"value":"grey"},
-              "strokeWidth": {"value": 2}
-            },
-            "hover": {
-              "fillOpacity": {"value": 0.5}
-            }
-          }
-        },
-         {
-          "type": "line",
-          "from": {"data": "networkMetrics"},
-          "encode": {
-            "enter": {
-              "x": {"scale": "xyears", "field": "year"},
-              "y": {"scale": "modularityScale", "field": "modularity"},
-              "stroke": {"value":"grey"},
-              "strokeWidth": {"value": 2}
-            },
-            "hover": {
-              "fillOpacity": {"value": 0.5}
-            }
-          }
-        },
-        {
-          "type": "rule",
-          "encode": {
-            "update": {
-              "x": {"scale": "xyears", "signal": "indexDate", "offset": 0.5},
-              "y": {"value": 0},
-              "y2": {"signal":"height"},
-              "stroke": {"value": "grey"},
-              "zindex":0
-            }
-          }
-        },
-        {
-          "type": "text",
-          "encode": {
-            "update": {
-              "x":  {"scale": "xyears", "signal": "indexDate", "offset": 10},
-              "y": {"value": 20},
-              "fontSize": {"value": 11},
-              "text": {"signal": "indexDate"},
-              "baseline": {"value": "bottom"},
-              "stroke": {"value": "grey"}
-            }      
-          }
+        "range": {
+          "scheme": "accent"
         }
-      ]
-    }
-  ]
-}
+      },
+      {
+        "name": "reportings_color",
+        "type": "ordinal",
+        "domain": {
+          "data": "reportings",
+          "field": "key"
+        },
+        "range": {
+          "scheme": "accent"
+        }
+      },
+      {
+        "name": "flowScale",
+        "type": "linear",
+        "range": [
+          {
+            "signal": "height/blockNumber-15"
+          },
+          0
+        ],
+        "domain": {
+          "data": "flows",
+          "field": "nb_flows"
+        }
+      },
+      {
+        "name": "reportingsScale",
+        "type": "linear",
+        "range": [
+          {
+            "signal": "height/blockNumber*2-15"
+          },
+          {
+            "signal": "height/blockNumber"
+          }
+        ],
+        "domain": {
+          "data": "entities",
+          "field": "y1"
+        }
+      },
+      {
+        "name": "partnersScale",
+        "type": "linear",
+        "range": [
+          {
+            "signal": "height/blockNumber*3-15"
+          },
+          {
+            "signal": "height/blockNumber*2"
+          }
+        ],
+        "domain": {
+          "data": "entities",
+          "field": "y1"
+        }
+      },
+      {
+        "name": "densityScale",
+        "type": "linear",
+        "range": [
+          {
+            "signal": "height/blockNumber*4-15"
+          },
+          {
+            "signal": "height/blockNumber*3"
+          }
+        ],
+        "domain": {
+          "data": "networkMetrics",
+          "field": "density"
+        }
+      },
+      {
+        "name": "modularityScale",
+        "type": "linear",
+        "range": [
+          {
+            "signal": "height"
+          },
+          {
+            "signal": "height/blockNumber*4"
+          }
+        ],
+        "domain": {
+          "data": "networkMetrics",
+          "field": "modularity"
+        }
+      }
+    ],
+    "axes": [
+      {
+        "orient": "bottom",
+        "scale": "xyears",
+        "zindex": 1,
+        "grid": true
+      },
+      {
+        "orient": "top",
+        "scale": "xyears",
+        "zindex": 1,
+        "grid": true
+      },
+      {
+        "title": "flows",
+        "orient": "left",
+        "scale": "flowScale",
+        "grid": true
+      },
+      {
+        "title": "reportings",
+        "orient": "left",
+        "scale": "reportingsScale",
+        "grid": true
+      },
+      {
+        "title": "partners",
+        "orient": "left",
+        "scale": "partnersScale",
+        "grid": true
+      },
+      {
+        "title": "density",
+        "orient": "left",
+        "scale": "densityScale",
+        "grid": true,
+        "zero": false
+      },
+      {
+        "title": "modularity",
+        "orient": "left",
+        "scale": "modularityScale",
+        "grid": true,
+        "zero": false
+      }
+    ],
+    "legends": [
+      {
+        "title": "flows",
+        "type": "symbol",
+        "fill": "flow_color"
+      },
+      {
+        "title": "entities",
+        "type": "symbol",
+        "fill": "reportings_color"
+      }
+    ],
+    "marks": [
+      {
+        "name": "metric",
+        "type": "group",
+        "marks": [
+          {
+            "type": "group",
+            "from": {
+              "facet": {
+                "name": "flowAreas",
+                "data": "flows",
+                "groupby": "key"
+              }
+            },
+            "marks": [
+              {
+                "type": "area",
+                "from": {
+                  "data": "flowAreas"
+                },
+                "encode": {
+                  "enter": {
+                    "x": {
+                      "scale": "xyears",
+                      "field": "year"
+                    },
+                    "y": {
+                      "scale": "flowScale",
+                      "field": "y0"
+                    },
+                    "y2": {
+                      "scale": "flowScale",
+                      "field": "y1"
+                    },
+                    "fill": {
+                      "scale": "flow_color",
+                      "field": "key"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "type": "group",
+            "from": {
+              "facet": {
+                "name": "areas",
+                "data": "reportings",
+                "groupby": "key"
+              }
+            },
+            "marks": [
+              {
+                "type": "area",
+                "from": {
+                  "data": "areas"
+                },
+                "encode": {
+                  "enter": {
+                    "x": {
+                      "scale": "xyears",
+                      "field": "year"
+                    },
+                    "y": {
+                      "scale": "reportingsScale",
+                      "field": "y0"
+                    },
+                    "y2": {
+                      "scale": "reportingsScale",
+                      "field": "y1"
+                    },
+                    "fill": {
+                      "scale": "reportings_color",
+                      "field": "key"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "type": "group",
+            "from": {
+              "facet": {
+                "name": "areas",
+                "data": "partners",
+                "groupby": "key"
+              }
+            },
+            "marks": [
+              {
+                "type": "area",
+                "from": {
+                  "data": "areas"
+                },
+                "encode": {
+                  "enter": {
+                    "x": {
+                      "scale": "xyears",
+                      "field": "year"
+                    },
+                    "y": {
+                      "scale": "partnersScale",
+                      "field": "y0"
+                    },
+                    "y2": {
+                      "scale": "partnersScale",
+                      "field": "y1"
+                    },
+                    "fill": {
+                      "scale": "partners_color",
+                      "field": "key"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "type": "line",
+            "from": {
+              "data": "networkMetrics"
+            },
+            "encode": {
+              "enter": {
+                "x": {
+                  "scale": "xyears",
+                  "field": "year"
+                },
+                "y": {
+                  "scale": "densityScale",
+                  "field": "density"
+                },
+                "stroke": {
+                  "value": "grey"
+                },
+                "strokeWidth": {
+                  "value": 2
+                }
+              },
+              "hover": {
+                "fillOpacity": {
+                  "value": 0.5
+                }
+              }
+            }
+          },
+          {
+            "type": "line",
+            "from": {
+              "data": "networkMetrics"
+            },
+            "encode": {
+              "enter": {
+                "x": {
+                  "scale": "xyears",
+                  "field": "year"
+                },
+                "y": {
+                  "scale": "modularityScale",
+                  "field": "modularity"
+                },
+                "stroke": {
+                  "value": "grey"
+                },
+                "strokeWidth": {
+                  "value": 2
+                }
+              },
+              "hover": {
+                "fillOpacity": {
+                  "value": 0.5
+                }
+              }
+            }
+          },
+          {
+            "type": "rule",
+            "encode": {
+              "update": {
+                "x": {
+                  "scale": "xyears",
+                  "signal": "indexDate",
+                  "offset": 0.5
+                },
+                "y": {
+                  "value": 0
+                },
+                "y2": {
+                  "signal": "height"
+                },
+                "stroke": {
+                  "value": "grey"
+                },
+                "zindex": 0
+              }
+            }
+          },
+          {
+            "type": "text",
+            "encode": {
+              "update": {
+                "x": {
+                  "scale": "xyears",
+                  "signal": "indexDate",
+                  "offset": 10
+                },
+                "y": {
+                  "value": 20
+                },
+                "fontSize": {
+                  "value": 11
+                },
+                "text": {
+                  "signal": "indexDate"
+                },
+                "baseline": {
+                  "value": "bottom"
+                },
+                "stroke": {
+                  "value": "grey"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }

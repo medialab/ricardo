@@ -1,4 +1,4 @@
-import { initParams, getListItemId } from "../utils";
+import { getListItemId, initParams } from "../utils";
 
 angular.module("ricardo.controllers.world", []).controller("world", [
   "$scope",
@@ -228,7 +228,7 @@ angular.module("ricardo.controllers.world", []).controller("world", [
       apiService
         .getReportingEntities({
           partners_ids: worldPartner.type.value,
-          type_filter: "GPH_entity,group,city",
+          type_filter: "GPH_entity,group,locality",
         })
         .then(function (result) {
           $scope.reportingCountryEntities = result;
