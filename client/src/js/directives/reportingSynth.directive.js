@@ -84,12 +84,13 @@ angular
           var source_map = {
             Primary: 0,
             Secondary: 1,
-            Estimation: 2,
-            FedericoTena: 3,
+            Primary_yearbook: 2,
+            Estimation: 3,
+            FedericoTena: 4,
           };
           var type_map = {
             GPH_entity: 0,
-            "locality": 1,
+            locality: 1,
             group: 2,
             colonial_area: 3,
           };
@@ -188,22 +189,18 @@ angular
                 return color_domain.slice(0).sort(function (a, b) {
                   return d3.ascending(world_partner_map[a], world_partner_map[b]);
                 });
-                break;
               case "sourcetype":
                 return color_domain.slice(0).sort(function (a, b) {
                   return d3.ascending(source_map[a], source_map[b]);
                 });
-                break;
               case "type":
                 return color_domain.slice(0).sort(function (a, b) {
                   return d3.ascending(type_map[a], type_map[b]);
                 });
-                break;
               case "continent":
                 return color_domain.slice(0).sort(function (a, b) {
                   return d3.ascending(continent_map[a], continent_map[b]);
                 });
-                break;
             }
           }
           function group_reporting(_data, curveBy) {
@@ -362,9 +359,10 @@ angular
             } else if (category === "reference") {
               categoryColor.domain([0, 1, 2, 3, 4]).range(["#393b79", "#ad494a", "#bd9e39", "#637939", "#7b4173"]);
             } else {
-              console.log("synth", category, color_domain, d3.set(color_domain).values())
+              console.log("synth", category, color_domain, d3.set(color_domain).values());
+
               color_domain = sort_color(category, d3.set(color_domain).values());
-              console.log("synth", color_domain)
+              console.log("synth", color_domain);
               categoryColor
                 .domain(color_domain)
                 .range([
