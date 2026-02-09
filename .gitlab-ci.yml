@@ -7,7 +7,7 @@ stages:
 variables:
   CLIENT_IMAGE_NAME: $CI_REGISTRY_IMAGE/ricardo-client:$CI_COMMIT_REF_SLUG
   API_IMAGE_NAME: $CI_REGISTRY_IMAGE/ricardo-api:$CI_COMMIT_REF_SLUG
-  DATA_VERSION_REF: "2025.07"
+  DATA_VERSION_REF: "2026.02"
 
 build_client:
   stage: build
